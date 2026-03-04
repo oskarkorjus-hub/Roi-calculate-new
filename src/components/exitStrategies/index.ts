@@ -1,0 +1,1 @@
+export { StrategyCardCompact } from './StrategyCardCompact';

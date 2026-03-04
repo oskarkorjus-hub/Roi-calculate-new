@@ -1,0 +1,69 @@
+@import "tailwindcss";
+
+@theme {
+  /* Unified light theme - slate/indigo palette */
+  --color-primary: #4f46e5;
+  --color-primary-dark: #4338ca;
+  --color-primary-light: #eef2ff;
+
+  --color-accent: #10b981;
+  --color-accent-dark: #059669;
+  --color-accent-light: #d1fae5;
+
+  --color-background: #f1f5f9;
+  --color-surface: #ffffff;
+  --color-surface-alt: #f8fafc;
+
+  --color-border: #e2e8f0;
+  --color-border-light: #f1f5f9;
+
+  --color-text-primary: #0f172a;
+  --color-text-secondary: #475569;
+  --color-text-muted: #94a3b8;
+
+  --color-negative: #ef4444;
+  --color-negative-light: #fee2e2;
+  --color-warning: #f97316;
+  --color-warning-light: #ffedd5;
+
+  --font-family-display: "Inter", sans-serif;
+}
+
+/* Custom scrollbar - light theme */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #4f46e5;
+}
+
+/* Material symbols styling */
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+
+/* Date input styling - light theme */
+input[type="date"]::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+}
+
+/* Radio card styles */
+.radio-card-input:checked + .radio-card-content {
+  border-color: #4f46e5;
+  background-color: rgba(79, 70, 229, 0.05);
+}
+.radio-card-input:checked + .radio-card-content .radio-indicator {
+  border-color: #4f46e5;
+  background-color: #4f46e5;
+}
+.radio-card-input:checked + .radio-card-content .radio-indicator::after {
+  opacity: 1;
+}
