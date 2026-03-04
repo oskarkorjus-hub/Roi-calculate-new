@@ -28,10 +28,10 @@ const formatDate = (timestamp: number): string => {
 };
 
 const getRatingColor = (grade: string): string => {
-  if (grade.startsWith('A')) return 'text-emerald-600 bg-emerald-50';
-  if (grade.startsWith('B')) return 'text-blue-600 bg-blue-50';
-  if (grade.startsWith('C')) return 'text-yellow-600 bg-yellow-50';
-  return 'text-red-600 bg-red-50';
+  if (grade.startsWith('A')) return 'text-emerald-400 bg-emerald-500/20';
+  if (grade.startsWith('B')) return 'text-cyan-400 bg-cyan-500/20';
+  if (grade.startsWith('C')) return 'text-yellow-400 bg-yellow-500/20';
+  return 'text-red-400 bg-red-500/20';
 };
 
 const getBestWorst = (values: number[], higherIsBetter: boolean): { best: number; worst: number } => {
@@ -40,8 +40,8 @@ const getBestWorst = (values: number[], higherIsBetter: boolean): { best: number
 };
 
 const getValueClass = (value: number, best: number, worst: number): string => {
-  if (value === best) return 'text-emerald-600 font-bold';
-  if (value === worst && best !== worst) return 'text-red-500';
+  if (value === best) return 'text-emerald-400 font-bold';
+  if (value === worst && best !== worst) return 'text-red-400';
   return '';
 };
 
@@ -84,11 +84,11 @@ export function ComparisonView({ isOpen, onClose, calculatorType }: Props) {
     const items = comparisons.rentalROI;
     if (items.length === 0) {
       return (
-        <div className="text-center py-16 text-slate-500">
-          <svg className="w-16 h-16 mx-auto mb-4 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div className="text-center py-16 text-zinc-500">
+          <svg className="w-16 h-16 mx-auto mb-4 text-zinc-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
           </svg>
-          <p className="font-semibold mb-2">No calculations saved yet</p>
+          <p className="font-semibold mb-2 text-zinc-300">No calculations saved yet</p>
           <p className="text-sm">Use "Save to Compare" on your Rental ROI calculations to add them here</p>
         </div>
       );
@@ -112,8 +112,8 @@ export function ComparisonView({ isOpen, onClose, calculatorType }: Props) {
       <div className="overflow-x-auto">
         <table className="w-full min-w-[600px]">
           <thead>
-            <tr className="border-b-2 border-slate-200">
-              <th className="text-left py-3 px-4 font-bold text-slate-600 uppercase text-xs tracking-wider w-48">Metric</th>
+            <tr className="border-b-2 border-zinc-700">
+              <th className="text-left py-3 px-4 font-bold text-zinc-400 uppercase text-xs tracking-wider w-48">Metric</th>
               {items.map((item) => (
                 <th key={item.timestamp} className="text-center py-3 px-4 min-w-[150px]">
                   <div className="flex flex-col items-center gap-1">
@@ -123,12 +123,12 @@ export function ComparisonView({ isOpen, onClose, calculatorType }: Props) {
                           type="text"
                           value={labelValue}
                           onChange={(e) => setLabelValue(e.target.value)}
-                          className="w-24 px-2 py-1 text-xs border border-slate-300 rounded"
+                          className="w-24 px-2 py-1 text-xs border border-zinc-600 rounded bg-zinc-800 text-white"
                           autoFocus
                         />
                         <button
                           onClick={() => handleSaveLabel(item.timestamp)}
-                          className="text-emerald-600 hover:text-emerald-700"
+                          className="text-emerald-400 hover:text-emerald-300"
                         >
                           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
@@ -138,15 +138,15 @@ export function ComparisonView({ isOpen, onClose, calculatorType }: Props) {
                     ) : (
                       <button
                         onClick={() => handleEditLabel(item.timestamp, item.label)}
-                        className="font-bold text-slate-800 hover:text-indigo-600 transition-colors"
+                        className="font-bold text-white hover:text-emerald-400 transition-colors"
                       >
                         {item.label}
                       </button>
                     )}
-                    <span className="text-[10px] text-slate-400">{formatDate(item.timestamp)}</span>
+                    <span className="text-[10px] text-zinc-500">{formatDate(item.timestamp)}</span>
                     <button
                       onClick={() => removeComparison('rental-roi', item.timestamp)}
-                      className="text-red-400 hover:text-red-600 transition-colors mt-1"
+                      className="text-red-400 hover:text-red-300 transition-colors mt-1"
                       title="Remove"
                     >
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -158,7 +158,7 @@ export function ComparisonView({ isOpen, onClose, calculatorType }: Props) {
               ))}
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-100">
+          <tbody className="divide-y divide-zinc-800">
             <MetricRow
               label="Investment Rating"
               items={items}
@@ -263,11 +263,11 @@ export function ComparisonView({ isOpen, onClose, calculatorType }: Props) {
     const items = comparisons.xirr;
     if (items.length === 0) {
       return (
-        <div className="text-center py-16 text-slate-500">
-          <svg className="w-16 h-16 mx-auto mb-4 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div className="text-center py-16 text-zinc-500">
+          <svg className="w-16 h-16 mx-auto mb-4 text-zinc-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
           </svg>
-          <p className="font-semibold mb-2">No calculations saved yet</p>
+          <p className="font-semibold mb-2 text-zinc-300">No calculations saved yet</p>
           <p className="text-sm">Use "Save to Compare" on your XIRR calculations to add them here</p>
         </div>
       );
@@ -286,8 +286,8 @@ export function ComparisonView({ isOpen, onClose, calculatorType }: Props) {
       <div className="overflow-x-auto">
         <table className="w-full min-w-[600px]">
           <thead>
-            <tr className="border-b-2 border-slate-200">
-              <th className="text-left py-3 px-4 font-bold text-slate-600 uppercase text-xs tracking-wider w-48">Metric</th>
+            <tr className="border-b-2 border-zinc-700">
+              <th className="text-left py-3 px-4 font-bold text-zinc-400 uppercase text-xs tracking-wider w-48">Metric</th>
               {items.map((item) => (
                 <th key={item.timestamp} className="text-center py-3 px-4 min-w-[150px]">
                   <div className="flex flex-col items-center gap-1">
@@ -297,12 +297,12 @@ export function ComparisonView({ isOpen, onClose, calculatorType }: Props) {
                           type="text"
                           value={labelValue}
                           onChange={(e) => setLabelValue(e.target.value)}
-                          className="w-24 px-2 py-1 text-xs border border-slate-300 rounded"
+                          className="w-24 px-2 py-1 text-xs border border-zinc-600 rounded bg-zinc-800 text-white"
                           autoFocus
                         />
                         <button
                           onClick={() => handleSaveLabel(item.timestamp)}
-                          className="text-emerald-600 hover:text-emerald-700"
+                          className="text-emerald-400 hover:text-emerald-300"
                         >
                           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
@@ -312,15 +312,15 @@ export function ComparisonView({ isOpen, onClose, calculatorType }: Props) {
                     ) : (
                       <button
                         onClick={() => handleEditLabel(item.timestamp, item.label)}
-                        className="font-bold text-slate-800 hover:text-indigo-600 transition-colors"
+                        className="font-bold text-white hover:text-emerald-400 transition-colors"
                       >
                         {item.label}
                       </button>
                     )}
-                    <span className="text-[10px] text-slate-400">{formatDate(item.timestamp)}</span>
+                    <span className="text-[10px] text-zinc-500">{formatDate(item.timestamp)}</span>
                     <button
                       onClick={() => removeComparison('xirr', item.timestamp)}
-                      className="text-red-400 hover:text-red-600 transition-colors mt-1"
+                      className="text-red-400 hover:text-red-300 transition-colors mt-1"
                       title="Remove"
                     >
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -332,7 +332,7 @@ export function ComparisonView({ isOpen, onClose, calculatorType }: Props) {
               ))}
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-100">
+          <tbody className="divide-y divide-zinc-800">
             <MetricRow
               label="Investment Rating"
               items={items}
@@ -396,15 +396,15 @@ export function ComparisonView({ isOpen, onClose, calculatorType }: Props) {
   };
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-5xl max-h-[90vh] overflow-hidden flex flex-col">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
+      <div className="bg-zinc-900 rounded-2xl border border-zinc-800 shadow-2xl w-full max-w-5xl max-h-[90vh] overflow-hidden flex flex-col">
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-zinc-800">
           <div>
-            <h2 className="text-xl font-bold text-slate-900">
+            <h2 className="text-xl font-bold text-white">
               Compare {calculatorType === 'rental-roi' ? 'Rental ROI' : 'XIRR'} Calculations
             </h2>
-            <p className="text-sm text-slate-500 mt-0.5">
+            <p className="text-sm text-zinc-500 mt-0.5">
               {data.length} of {MAX_COMPARISONS} slots used
             </p>
           </div>
@@ -413,7 +413,7 @@ export function ComparisonView({ isOpen, onClose, calculatorType }: Props) {
               <button
                 onClick={handleExportPDF}
                 disabled={isExporting}
-                className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white text-sm font-bold rounded-lg hover:bg-indigo-700 transition-colors disabled:opacity-50"
+                className="flex items-center gap-2 px-4 py-2 bg-emerald-600 text-white text-sm font-bold rounded-lg hover:bg-emerald-700 transition-colors disabled:opacity-50"
               >
                 {isExporting ? (
                   <>
@@ -436,16 +436,16 @@ export function ComparisonView({ isOpen, onClose, calculatorType }: Props) {
             {data.length > 0 && (
               <button
                 onClick={() => clearAll(calculatorType)}
-                className="text-sm text-red-500 hover:text-red-700 font-medium transition-colors"
+                className="text-sm text-red-400 hover:text-red-300 font-medium transition-colors"
               >
                 Clear All
               </button>
             )}
             <button
               onClick={onClose}
-              className="p-2 hover:bg-slate-100 rounded-lg transition-colors"
+              className="p-2 hover:bg-zinc-800 rounded-lg transition-colors"
             >
-              <svg className="w-5 h-5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-5 h-5 text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
               </svg>
             </button>
@@ -453,21 +453,21 @@ export function ComparisonView({ isOpen, onClose, calculatorType }: Props) {
         </div>
 
         {/* Content */}
-        <div className="flex-1 overflow-auto p-6">
+        <div className="flex-1 overflow-auto p-6 bg-zinc-900">
           {calculatorType === 'rental-roi' ? renderRentalROIComparison() : renderXIRRComparison()}
         </div>
 
         {/* Legend */}
         {data.length > 1 && (
-          <div className="px-6 py-3 border-t border-slate-200 bg-slate-50 flex items-center gap-6 text-xs">
-            <span className="text-slate-500 font-medium">Legend:</span>
+          <div className="px-6 py-3 border-t border-zinc-800 bg-zinc-800/50 flex items-center gap-6 text-xs">
+            <span className="text-zinc-500 font-medium">Legend:</span>
             <span className="flex items-center gap-1.5">
               <span className="w-3 h-3 rounded-full bg-emerald-500"></span>
-              <span className="text-slate-600">Best value</span>
+              <span className="text-zinc-400">Best value</span>
             </span>
             <span className="flex items-center gap-1.5">
               <span className="w-3 h-3 rounded-full bg-red-400"></span>
-              <span className="text-slate-600">Worst value</span>
+              <span className="text-zinc-400">Worst value</span>
             </span>
           </div>
         )}
@@ -487,10 +487,10 @@ function MetricRow<T>({
   render: (item: T) => React.ReactNode;
 }) {
   return (
-    <tr className="hover:bg-slate-50 transition-colors">
-      <td className="py-3 px-4 font-medium text-slate-700 text-sm">{label}</td>
+    <tr className="hover:bg-zinc-800/50 transition-colors">
+      <td className="py-3 px-4 font-medium text-zinc-400 text-sm">{label}</td>
       {items.map((item, idx) => (
-        <td key={idx} className="py-3 px-4 text-center text-sm text-slate-900">
+        <td key={idx} className="py-3 px-4 text-center text-sm text-white">
           {render(item)}
         </td>
       ))}

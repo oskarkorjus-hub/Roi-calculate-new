@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
 
 export function Contact() {
   const [formData, setFormData] = useState({
@@ -26,13 +27,8 @@ export function Contact() {
     setIsSubmitting(true);
 
     try {
-      // In a real implementation, this would send to a backend
-      // For now, we'll just simulate the submission
       await new Promise((resolve) => setTimeout(resolve, 1000));
-
-      // Log the form data (in production, send to backend)
       console.log('Form submitted:', formData);
-
       setSubmitted(true);
       setFormData({
         name: '',
@@ -41,7 +37,6 @@ export function Contact() {
         subject: '',
         message: '',
       });
-
       setTimeout(() => setSubmitted(false), 5000);
     } catch (error) {
       console.error('Error submitting form:', error);
@@ -51,251 +46,310 @@ export function Contact() {
   };
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-[#0a0a0a] pt-20">
       {/* Header */}
-      <section className="py-12 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-indigo-50 to-blue-50">
+      <section className="pt-16 pb-12 px-6 lg:px-8">
         <div className="max-w-4xl mx-auto text-center">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">Get In Touch</h1>
-          <p className="text-lg text-gray-600">
+          <motion.h1
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-4xl sm:text-5xl font-bold text-white mb-4"
+          >
+            Get In Touch
+          </motion.h1>
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+            className="text-lg text-zinc-400"
+          >
             Have questions? Want to learn more about ROI Calculate? We'd love to hear from you.
-          </p>
+          </motion.p>
         </div>
       </section>
 
       {/* Contact Section */}
-      <section className="py-16 px-4 sm:px-6 lg:px-8">
+      <section className="py-12 px-6 lg:px-8">
         <div className="max-w-5xl mx-auto">
-          <div className="grid md:grid-cols-3 gap-8 mb-16">
+          <div className="grid md:grid-cols-3 gap-8">
             {/* Contact Info */}
-            <div className="md:col-span-1">
-              <h2 className="text-2xl font-bold mb-8">Contact Information</h2>
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.2 }}
+              className="md:col-span-1"
+            >
+              <h2 className="text-xl font-bold text-white mb-8">Contact Information</h2>
 
               <div className="space-y-8">
                 <div>
-                  <h3 className="font-semibold text-gray-900 mb-2">Email</h3>
+                  <h3 className="font-semibold text-zinc-300 mb-2">Email</h3>
                   <a
-                    href="mailto:hello@investlandgroup.com"
-                    className="text-indigo-600 hover:underline"
+                    href="mailto:hello@roicalculate.com"
+                    className="text-emerald-400 hover:text-emerald-300 transition-colors"
                   >
-                    hello@investlandgroup.com
+                    hello@roicalculate.com
                   </a>
-                  <p className="text-sm text-gray-600 mt-1">
+                  <p className="text-sm text-zinc-500 mt-1">
                     We respond within 24 hours
                   </p>
                 </div>
 
                 <div>
-                  <h3 className="font-semibold text-gray-900 mb-2">Location</h3>
-                  <p className="text-gray-700">Bali, Indonesia</p>
+                  <h3 className="font-semibold text-zinc-300 mb-2">Location</h3>
+                  <p className="text-zinc-400">Bali, Indonesia</p>
                 </div>
 
                 <div>
-                  <h3 className="font-semibold text-gray-900 mb-2">Hours</h3>
-                  <p className="text-gray-700">Monday - Friday</p>
-                  <p className="text-gray-700">9:00 AM - 6:00 PM WIB</p>
+                  <h3 className="font-semibold text-zinc-300 mb-2">Hours</h3>
+                  <p className="text-zinc-400">Monday - Friday</p>
+                  <p className="text-zinc-400">9:00 AM - 6:00 PM WIB</p>
                 </div>
 
                 <div>
-                  <h3 className="font-semibold text-gray-900 mb-4">Follow Us</h3>
-                  <div className="flex gap-4">
-                    <a
-                      href="https://twitter.com"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="w-10 h-10 bg-indigo-100 rounded-full flex items-center justify-center text-indigo-600 hover:bg-indigo-600 hover:text-white transition-colors"
-                    >
-                      𝕏
-                    </a>
-                    <a
-                      href="https://linkedin.com"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="w-10 h-10 bg-indigo-100 rounded-full flex items-center justify-center text-indigo-600 hover:bg-indigo-600 hover:text-white transition-colors"
-                    >
-                      in
-                    </a>
-                    <a
-                      href="https://instagram.com"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="w-10 h-10 bg-indigo-100 rounded-full flex items-center justify-center text-indigo-600 hover:bg-indigo-600 hover:text-white transition-colors"
-                    >
-                      📷
-                    </a>
+                  <h3 className="font-semibold text-zinc-300 mb-4">Follow Us</h3>
+                  <div className="flex gap-3">
+                    {[
+                      { icon: '𝕏', href: 'https://twitter.com' },
+                      { icon: 'in', href: 'https://linkedin.com' },
+                      { icon: '📷', href: 'https://instagram.com' },
+                    ].map((social, i) => (
+                      <a
+                        key={i}
+                        href={social.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="w-10 h-10 bg-zinc-800 border border-zinc-700 rounded-lg flex items-center justify-center text-zinc-400 hover:bg-emerald-500/20 hover:border-emerald-500/50 hover:text-emerald-400 transition-all"
+                      >
+                        {social.icon}
+                      </a>
+                    ))}
                   </div>
                 </div>
               </div>
-            </div>
+            </motion.div>
 
             {/* Contact Form */}
-            <div className="md:col-span-2">
-              <h2 className="text-2xl font-bold mb-6">Send Us a Message</h2>
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.3 }}
+              className="md:col-span-2"
+            >
+              <div className="bg-zinc-900/50 border border-zinc-800 rounded-2xl p-8">
+                <h2 className="text-xl font-bold text-white mb-6">Send Us a Message</h2>
 
-              {submitted && (
-                <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg">
-                  <p className="text-green-800 font-semibold">
-                    ✓ Thank you! We've received your message and will get back to you soon.
-                  </p>
-                </div>
-              )}
-
-              <form onSubmit={handleSubmit} className="space-y-6">
-                <div>
-                  <label htmlFor="name" className="block text-sm font-semibold text-gray-900 mb-2">
-                    Full Name *
-                  </label>
-                  <input
-                    type="text"
-                    id="name"
-                    name="name"
-                    value={formData.name}
-                    onChange={handleChange}
-                    required
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-indigo-600 focus:ring-1 focus:ring-indigo-600"
-                    placeholder="Your name"
-                  />
-                </div>
-
-                <div>
-                  <label htmlFor="email" className="block text-sm font-semibold text-gray-900 mb-2">
-                    Email Address *
-                  </label>
-                  <input
-                    type="email"
-                    id="email"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleChange}
-                    required
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-indigo-600 focus:ring-1 focus:ring-indigo-600"
-                    placeholder="your@email.com"
-                  />
-                </div>
-
-                <div>
-                  <label htmlFor="company" className="block text-sm font-semibold text-gray-900 mb-2">
-                    Company (Optional)
-                  </label>
-                  <input
-                    type="text"
-                    id="company"
-                    name="company"
-                    value={formData.company}
-                    onChange={handleChange}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-indigo-600 focus:ring-1 focus:ring-indigo-600"
-                    placeholder="Your company"
-                  />
-                </div>
-
-                <div>
-                  <label htmlFor="subject" className="block text-sm font-semibold text-gray-900 mb-2">
-                    Subject *
-                  </label>
-                  <select
-                    id="subject"
-                    name="subject"
-                    value={formData.subject}
-                    onChange={handleChange}
-                    required
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-indigo-600 focus:ring-1 focus:ring-indigo-600"
+                {submitted && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="mb-6 p-4 bg-emerald-500/10 border border-emerald-500/30 rounded-xl"
                   >
-                    <option value="">Select a subject</option>
-                    <option value="general">General Inquiry</option>
-                    <option value="sales">Sales / Pricing</option>
-                    <option value="support">Technical Support</option>
-                    <option value="enterprise">Enterprise Plans</option>
-                    <option value="feedback">Feedback</option>
-                    <option value="partnership">Partnership</option>
-                  </select>
-                </div>
+                    <p className="text-emerald-400 font-semibold">
+                      ✓ Thank you! We've received your message and will get back to you soon.
+                    </p>
+                  </motion.div>
+                )}
 
-                <div>
-                  <label htmlFor="message" className="block text-sm font-semibold text-gray-900 mb-2">
-                    Message *
-                  </label>
-                  <textarea
-                    id="message"
-                    name="message"
-                    value={formData.message}
-                    onChange={handleChange}
-                    required
-                    rows={6}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-indigo-600 focus:ring-1 focus:ring-indigo-600"
-                    placeholder="Tell us more about your inquiry..."
-                  />
-                </div>
+                <form onSubmit={handleSubmit} className="space-y-5">
+                  <div className="grid md:grid-cols-2 gap-5">
+                    <div>
+                      <label htmlFor="name" className="block text-sm font-medium text-zinc-400 mb-2">
+                        Full Name *
+                      </label>
+                      <input
+                        type="text"
+                        id="name"
+                        name="name"
+                        value={formData.name}
+                        onChange={handleChange}
+                        required
+                        className="w-full px-4 py-3 bg-zinc-800/50 border border-zinc-700 rounded-xl text-white placeholder-zinc-500 focus:outline-none focus:border-emerald-500/50 focus:ring-2 focus:ring-emerald-500/20 transition-all"
+                        placeholder="Your name"
+                      />
+                    </div>
 
-                <button
-                  type="submit"
-                  disabled={isSubmitting}
-                  className="w-full px-6 py-3 bg-indigo-600 text-white font-bold rounded-lg hover:bg-indigo-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
-                >
-                  {isSubmitting ? 'Sending...' : 'Send Message'}
-                </button>
+                    <div>
+                      <label htmlFor="email" className="block text-sm font-medium text-zinc-400 mb-2">
+                        Email Address *
+                      </label>
+                      <input
+                        type="email"
+                        id="email"
+                        name="email"
+                        value={formData.email}
+                        onChange={handleChange}
+                        required
+                        className="w-full px-4 py-3 bg-zinc-800/50 border border-zinc-700 rounded-xl text-white placeholder-zinc-500 focus:outline-none focus:border-emerald-500/50 focus:ring-2 focus:ring-emerald-500/20 transition-all"
+                        placeholder="your@email.com"
+                      />
+                    </div>
+                  </div>
 
-                <p className="text-sm text-gray-600">
-                  We'll respond to your message within 24 business hours.
-                </p>
-              </form>
-            </div>
+                  <div className="grid md:grid-cols-2 gap-5">
+                    <div>
+                      <label htmlFor="company" className="block text-sm font-medium text-zinc-400 mb-2">
+                        Company (Optional)
+                      </label>
+                      <input
+                        type="text"
+                        id="company"
+                        name="company"
+                        value={formData.company}
+                        onChange={handleChange}
+                        className="w-full px-4 py-3 bg-zinc-800/50 border border-zinc-700 rounded-xl text-white placeholder-zinc-500 focus:outline-none focus:border-emerald-500/50 focus:ring-2 focus:ring-emerald-500/20 transition-all"
+                        placeholder="Your company"
+                      />
+                    </div>
+
+                    <div>
+                      <label htmlFor="subject" className="block text-sm font-medium text-zinc-400 mb-2">
+                        Subject *
+                      </label>
+                      <select
+                        id="subject"
+                        name="subject"
+                        value={formData.subject}
+                        onChange={handleChange}
+                        required
+                        className="w-full px-4 py-3 bg-zinc-800/50 border border-zinc-700 rounded-xl text-white focus:outline-none focus:border-emerald-500/50 focus:ring-2 focus:ring-emerald-500/20 transition-all"
+                      >
+                        <option value="" className="bg-zinc-800">Select a subject</option>
+                        <option value="general" className="bg-zinc-800">General Inquiry</option>
+                        <option value="sales" className="bg-zinc-800">Sales / Pricing</option>
+                        <option value="support" className="bg-zinc-800">Technical Support</option>
+                        <option value="enterprise" className="bg-zinc-800">Enterprise Plans</option>
+                        <option value="feedback" className="bg-zinc-800">Feedback</option>
+                        <option value="partnership" className="bg-zinc-800">Partnership</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label htmlFor="message" className="block text-sm font-medium text-zinc-400 mb-2">
+                      Message *
+                    </label>
+                    <textarea
+                      id="message"
+                      name="message"
+                      value={formData.message}
+                      onChange={handleChange}
+                      required
+                      rows={5}
+                      className="w-full px-4 py-3 bg-zinc-800/50 border border-zinc-700 rounded-xl text-white placeholder-zinc-500 focus:outline-none focus:border-emerald-500/50 focus:ring-2 focus:ring-emerald-500/20 transition-all resize-none"
+                      placeholder="Tell us more about your inquiry..."
+                    />
+                  </div>
+
+                  <button
+                    type="submit"
+                    disabled={isSubmitting}
+                    className="w-full px-6 py-3 bg-gradient-to-r from-emerald-500 to-cyan-500 text-white font-bold rounded-xl hover:from-emerald-600 hover:to-cyan-600 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {isSubmitting ? 'Sending...' : 'Send Message'}
+                  </button>
+
+                  <p className="text-sm text-zinc-500 text-center">
+                    We'll respond to your message within 24 business hours.
+                  </p>
+                </form>
+              </div>
+            </motion.div>
           </div>
         </div>
       </section>
 
-      {/* FAQ Quick Links */}
-      <section className="py-16 px-4 sm:px-6 lg:px-8 bg-gray-50">
+      {/* Quick Links */}
+      <section className="py-16 px-6 lg:px-8">
         <div className="max-w-5xl mx-auto">
-          <h2 className="text-2xl font-bold text-center mb-8">Quick Help</h2>
-          <div className="grid md:grid-cols-3 gap-6">
-            <Link
-              to="/faq"
-              className="p-6 bg-white rounded-lg border-2 border-gray-200 hover:border-indigo-600 transition-colors"
+          <motion.h2
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-xl font-bold text-white text-center mb-8"
+          >
+            Quick Help
+          </motion.h2>
+          <div className="grid md:grid-cols-2 gap-6">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.1 }}
             >
-              <div className="text-3xl mb-3">❓</div>
-              <h3 className="font-bold text-lg text-gray-900 mb-2">FAQ</h3>
-              <p className="text-sm text-gray-600">
-                Find answers to common questions about ROI Calculate
-              </p>
-            </Link>
+              <Link
+                to="/pricing"
+                className="block p-6 bg-zinc-900/50 border border-zinc-800 rounded-xl hover:border-zinc-700 transition-all group"
+              >
+                <div className="text-3xl mb-3">💰</div>
+                <h3 className="font-bold text-lg text-white mb-2 group-hover:text-emerald-400 transition-colors">
+                  Pricing
+                </h3>
+                <p className="text-sm text-zinc-500">
+                  Explore our plans and pricing options
+                </p>
+              </Link>
+            </motion.div>
 
-            <Link
-              to="/pricing"
-              className="p-6 bg-white rounded-lg border-2 border-gray-200 hover:border-indigo-600 transition-colors"
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.2 }}
             >
-              <div className="text-3xl mb-3">💰</div>
-              <h3 className="font-bold text-lg text-gray-900 mb-2">Pricing</h3>
-              <p className="text-sm text-gray-600">
-                Explore our plans and pricing options
-              </p>
-            </Link>
-
-            <Link
-              to="/calculators"
-              className="p-6 bg-white rounded-lg border-2 border-gray-200 hover:border-indigo-600 transition-colors"
-            >
-              <div className="text-3xl mb-3">📊</div>
-              <h3 className="font-bold text-lg text-gray-900 mb-2">Calculators</h3>
-              <p className="text-sm text-gray-600">
-                Start using ROI Calculate for free
-              </p>
-            </Link>
+              <Link
+                to="/calculators"
+                className="block p-6 bg-zinc-900/50 border border-zinc-800 rounded-xl hover:border-zinc-700 transition-all group"
+              >
+                <div className="text-3xl mb-3">📊</div>
+                <h3 className="font-bold text-lg text-white mb-2 group-hover:text-emerald-400 transition-colors">
+                  Calculators
+                </h3>
+                <p className="text-sm text-zinc-500">
+                  Start using ROI Calculate for free
+                </p>
+              </Link>
+            </motion.div>
           </div>
         </div>
       </section>
 
       {/* CTA */}
-      <section className="py-16 px-4 sm:px-6 lg:px-8 bg-gradient-to-r from-indigo-600 to-blue-600">
-        <div className="max-w-3xl mx-auto text-center text-white">
-          <h2 className="text-3xl font-bold mb-4">Ready to Start Calculating?</h2>
-          <p className="text-lg mb-8 opacity-90">
-            Get started with 3 free calculator uses. No credit card required.
-          </p>
-          <Link
-            to="/calculators"
-            className="inline-block px-8 py-3 bg-white text-indigo-600 font-bold rounded-lg hover:bg-gray-100 transition-colors"
+      <section className="py-16 px-6 lg:px-8 border-t border-zinc-800">
+        <div className="max-w-3xl mx-auto text-center">
+          <motion.h2
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-2xl font-bold text-white mb-4"
           >
-            → Start Free Now
-          </Link>
+            Ready to Start Calculating?
+          </motion.h2>
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.1 }}
+            className="text-zinc-400 mb-8"
+          >
+            Get started with 3 free calculator uses. No credit card required.
+          </motion.p>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.2 }}
+          >
+            <Link
+              to="/calculators"
+              className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-emerald-500 to-cyan-500 text-white font-bold rounded-xl hover:from-emerald-600 hover:to-cyan-600 transition-all"
+            >
+              Start Free Now
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+              </svg>
+            </Link>
+          </motion.div>
         </div>
       </section>
     </div>

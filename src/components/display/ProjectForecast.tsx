@@ -151,7 +151,7 @@ export function ProjectForecast({ result, symbol, currency, data, formatDisplay,
             className={`w-full flex items-center justify-center gap-2 rounded-lg py-3 font-bold transition-colors ${
               isPaymentValid && !isExporting
                 ? 'bg-primary text-white hover:bg-primary-dark'
-                : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                : 'bg-zinc-700 text-zinc-500 cursor-not-allowed'
             }`}
           >
             {isExporting ? (
@@ -170,7 +170,7 @@ export function ProjectForecast({ result, symbol, currency, data, formatDisplay,
             )}
           </button>
           {!isPaymentValid && (
-            <p className="text-xs text-red-500 mt-2 text-center">
+            <p className="text-xs text-red-400 mt-2 text-center">
               Fix payment validation errors before exporting
             </p>
           )}

@@ -1,13 +1,9 @@
 import { AdvancedSection } from '../../../components/AdvancedSection';
-import { InputField } from '../../../components/ui/InputField';
-import { SelectField } from '../../../components/ui/SelectField';
-import { SectionHeader } from '../../../components/ui/SectionHeader';
-import { getFieldHelper } from '../../../utils/fieldHelpers';
+import { Tooltip } from '../../../components/ui/Tooltip';
 
 interface CapRateInputs {
   propertyValue: number;
   annualNOI: number;
-  currency: 'IDR' | 'USD' | 'AUD' | 'EUR';
   showAdvanced: boolean;
   vacancyRatePercent: number;
   maintenanceReservePercent: number;
@@ -19,63 +15,35 @@ interface CapRateInputs {
 interface PropertyInputsProps {
   inputs: CapRateInputs;
   onInputChange: (field: keyof CapRateInputs, value: string | number | boolean) => void;
+  symbol: string;
 }
 
-const currencyOptions = [
-  { label: 'USD (US Dollar)', value: 'USD' },
-  { label: 'IDR (Indonesian Rupiah)', value: 'IDR' },
-  { label: 'AUD (Australian Dollar)', value: 'AUD' },
-  { label: 'EUR (Euro)', value: 'EUR' },
-];
-
-const currencySymbols = { IDR: 'Rp', USD: '$', AUD: 'A$', EUR: '€' };
-
-export function PropertyInputs({ inputs, onInputChange }: PropertyInputsProps) {
-  const symbol = currencySymbols[inputs.currency];
+export function PropertyInputs({ inputs, onInputChange, symbol }: PropertyInputsProps) {
 
   return (
     <div className="space-y-6">
       {/* BASIC SECTION */}
-      <div className="bg-white rounded-xl p-6 border border-slate-200 shadow-sm">
-        <SectionHeader
-          title="Property Information"
-          icon="🏢"
-          description="Enter property value and annual NOI"
-        />
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+      <div>
+        <div className="mb-6 flex items-center gap-2">
+          <div className="w-2 h-2 rounded-full bg-emerald-400"></div>
+          <h3 className="text-base font-semibold text-zinc-300">Property Information</h3>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <InputField
             label="Property Value"
             value={inputs.propertyValue}
-            onChange={(v) => onInputChange('propertyValue', parseFloat(v as string) || 0)}
-            type="number"
-            unit={symbol}
-            placeholder="1000000000"
-            helperText={getFieldHelper('propertyValue')}
-            icon="🏠"
-            required
+            onChange={(v) => onInputChange('propertyValue', v)}
+            prefix={symbol}
+            tooltip="Total purchase price or current market value of the property"
           />
 
           <InputField
             label="Annual NOI"
             value={inputs.annualNOI}
-            onChange={(v) => onInputChange('annualNOI', parseFloat(v as string) || 0)}
-            type="number"
-            unit={symbol}
-            placeholder="100000000"
-            helperText={getFieldHelper('annualNOI')}
-            icon="📈"
-            required
-          />
-
-          <SelectField
-            label="Currency"
-            value={inputs.currency}
-            onChange={(v) => onInputChange('currency', v as 'IDR' | 'USD' | 'AUD' | 'EUR')}
-            options={currencyOptions}
-            helperText={getFieldHelper('currency')}
-            icon="💵"
-            required
+            onChange={(v) => onInputChange('annualNOI', v)}
+            prefix={symbol}
+            tooltip="Net Operating Income - Gross income minus operating expenses"
           />
         </div>
       </div>
@@ -88,65 +56,80 @@ export function PropertyInputs({ inputs, onInputChange }: PropertyInputsProps) {
         onToggle={() => onInputChange('showAdvanced', !inputs.showAdvanced)}
         description="Vacancy, reserves, and detailed expenses"
       >
-        <div className="space-y-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pt-4">
           <InputField
             label="Vacancy Rate"
             value={inputs.vacancyRatePercent}
-            onChange={(v) => onInputChange('vacancyRatePercent', parseFloat(v as string) || 0)}
-            type="number"
-            step={0.1}
-            unit="%"
-            placeholder="5"
-            helperText={getFieldHelper('vacancyRate')}
-            icon="📉"
+            onChange={(v) => onInputChange('vacancyRatePercent', v)}
+            suffix="%"
+            tooltip="Expected percentage of time property is vacant"
           />
 
           <InputField
             label="Maintenance Reserve"
             value={inputs.maintenanceReservePercent}
-            onChange={(v) => onInputChange('maintenanceReservePercent', parseFloat(v as string) || 0)}
-            type="number"
-            step={0.1}
-            unit="%"
-            placeholder="10"
-            helperText={getFieldHelper('maintenanceReserve')}
-            icon="🔧"
+            onChange={(v) => onInputChange('maintenanceReservePercent', v)}
+            suffix="%"
+            tooltip="Percentage of income set aside for maintenance"
           />
 
           <InputField
             label="Annual Property Taxes"
             value={inputs.annualPropertyTaxes}
-            onChange={(v) => onInputChange('annualPropertyTaxes', parseInt(v as string) || 0)}
-            type="number"
-            unit={symbol}
-            placeholder="0"
-            helperText="Annual property tax costs"
-            icon="🏛️"
+            onChange={(v) => onInputChange('annualPropertyTaxes', v)}
+            prefix={symbol}
+            tooltip="Annual property tax costs"
           />
 
           <InputField
             label="Annual Insurance"
             value={inputs.annualInsurance}
-            onChange={(v) => onInputChange('annualInsurance', parseInt(v as string) || 0)}
-            type="number"
-            unit={symbol}
-            placeholder="0"
-            helperText="Annual insurance cost for property protection"
-            icon="🛡️"
+            onChange={(v) => onInputChange('annualInsurance', v)}
+            prefix={symbol}
+            tooltip="Annual insurance cost for property protection"
           />
 
           <InputField
             label="Annual Utilities"
             value={inputs.annualUtilities}
-            onChange={(v) => onInputChange('annualUtilities', parseInt(v as string) || 0)}
-            type="number"
-            unit={symbol}
-            placeholder="0"
-            helperText="Expected annual utilities costs (electricity, water, gas)"
-            icon="⚡"
+            onChange={(v) => onInputChange('annualUtilities', v)}
+            prefix={symbol}
+            tooltip="Expected annual utilities costs"
           />
         </div>
       </AdvancedSection>
+    </div>
+  );
+}
+
+function InputField({ label, value, onChange, prefix, suffix, tooltip }: {
+  label: string;
+  value: number;
+  onChange: (value: number) => void;
+  prefix?: string;
+  suffix?: string;
+  tooltip?: string;
+}) {
+  return (
+    <div className="space-y-3">
+      <label className="flex items-center gap-1.5 text-sm font-medium text-zinc-400">
+        {label}
+        {tooltip && <Tooltip text={tooltip} />}
+      </label>
+      <div className="relative">
+        {prefix && (
+          <span className="absolute left-5 top-1/2 -translate-y-1/2 text-[13px] font-bold text-zinc-500">{prefix}</span>
+        )}
+        <input
+          type="number"
+          value={value}
+          onChange={e => onChange(parseFloat(e.target.value) || 0)}
+          className={`w-full bg-zinc-800 border border-zinc-700 rounded-2xl py-4 text-[16px] font-bold text-white placeholder:text-zinc-500 outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all tabular-nums ${prefix ? 'pl-12 pr-6' : suffix ? 'pl-6 pr-12' : 'px-6'}`}
+        />
+        {suffix && (
+          <span className="absolute right-5 top-1/2 -translate-y-1/2 text-[13px] font-bold text-zinc-500">{suffix}</span>
+        )}
+      </div>
     </div>
   );
 }

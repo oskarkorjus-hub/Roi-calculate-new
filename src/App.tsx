@@ -9,7 +9,6 @@ import { CalculatorHeader } from './components/layout/CalculatorHeader';
 import { Footer } from './components/layout/Footer';
 import { Landing } from './pages/Landing';
 import { Pricing } from './pages/Pricing';
-import { FAQ } from './pages/FAQ';
 import { Terms } from './pages/Terms';
 import { Privacy } from './pages/Privacy';
 import { Contact } from './pages/Contact';
@@ -59,7 +58,7 @@ function CalculatorApp() {
   const ActiveComponent = activeCalculator?.component;
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
+    <div className="min-h-screen bg-[#0a0a0a] flex flex-col pt-20">
       {/* Show header only when viewing a calculator */}
       {activeView === 'calculator' && activeCalculator && (
         <CalculatorHeader
@@ -70,38 +69,38 @@ function CalculatorApp() {
 
       {/* Main View Navigation */}
       {activeView !== 'calculator' && (
-        <div className="bg-white border-b border-gray-200 sticky top-0 z-10">
+        <div className="bg-[#0a0a0a] border-b border-zinc-800 sticky top-20 z-10">
           <div className="max-w-7xl mx-auto px-4">
-            <div className="flex gap-1 border-b border-gray-200">
+            <div className="flex gap-1">
               <button
                 onClick={() => handleViewChange('home')}
-                className={`px-4 py-3 font-medium text-sm ${
+                className={`px-4 py-3 font-medium text-sm transition-all ${
                   activeView === 'home'
-                    ? 'border-b-2 border-indigo-600 text-indigo-600'
-                    : 'text-gray-600 hover:text-gray-900'
+                    ? 'border-b-2 border-emerald-500 text-emerald-400'
+                    : 'text-zinc-400 hover:text-white'
                 }`}
               >
-                📊 Calculators
+                Calculators
               </button>
               <button
                 onClick={() => handleViewChange('portfolio')}
-                className={`px-4 py-3 font-medium text-sm ${
+                className={`px-4 py-3 font-medium text-sm transition-all ${
                   activeView === 'portfolio'
-                    ? 'border-b-2 border-indigo-600 text-indigo-600'
-                    : 'text-gray-600 hover:text-gray-900'
+                    ? 'border-b-2 border-emerald-500 text-emerald-400'
+                    : 'text-zinc-400 hover:text-white'
                 }`}
               >
-                💼 Portfolio
+                Portfolio
               </button>
               <button
                 onClick={() => handleViewChange('comparison')}
-                className={`px-4 py-3 font-medium text-sm ${
+                className={`px-4 py-3 font-medium text-sm transition-all ${
                   activeView === 'comparison'
-                    ? 'border-b-2 border-indigo-600 text-indigo-600'
-                    : 'text-gray-600 hover:text-gray-900'
+                    ? 'border-b-2 border-emerald-500 text-emerald-400'
+                    : 'text-zinc-400 hover:text-white'
                 }`}
               >
-                ⚖️ Compare
+                Compare
               </button>
             </div>
           </div>
@@ -110,7 +109,7 @@ function CalculatorApp() {
 
       {/* Main Content */}
       <main className="flex-1">
-        <Suspense fallback={<div className="text-center py-8">Loading...</div>}>
+        <Suspense fallback={<div className="text-center py-8 text-zinc-400">Loading...</div>}>
           {activeView === 'home' ? (
             <CalculatorHome onSelectCalculator={handleCalculatorChange} />
           ) : activeView === 'calculator' && ActiveComponent ? (
@@ -126,7 +125,7 @@ function CalculatorApp() {
               <ScenarioComparison />
             </div>
           ) : (
-            <div>View not found</div>
+            <div className="text-zinc-400">View not found</div>
           )}
         </Suspense>
       </main>
@@ -144,7 +143,6 @@ function App() {
             <Route path="/" element={<Landing />} />
             <Route path="/calculators" element={<CalculatorApp />} />
             <Route path="/pricing" element={<Pricing />} />
-            <Route path="/faq" element={<FAQ />} />
             <Route path="/terms" element={<Terms />} />
             <Route path="/privacy" element={<Privacy />} />
             <Route path="/contact" element={<Contact />} />

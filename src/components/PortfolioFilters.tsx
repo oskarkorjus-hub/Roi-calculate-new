@@ -109,116 +109,119 @@ export function PortfolioFilters({ projects, onFiltersChange }: PortfolioFilters
   }, [filtered, onFiltersChange]);
 
   return (
-    <div className="bg-white rounded-lg border border-gray-200 p-4 space-y-4">
-      <h2 className="text-lg font-bold text-gray-900">Filters & Sorting</h2>
+    <div className="bg-zinc-900 rounded-xl border border-zinc-800 p-6 space-y-4">
+      <div className="flex items-center gap-2 border-b border-zinc-800 pb-4">
+        <span className="material-symbols-outlined text-emerald-400">filter_list</span>
+        <h2 className="text-lg font-bold text-white">Filters & Sorting</h2>
+      </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Search */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            🔍 Search
+          <label className="block text-sm font-medium text-zinc-400 mb-2">
+            Search
           </label>
           <input
             type="text"
             value={searchTerm}
             onChange={e => setSearchTerm(e.target.value)}
             placeholder="Project name or location..."
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm"
+            className="w-full px-3 py-2 bg-zinc-800 border border-zinc-700 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-sm text-white placeholder:text-zinc-500"
           />
         </div>
 
         {/* Strategy Filter */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-sm font-medium text-zinc-400 mb-2">
             Strategy
           </label>
           <select
             value={strategy}
             onChange={e => setStrategy(e.target.value as FilterStrategy)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm"
+            className="w-full px-3 py-2 bg-zinc-800 border border-zinc-700 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-sm text-white"
           >
-            <option value="all">All Strategies</option>
-            <option value="flip">Flip</option>
-            <option value="hold">Hold</option>
-            <option value="rental">Rental</option>
-            <option value="development">Development</option>
+            <option value="all" className="bg-zinc-800">All Strategies</option>
+            <option value="flip" className="bg-zinc-800">Flip</option>
+            <option value="hold" className="bg-zinc-800">Hold</option>
+            <option value="rental" className="bg-zinc-800">Rental</option>
+            <option value="development" className="bg-zinc-800">Development</option>
           </select>
         </div>
 
         {/* Score Filter */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-sm font-medium text-zinc-400 mb-2">
             Investment Score
           </label>
           <select
             value={score}
             onChange={e => setScore(e.target.value as FilterScore)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm"
+            className="w-full px-3 py-2 bg-zinc-800 border border-zinc-700 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-sm text-white"
           >
-            <option value="all">All Scores</option>
-            <option value="excellent">Excellent (85+)</option>
-            <option value="very-good">Very Good (70-84)</option>
-            <option value="good">Good (60-69)</option>
-            <option value="moderate">Moderate (50-59)</option>
-            <option value="high-risk">High Risk (&lt;50)</option>
+            <option value="all" className="bg-zinc-800">All Scores</option>
+            <option value="excellent" className="bg-zinc-800">Excellent (85+)</option>
+            <option value="very-good" className="bg-zinc-800">Very Good (70-84)</option>
+            <option value="good" className="bg-zinc-800">Good (60-69)</option>
+            <option value="moderate" className="bg-zinc-800">Moderate (50-59)</option>
+            <option value="high-risk" className="bg-zinc-800">High Risk (&lt;50)</option>
           </select>
         </div>
 
         {/* Status Filter */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-sm font-medium text-zinc-400 mb-2">
             Status
           </label>
           <select
             value={status}
             onChange={e => setStatus(e.target.value as FilterStatus)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm"
+            className="w-full px-3 py-2 bg-zinc-800 border border-zinc-700 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-sm text-white"
           >
-            <option value="all">All Status</option>
-            <option value="active">Active</option>
-            <option value="archived">Archived</option>
-            <option value="completed">Completed</option>
+            <option value="all" className="bg-zinc-800">All Status</option>
+            <option value="active" className="bg-zinc-800">Active</option>
+            <option value="archived" className="bg-zinc-800">Archived</option>
+            <option value="completed" className="bg-zinc-800">Completed</option>
           </select>
         </div>
       </div>
 
-      <div className="border-t border-gray-200 pt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="border-t border-zinc-800 pt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* Sort By */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-sm font-medium text-zinc-400 mb-2">
             Sort By
           </label>
           <select
             value={sortBy}
             onChange={e => setSortBy(e.target.value as SortBy)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm"
+            className="w-full px-3 py-2 bg-zinc-800 border border-zinc-700 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-sm text-white"
           >
-            <option value="score">Investment Score</option>
-            <option value="roi">ROI %</option>
-            <option value="cashflow">Cash Flow</option>
-            <option value="investment">Investment Amount</option>
-            <option value="date">Created Date</option>
+            <option value="score" className="bg-zinc-800">Investment Score</option>
+            <option value="roi" className="bg-zinc-800">ROI %</option>
+            <option value="cashflow" className="bg-zinc-800">Cash Flow</option>
+            <option value="investment" className="bg-zinc-800">Investment Amount</option>
+            <option value="date" className="bg-zinc-800">Created Date</option>
           </select>
         </div>
 
         {/* Sort Order */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-sm font-medium text-zinc-400 mb-2">
             Order
           </label>
           <select
             value={sortOrder}
             onChange={e => setSortOrder(e.target.value as 'asc' | 'desc')}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm"
+            className="w-full px-3 py-2 bg-zinc-800 border border-zinc-700 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-sm text-white"
           >
-            <option value="desc">Highest to Lowest</option>
-            <option value="asc">Lowest to Highest</option>
+            <option value="desc" className="bg-zinc-800">Highest to Lowest</option>
+            <option value="asc" className="bg-zinc-800">Lowest to Highest</option>
           </select>
         </div>
       </div>
 
       {/* Results count */}
-      <div className="pt-2 text-sm text-gray-600">
+      <div className="pt-2 text-sm text-zinc-500">
         Showing {filtered.length} of {projects.length} projects
       </div>
     </div>

@@ -340,10 +340,10 @@ export function PaymentTerms({
                     if (bookingFeeIDR > 0) {
                       rowNumber++;
                       rows.push(
-                        <div key="booking-fee" className="grid grid-cols-12 items-center py-2 px-4 border-b border-border-light bg-amber-50/50">
+                        <div key="booking-fee" className="grid grid-cols-12 items-center py-2 px-4 border-b border-border-light bg-amber-500/10">
                           <div className="col-span-1 text-text-muted text-sm">{rowNumber}</div>
                           <div className="col-span-3">
-                            <span className="text-xs font-medium text-amber-700 bg-amber-100 px-2 py-0.5 rounded">Booking Fee</span>
+                            <span className="text-xs font-medium text-amber-400 bg-amber-500/20 px-2 py-0.5 rounded">Booking Fee</span>
                           </div>
                           <div className="col-span-4 text-text-primary text-sm">
                             {data.bookingFeeDate ? formatDate(data.bookingFeeDate) : 'Date not set'}
@@ -360,10 +360,10 @@ export function PaymentTerms({
                     if (remainingDownPaymentIDR > 0) {
                       rowNumber++;
                       rows.push(
-                        <div key="down-payment" className="grid grid-cols-12 items-center py-2 px-4 border-b border-border-light bg-blue-50/50">
+                        <div key="down-payment" className="grid grid-cols-12 items-center py-2 px-4 border-b border-border-light bg-cyan-500/10">
                           <div className="col-span-1 text-text-muted text-sm">{rowNumber}</div>
                           <div className="col-span-3">
-                            <span className="text-xs font-medium text-blue-700 bg-blue-100 px-2 py-0.5 rounded">Down Payment</span>
+                            <span className="text-xs font-medium text-cyan-400 bg-cyan-500/20 px-2 py-0.5 rounded">Down Payment</span>
                           </div>
                           <div className="col-span-4 text-text-primary text-sm">
                             Upon signing
@@ -396,7 +396,7 @@ export function PaymentTerms({
                           >
                             <div className="col-span-1 text-text-muted text-sm">{rowNumber}</div>
                             <div className="col-span-3">
-                              <span className="text-xs font-medium text-slate-600 bg-slate-100 px-2 py-0.5 rounded">Installment {i + 1}</span>
+                              <span className="text-xs font-medium text-zinc-300 bg-zinc-700 px-2 py-0.5 rounded">Installment {i + 1}</span>
                             </div>
                             <div className="col-span-4">
                               <input
@@ -450,12 +450,12 @@ export function PaymentTerms({
 
       {/* Payment Validation Error */}
       {!isPaymentValid && data.type === 'plan' && totalPriceIDR > 0 && (
-        <div className="mt-6 p-4 rounded-lg bg-red-50 border border-red-200">
+        <div className="mt-6 p-4 rounded-lg bg-red-500/10 border border-red-500/30">
           <div className="flex items-center gap-3">
-            <span className="material-symbols-outlined text-red-500">error</span>
+            <span className="material-symbols-outlined text-red-400">error</span>
             <div>
-              <p className="text-sm font-medium text-red-700">Payment amounts don't match total price</p>
-              <p className="text-xs text-red-600 mt-1">
+              <p className="text-sm font-medium text-red-400">Payment amounts don't match total price</p>
+              <p className="text-xs text-red-400/80 mt-1">
                 Down payment ({downPaymentPercent}%) + scheduled payments must equal the total property price.
                 Adjust the schedule or regenerate it to fix this.
               </p>

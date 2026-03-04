@@ -36,7 +36,7 @@ export function ToggleField({
             <div
               className={`
                 w-11 h-6 rounded-full transition-colors
-                ${checked ? 'bg-indigo-600' : 'bg-slate-300'}
+                ${checked ? 'bg-emerald-500' : 'bg-zinc-600'}
                 ${disabled ? 'opacity-50 cursor-not-allowed' : ''}
               `}
             />
@@ -50,18 +50,18 @@ export function ToggleField({
           </div>
           
           <div className="flex items-center gap-2">
-            <span className="text-sm font-semibold text-slate-900">
+            <span className="text-sm font-semibold text-white">
               {icon && <span className="mr-1">{icon}</span>}
               {label}
-              {required && <span className="text-red-500">*</span>}
+              {required && <span className="text-red-400">*</span>}
             </span>
             {helperText && <Tooltip text={helperText} />}
           </div>
         </label>
       </div>
-      
+
       {description && (
-        <p className="text-sm text-slate-600 ml-14">{description}</p>
+        <p className="text-sm text-zinc-400 ml-14">{description}</p>
       )}
     </div>
   );

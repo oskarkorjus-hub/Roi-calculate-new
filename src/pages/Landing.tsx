@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
-import { motion, useMotionValue, useSpring, useInView, animate } from 'framer-motion';
+import { motion, useMotionValue, useSpring, useInView, animate, AnimatePresence } from 'framer-motion';
 
 // ============================================
 // ANIMATED COMPONENTS
@@ -184,6 +184,76 @@ const ParticleField = () => {
   );
 };
 
+// FAQ Accordion Item
+const AccordionItem = ({
+  question,
+  answer,
+  isOpen,
+  onClick,
+  index
+}: {
+  question: string;
+  answer: string;
+  isOpen: boolean;
+  onClick: () => void;
+  index: number;
+}) => {
+  const ref = useRef<HTMLDivElement>(null);
+  const isInView = useInView(ref, { once: true, margin: '-50px' });
+
+  return (
+    <motion.div
+      ref={ref}
+      initial={{ opacity: 0, y: 20 }}
+      animate={isInView ? { opacity: 1, y: 0 } : {}}
+      transition={{ duration: 0.4, delay: index * 0.05 }}
+    >
+      <div
+        className={`rounded-xl overflow-hidden transition-all duration-300 ${
+          isOpen
+            ? 'border-2 border-emerald-500 bg-zinc-900/80'
+            : 'border border-zinc-800 bg-zinc-900/50 hover:border-zinc-700'
+        }`}
+      >
+        <button
+          onClick={onClick}
+          className="w-full flex items-center justify-between p-6 text-left"
+        >
+          <span className={`font-bold text-lg transition-colors ${isOpen ? 'text-white' : 'text-zinc-200'}`}>
+            {question}
+          </span>
+          <motion.svg
+            className={`w-5 h-5 flex-shrink-0 ml-4 ${isOpen ? 'text-emerald-400' : 'text-zinc-500'}`}
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            animate={{ rotate: isOpen ? 180 : 0 }}
+            transition={{ duration: 0.3 }}
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+          </motion.svg>
+        </button>
+
+        <AnimatePresence initial={false}>
+          {isOpen && (
+            <motion.div
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: 'auto', opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
+              className="overflow-hidden"
+            >
+              <div className="px-6 pb-6 text-zinc-400 leading-relaxed border-t border-zinc-800/50 pt-4">
+                {answer}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+    </motion.div>
+  );
+};
+
 // Animated Background Blobs
 const AnimatedBlobs = () => (
   <div className="absolute inset-0 overflow-hidden pointer-events-none">
@@ -204,6 +274,269 @@ const AnimatedBlobs = () => (
     />
   </div>
 );
+
+// Interactive Hero Calculator
+const InteractiveCalculator = () => {
+  const [purchasePrice, setPurchasePrice] = useState(450000);
+  const [salePrice, setSalePrice] = useState(620000);
+  const [holdMonths, setHoldMonths] = useState(18);
+  const [isCalculating, setIsCalculating] = useState(false);
+
+  // Calculate ROI metrics
+  const profit = salePrice - purchasePrice;
+  const totalROI = purchasePrice > 0 ? ((profit / purchasePrice) * 100) : 0;
+  const annualizedReturn = purchasePrice > 0 && holdMonths > 0
+    ? ((Math.pow(salePrice / purchasePrice, 12 / holdMonths) - 1) * 100)
+    : 0;
+
+  // Format currency
+  const formatCurrency = (value: number) => {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      maximumFractionDigits: 0,
+    }).format(value);
+  };
+
+  // Handle input changes with animation
+  const handleInputChange = (setter: (val: number) => void, value: string) => {
+    const numValue = parseInt(value.replace(/[^0-9]/g, '')) || 0;
+    setIsCalculating(true);
+    setter(numValue);
+    setTimeout(() => setIsCalculating(false), 300);
+  };
+
+  return (
+    <GlassCard className="p-6">
+      {/* Header */}
+      <div className="flex items-center justify-between mb-6">
+        <span className="text-sm font-medium text-zinc-400">Quick ROI Analysis</span>
+        <motion.span
+          className="px-2 py-1 bg-emerald-500/20 text-emerald-400 text-xs font-bold rounded"
+          animate={{ opacity: isCalculating ? [1, 0.3, 1] : 1 }}
+          transition={{ duration: 0.3 }}
+        >
+          {isCalculating ? 'CALCULATING...' : 'LIVE'}
+        </motion.span>
+      </div>
+
+      {/* Inputs */}
+      <div className="space-y-4 mb-6">
+        {/* Purchase Price */}
+        <motion.div
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: 0.6 }}
+        >
+          <label className="text-xs text-zinc-500 mb-1 block">Purchase Price</label>
+          <div className="relative">
+            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500">$</span>
+            <input
+              type="text"
+              value={purchasePrice.toLocaleString()}
+              onChange={(e) => handleInputChange(setPurchasePrice, e.target.value)}
+              className="w-full bg-zinc-800/50 border border-zinc-700/50 hover:border-zinc-600 focus:border-emerald-500/50 focus:ring-2 focus:ring-emerald-500/20 rounded-lg pl-8 pr-4 py-3 text-white font-mono text-lg outline-none transition-all"
+            />
+          </div>
+        </motion.div>
+
+        {/* Sale Price */}
+        <motion.div
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: 0.7 }}
+        >
+          <label className="text-xs text-zinc-500 mb-1 block">Expected Sale Price</label>
+          <div className="relative">
+            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500">$</span>
+            <input
+              type="text"
+              value={salePrice.toLocaleString()}
+              onChange={(e) => handleInputChange(setSalePrice, e.target.value)}
+              className="w-full bg-zinc-800/50 border border-zinc-700/50 hover:border-zinc-600 focus:border-emerald-500/50 focus:ring-2 focus:ring-emerald-500/20 rounded-lg pl-8 pr-4 py-3 text-white font-mono text-lg outline-none transition-all"
+            />
+          </div>
+        </motion.div>
+
+        {/* Hold Period */}
+        <motion.div
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: 0.8 }}
+        >
+          <label className="text-xs text-zinc-500 mb-1 block">Hold Period (months)</label>
+          <div className="relative">
+            <input
+              type="range"
+              min="1"
+              max="120"
+              value={holdMonths}
+              onChange={(e) => {
+                setIsCalculating(true);
+                setHoldMonths(parseInt(e.target.value));
+                setTimeout(() => setIsCalculating(false), 300);
+              }}
+              className="w-full h-2 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-emerald-500"
+            />
+            <div className="flex justify-between mt-2">
+              <span className="text-xs text-zinc-600">1 mo</span>
+              <span className="text-lg font-mono text-white font-bold">{holdMonths} months</span>
+              <span className="text-xs text-zinc-600">10 yrs</span>
+            </div>
+          </div>
+        </motion.div>
+      </div>
+
+      {/* Results */}
+      <motion.div
+        className="bg-gradient-to-r from-emerald-500/10 to-cyan-500/10 border border-emerald-500/30 rounded-xl p-6"
+        animate={isCalculating ? { scale: [1, 1.02, 1] } : {}}
+        transition={{ duration: 0.3 }}
+      >
+        <div className="text-center">
+          <p className="text-sm text-zinc-400 mb-2">Your Annualized Return</p>
+          <motion.p
+            className={`text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r ${
+              annualizedReturn >= 0 ? 'from-emerald-400 to-cyan-400' : 'from-red-400 to-orange-400'
+            }`}
+            key={annualizedReturn.toFixed(1)}
+            initial={{ scale: 0.8, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+          >
+            {annualizedReturn >= 0 ? '+' : ''}{annualizedReturn.toFixed(1)}%
+          </motion.p>
+          <motion.p
+            className={`text-sm mt-2 ${profit >= 0 ? 'text-emerald-400' : 'text-red-400'}`}
+            key={profit}
+            initial={{ opacity: 0, y: 5 }}
+            animate={{ opacity: 1, y: 0 }}
+          >
+            {profit >= 0 ? '+' : ''}{formatCurrency(profit)} profit in {holdMonths} months
+          </motion.p>
+        </div>
+
+        {/* Additional Metrics */}
+        <div className="grid grid-cols-2 gap-4 mt-4 pt-4 border-t border-emerald-500/20">
+          <div className="text-center">
+            <p className="text-xs text-zinc-500">Total ROI</p>
+            <p className={`text-lg font-bold ${totalROI >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
+              {totalROI >= 0 ? '+' : ''}{totalROI.toFixed(1)}%
+            </p>
+          </div>
+          <div className="text-center">
+            <p className="text-xs text-zinc-500">Monthly Gain</p>
+            <p className={`text-lg font-bold ${profit >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
+              {formatCurrency(profit / holdMonths)}/mo
+            </p>
+          </div>
+        </div>
+      </motion.div>
+
+      {/* CTA */}
+      <Link
+        to="/calculators"
+        className="block w-full mt-4 py-3 text-center bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-600 hover:to-cyan-600 text-white font-bold rounded-lg transition-all shadow-lg shadow-emerald-500/20"
+      >
+        Get Full Analysis →
+      </Link>
+
+      {/* Trust Badges */}
+      <div className="flex items-center justify-center gap-6 mt-4 pt-4 border-t border-zinc-800">
+        {[
+          { icon: '🔒', text: 'Bank-Level Security' },
+          { icon: '⚡', text: 'Instant Results' },
+        ].map((badge, i) => (
+          <div key={i} className="flex items-center gap-2 text-xs text-zinc-500">
+            <span>{badge.icon}</span>
+            {badge.text}
+          </div>
+        ))}
+      </div>
+    </GlassCard>
+  );
+};
+
+// FAQ Section Component
+const FAQSection = () => {
+  const [openIndex, setOpenIndex] = useState<number | null>(0); // First item open by default
+
+  const faqs = [
+    {
+      question: "Can't I just use Excel?",
+      answer: "Sure, if you want to spend 4-5 hours building formulas, debugging #REF errors, and still wonder if your XIRR calculation is correct. Most investors who switch from Excel tell us they save 20+ hours per month. At $9/month, that's less than 50 cents per hour saved. Plus, Excel doesn't give you instant scenario comparison, PDF exports for lenders, or mobile access when you're on-site at a property."
+    },
+    {
+      question: "Is this accurate for international investments?",
+      answer: "Absolutely. We support multiple currencies (USD, EUR, IDR, SGD, AUD, GBP, and more) with proper handling of exchange rates. The calculators use the same institutional-grade formulas used by property funds managing billions in assets worldwide. Whether you're investing in Bali villas, London apartments, or Singapore condos — the math is the same."
+    },
+    {
+      question: "What if I'm just getting started in real estate?",
+      answer: "Perfect timing. Learning to analyze deals properly from day one will save you from the expensive mistakes that wipe out 73% of first-time investors. Our calculators include tooltips that explain every metric in plain English. You'll understand XIRR, cap rates, and cash-on-cash returns faster than any course could teach you — because you're learning by doing with real numbers."
+    },
+    {
+      question: "How is this different from other ROI calculators?",
+      answer: "Most free calculators online give you basic ROI — which is dangerously oversimplified. We calculate XIRR (time-weighted returns that account for WHEN cash flows happen), factor in ALL cash flows including closing costs and renovations, project 10-year scenarios with appreciation, handle irregular payment timings, and account for costs most calculators ignore. It's the difference between knowing you 'made money' and knowing your actual annualized return was 4.2% vs 18.3%."
+    },
+    {
+      question: "Can I cancel anytime?",
+      answer: "Yes, with one click from your account settings. No phone calls, no retention specialists, no guilt trips, no hidden fees. Cancel in 10 seconds flat. We earn your business every month. That confidence comes from knowing 94% of Pro users choose to stay for 12+ months — because the value is undeniable."
+    },
+    {
+      question: "Is my financial data secure?",
+      answer: "Bank-level secure. We use 256-bit AES encryption (the same standard used by major banks), all data is transmitted over TLS 1.3, and we never sell or share your information with third parties. We're fully GDPR and CCPA compliant. Your deal information stays yours — period. We also offer data export and deletion at any time."
+    }
+  ];
+
+  return (
+    <section className="py-24 px-6 lg:px-8">
+      <div className="max-w-3xl mx-auto">
+        <motion.h2
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="text-3xl sm:text-4xl font-bold text-white text-center mb-12"
+        >
+          Frequently Asked Questions
+        </motion.h2>
+
+        <div className="space-y-4">
+          {faqs.map((faq, i) => (
+            <AccordionItem
+              key={i}
+              question={faq.question}
+              answer={faq.answer}
+              isOpen={openIndex === i}
+              onClick={() => setOpenIndex(openIndex === i ? null : i)}
+              index={i}
+            />
+          ))}
+        </div>
+
+        {/* Additional Help CTA */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="text-center mt-12 pt-8 border-t border-zinc-800"
+        >
+          <p className="text-zinc-400 mb-4">
+            Still have questions? We're here to help.
+          </p>
+          <a
+            href="mailto:support@roicalculate.com"
+            className="inline-flex items-center gap-2 text-emerald-400 hover:text-emerald-300 font-medium transition-colors"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+            </svg>
+            Contact Support
+          </a>
+        </motion.div>
+      </div>
+    </section>
+  );
+};
 
 // ============================================
 // MAIN LANDING PAGE COMPONENT
@@ -275,7 +608,7 @@ export function Landing() {
           initial={{ y: -50, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.6, delay: 0.2 }}
-          className="absolute top-0 left-0 right-0 bg-gradient-to-r from-emerald-600 to-cyan-600 text-white py-3 px-4 text-center text-sm font-medium z-20"
+          className="absolute top-20 left-0 right-0 bg-gradient-to-r from-emerald-600 to-cyan-600 text-white py-3 px-4 text-center text-sm font-medium z-20"
         >
           <span className="inline-flex items-center gap-2">
             <motion.span
@@ -289,7 +622,7 @@ export function Landing() {
           </span>
         </motion.div>
 
-        <div className="relative max-w-6xl mx-auto px-6 lg:px-8 pt-24 pb-16 z-10">
+        <div className="relative max-w-6xl mx-auto px-6 lg:px-8 pt-36 pb-16 z-10">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
 
             {/* Left Column - Copy */}
@@ -415,7 +748,7 @@ export function Landing() {
               </motion.div>
             </div>
 
-            {/* Right Column - Calculator Preview */}
+            {/* Right Column - Interactive Calculator */}
             <motion.div
               initial={{ opacity: 0, x: 50, rotateY: -10 }}
               animate={{ opacity: 1, x: 0, rotateY: 0 }}
@@ -423,68 +756,7 @@ export function Landing() {
               className="relative"
               style={{ perspective: 1000 }}
             >
-              <GlassCard className="p-6">
-                {/* Mini Calculator Demo */}
-                <div className="flex items-center justify-between mb-6">
-                  <span className="text-sm font-medium text-zinc-400">Quick ROI Analysis</span>
-                  <motion.span
-                    className="px-2 py-1 bg-emerald-500/20 text-emerald-400 text-xs font-bold rounded"
-                    animate={{ opacity: [1, 0.5, 1] }}
-                    transition={{ duration: 2, repeat: Infinity }}
-                  >
-                    LIVE
-                  </motion.span>
-                </div>
-
-                <div className="space-y-4 mb-6">
-                  {[
-                    { label: 'Purchase Price', value: '$450,000' },
-                    { label: 'Expected Sale Price', value: '$620,000' },
-                    { label: 'Hold Period', value: '18 months' },
-                  ].map((field, i) => (
-                    <motion.div
-                      key={i}
-                      initial={{ opacity: 0, x: -20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: 0.6 + i * 0.1 }}
-                    >
-                      <label className="text-xs text-zinc-500 mb-1 block">{field.label}</label>
-                      <div className="bg-zinc-800/50 border border-zinc-700/50 rounded-lg px-4 py-3 text-white font-mono text-lg">
-                        {field.value}
-                      </div>
-                    </motion.div>
-                  ))}
-                </div>
-
-                {/* Results */}
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: 1 }}
-                  className="bg-gradient-to-r from-emerald-500/10 to-cyan-500/10 border border-emerald-500/30 rounded-xl p-6"
-                >
-                  <div className="text-center">
-                    <p className="text-sm text-zinc-400 mb-2">Your Annualized Return</p>
-                    <p className="text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-cyan-400">
-                      <CountingNumber value="24.7%" delay={1.2} />
-                    </p>
-                    <p className="text-sm text-emerald-400 mt-2">+$170,000 profit in 18 months</p>
-                  </div>
-                </motion.div>
-
-                {/* Trust Badges */}
-                <div className="flex items-center justify-center gap-6 mt-6 pt-4 border-t border-zinc-800">
-                  {[
-                    { icon: '🔒', text: 'Bank-Level Security' },
-                    { icon: '⚡', text: 'Instant Results' },
-                  ].map((badge, i) => (
-                    <div key={i} className="flex items-center gap-2 text-xs text-zinc-500">
-                      <span>{badge.icon}</span>
-                      {badge.text}
-                    </div>
-                  ))}
-                </div>
-              </GlassCard>
+              <InteractiveCalculator />
 
               {/* Floating elements */}
               <motion.div
@@ -506,45 +778,63 @@ export function Landing() {
             </motion.div>
           </div>
 
-          {/* Logo Bar */}
+          {/* Logo Bar - Infinite Scroll Marquee */}
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 1.2 }}
-            className="mt-20 pt-12 border-t border-zinc-800"
+            className="mt-20 pt-12 border-t border-zinc-800 relative overflow-hidden"
           >
-            <p className="text-center text-xs text-zinc-600 uppercase tracking-widest mb-8">Trusted by investors at</p>
-            <div className="flex flex-wrap justify-center items-center gap-8 lg:gap-16 opacity-40">
-              {['CBRE', 'Knight Frank', 'Colliers', 'JLL', 'Savills'].map((name) => (
-                <span key={name} className="text-xl font-bold text-zinc-500">{name}</span>
-              ))}
+            <p className="text-center text-xs text-zinc-500 uppercase tracking-wider mb-8">
+              Trusted by innovative companies
+            </p>
+
+            {/* Gradient masks for fade effect */}
+            <div className="absolute left-0 top-12 bottom-0 w-32 bg-gradient-to-r from-[#0a0a0a] to-transparent z-10 pointer-events-none" />
+            <div className="absolute right-0 top-12 bottom-0 w-32 bg-gradient-to-l from-[#0a0a0a] to-transparent z-10 pointer-events-none" />
+
+            {/* Scrolling track */}
+            <div className="overflow-hidden">
+              <motion.div
+                className="flex items-center gap-16 whitespace-nowrap"
+                animate={{
+                  x: ['0%', '-50%'],
+                }}
+                transition={{
+                  x: {
+                    duration: 30,
+                    repeat: Infinity,
+                    ease: 'linear',
+                  },
+                }}
+              >
+                {/* Duplicate logos for seamless loop */}
+                {[...Array(4)].map((_, setIndex) => (
+                  <div key={setIndex} className="flex items-center gap-16">
+                    {[
+                      { name: 'Pellago', logo: '/logos/pellago.webp' },
+                      { name: 'Investland Bali', logo: '/logos/investland-bali.webp' },
+                      { name: 'Luup Design', logo: '/logos/luup-design.png' },
+                      { name: 'Constructland Indonesia', logo: '/logos/constructland.png' },
+                      { name: 'PropertyBase', logo: '/logos/propertybase.png' },
+                    ].map((company) => (
+                      <div
+                        key={`${company.name}-${setIndex}`}
+                        className="flex-shrink-0 flex items-center justify-center h-10 px-4 opacity-50 hover:opacity-80 transition-all duration-300"
+                      >
+                        <img
+                          src={company.logo}
+                          alt={company.name}
+                          className="h-full w-auto max-w-[140px] object-contain brightness-0 invert"
+                        />
+                      </div>
+                    ))}
+                  </div>
+                ))}
+              </motion.div>
             </div>
           </motion.div>
         </div>
-
-        {/* Scroll indicator */}
-        <motion.div
-          className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 cursor-pointer z-20"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 2 }}
-          onClick={() => window.scrollTo({ top: window.innerHeight, behavior: 'smooth' })}
-        >
-          <motion.span
-            className="text-zinc-500 text-xs uppercase tracking-widest"
-            animate={{ opacity: [0.5, 1, 0.5] }}
-            transition={{ duration: 2, repeat: Infinity }}
-          >
-            Scroll
-          </motion.span>
-          <motion.div className="w-6 h-10 rounded-full border-2 border-zinc-700 flex justify-center pt-2">
-            <motion.div
-              className="w-1.5 h-1.5 rounded-full bg-zinc-500"
-              animate={{ y: [0, 16, 0], opacity: [1, 0.3, 1] }}
-              transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
-            />
-          </motion.div>
-        </motion.div>
 
         {/* Bottom gradient line */}
         <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-zinc-800 to-transparent" />
@@ -1111,50 +1401,9 @@ export function Landing() {
       </section>
 
       {/* ============================================ */}
-      {/* SECTION 8: FAQ */}
+      {/* SECTION 8: FAQ - OBJECTION HANDLING */}
       {/* ============================================ */}
-      <section className="py-24 px-6 lg:px-8">
-        <div className="max-w-3xl mx-auto">
-          <motion.h2
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-3xl font-bold text-white text-center mb-12"
-          >
-            Frequently Asked Questions
-          </motion.h2>
-
-          <div className="space-y-4">
-            {[
-              { q: "Can't I just use Excel?", a: 'Sure, if you want to spend 4-5 hours building formulas, debugging #REF errors, and still wonder if your XIRR calculation is correct. Most investors who switch from Excel tell us they save 20+ hours per month. At $9/month, that\'s less than 50 cents per hour saved.' },
-              { q: 'Is this accurate for international investments?', a: 'Absolutely. We support multiple currencies (USD, EUR, IDR, SGD, etc.) with proper handling of exchange rates. The calculators use the same institutional-grade formulas used by property funds worldwide.' },
-              { q: "What if I'm just getting started in real estate?", a: 'Perfect timing. Learning to analyze deals properly from day one will save you from expensive mistakes that wipe out first-time investors. Our calculators include tooltips that explain every metric.' },
-              { q: 'How is this different from other ROI calculators?', a: 'Most free calculators online give you basic ROI. We calculate XIRR (time-weighted returns), factor in all cash flows, project 10-year scenarios, handle irregular timings, and account for costs most calculators ignore.' },
-              { q: 'Can I cancel anytime?', a: 'Yes, with one click. No phone calls, no retention specialists, no guilt trips. That confidence comes from knowing 94% of Pro users stay for 12+ months.' },
-              { q: 'Is my financial data secure?', a: 'Bank-level secure. We use 256-bit encryption, never sell your data, and are fully GDPR compliant. Your deal information stays yours.' },
-            ].map((faq, i) => (
-              <motion.details
-                key={i}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.05 }}
-                className="group"
-              >
-                <summary className="flex items-center justify-between p-6 cursor-pointer list-none bg-zinc-900/50 border border-zinc-800 rounded-xl hover:border-zinc-700 transition-colors">
-                  <span className="font-bold text-white">{faq.q}</span>
-                  <svg className="w-5 h-5 text-zinc-500 group-open:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                  </svg>
-                </summary>
-                <div className="px-6 pb-6 pt-4 text-zinc-400 leading-relaxed bg-zinc-900/50 border-x border-b border-zinc-800 rounded-b-xl -mt-2">
-                  {faq.a}
-                </div>
-              </motion.details>
-            ))}
-          </div>
-        </div>
-      </section>
+      <FAQSection />
 
       {/* ============================================ */}
       {/* SECTION 9: FINAL CTA */}

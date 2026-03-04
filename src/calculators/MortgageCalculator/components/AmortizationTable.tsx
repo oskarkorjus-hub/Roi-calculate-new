@@ -32,65 +32,70 @@ export function AmortizationTable({
   hoaFeesMonthly,
 }: AmortizationTableProps) {
   return (
-    <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
-      <h3 className="text-xl font-bold text-gray-900 mb-6">Amortization Schedule (Yearly)</h3>
+    <div className="bg-zinc-900 rounded-xl border border-zinc-800 p-6">
+      <div className="mb-6 flex items-center border-b border-zinc-800 pb-4">
+        <div className="flex items-center gap-2">
+          <span className="material-symbols-outlined text-emerald-400">table_chart</span>
+          <h3 className="text-xl font-bold text-white">Amortization Schedule (Yearly)</h3>
+        </div>
+      </div>
       <div className="overflow-x-auto">
         <table className="w-full text-xs">
-          <thead className="bg-gray-100 border-b border-gray-300">
+          <thead className="bg-zinc-800 border-b border-zinc-700">
             <tr>
-              <th className="px-3 py-2 text-left text-gray-700 font-semibold">Year</th>
-              <th className="px-3 py-2 text-right text-gray-700 font-semibold">P&I Payment</th>
-              <th className="px-3 py-2 text-right text-gray-700 font-semibold">Principal</th>
-              <th className="px-3 py-2 text-right text-gray-700 font-semibold">Interest</th>
+              <th className="px-3 py-2 text-left text-zinc-300 font-semibold">Year</th>
+              <th className="px-3 py-2 text-right text-zinc-300 font-semibold">P&I Payment</th>
+              <th className="px-3 py-2 text-right text-zinc-300 font-semibold">Principal</th>
+              <th className="px-3 py-2 text-right text-zinc-300 font-semibold">Interest</th>
               {showAdvanced && (
                 <>
-                  <th className="px-3 py-2 text-right text-gray-700 font-semibold">Property Tax</th>
-                  <th className="px-3 py-2 text-right text-gray-700 font-semibold">Insurance</th>
-                  {pmiRequired && <th className="px-3 py-2 text-right text-gray-700 font-semibold">PMI</th>}
-                  {hoaFeesMonthly > 0 && <th className="px-3 py-2 text-right text-gray-700 font-semibold">HOA</th>}
-                  <th className="px-3 py-2 text-right text-gray-700 font-semibold">Total Monthly</th>
+                  <th className="px-3 py-2 text-right text-zinc-300 font-semibold">Property Tax</th>
+                  <th className="px-3 py-2 text-right text-zinc-300 font-semibold">Insurance</th>
+                  {pmiRequired && <th className="px-3 py-2 text-right text-zinc-300 font-semibold">PMI</th>}
+                  {hoaFeesMonthly > 0 && <th className="px-3 py-2 text-right text-zinc-300 font-semibold">HOA</th>}
+                  <th className="px-3 py-2 text-right text-zinc-300 font-semibold">Total Monthly</th>
                 </>
               )}
-              <th className="px-3 py-2 text-right text-gray-700 font-semibold">Balance</th>
+              <th className="px-3 py-2 text-right text-zinc-300 font-semibold">Balance</th>
             </tr>
           </thead>
           <tbody>
             {schedule.map(row => (
-              <tr key={row.month} className="border-b border-gray-200 hover:bg-gray-50">
-                <td className="px-3 py-2 text-gray-700 font-medium">{row.month / 12}</td>
-                <td className="px-3 py-2 text-right text-gray-700">
+              <tr key={row.month} className="border-b border-zinc-800 hover:bg-zinc-800/50">
+                <td className="px-3 py-2 text-zinc-300 font-medium">{row.month / 12}</td>
+                <td className="px-3 py-2 text-right text-zinc-300">
                   {symbol} {formatCurrency(row.payment * 12, currency)}
                 </td>
-                <td className="px-3 py-2 text-right text-green-600 font-medium">
+                <td className="px-3 py-2 text-right text-emerald-400 font-medium">
                   {symbol} {formatCurrency(row.principal * 12, currency)}
                 </td>
-                <td className="px-3 py-2 text-right text-red-600 font-medium">
+                <td className="px-3 py-2 text-right text-red-400 font-medium">
                   {symbol} {formatCurrency(row.interest * 12, currency)}
                 </td>
                 {showAdvanced && (
                   <>
-                    <td className="px-3 py-2 text-right text-gray-700">
+                    <td className="px-3 py-2 text-right text-zinc-300">
                       {symbol} {formatCurrency(row.propertyTax * 12, currency)}
                     </td>
-                    <td className="px-3 py-2 text-right text-gray-700">
+                    <td className="px-3 py-2 text-right text-zinc-300">
                       {symbol} {formatCurrency(row.insurance * 12, currency)}
                     </td>
                     {pmiRequired && (
-                      <td className="px-3 py-2 text-right text-gray-700">
+                      <td className="px-3 py-2 text-right text-zinc-300">
                         {symbol} {formatCurrency(row.pmi * 12, currency)}
                       </td>
                     )}
                     {hoaFeesMonthly > 0 && (
-                      <td className="px-3 py-2 text-right text-gray-700">
+                      <td className="px-3 py-2 text-right text-zinc-300">
                         {symbol} {formatCurrency(row.hoa * 12, currency)}
                       </td>
                     )}
-                    <td className="px-3 py-2 text-right font-bold text-purple-600">
+                    <td className="px-3 py-2 text-right font-bold text-purple-400">
                       {symbol} {formatCurrency(row.totalPayment * 12, currency)}
                     </td>
                   </>
                 )}
-                <td className="px-3 py-2 text-right font-medium text-gray-900">
+                <td className="px-3 py-2 text-right font-medium text-white">
                   {symbol} {formatCurrency(row.balance, currency)}
                 </td>
               </tr>

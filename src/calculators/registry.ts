@@ -32,6 +32,26 @@ const DevFeasibilityComp = lazy(() =>
   import('./DevFeasibility/index').then(m => ({ default: m.DevFeasibilityCalculator }))
 );
 
+const IndonesiaTaxOptimizerComp = lazy(() =>
+  import('./IndonesiaTaxOptimizer/index').then(m => ({ default: m.IndonesiaTaxOptimizer }))
+);
+
+const RentalIncomeProjectionComp = lazy(() =>
+  import('./RentalIncomeProjection/index').then(m => ({ default: m.RentalIncomeProjection }))
+);
+
+const FinancingComparisonComp = lazy(() =>
+  import('./FinancingComparison/index').then(m => ({ default: m.FinancingComparison }))
+);
+
+const DevBudgetTrackerComp = lazy(() =>
+  import('./DevBudgetTracker/index').then(m => ({ default: m.DevBudgetTracker }))
+);
+
+const RiskAssessmentComp = lazy(() =>
+  import('./RiskAssessment/index').then(m => ({ default: m.RiskAssessment }))
+);
+
 export interface Calculator {
   id: string;
   name: string;
@@ -123,6 +143,56 @@ export const CALCULATORS: Calculator[] = [
     useCases: ['New Projects', 'Construction Feasibility', 'Multi-unit Analysis'],
     tags: ['development', 'construction', 'feasibility'],
     component: DevFeasibilityComp,
+  },
+  {
+    id: 'indonesia-tax',
+    name: 'Indonesia Tax Optimizer',
+    shortName: 'Tax Optimizer',
+    icon: '🇮🇩',
+    description: 'Optimize Indonesian real estate taxes with depreciation, deductions, and ownership analysis',
+    useCases: ['Tax Planning', 'Ownership Structure', 'Bali Investments'],
+    tags: ['tax', 'indonesia', 'depreciation', 'deductions', 'bali'],
+    component: IndonesiaTaxOptimizerComp,
+  },
+  {
+    id: 'rental-projection',
+    name: 'Rental Income Projection',
+    shortName: 'Rental Projection',
+    icon: '📊',
+    description: 'Advanced vacation rental projections with seasonality, occupancy curves, and dynamic pricing',
+    useCases: ['Vacation Rentals', 'Airbnb Analysis', 'Seasonal Planning'],
+    tags: ['rental', 'airbnb', 'seasonality', 'occupancy', 'vacation'],
+    component: RentalIncomeProjectionComp,
+  },
+  {
+    id: 'financing',
+    name: 'Financing Comparison',
+    shortName: 'Financing',
+    icon: '🏦',
+    description: 'Compare up to 4 loan options side-by-side with amortization and prepayment analysis',
+    useCases: ['Loan Comparison', 'Refinancing', 'Development Financing'],
+    tags: ['financing', 'loan', 'mortgage', 'comparison', 'bank'],
+    component: FinancingComparisonComp,
+  },
+  {
+    id: 'dev-budget',
+    name: 'Development Budget Tracker',
+    shortName: 'Budget Tracker',
+    icon: '📋',
+    description: 'Track construction budgets, timelines, cost overruns, and project health in real-time',
+    useCases: ['Budget Tracking', 'Construction Management', 'Cost Control'],
+    tags: ['budget', 'construction', 'tracking', 'timeline', 'development'],
+    component: DevBudgetTrackerComp,
+  },
+  {
+    id: 'risk-assessment',
+    name: 'Risk Assessment & Rating',
+    shortName: 'Risk Assessment',
+    icon: '🎯',
+    description: 'Comprehensive risk scoring with scenario analysis, sensitivity charts, and mitigation strategies',
+    useCases: ['Risk Analysis', 'Investment Rating', 'Due Diligence'],
+    tags: ['risk', 'assessment', 'rating', 'scenarios', 'sensitivity', 'mitigation'],
+    component: RiskAssessmentComp,
   },
 ];
 

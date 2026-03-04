@@ -4,7 +4,7 @@ import { calculateInvestmentScore } from '../utils/investmentScoring';
 import { Toast } from './ui/Toast';
 
 interface SaveToPortfolioButtonProps {
-  calculatorType: 'xirr' | 'rental-roi' | 'mortgage' | 'cashflow' | 'dev-feasibility' | 'cap-rate' | 'irr' | 'npv';
+  calculatorType: 'xirr' | 'rental-roi' | 'mortgage' | 'cashflow' | 'dev-feasibility' | 'cap-rate' | 'irr' | 'npv' | 'indonesia-tax' | 'rental-projection' | 'financing';
   projectData: Record<string, any>;
   defaultProjectName?: string;
   strategy?: 'flip' | 'hold' | 'rental' | 'development';
@@ -99,13 +99,13 @@ export function SaveToPortfolioButton({
 
       {/* Modal */}
       {showModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
-            <h3 className="text-lg font-bold text-gray-900 mb-4">Save to Portfolio</h3>
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="bg-zinc-900 rounded-2xl border border-zinc-800 p-6 max-w-md w-full mx-4">
+            <h3 className="text-lg font-bold text-white mb-4">Save to Portfolio</h3>
 
             <div className="space-y-4 mb-6">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-zinc-400 mb-2">
                   Project Name *
                 </label>
                 <input
@@ -113,37 +113,37 @@ export function SaveToPortfolioButton({
                   value={projectName}
                   onChange={e => setProjectName(e.target.value)}
                   placeholder="My Project Name"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                  className="w-full px-3 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white placeholder:text-zinc-500 focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none"
                   autoFocus
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-zinc-400 mb-2">
                   Investment Strategy (Optional)
                 </label>
                 <select
                   value={selectedStrategy}
                   onChange={e => setSelectedStrategy(e.target.value as any)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                  className="w-full px-3 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none"
                 >
-                  <option value="">Select strategy...</option>
-                  <option value="flip">Flip (Short-term buy & sell)</option>
-                  <option value="hold">Hold (Long-term appreciation)</option>
-                  <option value="rental">Rental (Cash flow focus)</option>
-                  <option value="development">Development (Renovation/Build)</option>
+                  <option value="" className="bg-zinc-800">Select strategy...</option>
+                  <option value="flip" className="bg-zinc-800">Flip (Short-term buy & sell)</option>
+                  <option value="hold" className="bg-zinc-800">Hold (Long-term appreciation)</option>
+                  <option value="rental" className="bg-zinc-800">Rental (Cash flow focus)</option>
+                  <option value="development" className="bg-zinc-800">Development (Renovation/Build)</option>
                 </select>
               </div>
 
               {/* Score Preview */}
               {scoreComponents.investmentScore > 0 && (
-                <div className="bg-indigo-50 border border-indigo-200 rounded-lg p-3">
-                  <div className="text-xs text-gray-600 font-medium mb-2">Investment Score</div>
+                <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-lg p-3">
+                  <div className="text-xs text-zinc-400 font-medium mb-2">Investment Score</div>
                   <div className="flex items-center gap-2">
-                    <div className="text-2xl font-bold text-indigo-600">
+                    <div className="text-2xl font-bold text-emerald-400">
                       {scoreComponents.investmentScore}
                     </div>
-                    <div className="text-xs text-gray-700">
+                    <div className="text-xs text-zinc-300">
                       <div className="font-semibold">
                         {scoreComponents.investmentScore >= 85
                           ? 'Excellent'
@@ -166,14 +166,14 @@ export function SaveToPortfolioButton({
               <button
                 onClick={() => setShowModal(false)}
                 disabled={isSaving}
-                className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition disabled:opacity-50"
+                className="flex-1 px-4 py-2 border border-zinc-700 text-zinc-300 rounded-lg hover:bg-zinc-800 transition disabled:opacity-50"
               >
                 Cancel
               </button>
               <button
                 onClick={handleSave}
                 disabled={isSaving}
-                className="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition disabled:opacity-50"
+                className="flex-1 px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition disabled:opacity-50"
               >
                 {isSaving ? 'Saving...' : 'Save'}
               </button>

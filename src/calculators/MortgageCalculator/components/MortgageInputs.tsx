@@ -1,15 +1,10 @@
 import { AdvancedSection } from '../../../components/AdvancedSection';
-import { InputField } from '../../../components/ui/InputField';
-import { SelectField } from '../../../components/ui/SelectField';
-import { ToggleField } from '../../../components/ui/ToggleField';
-import { SectionHeader } from '../../../components/ui/SectionHeader';
-import { getFieldHelper } from '../../../utils/fieldHelpers';
+import { Tooltip } from '../../../components/ui/Tooltip';
 
 interface MortgageInputs {
   loanAmount: number;
   interestRate: number;
   loanTerm: number;
-  currency: 'IDR' | 'USD' | 'AUD' | 'EUR';
   showAdvanced: boolean;
   originationFeePercent: number;
   propertyTaxRate: number;
@@ -26,69 +21,40 @@ interface MortgageInputsProps {
 }
 
 export function MortgageInputs({ inputs, onInputChange, symbol }: MortgageInputsProps) {
-  const currencyOptions = [
-    { label: 'IDR (Indonesian Rupiah)', value: 'IDR' },
-    { label: 'USD (US Dollar)', value: 'USD' },
-    { label: 'AUD (Australian Dollar)', value: 'AUD' },
-    { label: 'EUR (Euro)', value: 'EUR' },
-  ];
-
   return (
     <div className="space-y-6">
       {/* BASIC SECTION */}
-      <div className="bg-white rounded-xl p-6 border border-slate-200 shadow-sm">
-        <SectionHeader
-          title="Loan Details"
-          icon="🏦"
-          description="Enter your mortgage information"
-        />
-        
-        <div className="space-y-4 mt-6">
+      <div>
+        <div className="mb-6 flex items-center border-b border-zinc-800 pb-4">
+          <div className="flex items-center gap-2">
+            <span className="material-symbols-outlined text-emerald-400">account_balance</span>
+            <h2 className="text-xl font-bold text-white">Loan Details</h2>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <InputField
             label="Loan Amount"
             value={inputs.loanAmount}
-            onChange={(v) => onInputChange('loanAmount', parseFloat(v as string) || 0)}
-            type="number"
-            unit={symbol}
-            placeholder="500,000,000"
-            helperText={getFieldHelper('loanAmount')}
-            icon="💰"
-            required
+            onChange={(v) => onInputChange('loanAmount', v)}
+            prefix={symbol}
+            tooltip="Total amount being borrowed"
           />
 
           <InputField
             label="Annual Interest Rate"
             value={inputs.interestRate}
-            onChange={(v) => onInputChange('interestRate', parseFloat(v as string) || 0)}
-            type="number"
-            step={0.1}
-            unit="%"
-            placeholder="6.5"
-            helperText={getFieldHelper('interestRate')}
-            icon="📊"
-            required
+            onChange={(v) => onInputChange('interestRate', v)}
+            suffix="%"
+            tooltip="Annual interest rate for the loan"
           />
 
           <InputField
             label="Loan Term"
             value={inputs.loanTerm}
-            onChange={(v) => onInputChange('loanTerm', parseFloat(v as string) || 0)}
-            type="number"
-            unit="years"
-            placeholder="20"
-            helperText={getFieldHelper('loanTerm')}
-            icon="⏱️"
-            required
-          />
-
-          <SelectField
-            label="Currency"
-            value={inputs.currency}
-            onChange={(v) => onInputChange('currency', v as 'IDR' | 'USD' | 'AUD' | 'EUR')}
-            options={currencyOptions}
-            helperText={getFieldHelper('currency')}
-            icon="💵"
-            required
+            onChange={(v) => onInputChange('loanTerm', v)}
+            suffix="years"
+            tooltip="Duration of the mortgage in years"
           />
         </div>
       </div>
@@ -101,77 +67,100 @@ export function MortgageInputs({ inputs, onInputChange, symbol }: MortgageInputs
         onToggle={() => onInputChange('showAdvanced', !inputs.showAdvanced)}
         description="Fees, taxes, insurance, PMI, HOA"
       >
-        <div className="space-y-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pt-4">
           <InputField
             label="Origination Fee"
             value={inputs.originationFeePercent}
-            onChange={(v) => onInputChange('originationFeePercent', parseFloat(v as string) || 0)}
-            type="number"
-            step={0.1}
-            unit="%"
-            placeholder="1"
-            helperText={getFieldHelper('originationFeePercent')}
-            icon="📋"
+            onChange={(v) => onInputChange('originationFeePercent', v)}
+            suffix="%"
+            tooltip="Loan origination fee charged by lender"
           />
 
           <InputField
             label="Property Tax Rate"
             value={inputs.propertyTaxRate}
-            onChange={(v) => onInputChange('propertyTaxRate', parseFloat(v as string) || 0)}
-            type="number"
-            step={0.1}
-            unit="%"
-            placeholder="1.2"
-            helperText={getFieldHelper('propertyTaxRate')}
-            icon="🏛️"
+            onChange={(v) => onInputChange('propertyTaxRate', v)}
+            suffix="%"
+            tooltip="Annual property tax as percentage of loan"
           />
 
           <InputField
             label="Home Insurance (Annual)"
             value={inputs.homeInsuranceAnnual}
-            onChange={(v) => onInputChange('homeInsuranceAnnual', parseFloat(v as string) || 0)}
-            type="number"
-            unit={symbol}
-            placeholder="50000000"
-            helperText={getFieldHelper('homeInsuranceAnnual')}
-            icon="🛡️"
+            onChange={(v) => onInputChange('homeInsuranceAnnual', v)}
+            prefix={symbol}
+            tooltip="Annual home insurance premium"
           />
 
-          <ToggleField
-            label="PMI Required"
-            checked={inputs.pmiRequired}
-            onChange={(v) => onInputChange('pmiRequired', v)}
-            helperText={getFieldHelper('pmiRequired')}
-            icon="✓"
-            description="Private Mortgage Insurance when down payment < 20%"
-          />
+          <div className="space-y-3">
+            <label className="flex items-center gap-1.5 text-sm font-medium text-zinc-400">
+              PMI Required
+              <Tooltip text="Private Mortgage Insurance when down payment < 20%" />
+            </label>
+            <button
+              type="button"
+              onClick={() => onInputChange('pmiRequired', !inputs.pmiRequired)}
+              className={`w-full rounded-2xl px-6 py-4 text-[16px] font-bold transition-all border ${
+                inputs.pmiRequired
+                  ? 'bg-emerald-500/20 border-emerald-500 text-emerald-400'
+                  : 'bg-zinc-800 border-zinc-700 text-zinc-400'
+              }`}
+            >
+              {inputs.pmiRequired ? 'Yes - PMI Required' : 'No - PMI Not Required'}
+            </button>
+          </div>
 
           {inputs.pmiRequired && (
             <InputField
               label="PMI Rate"
               value={inputs.pmiRate}
-              onChange={(v) => onInputChange('pmiRate', parseFloat(v as string) || 0)}
-              type="number"
-              step={0.1}
-              unit="%"
-              placeholder="0.5"
-              helperText={getFieldHelper('pmiRate')}
-              icon="📌"
+              onChange={(v) => onInputChange('pmiRate', v)}
+              suffix="%"
+              tooltip="Private Mortgage Insurance rate"
             />
           )}
 
           <InputField
             label="HOA Fees (Monthly)"
             value={inputs.hoaFeesMonthly}
-            onChange={(v) => onInputChange('hoaFeesMonthly', parseFloat(v as string) || 0)}
-            type="number"
-            unit={symbol}
-            placeholder="0"
-            helperText={getFieldHelper('hoaFeesMonthly')}
-            icon="🏘️"
+            onChange={(v) => onInputChange('hoaFeesMonthly', v)}
+            prefix={symbol}
+            tooltip="Monthly Homeowners Association fees"
           />
         </div>
       </AdvancedSection>
+    </div>
+  );
+}
+
+function InputField({ label, value, onChange, prefix, suffix, tooltip }: {
+  label: string;
+  value: number;
+  onChange: (value: number) => void;
+  prefix?: string;
+  suffix?: string;
+  tooltip?: string;
+}) {
+  return (
+    <div className="space-y-3">
+      <label className="flex items-center gap-1.5 text-sm font-medium text-zinc-400">
+        {label}
+        {tooltip && <Tooltip text={tooltip} />}
+      </label>
+      <div className="relative">
+        {prefix && (
+          <span className="absolute left-5 top-1/2 -translate-y-1/2 text-[13px] font-bold text-zinc-500">{prefix}</span>
+        )}
+        <input
+          type="number"
+          value={value}
+          onChange={e => onChange(parseFloat(e.target.value) || 0)}
+          className={`w-full bg-zinc-800 border border-zinc-700 rounded-2xl py-4 text-[16px] font-bold text-white placeholder:text-zinc-500 outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all tabular-nums ${prefix ? 'pl-12 pr-6' : suffix ? 'pl-6 pr-16' : 'px-6'}`}
+        />
+        {suffix && (
+          <span className="absolute right-5 top-1/2 -translate-y-1/2 text-[13px] font-bold text-zinc-500">{suffix}</span>
+        )}
+      </div>
     </div>
   );
 }

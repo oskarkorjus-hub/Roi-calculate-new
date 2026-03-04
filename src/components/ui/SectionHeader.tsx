@@ -18,15 +18,15 @@ export function SectionHeader({
   return (
     <div className="flex items-center justify-between gap-4">
       <div>
-        <h3 className="flex items-center gap-2 text-lg font-bold text-slate-900">
+        <h3 className="flex items-center gap-2 text-lg font-bold text-white">
           {icon && <span className="text-2xl">{icon}</span>}
           {title}
         </h3>
         {description && (
-          <p className="text-sm text-slate-600 mt-1">{description}</p>
+          <p className="text-sm text-zinc-400 mt-1">{description}</p>
         )}
       </div>
-      
+
       {action && (
         <button
           onClick={action.onClick}
@@ -34,8 +34,8 @@ export function SectionHeader({
             px-4 py-2 rounded-lg font-semibold text-sm transition-colors whitespace-nowrap
             ${
               action.variant === 'primary'
-                ? 'bg-indigo-600 text-white hover:bg-indigo-700'
-                : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
+                ? 'bg-emerald-500 text-white hover:bg-emerald-600'
+                : 'bg-zinc-800 text-zinc-300 hover:bg-zinc-700 border border-zinc-700'
             }
           `}
         >

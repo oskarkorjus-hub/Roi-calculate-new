@@ -152,7 +152,7 @@ export function XIRRCalculator() {
   }
 
   return (
-    <div className="min-h-screen bg-background text-text-primary selection:bg-primary-light selection:text-primary -mx-4 md:-mx-10 lg:-mx-20 -my-8 px-6 py-8">
+    <div className="min-h-screen bg-[#0a0a0a] text-white -mx-4 md:-mx-10 lg:-mx-20 -my-8 px-6 py-8">
       {toast && (
         <Toast
           message={toast.message}
@@ -164,14 +164,12 @@ export function XIRRCalculator() {
       <div className="max-w-[100%] mx-auto">
         <header className="mb-8 flex flex-col xl:flex-row xl:items-center justify-between gap-6">
             <div className="flex items-center gap-4">
-              <div className="bg-primary p-2.5 rounded-lg shadow-sm">
-                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
-                </svg>
+              <div className="w-12 h-12 rounded-xl bg-zinc-800 flex items-center justify-center text-2xl">
+                📐
               </div>
               <div>
-                <h1 className="text-2xl font-bold text-text-primary tracking-tight">XIRR Calculator</h1>
-                <p className="text-text-muted text-xs mt-1 max-w-md">
+                <h1 className="text-2xl font-bold text-white">XIRR Calculator</h1>
+                <p className="text-zinc-500 text-sm mt-1">
                   Calculate your real estate investment returns based on purchase price, payment schedule, and projected sale price
                 </p>
               </div>
@@ -179,20 +177,20 @@ export function XIRRCalculator() {
 
             <div className="flex items-center gap-4 flex-wrap">
             {currency !== 'IDR' && (
-              <div className="flex items-center gap-3 bg-surface px-4 py-2 rounded-lg border border-border shadow-sm">
-                <span className="text-[10px] font-bold text-text-secondary uppercase tracking-widest">
+              <div className="flex items-center gap-3 bg-zinc-800 px-4 py-2 rounded-lg border border-zinc-700">
+                <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">
                   1 {currency} = {rate.toLocaleString()} IDR
                 </span>
                 {ratesLoading ? (
                   <span className="text-yellow-500 text-xs">(loading...)</span>
                 ) : ratesError ? (
-                  <span className="text-negative text-xs" title={ratesError}>!</span>
+                  <span className="text-red-400 text-xs" title={ratesError}>!</span>
                 ) : (
-                  <span className="text-accent text-xs" title={`Source: ${ratesSource}`}>✓</span>
+                  <span className="text-emerald-400 text-xs" title={`Source: ${ratesSource}`}>✓</span>
                 )}
                 <button
                   onClick={refreshRates}
-                  className="text-primary hover:text-primary-dark text-xs underline"
+                  className="text-emerald-400 hover:text-emerald-300 text-xs underline"
                   disabled={ratesLoading}
                 >
                   Refresh
@@ -200,22 +198,22 @@ export function XIRRCalculator() {
               </div>
             )}
 
-            <div className="flex items-center bg-white px-4 py-2 rounded-lg border border-slate-200 shadow-sm">
-              <span className="text-[10px] font-bold text-slate-600 uppercase tracking-widest mr-3">Currency</span>
+            <div className="flex items-center bg-zinc-800 px-4 py-2 rounded-lg border border-zinc-700">
+              <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest mr-3">Currency</span>
               <select
                 value={currency}
                 onChange={(e) => updateProperty('currency', e.target.value as 'IDR' | 'USD' | 'AUD' | 'EUR' | 'GBP' | 'INR' | 'CNY' | 'AED' | 'RUB')}
-                className="bg-transparent text-slate-900 text-xs font-bold focus:outline-none cursor-pointer"
+                className="bg-transparent text-white text-xs font-bold focus:outline-none cursor-pointer"
               >
-                <option value="IDR">Rp IDR</option>
-                <option value="USD">$ USD</option>
-                <option value="EUR">€ EUR</option>
-                <option value="AUD">A$ AUD</option>
-                <option value="GBP">£ GBP</option>
-                <option value="INR">₹ INR</option>
-                <option value="CNY">¥ CNY</option>
-                <option value="AED">د.إ AED</option>
-                <option value="RUB">₽ RUB</option>
+                <option value="IDR" className="bg-zinc-800 text-white">Rp IDR</option>
+                <option value="USD" className="bg-zinc-800 text-white">$ USD</option>
+                <option value="EUR" className="bg-zinc-800 text-white">€ EUR</option>
+                <option value="AUD" className="bg-zinc-800 text-white">A$ AUD</option>
+                <option value="GBP" className="bg-zinc-800 text-white">£ GBP</option>
+                <option value="INR" className="bg-zinc-800 text-white">₹ INR</option>
+                <option value="CNY" className="bg-zinc-800 text-white">¥ CNY</option>
+                <option value="AED" className="bg-zinc-800 text-white">د.إ AED</option>
+                <option value="RUB" className="bg-zinc-800 text-white">₽ RUB</option>
               </select>
             </div>
 
@@ -231,19 +229,19 @@ export function XIRRCalculator() {
 
             <button
               onClick={handleReset}
-              className={`px-5 py-2 rounded-lg text-xs font-bold shadow-sm transition-all active:scale-95 ${
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
                 showResetConfirm
-                  ? 'bg-red-600 text-white animate-pulse'
-                  : 'bg-red-500 text-white hover:bg-red-600'
+                  ? 'bg-red-500 text-white'
+                  : 'bg-zinc-800 text-zinc-300 border border-zinc-700 hover:bg-zinc-700'
               }`}
             >
-              {showResetConfirm ? 'Click to Confirm' : 'Reset Values'}
+              {showResetConfirm ? 'Click to Confirm' : 'Reset'}
             </button>
 
             <button
               onClick={handleSaveDraft}
               disabled={isSaving}
-              className="bg-primary text-white px-5 py-2 rounded-lg text-xs font-bold shadow-sm hover:bg-primary-dark transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+              className="px-4 py-2 rounded-lg text-sm font-medium bg-zinc-800 text-zinc-300 border border-zinc-700 hover:bg-zinc-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
             >
               {isSaving ? (
                 <>
@@ -322,7 +320,7 @@ export function XIRRCalculator() {
             {getCount('xirr') > 0 && (
               <button
                 onClick={() => setShowComparison(true)}
-                className="w-full mt-4 flex items-center justify-center gap-2 px-4 py-3 bg-surface rounded-xl text-sm font-bold text-text-secondary hover:bg-surface-alt border border-border transition-all"
+                className="w-full mt-4 flex items-center justify-center gap-2 px-4 py-3 bg-zinc-800 rounded-xl text-sm font-bold text-zinc-300 hover:bg-zinc-700 border border-zinc-700 transition-all"
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />

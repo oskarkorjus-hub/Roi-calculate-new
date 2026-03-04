@@ -1,7 +1,11 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import { Toast } from '../../components/ui/Toast';
 import { SaveToPortfolioButton } from '../../components/SaveToPortfolioButton';
+import { ReportPreviewModal } from '../../components/ui/ReportPreviewModal';
+import { generateDevFeasibilityReport } from '../../hooks/useReportGenerator';
 import { formatCurrency } from '../../utils/numberParsing';
+import { AdvancedSection } from '../../components/AdvancedSection';
+import { Tooltip } from '../../components/ui/Tooltip';
 
 interface DevInputs {
   landSizeM2: number;
@@ -12,7 +16,7 @@ interface DevInputs {
   avgAnnualRentalIncome: number;
   holdingPeriod: number;
   numVillas: number;
-  currency: 'IDR' | 'USD' | 'AUD' | 'EUR';
+  currency: 'IDR' | 'USD' | 'AUD' | 'EUR' | 'GBP' | 'INR' | 'CNY' | 'AED' | 'RUB';
   showSoftCosts: boolean;
   architectureFeePercent: number;
   engineeringLegalPercent: number;
@@ -75,35 +79,15 @@ const INITIAL_INPUTS: DevInputs = {
   capitalGainsTaxPercent: 15,
 };
 
-const symbols = { IDR: 'Rp', USD: '$', AUD: 'A$', EUR: '€' };
+type CurrencyType = 'IDR' | 'USD' | 'AUD' | 'EUR' | 'GBP' | 'INR' | 'CNY' | 'AED' | 'RUB';
 
-const AdvancedSection = ({
-  title,
-  show,
-  onToggle,
-  children,
-}: {
-  title: string;
-  show: boolean;
-  onToggle: () => void;
-  children: React.ReactNode;
-}) => (
-  <div className="border rounded-lg overflow-hidden">
-    <button
-      onClick={onToggle}
-      className="w-full flex items-center justify-between px-4 py-3 bg-gray-100 hover:bg-gray-200 transition"
-    >
-      <h3 className="font-semibold text-gray-900">{title}</h3>
-      <span className={`text-xl transition-transform ${show ? 'rotate-180' : ''}`}>▼</span>
-    </button>
-    {show && <div className="p-4 space-y-3 bg-gray-50 border-t">{children}</div>}
-  </div>
-);
+const symbols: Record<CurrencyType, string> = { IDR: 'Rp', USD: '$', AUD: 'A$', EUR: '€', GBP: '£', INR: '₹', CNY: '¥', AED: 'د.إ', RUB: '₽' };
 
 export function DevFeasibilityCalculator() {
   const [inputs, setInputs] = useState<DevInputs>(INITIAL_INPUTS);
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
   const [showResetConfirm, setShowResetConfirm] = useState(false);
+  const [showReportModal, setShowReportModal] = useState(false);
 
   const calculateScenarios = useCallback((): VillaScenario[] => {
     const {
@@ -227,8 +211,28 @@ export function DevFeasibilityCalculator() {
 
   const symbol = symbols[inputs.currency];
 
+  // Generate report data for PDF export
+  const reportData = useMemo(() => {
+    return generateDevFeasibilityReport(
+      {
+        landSizeM2: inputs.landSizeM2,
+        landCost: inputs.landCost,
+        costPerM2: inputs.costPerM2,
+        avgVillaSize: inputs.avgVillaSize,
+        avgSalePrice: inputs.avgSalePrice,
+        avgAnnualRentalIncome: inputs.avgAnnualRentalIncome,
+        holdingPeriod: inputs.holdingPeriod,
+        numVillas: inputs.numVillas,
+      },
+      bestFlipScenario,
+      bestHoldScenario,
+      scenarios,
+      symbol
+    );
+  }, [inputs, bestFlipScenario, bestHoldScenario, scenarios, symbol]);
+
   return (
-    <div className="min-h-screen bg-background text-text-primary selection:bg-primary-light selection:text-primary -mx-4 md:-mx-10 lg:-mx-20 -my-8 px-6 py-8">
+    <div className="min-h-screen bg-[#0a0a0a] text-white -mx-4 md:-mx-10 lg:-mx-20 -my-8 px-6 py-8">
       {toast && (
         <Toast
           message={toast.message}
@@ -237,40 +241,73 @@ export function DevFeasibilityCalculator() {
         />
       )}
 
+      <ReportPreviewModal
+        isOpen={showReportModal}
+        onClose={() => setShowReportModal(false)}
+        reportData={reportData}
+      />
+
       <div className="max-w-[100%] mx-auto">
         {/* Header */}
         <header className="mb-8 flex flex-col xl:flex-row xl:items-center justify-between gap-6">
           <div className="flex items-center gap-4">
-            <div className="bg-primary p-2.5 rounded-lg shadow-sm">
-              <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z" />
-              </svg>
+            <div className="w-12 h-12 rounded-xl bg-zinc-800 flex items-center justify-center text-2xl">
+              🏗️
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-text-primary tracking-tight">Dev Feasibility</h1>
-              <p className="text-text-muted text-xs mt-1 max-w-md">
+              <h1 className="text-2xl font-bold text-white">Dev Feasibility</h1>
+              <p className="text-zinc-500 text-sm mt-1">
                 Analyze property development scenarios for flip and hold strategies
               </p>
             </div>
           </div>
 
-          <div className="flex items-center gap-4 flex-wrap">
+          <div className="flex items-center gap-3 flex-wrap">
+            <div className="flex items-center bg-zinc-800 px-4 py-2 rounded-lg border border-zinc-700">
+              <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest mr-3">Currency</span>
+              <select
+                value={inputs.currency}
+                onChange={(e) => handleInputChange('currency', e.target.value as CurrencyType)}
+                className="bg-transparent text-white text-xs font-bold focus:outline-none cursor-pointer"
+              >
+                <option value="IDR" className="bg-zinc-800 text-white">Rp IDR</option>
+                <option value="USD" className="bg-zinc-800 text-white">$ USD</option>
+                <option value="EUR" className="bg-zinc-800 text-white">€ EUR</option>
+                <option value="AUD" className="bg-zinc-800 text-white">A$ AUD</option>
+                <option value="GBP" className="bg-zinc-800 text-white">£ GBP</option>
+                <option value="INR" className="bg-zinc-800 text-white">₹ INR</option>
+                <option value="CNY" className="bg-zinc-800 text-white">¥ CNY</option>
+                <option value="AED" className="bg-zinc-800 text-white">د.إ AED</option>
+                <option value="RUB" className="bg-zinc-800 text-white">₽ RUB</option>
+              </select>
+            </div>
+
             <button
               onClick={handleReset}
-              className={`px-5 py-2 rounded-lg text-xs font-bold shadow-sm transition-all active:scale-95 ${
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
                 showResetConfirm
-                  ? 'bg-red-600 text-white animate-pulse'
-                  : 'bg-red-500 text-white hover:bg-red-600'
+                  ? 'bg-red-500 text-white'
+                  : 'bg-zinc-800 text-zinc-300 border border-zinc-700 hover:bg-zinc-700'
               }`}
             >
-              {showResetConfirm ? 'Click to Confirm' : 'Reset Values'}
+              {showResetConfirm ? 'Click to Confirm' : 'Reset'}
             </button>
 
             <button
               onClick={handleSaveDraft}
-              className="bg-primary text-white px-5 py-2 rounded-lg text-xs font-bold shadow-sm hover:bg-primary-dark transition-all active:scale-95"
+              className="px-4 py-2 rounded-lg text-sm font-medium bg-zinc-800 text-zinc-300 border border-zinc-700 hover:bg-zinc-700 transition-all"
             >
               Save Draft
+            </button>
+
+            <button
+              onClick={() => setShowReportModal(true)}
+              className="px-4 py-2 rounded-lg text-sm font-medium bg-cyan-600 text-white hover:bg-cyan-700 transition-all flex items-center gap-2"
+            >
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+              PDF Report
             </button>
 
             <SaveToPortfolioButton
@@ -285,327 +322,335 @@ export function DevFeasibilityCalculator() {
         </header>
 
         {/* Main Content */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
           {/* Input Section */}
-          <div className="lg:col-span-1">
-            <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-200 h-fit sticky top-24">
-              <h2 className="text-xl font-bold text-gray-900 mb-6">Inputs</h2>
+          <div className="lg:col-span-9 space-y-6">
+            <div className="rounded-xl border border-zinc-800 bg-zinc-900 p-6">
+              <div className="mb-6 flex items-center border-b border-zinc-800 pb-4">
+                <div className="flex items-center gap-2">
+                  <span className="material-symbols-outlined text-emerald-400">landscape</span>
+                  <h2 className="text-xl font-bold text-white">Land & Construction</h2>
+                </div>
+              </div>
 
-              <div className="space-y-4 text-sm">
-                {/* BASIC SECTION */}
-                <div className="bg-blue-50 rounded-lg p-3 border border-blue-200">
-                  <h3 className="font-semibold text-gray-900 mb-2">Land</h3>
-                  <div className="space-y-2">
-                    <div>
-                      <label className="block text-xs font-medium text-gray-700">Size (m²)</label>
-                      <input
-                        type="number"
-                        value={inputs.landSizeM2}
-                        onChange={e => handleInputChange('landSizeM2', e.target.value)}
-                        className="w-full px-2 py-1 border border-gray-300 rounded text-xs"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-xs font-medium text-gray-700">Cost ({inputs.currency})</label>
-                      <input
-                        type="number"
-                        value={inputs.landCost}
-                        onChange={e => handleInputChange('landCost', e.target.value)}
-                        className="w-full px-2 py-1 border border-gray-300 rounded text-xs"
-                      />
-                    </div>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <InputField
+                  label="Land Size"
+                  value={inputs.landSizeM2}
+                  onChange={(v) => handleInputChange('landSizeM2', v)}
+                  suffix="m²"
+                  tooltip="Total land area in square meters"
+                />
+
+                <InputField
+                  label="Land Cost"
+                  value={inputs.landCost}
+                  onChange={(v) => handleInputChange('landCost', v)}
+                  prefix={symbol}
+                  tooltip="Total cost to acquire the land"
+                />
+
+                <InputField
+                  label="Construction Cost"
+                  value={inputs.costPerM2}
+                  onChange={(v) => handleInputChange('costPerM2', v)}
+                  prefix={symbol}
+                  suffix="/m²"
+                  tooltip="Construction cost per square meter"
+                />
+              </div>
+            </div>
+
+            <div className="rounded-xl border border-zinc-800 bg-zinc-900 p-6">
+              <div className="mb-6 flex items-center border-b border-zinc-800 pb-4">
+                <div className="flex items-center gap-2">
+                  <span className="material-symbols-outlined text-emerald-400">home</span>
+                  <h2 className="text-xl font-bold text-white">Villa Configuration</h2>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
+                <InputField
+                  label="Number of Villas"
+                  value={inputs.numVillas}
+                  onChange={(v) => handleInputChange('numVillas', v)}
+                  tooltip="Number of villas to build (0 for auto scenarios)"
+                />
+
+                <InputField
+                  label="Average Villa Size"
+                  value={inputs.avgVillaSize}
+                  onChange={(v) => handleInputChange('avgVillaSize', v)}
+                  suffix="m²"
+                  tooltip="Average built area per villa"
+                />
+
+                <InputField
+                  label="Sale Price (per villa)"
+                  value={inputs.avgSalePrice}
+                  onChange={(v) => handleInputChange('avgSalePrice', v)}
+                  prefix={symbol}
+                  tooltip="Expected sale price per villa"
+                />
+
+                <InputField
+                  label="Annual Rental Income"
+                  value={inputs.avgAnnualRentalIncome}
+                  onChange={(v) => handleInputChange('avgAnnualRentalIncome', v)}
+                  prefix={symbol}
+                  tooltip="Expected annual rental income per villa"
+                />
+
+                <InputField
+                  label="Hold Period"
+                  value={inputs.holdingPeriod}
+                  onChange={(v) => handleInputChange('holdingPeriod', v)}
+                  suffix="years"
+                  tooltip="Investment holding period for rental strategy"
+                />
+              </div>
+            </div>
+
+            {/* Advanced Sections */}
+            <AdvancedSection
+              title="Permits & Infrastructure"
+              icon="📋"
+              isOpen={inputs.showPermits}
+              onToggle={() => handleInputChange('showPermits', !inputs.showPermits)}
+              description="Permits, licenses, and infrastructure costs"
+            >
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4">
+                <InputField
+                  label="Permits & Licenses"
+                  value={inputs.permitsLicenses}
+                  onChange={(v) => handleInputChange('permitsLicenses', v)}
+                  prefix={symbol}
+                  tooltip="Cost for building permits and licenses"
+                />
+
+                <InputField
+                  label="Infrastructure Cost"
+                  value={inputs.infrastructureCost}
+                  onChange={(v) => handleInputChange('infrastructureCost', v)}
+                  prefix={symbol}
+                  tooltip="Roads, utilities, landscaping costs"
+                />
+              </div>
+            </AdvancedSection>
+
+            <AdvancedSection
+              title="Soft Costs"
+              icon="💰"
+              isOpen={inputs.showSoftCosts}
+              onToggle={() => handleInputChange('showSoftCosts', !inputs.showSoftCosts)}
+              description="Professional fees and commissions"
+            >
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 pt-4">
+                <InputField
+                  label="Architecture Fee"
+                  value={inputs.architectureFeePercent}
+                  onChange={(v) => handleInputChange('architectureFeePercent', v)}
+                  suffix="%"
+                  tooltip="Architect fees as % of construction"
+                />
+
+                <InputField
+                  label="Engineering/Legal"
+                  value={inputs.engineeringLegalPercent}
+                  onChange={(v) => handleInputChange('engineeringLegalPercent', v)}
+                  suffix="%"
+                  tooltip="Engineering and legal fees"
+                />
+
+                <InputField
+                  label="Marketing/Sales"
+                  value={inputs.marketingSalesCommissionPercent}
+                  onChange={(v) => handleInputChange('marketingSalesCommissionPercent', v)}
+                  suffix="%"
+                  tooltip="Marketing and sales commission"
+                />
+
+                <InputField
+                  label="Project Management"
+                  value={inputs.pmFeePercent}
+                  onChange={(v) => handleInputChange('pmFeePercent', v)}
+                  suffix="%"
+                  tooltip="Project management fees"
+                />
+              </div>
+            </AdvancedSection>
+
+            <AdvancedSection
+              title="Financing"
+              icon="🏦"
+              isOpen={inputs.showFinancing}
+              onToggle={() => handleInputChange('showFinancing', !inputs.showFinancing)}
+              description="Loan and interest calculations"
+            >
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-4">
+                <InputField
+                  label="Loan % of Project"
+                  value={inputs.loanPercent}
+                  onChange={(v) => handleInputChange('loanPercent', v)}
+                  suffix="%"
+                  tooltip="Percentage of project financed"
+                />
+
+                <InputField
+                  label="Interest Rate"
+                  value={inputs.interestRate}
+                  onChange={(v) => handleInputChange('interestRate', v)}
+                  suffix="%"
+                  tooltip="Annual interest rate on loan"
+                />
+
+                <InputField
+                  label="Construction Period"
+                  value={inputs.constructionMonths}
+                  onChange={(v) => handleInputChange('constructionMonths', v)}
+                  suffix="months"
+                  tooltip="Duration of construction"
+                />
+              </div>
+            </AdvancedSection>
+
+            <AdvancedSection
+              title="Exit Costs"
+              icon="📊"
+              isOpen={inputs.showExitCosts}
+              onToggle={() => handleInputChange('showExitCosts', !inputs.showExitCosts)}
+              description="Sales commissions and taxes"
+            >
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4">
+                <InputField
+                  label="Sales Commission"
+                  value={inputs.saleSalesCommissionPercent}
+                  onChange={(v) => handleInputChange('saleSalesCommissionPercent', v)}
+                  suffix="%"
+                  tooltip="Agent commission on sale"
+                />
+
+                <InputField
+                  label="Capital Gains Tax"
+                  value={inputs.capitalGainsTaxPercent}
+                  onChange={(v) => handleInputChange('capitalGainsTaxPercent', v)}
+                  suffix="%"
+                  tooltip="Tax on profit from sale"
+                />
+              </div>
+            </AdvancedSection>
+          </div>
+
+          {/* Results Section */}
+          <div className="lg:col-span-3">
+            <div className="sticky top-24 flex flex-col gap-4">
+              <div className="bg-zinc-900 rounded-xl border border-zinc-800 p-6">
+                <div className="mb-4 flex items-center border-b border-zinc-800 pb-4">
+                  <div className="flex items-center gap-2">
+                    <span className="material-symbols-outlined text-emerald-400">analytics</span>
+                    <h3 className="text-lg font-bold text-white">Results</h3>
                   </div>
                 </div>
 
-                <div className="bg-yellow-50 rounded-lg p-3 border border-yellow-200">
-                  <h3 className="font-semibold text-gray-900 mb-2">Construction</h3>
-                  <div className="space-y-2">
-                    <div>
-                      <label className="block text-xs font-medium text-gray-700">Cost/m² ({inputs.currency})</label>
-                      <input
-                        type="number"
-                        value={inputs.costPerM2}
-                        onChange={e => handleInputChange('costPerM2', e.target.value)}
-                        className="w-full px-2 py-1 border border-gray-300 rounded text-xs"
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                <div className="bg-green-50 rounded-lg p-3 border border-green-200">
-                  <h3 className="font-semibold text-gray-900 mb-2">Villas</h3>
-                  <div className="space-y-2">
-                    <div>
-                      <label className="block text-xs font-medium text-gray-700">Number</label>
-                      <input
-                        type="number"
-                        value={inputs.numVillas}
-                        onChange={e => handleInputChange('numVillas', e.target.value)}
-                        className="w-full px-2 py-1 border border-gray-300 rounded text-xs"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-xs font-medium text-gray-700">Avg Size (m²)</label>
-                      <input
-                        type="number"
-                        value={inputs.avgVillaSize}
-                        onChange={e => handleInputChange('avgVillaSize', e.target.value)}
-                        className="w-full px-2 py-1 border border-gray-300 rounded text-xs"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-xs font-medium text-gray-700">Sale Price ({inputs.currency})</label>
-                      <input
-                        type="number"
-                        value={inputs.avgSalePrice}
-                        onChange={e => handleInputChange('avgSalePrice', e.target.value)}
-                        className="w-full px-2 py-1 border border-gray-300 rounded text-xs"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-xs font-medium text-gray-700">Annual Rental ({inputs.currency})</label>
-                      <input
-                        type="number"
-                        value={inputs.avgAnnualRentalIncome}
-                        onChange={e => handleInputChange('avgAnnualRentalIncome', e.target.value)}
-                        className="w-full px-2 py-1 border border-gray-300 rounded text-xs"
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-xs font-medium text-gray-700 mb-1">Hold Period (years)</label>
-                  <input
-                    type="number"
-                    value={inputs.holdingPeriod}
-                    onChange={e => handleInputChange('holdingPeriod', e.target.value)}
-                    className="w-full px-2 py-1 border border-gray-300 rounded text-xs"
+                <div className="space-y-4">
+                  <ResultCard
+                    title="Best Flip ROI"
+                    value={`${bestFlipScenario.roiFlip.toFixed(1)}%`}
+                    label={`${bestFlipScenario.numVillas} villas • ${symbol} ${formatCurrency(bestFlipScenario.grossProfit, inputs.currency)} profit`}
+                    color="purple"
+                    icon={<svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" /></svg>}
                   />
-                </div>
 
-                {/* ADVANCED SECTIONS */}
-                <div className="space-y-3 pt-4 border-t">
-                  <AdvancedSection
-                    title="📋 Permits & Infrastructure"
-                    show={inputs.showPermits}
-                    onToggle={() => handleInputChange('showPermits', !inputs.showPermits)}
-                  >
-                    <div>
-                      <label className="block text-xs font-medium text-gray-700">Permits ({inputs.currency})</label>
-                      <input
-                        type="number"
-                        value={inputs.permitsLicenses}
-                        onChange={e => handleInputChange('permitsLicenses', e.target.value)}
-                        className="w-full px-2 py-1 border border-gray-300 rounded text-xs"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-xs font-medium text-gray-700">Infrastructure ({inputs.currency})</label>
-                      <input
-                        type="number"
-                        value={inputs.infrastructureCost}
-                        onChange={e => handleInputChange('infrastructureCost', e.target.value)}
-                        className="w-full px-2 py-1 border border-gray-300 rounded text-xs"
-                      />
-                    </div>
-                  </AdvancedSection>
+                  <ResultCard
+                    title={`Best Hold ROI (${inputs.holdingPeriod}yr)`}
+                    value={`${bestHoldScenario.roiHold.toFixed(1)}%`}
+                    label={`${bestHoldScenario.numVillas} villas • ${symbol} ${formatCurrency(bestHoldScenario.rentalPlusResidual - bestHoldScenario.totalProjectCost, inputs.currency)} return`}
+                    color="emerald"
+                    icon={<svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>}
+                  />
 
-                  <AdvancedSection
-                    title="💰 Soft Costs"
-                    show={inputs.showSoftCosts}
-                    onToggle={() => handleInputChange('showSoftCosts', !inputs.showSoftCosts)}
-                  >
-                    <div>
-                      <label className="block text-xs font-medium text-gray-700">Architecture (%)</label>
-                      <input
-                        type="number"
-                        step={0.1}
-                        value={inputs.architectureFeePercent}
-                        onChange={e => handleInputChange('architectureFeePercent', e.target.value)}
-                        className="w-full px-2 py-1 border border-gray-300 rounded text-xs"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-xs font-medium text-gray-700">Engineering/Legal (%)</label>
-                      <input
-                        type="number"
-                        step={0.1}
-                        value={inputs.engineeringLegalPercent}
-                        onChange={e => handleInputChange('engineeringLegalPercent', e.target.value)}
-                        className="w-full px-2 py-1 border border-gray-300 rounded text-xs"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-xs font-medium text-gray-700">Marketing/Sales (%)</label>
-                      <input
-                        type="number"
-                        step={0.1}
-                        value={inputs.marketingSalesCommissionPercent}
-                        onChange={e => handleInputChange('marketingSalesCommissionPercent', e.target.value)}
-                        className="w-full px-2 py-1 border border-gray-300 rounded text-xs"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-xs font-medium text-gray-700">Project Mgmt (%)</label>
-                      <input
-                        type="number"
-                        step={0.1}
-                        value={inputs.pmFeePercent}
-                        onChange={e => handleInputChange('pmFeePercent', e.target.value)}
-                        className="w-full px-2 py-1 border border-gray-300 rounded text-xs"
-                      />
-                    </div>
-                  </AdvancedSection>
+                  <MiniCard
+                    title="Total Project Cost"
+                    value={`${symbol} ${formatCurrency(bestFlipScenario.totalProjectCost, inputs.currency)}`}
+                    color="zinc"
+                  />
 
-                  <AdvancedSection
-                    title="🏦 Financing"
-                    show={inputs.showFinancing}
-                    onToggle={() => handleInputChange('showFinancing', !inputs.showFinancing)}
-                  >
-                    <div>
-                      <label className="block text-xs font-medium text-gray-700">Loan % of Project</label>
-                      <input
-                        type="number"
-                        value={inputs.loanPercent}
-                        onChange={e => handleInputChange('loanPercent', e.target.value)}
-                        className="w-full px-2 py-1 border border-gray-300 rounded text-xs"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-xs font-medium text-gray-700">Interest Rate (%)</label>
-                      <input
-                        type="number"
-                        step={0.1}
-                        value={inputs.interestRate}
-                        onChange={e => handleInputChange('interestRate', e.target.value)}
-                        className="w-full px-2 py-1 border border-gray-300 rounded text-xs"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-xs font-medium text-gray-700">Construction Months</label>
-                      <input
-                        type="number"
-                        value={inputs.constructionMonths}
-                        onChange={e => handleInputChange('constructionMonths', e.target.value)}
-                        className="w-full px-2 py-1 border border-gray-300 rounded text-xs"
-                      />
-                    </div>
-                  </AdvancedSection>
-
-                  <AdvancedSection
-                    title="📊 Exit Costs"
-                    show={inputs.showExitCosts}
-                    onToggle={() => handleInputChange('showExitCosts', !inputs.showExitCosts)}
-                  >
-                    <div>
-                      <label className="block text-xs font-medium text-gray-700">Sales Commission (%)</label>
-                      <input
-                        type="number"
-                        step={0.1}
-                        value={inputs.saleSalesCommissionPercent}
-                        onChange={e => handleInputChange('saleSalesCommissionPercent', e.target.value)}
-                        className="w-full px-2 py-1 border border-gray-300 rounded text-xs"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-xs font-medium text-gray-700">Capital Gains Tax (%)</label>
-                      <input
-                        type="number"
-                        step={0.1}
-                        value={inputs.capitalGainsTaxPercent}
-                        onChange={e => handleInputChange('capitalGainsTaxPercent', e.target.value)}
-                        className="w-full px-2 py-1 border border-gray-300 rounded text-xs"
-                      />
-                    </div>
-                  </AdvancedSection>
+                  <MiniCard
+                    title="Sale Revenue"
+                    value={`${symbol} ${formatCurrency(bestFlipScenario.revenueFromSale, inputs.currency)}`}
+                    color="cyan"
+                  />
                 </div>
               </div>
             </div>
           </div>
+        </div>
 
-          {/* Results Section */}
-          <div className="lg:col-span-2 space-y-6">
-            {/* Summary Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="bg-indigo-50 rounded-lg shadow-sm p-4 border border-indigo-200">
-                <p className="text-xs text-gray-600 mb-1">Best Flip ROI</p>
-                <p className="text-3xl font-bold text-indigo-600 mb-2">{bestFlipScenario.roiFlip.toFixed(1)}%</p>
-                <p className="text-xs text-gray-600">{bestFlipScenario.numVillas} villas</p>
-                <p className="text-xs font-medium text-gray-700 mt-1">
-                  Profit: {symbol} {formatCurrency(bestFlipScenario.grossProfit, inputs.currency)}
-                </p>
-              </div>
-
-              <div className="bg-emerald-50 rounded-lg shadow-sm p-4 border border-emerald-200">
-                <p className="text-xs text-gray-600 mb-1">Best Hold ROI ({inputs.holdingPeriod}yr)</p>
-                <p className="text-3xl font-bold text-emerald-600 mb-2">{bestHoldScenario.roiHold.toFixed(1)}%</p>
-                <p className="text-xs text-gray-600">{bestHoldScenario.numVillas} villas</p>
-                <p className="text-xs font-medium text-gray-700 mt-1">
-                  Return: {symbol} {formatCurrency(bestHoldScenario.rentalPlusResidual - bestHoldScenario.totalProjectCost, inputs.currency)}
-                </p>
+        {/* Detailed Scenarios Table */}
+        <div className="mt-6">
+          <div className="bg-zinc-900 rounded-xl border border-zinc-800 p-6">
+            <div className="mb-6 flex items-center border-b border-zinc-800 pb-4">
+              <div className="flex items-center gap-2">
+                <span className="material-symbols-outlined text-emerald-400">table_chart</span>
+                <h3 className="text-xl font-bold text-white">Development Scenarios</h3>
               </div>
             </div>
-
-            {/* Detailed Scenarios Table */}
-            <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
-              <h3 className="text-lg font-bold text-gray-900 mb-4">Development Scenarios</h3>
               <div className="overflow-x-auto">
                 <table className="w-full text-xs">
-                  <thead className="bg-gray-100 border-b border-gray-300">
+                  <thead className="bg-zinc-800 border-b border-zinc-700">
                     <tr>
-                      <th className="px-3 py-2 text-left font-semibold">Villas</th>
-                      <th className="px-3 py-2 text-right font-semibold">Build Cost</th>
-                      <th className="px-3 py-2 text-right font-semibold">Soft Costs</th>
-                      <th className="px-3 py-2 text-right font-semibold">Permits</th>
-                      <th className="px-3 py-2 text-right font-semibold">Finance</th>
-                      <th className="px-3 py-2 text-right font-semibold">Total Cost</th>
-                      <th className="px-3 py-2 text-right font-semibold">Sale Revenue</th>
-                      <th className="px-3 py-2 text-right font-semibold">Exit Cost</th>
-                      <th className="px-3 py-2 text-right font-semibold">Flip Profit</th>
-                      <th className="px-3 py-2 text-right font-semibold">Flip ROI</th>
-                      <th className="px-3 py-2 text-right font-semibold">Hold ROI</th>
+                      <th className="px-3 py-2 text-left font-semibold text-zinc-300">Villas</th>
+                      <th className="px-3 py-2 text-right font-semibold text-zinc-300">Build Cost</th>
+                      <th className="px-3 py-2 text-right font-semibold text-zinc-300">Soft Costs</th>
+                      <th className="px-3 py-2 text-right font-semibold text-zinc-300">Permits</th>
+                      <th className="px-3 py-2 text-right font-semibold text-zinc-300">Finance</th>
+                      <th className="px-3 py-2 text-right font-semibold text-zinc-300">Total Cost</th>
+                      <th className="px-3 py-2 text-right font-semibold text-zinc-300">Sale Revenue</th>
+                      <th className="px-3 py-2 text-right font-semibold text-zinc-300">Exit Cost</th>
+                      <th className="px-3 py-2 text-right font-semibold text-zinc-300">Flip Profit</th>
+                      <th className="px-3 py-2 text-right font-semibold text-zinc-300">Flip ROI</th>
+                      <th className="px-3 py-2 text-right font-semibold text-zinc-300">Hold ROI</th>
                     </tr>
                   </thead>
                   <tbody>
                     {scenarios.map(scenario => (
                       <tr
                         key={scenario.numVillas}
-                        className={`border-b border-gray-200 hover:bg-gray-50 ${
+                        className={`border-b border-zinc-800 hover:bg-zinc-800/50 ${
                           scenario.numVillas === bestFlipScenario.numVillas || scenario.numVillas === bestHoldScenario.numVillas
-                            ? 'bg-yellow-50'
+                            ? 'bg-emerald-500/10'
                             : ''
                         }`}
                       >
-                        <td className="px-3 py-2 font-medium text-gray-900">{scenario.numVillas}</td>
-                        <td className="px-3 py-2 text-right text-gray-700">
+                        <td className="px-3 py-2 font-medium text-white">{scenario.numVillas}</td>
+                        <td className="px-3 py-2 text-right text-zinc-400">
                           {symbol} {formatCurrency(scenario.constructionCost, inputs.currency)}
                         </td>
-                        <td className="px-3 py-2 text-right text-gray-700">
+                        <td className="px-3 py-2 text-right text-zinc-400">
                           {symbol} {formatCurrency(scenario.softCosts, inputs.currency)}
                         </td>
-                        <td className="px-3 py-2 text-right text-gray-700">
+                        <td className="px-3 py-2 text-right text-zinc-400">
                           {symbol} {formatCurrency(scenario.permitsCosts, inputs.currency)}
                         </td>
-                        <td className="px-3 py-2 text-right text-gray-700">
+                        <td className="px-3 py-2 text-right text-zinc-400">
                           {symbol} {formatCurrency(scenario.financeCharges, inputs.currency)}
                         </td>
-                        <td className="px-3 py-2 text-right font-medium text-gray-900">
+                        <td className="px-3 py-2 text-right font-medium text-white">
                           {symbol} {formatCurrency(scenario.totalProjectCost, inputs.currency)}
                         </td>
-                        <td className="px-3 py-2 text-right text-green-600">
+                        <td className="px-3 py-2 text-right text-emerald-400">
                           {symbol} {formatCurrency(scenario.revenueFromSale, inputs.currency)}
                         </td>
-                        <td className="px-3 py-2 text-right text-red-600">
+                        <td className="px-3 py-2 text-right text-red-400">
                           {symbol} {formatCurrency(scenario.exitCosts, inputs.currency)}
                         </td>
-                        <td className="px-3 py-2 text-right font-medium text-gray-900">
+                        <td className="px-3 py-2 text-right font-medium text-white">
                           {symbol} {formatCurrency(scenario.grossProfit, inputs.currency)}
                         </td>
-                        <td className="px-3 py-2 text-right font-bold text-indigo-600">
+                        <td className="px-3 py-2 text-right font-bold text-purple-400">
                           {scenario.roiFlip.toFixed(1)}%
                         </td>
-                        <td className="px-3 py-2 text-right font-bold text-emerald-600">
+                        <td className="px-3 py-2 text-right font-bold text-emerald-400">
                           {scenario.roiHold.toFixed(1)}%
                         </td>
                       </tr>
@@ -613,9 +658,88 @@ export function DevFeasibilityCalculator() {
                   </tbody>
                 </table>
               </div>
-            </div>
           </div>
         </div>
+      </div>
+    </div>
+  );
+}
+
+const colorMap = {
+  emerald: { text: 'text-emerald-400', bg: 'bg-emerald-500/10', border: 'border-emerald-500/20' },
+  cyan: { text: 'text-cyan-400', bg: 'bg-cyan-500/10', border: 'border-cyan-500/20' },
+  purple: { text: 'text-purple-400', bg: 'bg-purple-500/10', border: 'border-purple-500/20' },
+  orange: { text: 'text-orange-400', bg: 'bg-orange-500/10', border: 'border-orange-500/20' },
+  red: { text: 'text-red-400', bg: 'bg-red-500/10', border: 'border-red-500/20' },
+  zinc: { text: 'text-zinc-300', bg: 'bg-zinc-800', border: 'border-zinc-700' },
+};
+
+function ResultCard({ title, value, label, color, icon }: {
+  title: string;
+  value: string;
+  label: string;
+  color: keyof typeof colorMap;
+  icon: React.ReactNode;
+}) {
+  const colors = colorMap[color];
+
+  return (
+    <div className={`bg-zinc-900 p-4 rounded-2xl border ${colors.border} transition-all duration-300 hover:border-zinc-600 group cursor-default`}>
+      <div className="flex items-start justify-between mb-2">
+        <div className="flex-1">
+          <span className="text-zinc-400 text-[10px] font-semibold uppercase tracking-wide">{title}</span>
+          <div className={`text-xl font-bold ${colors.text} tracking-tight leading-none mt-1`}>{value}</div>
+        </div>
+        <div className={`w-9 h-9 ${colors.bg} rounded-xl flex items-center justify-center ${colors.text} transition-transform group-hover:scale-110 duration-300`}>
+          {icon}
+        </div>
+      </div>
+      <div className="flex items-center gap-1.5">
+        <div className={`w-1.5 h-1.5 rounded-full ${colors.text.replace('text', 'bg')} opacity-60 animate-pulse`}></div>
+        <span className="text-[10px] font-medium text-zinc-500 uppercase tracking-wide">{label}</span>
+      </div>
+    </div>
+  );
+}
+
+function MiniCard({ title, value, color }: { title: string; value: string; color: keyof typeof colorMap }) {
+  const colors = colorMap[color];
+
+  return (
+    <div className="bg-zinc-800 rounded-xl p-3 border border-zinc-700">
+      <p className="text-xs text-zinc-400 mb-1">{title}</p>
+      <p className={`font-bold ${colors.text} text-sm tabular-nums`}>{value}</p>
+    </div>
+  );
+}
+
+function InputField({ label, value, onChange, prefix, suffix, tooltip }: {
+  label: string;
+  value: number;
+  onChange: (value: number) => void;
+  prefix?: string;
+  suffix?: string;
+  tooltip?: string;
+}) {
+  return (
+    <div className="space-y-3">
+      <label className="flex items-center gap-1.5 text-sm font-medium text-zinc-400">
+        {label}
+        {tooltip && <Tooltip text={tooltip} />}
+      </label>
+      <div className="relative">
+        {prefix && (
+          <span className="absolute left-5 top-1/2 -translate-y-1/2 text-[13px] font-bold text-zinc-500">{prefix}</span>
+        )}
+        <input
+          type="number"
+          value={value}
+          onChange={e => onChange(parseFloat(e.target.value) || 0)}
+          className={`w-full bg-zinc-800 border border-zinc-700 rounded-2xl py-4 text-[16px] font-bold text-white placeholder:text-zinc-500 outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all tabular-nums ${prefix ? 'pl-12 pr-6' : suffix ? 'pl-6 pr-16' : 'px-6'}`}
+        />
+        {suffix && (
+          <span className="absolute right-5 top-1/2 -translate-y-1/2 text-[13px] font-bold text-zinc-500">{suffix}</span>
+        )}
       </div>
     </div>
   );

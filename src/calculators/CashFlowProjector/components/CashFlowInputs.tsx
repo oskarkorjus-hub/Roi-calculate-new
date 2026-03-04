@@ -1,8 +1,5 @@
 import { AdvancedSection } from '../../../components/AdvancedSection';
-import { InputField } from '../../../components/ui/InputField';
-import { SelectField } from '../../../components/ui/SelectField';
-import { SectionHeader } from '../../../components/ui/SectionHeader';
-import { getFieldHelper } from '../../../utils/fieldHelpers';
+import { Tooltip } from '../../../components/ui/Tooltip';
 
 interface CashFlowInputs {
   monthlyRentalIncome: number;
@@ -13,7 +10,6 @@ interface CashFlowInputs {
   monthlyOtherExpenses: number;
   vacancyRate: number;
   projectionYears: number;
-  currency: 'IDR' | 'USD' | 'AUD' | 'EUR';
   showAdvanced: boolean;
   annualGrowthRate: number;
   expenseGrowthRate: number;
@@ -28,140 +24,111 @@ interface CashFlowInputsProps {
   symbol: string;
 }
 
-const currencyOptions = [
-  { label: 'IDR (Indonesian Rupiah)', value: 'IDR' },
-  { label: 'USD (US Dollar)', value: 'USD' },
-  { label: 'AUD (Australian Dollar)', value: 'AUD' },
-  { label: 'EUR (Euro)', value: 'EUR' },
-];
-
 export function CashFlowInputs({ inputs, onInputChange, symbol }: CashFlowInputsProps) {
   const monthlyExpenses =
-    inputs.monthlyMaintenance + inputs.monthlyPropertyTax + inputs.monthlyInsurance + 
+    inputs.monthlyMaintenance + inputs.monthlyPropertyTax + inputs.monthlyInsurance +
     inputs.monthlyUtilities + inputs.monthlyOtherExpenses;
   const monthlyNetCashFlow = inputs.monthlyRentalIncome * (1 - inputs.vacancyRate / 100) - monthlyExpenses;
 
   return (
     <div className="space-y-6">
       {/* BASIC SECTION */}
-      <div className="bg-white rounded-xl p-6 border border-slate-200 shadow-sm">
-        <SectionHeader
-          title="Cash Flow Projection"
-          icon="💵"
-          description="Enter rental income and monthly expenses"
-        />
-        
-        <div className="space-y-4 mt-6">
+      <div>
+        <div className="mb-6 flex items-center border-b border-zinc-800 pb-4">
+          <div className="flex items-center gap-2">
+            <span className="material-symbols-outlined text-emerald-400">payments</span>
+            <h2 className="text-xl font-bold text-white">Cash Flow Projection</h2>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <InputField
             label="Monthly Rental Income"
             value={inputs.monthlyRentalIncome}
-            onChange={v => onInputChange('monthlyRentalIncome', parseFloat(v as string) || 0)}
-            type="number"
-            unit={symbol}
-            placeholder="5000000"
-            helperText={getFieldHelper('monthlyRentalIncome')}
-            icon="🏠"
-            required
+            onChange={v => onInputChange('monthlyRentalIncome', v)}
+            prefix={symbol}
+            tooltip="Expected monthly income from rental property"
           />
 
           <InputField
             label="Vacancy Rate"
             value={inputs.vacancyRate}
-            onChange={v => onInputChange('vacancyRate', parseFloat(v as string) || 0)}
-            type="number"
-            step={0.5}
-            unit="%"
-            placeholder="5"
-            helperText={getFieldHelper('vacancyRate')}
-            icon="📉"
-            required
+            onChange={v => onInputChange('vacancyRate', v)}
+            suffix="%"
+            tooltip="Percentage of time property is expected to be vacant"
           />
-
-          {/* Monthly Expenses */}
-          <div className="bg-slate-50 rounded-xl p-4 border border-slate-200">
-            <p className="text-sm font-semibold text-slate-900 mb-4">Monthly Expenses</p>
-            <div className="space-y-3">
-              <InputField
-                label="Maintenance"
-                value={inputs.monthlyMaintenance}
-                onChange={v => onInputChange('monthlyMaintenance', parseFloat(v as string) || 0)}
-                type="number"
-                unit={symbol}
-                placeholder="0"
-                icon="🔧"
-              />
-              <InputField
-                label="Property Tax"
-                value={inputs.monthlyPropertyTax}
-                onChange={v => onInputChange('monthlyPropertyTax', parseFloat(v as string) || 0)}
-                type="number"
-                unit={symbol}
-                placeholder="0"
-                icon="🏛️"
-              />
-              <InputField
-                label="Insurance"
-                value={inputs.monthlyInsurance}
-                onChange={v => onInputChange('monthlyInsurance', parseFloat(v as string) || 0)}
-                type="number"
-                unit={symbol}
-                placeholder="0"
-                icon="🛡️"
-              />
-              <InputField
-                label="Utilities"
-                value={inputs.monthlyUtilities}
-                onChange={v => onInputChange('monthlyUtilities', parseFloat(v as string) || 0)}
-                type="number"
-                unit={symbol}
-                placeholder="0"
-                icon="⚡"
-              />
-              <InputField
-                label="Other Expenses"
-                value={inputs.monthlyOtherExpenses}
-                onChange={v => onInputChange('monthlyOtherExpenses', parseFloat(v as string) || 0)}
-                type="number"
-                unit={symbol}
-                placeholder="0"
-                icon="💸"
-              />
-              <div className="border-t border-slate-200 pt-3 mt-3">
-                <div className="flex justify-between items-center">
-                  <span className="text-sm font-semibold text-slate-900">Total Monthly Expenses</span>
-                  <span className="text-lg font-bold text-slate-900">{symbol} {monthlyExpenses.toLocaleString()}</span>
-                </div>
-              </div>
-            </div>
-          </div>
 
           <InputField
             label="Projection Years"
             value={inputs.projectionYears}
-            onChange={v => onInputChange('projectionYears', Math.max(1, parseInt(v as string) || 1))}
-            type="number"
-            placeholder="10"
-            helperText={getFieldHelper('projectionYears')}
-            icon="📊"
-            required
+            onChange={v => onInputChange('projectionYears', Math.max(1, v))}
+            tooltip="Number of years to project cash flow"
           />
+        </div>
 
-          <SelectField
-            label="Currency"
-            value={inputs.currency}
-            onChange={v => onInputChange('currency', v as 'IDR' | 'USD' | 'AUD' | 'EUR')}
-            options={currencyOptions}
-            helperText={getFieldHelper('currency')}
-            icon="💵"
-            required
-          />
+        {/* Monthly Expenses */}
+        <div className="mt-6 rounded-xl border border-zinc-700 bg-zinc-800/50 p-6">
+          <div className="mb-4 flex items-center gap-2">
+            <div className="w-2 h-2 rounded-full bg-red-400"></div>
+            <h3 className="text-base font-semibold text-zinc-300">Monthly Expenses</h3>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <InputField
+              label="Maintenance"
+              value={inputs.monthlyMaintenance}
+              onChange={v => onInputChange('monthlyMaintenance', v)}
+              prefix={symbol}
+              tooltip="Monthly maintenance and repairs"
+            />
+            <InputField
+              label="Property Tax"
+              value={inputs.monthlyPropertyTax}
+              onChange={v => onInputChange('monthlyPropertyTax', v)}
+              prefix={symbol}
+              tooltip="Monthly property tax"
+            />
+            <InputField
+              label="Insurance"
+              value={inputs.monthlyInsurance}
+              onChange={v => onInputChange('monthlyInsurance', v)}
+              prefix={symbol}
+              tooltip="Monthly insurance premium"
+            />
+            <InputField
+              label="Utilities"
+              value={inputs.monthlyUtilities}
+              onChange={v => onInputChange('monthlyUtilities', v)}
+              prefix={symbol}
+              tooltip="Monthly utilities if paid by owner"
+            />
+            <InputField
+              label="Other Expenses"
+              value={inputs.monthlyOtherExpenses}
+              onChange={v => onInputChange('monthlyOtherExpenses', v)}
+              prefix={symbol}
+              tooltip="Other monthly expenses"
+            />
+          </div>
+          <div className="border-t border-zinc-700 pt-4 mt-4">
+            <div className="flex justify-between items-center">
+              <span className="text-sm font-semibold text-zinc-300">Total Monthly Expenses</span>
+              <span className="text-lg font-bold text-red-400">{symbol} {monthlyExpenses.toLocaleString()}</span>
+            </div>
+          </div>
+        </div>
 
-          {/* Monthly Net Cash Flow */}
-          <div className="bg-green-50 border border-green-200 rounded-xl p-4">
-            <p className="text-sm text-slate-600">Estimated Monthly Net Cash Flow</p>
-            <p className="text-2xl font-bold text-green-600 mt-1">
-              {symbol} {monthlyNetCashFlow.toLocaleString()}
-            </p>
+        {/* Monthly Net Cash Flow */}
+        <div className="mt-6 bg-emerald-500/10 border border-emerald-500/20 rounded-xl p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm text-zinc-400">Estimated Monthly Net Cash Flow</p>
+              <p className="text-2xl font-bold text-emerald-400 mt-1">
+                {symbol} {monthlyNetCashFlow.toLocaleString()}
+              </p>
+            </div>
+            <div className="w-12 h-12 bg-emerald-500/20 rounded-xl flex items-center justify-center">
+              <span className="material-symbols-outlined text-emerald-400 text-2xl">trending_up</span>
+            </div>
           </div>
         </div>
       </div>
@@ -174,54 +141,71 @@ export function CashFlowInputs({ inputs, onInputChange, symbol }: CashFlowInputs
         onToggle={() => onInputChange('showAdvanced', !inputs.showAdvanced)}
         description="Annual growth, expense growth, seasonal multipliers"
       >
-        <div className="space-y-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4">
           <InputField
             label="Annual Income Growth Rate"
             value={inputs.annualGrowthRate}
-            onChange={v => onInputChange('annualGrowthRate', parseFloat(v as string) || 0)}
-            type="number"
-            step={0.1}
-            unit="%"
-            placeholder="3"
-            helperText={getFieldHelper('growthRate')}
-            icon="📈"
+            onChange={v => onInputChange('annualGrowthRate', v)}
+            suffix="%"
+            tooltip="Expected annual increase in rental income"
           />
 
           <InputField
             label="Annual Expense Growth Rate"
             value={inputs.expenseGrowthRate}
-            onChange={v => onInputChange('expenseGrowthRate', parseFloat(v as string) || 0)}
-            type="number"
-            step={0.1}
-            unit="%"
-            placeholder="2"
-            helperText="Expected annual increase in operating expenses"
-            icon="📉"
+            onChange={v => onInputChange('expenseGrowthRate', v)}
+            suffix="%"
+            tooltip="Expected annual increase in operating expenses"
           />
 
           <InputField
             label="Fixed Expense Percentage"
             value={inputs.fixedExpensePercent}
-            onChange={v => onInputChange('fixedExpensePercent', parseFloat(v as string) || 0)}
-            type="number"
-            unit="%"
-            placeholder="40"
-            helperText="Expenses that don't change with income"
-            icon="🔐"
+            onChange={v => onInputChange('fixedExpensePercent', v)}
+            suffix="%"
+            tooltip="Expenses that don't change with income"
           />
 
           <InputField
             label="Seasonal Multiplier"
             value={inputs.seasonalMultiplier}
-            onChange={v => onInputChange('seasonalMultiplier', parseFloat(v as string) || 0)}
-            type="number"
-            step={0.1}
-            placeholder="1.0"
-            helperText="1.0 = baseline, <1.0 dip, >1.0 peak"
-            icon="🔄"
+            onChange={v => onInputChange('seasonalMultiplier', v)}
+            tooltip="1.0 = baseline, <1.0 dip, >1.0 peak"
           />
         </div>
       </AdvancedSection>
+    </div>
+  );
+}
+
+function InputField({ label, value, onChange, prefix, suffix, tooltip }: {
+  label: string;
+  value: number;
+  onChange: (value: number) => void;
+  prefix?: string;
+  suffix?: string;
+  tooltip?: string;
+}) {
+  return (
+    <div className="space-y-3">
+      <label className="flex items-center gap-1.5 text-sm font-medium text-zinc-400">
+        {label}
+        {tooltip && <Tooltip text={tooltip} />}
+      </label>
+      <div className="relative">
+        {prefix && (
+          <span className="absolute left-5 top-1/2 -translate-y-1/2 text-[13px] font-bold text-zinc-500">{prefix}</span>
+        )}
+        <input
+          type="number"
+          value={value}
+          onChange={e => onChange(parseFloat(e.target.value) || 0)}
+          className={`w-full bg-zinc-800 border border-zinc-700 rounded-2xl py-4 text-[16px] font-bold text-white placeholder:text-zinc-500 outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all tabular-nums ${prefix ? 'pl-12 pr-6' : suffix ? 'pl-6 pr-12' : 'px-6'}`}
+        />
+        {suffix && (
+          <span className="absolute right-5 top-1/2 -translate-y-1/2 text-[13px] font-bold text-zinc-500">{suffix}</span>
+        )}
+      </div>
     </div>
   );
 }

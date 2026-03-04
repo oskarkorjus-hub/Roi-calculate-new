@@ -23,12 +23,12 @@ export function ScenarioAnalysisPage({ projectId, onBack }: ScenarioAnalysisPage
 
   if (!project) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center">
         <div className="text-center">
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">Project Not Found</h2>
+          <h2 className="text-2xl font-bold text-white mb-2">Project Not Found</h2>
           <button
             onClick={onBack}
-            className="px-4 py-2 text-indigo-600 hover:text-indigo-700 underline"
+            className="px-4 py-2 text-emerald-400 hover:text-emerald-300 underline"
           >
             ← Back
           </button>
@@ -84,31 +84,41 @@ export function ScenarioAnalysisPage({ projectId, onBack }: ScenarioAnalysisPage
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="min-h-screen bg-[#0a0a0a] text-white -mx-4 md:-mx-10 lg:-mx-20 -my-8 px-6 py-8">
       {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
 
-      <div className="max-w-7xl mx-auto px-4 space-y-8">
+      <div className="max-w-[100%] mx-auto space-y-8">
         {/* Header */}
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900">{project.projectName}</h1>
-            <p className="text-gray-600 mt-1">{project.location}</p>
+        <header className="mb-8 flex flex-col xl:flex-row xl:items-center justify-between gap-6">
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 rounded-xl bg-zinc-800 flex items-center justify-center text-2xl">
+              📊
+            </div>
+            <div>
+              <h1 className="text-2xl font-bold text-white">{project.projectName}</h1>
+              <p className="text-zinc-500 text-sm mt-1">{project.location}</p>
+            </div>
           </div>
           {onBack && (
             <button
               onClick={onBack}
-              className="px-4 py-2 text-indigo-600 hover:text-indigo-700 font-medium flex items-center gap-2"
+              className="px-4 py-2 bg-zinc-800 text-zinc-300 border border-zinc-700 rounded-lg hover:bg-zinc-700 transition font-medium flex items-center gap-2"
             >
-              ← Back
+              ← Back to Portfolio
             </button>
           )}
-        </div>
+        </header>
 
         {/* Scenario Selector */}
         {scenarios.length > 0 && (
-          <div className="bg-white rounded-lg border border-gray-200 p-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">Select Scenarios to Compare</h2>
-            <p className="text-sm text-gray-600 mb-4">
+          <div className="bg-zinc-900 rounded-xl border border-zinc-800 p-6">
+            <div className="mb-6 flex items-center border-b border-zinc-800 pb-4">
+              <div className="flex items-center gap-2">
+                <span className="material-symbols-outlined text-emerald-400">compare_arrows</span>
+                <h2 className="text-xl font-bold text-white">Select Scenarios to Compare</h2>
+              </div>
+            </div>
+            <p className="text-sm text-zinc-400 mb-4">
               Choose up to 4 scenarios. Selected: {selectedScenarios.length}
             </p>
 
@@ -116,10 +126,10 @@ export function ScenarioAnalysisPage({ projectId, onBack }: ScenarioAnalysisPage
               {scenarios.map(scenario => (
                 <label
                   key={scenario.id}
-                  className={`relative p-4 rounded-lg border-2 cursor-pointer transition ${
+                  className={`relative p-4 rounded-xl border-2 cursor-pointer transition ${
                     selectedScenarioIds.includes(scenario.id)
-                      ? 'border-indigo-500 bg-indigo-50'
-                      : 'border-gray-200 bg-white hover:border-gray-300'
+                      ? 'border-emerald-500 bg-emerald-500/10'
+                      : 'border-zinc-700 bg-zinc-800 hover:border-zinc-600'
                   }`}
                 >
                   <input
@@ -129,13 +139,13 @@ export function ScenarioAnalysisPage({ projectId, onBack }: ScenarioAnalysisPage
                     disabled={
                       !selectedScenarioIds.includes(scenario.id) && selectedScenarioIds.length >= 4
                     }
-                    className="absolute top-3 right-3 w-4 h-4 cursor-pointer"
+                    className="absolute top-3 right-3 w-4 h-4 cursor-pointer accent-emerald-500"
                   />
 
                   <div className="pr-8">
-                    <h3 className="font-semibold text-gray-900">{scenario.name}</h3>
-                    <div className="mt-2 space-y-1 text-sm text-gray-600">
-                      <div>ROI: {(scenario.results.roi || 0).toFixed(1)}%</div>
+                    <h3 className="font-semibold text-white">{scenario.name}</h3>
+                    <div className="mt-2 space-y-1 text-sm text-zinc-400">
+                      <div>ROI: <span className="text-emerald-400">{(scenario.results.roi || 0).toFixed(1)}%</span></div>
                       <div>Cash Flow: ${(scenario.results.avgCashFlow || 0).toLocaleString()}</div>
                       <div>Break-Even: {scenario.results.breakEvenMonths || 0}m</div>
                     </div>
@@ -149,7 +159,7 @@ export function ScenarioAnalysisPage({ projectId, onBack }: ScenarioAnalysisPage
                         setRenamingId(scenario.id);
                         setNewName(scenario.name);
                       }}
-                      className="text-xs px-2 py-1 bg-blue-100 text-blue-600 rounded hover:bg-blue-200"
+                      className="text-xs px-2 py-1 bg-cyan-500/20 text-cyan-400 rounded hover:bg-cyan-500/30"
                     >
                       ✏️
                     </button>
@@ -160,7 +170,7 @@ export function ScenarioAnalysisPage({ projectId, onBack }: ScenarioAnalysisPage
                           handleDeleteScenario(scenario.id);
                         }
                       }}
-                      className="text-xs px-2 py-1 bg-red-100 text-red-600 rounded hover:bg-red-200"
+                      className="text-xs px-2 py-1 bg-red-500/20 text-red-400 rounded hover:bg-red-500/30"
                     >
                       🗑️
                     </button>
@@ -173,26 +183,26 @@ export function ScenarioAnalysisPage({ projectId, onBack }: ScenarioAnalysisPage
 
         {/* Rename Modal */}
         {renamingId && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-lg p-6 max-w-sm w-full">
-              <h3 className="text-lg font-bold text-gray-900 mb-4">Rename Scenario</h3>
+          <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+            <div className="bg-zinc-900 rounded-2xl border border-zinc-800 p-6 max-w-sm w-full">
+              <h3 className="text-lg font-bold text-white mb-4">Rename Scenario</h3>
               <input
                 type="text"
                 value={newName}
                 onChange={e => setNewName(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent mb-4"
+                className="w-full px-4 py-3 bg-zinc-800 border border-zinc-700 rounded-xl text-white focus:ring-2 focus:ring-emerald-500 focus:border-transparent mb-4 outline-none"
                 autoFocus
               />
               <div className="flex gap-3">
                 <button
                   onClick={() => setRenamingId(null)}
-                  className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
+                  className="flex-1 px-4 py-2 border border-zinc-700 text-zinc-300 rounded-lg hover:bg-zinc-800"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={() => handleRenameScenario(renamingId, newName)}
-                  className="flex-1 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
+                  className="flex-1 px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700"
                 >
                   Save
                 </button>
@@ -206,18 +216,23 @@ export function ScenarioAnalysisPage({ projectId, onBack }: ScenarioAnalysisPage
           <div className="space-y-8">
             {/* Winner Badge */}
             {winner && (
-              <div className="bg-gradient-to-r from-green-50 to-emerald-50 border-l-4 border-green-500 p-6 rounded-lg">
-                <h3 className="text-lg font-bold text-green-900 mb-2">🏆 Best Overall Scenario</h3>
-                <p className="text-green-800">
-                  <span className="font-semibold">{winner.name}</span> is the most profitable scenario with a
+              <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-xl p-6">
+                <h3 className="text-lg font-bold text-emerald-400 mb-2">🏆 Best Overall Scenario</h3>
+                <p className="text-zinc-300">
+                  <span className="font-semibold text-white">{winner.name}</span> is the most profitable scenario with a
                   composite score of {winner.score?.toFixed(0)}.
                 </p>
               </div>
             )}
 
             {/* Metrics Table */}
-            <div className="bg-white rounded-lg border border-gray-200 p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Detailed Comparison</h3>
+            <div className="bg-zinc-900 rounded-xl border border-zinc-800 p-6">
+              <div className="mb-6 flex items-center border-b border-zinc-800 pb-4">
+                <div className="flex items-center gap-2">
+                  <span className="material-symbols-outlined text-emerald-400">table_chart</span>
+                  <h3 className="text-xl font-bold text-white">Detailed Comparison</h3>
+                </div>
+              </div>
               <ScenarioComparatorTable
                 scenarios={selectedScenarios}
                 baselineScenario={baselineScenario}
@@ -226,7 +241,7 @@ export function ScenarioAnalysisPage({ projectId, onBack }: ScenarioAnalysisPage
 
             {/* Charts */}
             <div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Visual Analysis</h3>
+              <h3 className="text-lg font-semibold text-white mb-4">Visual Analysis</h3>
               <ScenarioComparisonCharts
                 scenarios={selectedScenarios}
                 baselineScenario={baselineScenario}
@@ -234,20 +249,25 @@ export function ScenarioAnalysisPage({ projectId, onBack }: ScenarioAnalysisPage
             </div>
 
             {/* Summary */}
-            <div className="bg-white rounded-lg border border-gray-200 p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Analysis Summary</h3>
-              <div className="space-y-3 text-sm text-gray-700">
+            <div className="bg-zinc-900 rounded-xl border border-zinc-800 p-6">
+              <div className="mb-6 flex items-center border-b border-zinc-800 pb-4">
+                <div className="flex items-center gap-2">
+                  <span className="material-symbols-outlined text-emerald-400">summarize</span>
+                  <h3 className="text-xl font-bold text-white">Analysis Summary</h3>
+                </div>
+              </div>
+              <div className="space-y-3 text-sm text-zinc-400">
                 <p>
-                  <strong>Scenarios Compared:</strong> {selectedScenarios.length + 1} (including baseline)
+                  <strong className="text-white">Scenarios Compared:</strong> {selectedScenarios.length + 1} (including baseline)
                 </p>
                 <p>
-                  <strong>ROI Range:</strong> {Math.min(baselineScenario.results.roi, ...selectedScenarios.map(s => s.results.roi)).toFixed(1)}% -{' '}
-                  {Math.max(baselineScenario.results.roi, ...selectedScenarios.map(s => s.results.roi)).toFixed(1)}%
+                  <strong className="text-white">ROI Range:</strong> <span className="text-emerald-400">{Math.min(baselineScenario.results.roi, ...selectedScenarios.map(s => s.results.roi)).toFixed(1)}%</span> -{' '}
+                  <span className="text-emerald-400">{Math.max(baselineScenario.results.roi, ...selectedScenarios.map(s => s.results.roi)).toFixed(1)}%</span>
                 </p>
                 <p>
-                  <strong>Cash Flow Variation:</strong> ${(Math.max(baselineScenario.results.avgCashFlow, ...selectedScenarios.map(s => s.results.avgCashFlow)) - Math.min(baselineScenario.results.avgCashFlow, ...selectedScenarios.map(s => s.results.avgCashFlow))).toLocaleString()}/month
+                  <strong className="text-white">Cash Flow Variation:</strong> ${(Math.max(baselineScenario.results.avgCashFlow, ...selectedScenarios.map(s => s.results.avgCashFlow)) - Math.min(baselineScenario.results.avgCashFlow, ...selectedScenarios.map(s => s.results.avgCashFlow))).toLocaleString()}/month
                 </p>
-                <p className="pt-2 italic text-gray-600">
+                <p className="pt-2 italic text-zinc-500">
                   All metrics are based on calculator inputs. Consider external factors when making investment decisions.
                 </p>
               </div>
@@ -256,9 +276,9 @@ export function ScenarioAnalysisPage({ projectId, onBack }: ScenarioAnalysisPage
         )}
 
         {scenarios.length === 0 && (
-          <div className="bg-white rounded-lg border border-gray-200 p-12 text-center">
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">No Scenarios Yet</h3>
-            <p className="text-gray-600">
+          <div className="bg-zinc-900 rounded-xl border border-zinc-800 p-12 text-center">
+            <h3 className="text-lg font-semibold text-white mb-2">No Scenarios Yet</h3>
+            <p className="text-zinc-400">
               Create a scenario variant to compare different investment parameters and strategies.
             </p>
           </div>

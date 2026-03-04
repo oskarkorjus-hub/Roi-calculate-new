@@ -17,11 +17,11 @@ const AssumptionsPanel = ({ assumptions, onChange, currency }: Props) => {
   };
 
   return (
-    <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm mt-6 mb-4">
-      <div className="mb-6 flex items-center border-b border-slate-200 pb-4">
+    <div className="rounded-xl border border-zinc-800 bg-zinc-900 p-6 mt-6 mb-4">
+      <div className="mb-6 flex items-center border-b border-zinc-800 pb-4">
         <div className="flex items-center gap-2">
-          <span className="material-symbols-outlined text-indigo-600">tune</span>
-          <h2 className="text-xl font-bold text-slate-900">Operational Assumptions</h2>
+          <span className="material-symbols-outlined text-emerald-400">tune</span>
+          <h2 className="text-xl font-bold text-white">Operational Assumptions</h2>
         </div>
       </div>
 
@@ -29,8 +29,8 @@ const AssumptionsPanel = ({ assumptions, onChange, currency }: Props) => {
         {/* Cost Structure */}
         <section className="space-y-8">
           <div className="flex items-center gap-2.5">
-            <div className="w-2 h-2 rounded-full bg-red-500"></div>
-            <h3 className="text-base font-semibold text-slate-700">
+            <div className="w-2 h-2 rounded-full bg-red-400"></div>
+            <h3 className="text-base font-semibold text-zinc-300">
               Operating Cost Basis (% Revenue)
             </h3>
           </div>
@@ -45,8 +45,8 @@ const AssumptionsPanel = ({ assumptions, onChange, currency }: Props) => {
         {/* Undistributed Expenses */}
         <section className="space-y-8">
           <div className="flex items-center gap-2.5">
-            <div className="w-2 h-2 rounded-full bg-orange-500"></div>
-            <h3 className="text-base font-semibold text-slate-700">
+            <div className="w-2 h-2 rounded-full bg-orange-400"></div>
+            <h3 className="text-base font-semibold text-zinc-300">
               Undistributed Expenses (% Revenue)
             </h3>
           </div>
@@ -60,8 +60,8 @@ const AssumptionsPanel = ({ assumptions, onChange, currency }: Props) => {
         {/* Growth Rates */}
         <section className="space-y-8">
           <div className="flex items-center gap-2.5">
-            <div className="w-2 h-2 rounded-full bg-blue-500"></div>
-            <h3 className="text-base font-semibold text-slate-700">
+            <div className="w-2 h-2 rounded-full bg-cyan-400"></div>
+            <h3 className="text-base font-semibold text-zinc-300">
               Annual Growth Rates (% p.a.)
             </h3>
           </div>
@@ -78,8 +78,8 @@ const AssumptionsPanel = ({ assumptions, onChange, currency }: Props) => {
         {/* Management Fees */}
         <section className="space-y-8">
           <div className="flex items-center gap-2.5">
-            <div className="w-2 h-2 rounded-full bg-purple-500"></div>
-            <h3 className="text-base font-semibold text-slate-700">
+            <div className="w-2 h-2 rounded-full bg-purple-400"></div>
+            <h3 className="text-base font-semibold text-zinc-300">
               Management Fees
             </h3>
           </div>
@@ -130,7 +130,7 @@ const SecondaryInput: React.FC<{
 
   return (
     <div className="space-y-3">
-      <label className="flex items-center gap-1.5 text-sm font-medium text-slate-600 ml-0.5">
+      <label className="flex items-center gap-1.5 text-sm font-medium text-zinc-400 ml-0.5">
         {label}
         {tooltip && <Tooltip text={tooltip} />}
       </label>
@@ -141,10 +141,10 @@ const SecondaryInput: React.FC<{
           value={inputValue}
           placeholder={placeholder?.toString() || '0'}
           onChange={handleInputChange}
-          className="w-full bg-[#fcfdfe] border border-slate-200 rounded-2xl px-6 py-5 text-[17px] font-bold text-slate-900 placeholder:text-slate-300 outline-none focus:border-indigo-400 focus:ring-4 focus:ring-indigo-500/5 focus:bg-white transition-all tabular-nums"
+          className="w-full bg-zinc-800 border border-zinc-700 rounded-2xl px-6 py-5 text-[17px] font-bold text-white placeholder:text-zinc-500 outline-none focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 transition-all tabular-nums"
         />
         {isPercentage && (
-          <span className="absolute right-6 top-1/2 -translate-y-1/2 text-[13px] font-black text-slate-300">%</span>
+          <span className="absolute right-6 top-1/2 -translate-y-1/2 text-[13px] font-black text-zinc-500">%</span>
         )}
       </div>
     </div>
@@ -198,19 +198,19 @@ const CurrencyInput: React.FC<{
 
   return (
     <div className="space-y-3">
-      <label className="flex items-center gap-1.5 text-sm font-medium text-slate-600 ml-0.5">
+      <label className="flex items-center gap-1.5 text-sm font-medium text-zinc-400 ml-0.5">
         {label}
         {tooltip && <Tooltip text={tooltip} />}
       </label>
       <div className="relative group">
-        <span className="absolute left-5 top-1/2 -translate-y-1/2 text-[13px] font-bold text-slate-300">{currency.symbol}</span>
+        <span className="absolute left-5 top-1/2 -translate-y-1/2 text-[13px] font-bold text-zinc-500">{currency.symbol}</span>
         <input
           type="text"
           inputMode="decimal"
           value={inputValue}
           placeholder={formatNumber(displayPlaceholder)}
           onChange={handleInputChange}
-          className="w-full bg-[#fcfdfe] border border-slate-200 rounded-2xl pl-12 pr-6 py-5 text-[17px] font-bold text-slate-900 placeholder:text-slate-300 outline-none focus:border-indigo-400 focus:ring-4 focus:ring-indigo-500/5 focus:bg-white transition-all tabular-nums"
+          className="w-full bg-zinc-800 border border-zinc-700 rounded-2xl pl-12 pr-6 py-5 text-[17px] font-bold text-white placeholder:text-zinc-500 outline-none focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 transition-all tabular-nums"
         />
       </div>
     </div>

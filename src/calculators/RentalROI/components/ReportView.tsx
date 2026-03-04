@@ -21,8 +21,7 @@ const ReportView: React.FC<Props> = ({ data, assumptions, currency, user, onLogi
   const [isExporting, setIsExporting] = useState(false);
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' | 'info' } | null>(null);
 
-  const exportPDF = async (userEmail?: string) => {
-    const emailToUse = userEmail || user?.email;
+  const downloadPDF = async () => {
     setIsExporting(true);
     try {
       const { pdfBase64, fileName } = await generateRentalROIPDF({
@@ -32,38 +31,66 @@ const ReportView: React.FC<Props> = ({ data, assumptions, currency, user, onLogi
         projectName: 'Property Investment',
       });
 
-      // Send PDF to user's email
-      if (emailToUse) {
-        const success = await sendPDFByEmail({
-          email: emailToUse,
-          pdfBase64,
-          fileName,
-          reportType: '10-Year Rental ROI',
-        });
-        if (success) {
-          setToast({ message: `Report sent to ${emailToUse}`, type: 'success' });
-        } else {
-          setToast({ message: 'Email delivery failed. Please try again.', type: 'error' });
-        }
+      // Convert base64 to blob and download
+      const byteCharacters = atob(pdfBase64);
+      const byteNumbers = new Array(byteCharacters.length);
+      for (let i = 0; i < byteCharacters.length; i++) {
+        byteNumbers[i] = byteCharacters.charCodeAt(i);
       }
+      const byteArray = new Uint8Array(byteNumbers);
+      const blob = new Blob([byteArray], { type: 'application/pdf' });
+
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = fileName;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+
+      setToast({ message: 'PDF downloaded successfully!', type: 'success' });
     } catch (error) {
-      console.error('PDF export error:', error);
-      setToast({ message: 'Failed to generate report. Please try again.', type: 'error' });
+      console.error('PDF download error:', error);
+      setToast({ message: 'Failed to generate PDF. Please try again.', type: 'error' });
     } finally {
       setIsExporting(false);
     }
   };
 
-  const handleDownload = () => {
-    if (!user) {
-      setShowEmailCollector(true);
-    } else {
-      exportPDF();
+  const sendPDFToEmail = async (userEmail: string) => {
+    setIsExporting(true);
+    try {
+      const { pdfBase64, fileName } = await generateRentalROIPDF({
+        data,
+        assumptions,
+        currency,
+        projectName: 'Property Investment',
+      });
+
+      const success = await sendPDFByEmail({
+        email: userEmail,
+        pdfBase64,
+        fileName,
+        reportType: '10-Year Rental ROI',
+      });
+
+      if (success) {
+        setToast({ message: `Report sent to ${userEmail}`, type: 'success' });
+        setShowEmailCollector(false);
+      } else {
+        setToast({ message: 'Email delivery failed. Please try again.', type: 'error' });
+      }
+    } catch (error) {
+      console.error('PDF email error:', error);
+      setToast({ message: 'Failed to send report. Please try again.', type: 'error' });
+    } finally {
+      setIsExporting(false);
     }
   };
 
   const handleEmailSubmit = (email: string) => {
-    exportPDF(email);
+    sendPDFToEmail(email);
   };
 
   // Calculated metrics
@@ -113,11 +140,11 @@ const ReportView: React.FC<Props> = ({ data, assumptions, currency, user, onLogi
           </svg>
           Back to Calculator
         </button>
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-3">
           <button
-            onClick={handleDownload}
+            onClick={downloadPDF}
             disabled={isExporting}
-            className="bg-indigo-600 text-white px-6 py-2 rounded-xl text-xs font-black uppercase tracking-widest shadow-lg shadow-indigo-200/50 hover:bg-indigo-700 transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+            className="bg-indigo-600 text-white px-5 py-2 rounded-xl text-xs font-black uppercase tracking-widest shadow-lg shadow-indigo-200/50 hover:bg-indigo-700 transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
           >
             {isExporting ? (
               <>
@@ -128,8 +155,23 @@ const ReportView: React.FC<Props> = ({ data, assumptions, currency, user, onLogi
                 <span>Exporting...</span>
               </>
             ) : (
-              <span>Download PDF Report</span>
+              <>
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                </svg>
+                <span>Download PDF</span>
+              </>
             )}
+          </button>
+          <button
+            onClick={() => setShowEmailCollector(true)}
+            disabled={isExporting}
+            className="bg-emerald-600 text-white px-5 py-2 rounded-xl text-xs font-black uppercase tracking-widest shadow-lg shadow-emerald-200/50 hover:bg-emerald-700 transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+          >
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+            </svg>
+            <span>Send to Email</span>
           </button>
         </div>
       </nav>

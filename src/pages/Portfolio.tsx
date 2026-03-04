@@ -4,6 +4,7 @@ import { PortfolioStats } from '../components/PortfolioStats';
 import { PortfolioFilters } from '../components/PortfolioFilters';
 import { PortfolioCharts } from '../components/PortfolioCharts';
 import { ProjectCard } from '../components/ProjectCard';
+import { ComparisonView } from '../components/ui/ComparisonView';
 import { ScenarioAnalysisPage } from './ScenarioAnalysis';
 import type { PortfolioProject } from '../types/portfolio';
 import { generateProjectPDF, generatePortfolioComparisionPDF } from '../utils/pdfExport';
@@ -68,60 +69,82 @@ export function Portfolio() {
 
   if (projects.length === 0) {
     return (
-      <div className="text-center py-12">
-        <div className="inline-block p-8 bg-indigo-50 rounded-lg">
-          <div className="text-4xl mb-3">📊</div>
-          <h3 className="text-2xl font-bold text-gray-900 mb-3">No Projects Yet</h3>
-          <p className="text-gray-600 max-w-sm mb-4">
-            Start by using any calculator to create your first investment project. Your portfolio analytics will appear here.
-          </p>
-          <p className="text-sm text-gray-500">
-            💡 Tip: Save projects from the calculator results to build your portfolio!
-          </p>
+      <div className="min-h-screen bg-[#0a0a0a] text-white -mx-4 md:-mx-10 lg:-mx-20 -my-8 px-6 py-8">
+        <div className="max-w-[100%] mx-auto">
+          <header className="mb-8 flex items-center gap-4">
+            <div className="w-12 h-12 rounded-xl bg-zinc-800 flex items-center justify-center text-2xl">
+              📊
+            </div>
+            <div>
+              <h1 className="text-2xl font-bold text-white">Investment Portfolio</h1>
+              <p className="text-zinc-500 text-sm mt-1">
+                Track, analyze, and compare your investment projects
+              </p>
+            </div>
+          </header>
+
+          <div className="flex items-center justify-center py-20">
+            <div className="text-center p-8 bg-zinc-900 rounded-xl border border-zinc-800">
+              <div className="text-4xl mb-3">📊</div>
+              <h3 className="text-2xl font-bold text-white mb-3">No Projects Yet</h3>
+              <p className="text-zinc-400 max-w-sm mb-4">
+                Start by using any calculator to create your first investment project. Your portfolio analytics will appear here.
+              </p>
+              <p className="text-sm text-zinc-500">
+                💡 Tip: Save projects from the calculator results to build your portfolio!
+              </p>
+            </div>
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Investment Portfolio</h1>
-        <p className="text-gray-600">Track, analyze, and compare your investment projects</p>
-      </div>
+    <div className="min-h-screen bg-[#0a0a0a] text-white -mx-4 md:-mx-10 lg:-mx-20 -my-8 px-6 py-8">
+      <div className="max-w-[100%] mx-auto space-y-6">
+        {/* Header */}
+        <header className="mb-8 flex flex-col xl:flex-row xl:items-center justify-between gap-6">
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 rounded-xl bg-zinc-800 flex items-center justify-center text-2xl">
+              📊
+            </div>
+            <div>
+              <h1 className="text-2xl font-bold text-white">Investment Portfolio</h1>
+              <p className="text-zinc-500 text-sm mt-1">
+                Track, analyze, and compare your investment projects
+              </p>
+            </div>
+          </div>
 
-      {/* Portfolio Summary Stats */}
-      <PortfolioStats projects={projects} />
-
-      {/* Export Section */}
-      <div className="bg-white rounded-lg border border-gray-200 p-4">
-        <h2 className="font-bold text-gray-900 mb-3">📥 Export & Reports</h2>
-        <div className="flex flex-wrap gap-3">
-          <button
-            onClick={() => generatePortfolioComparisionPDF(projects)}
-            disabled={projects.length === 0}
-            className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition font-medium disabled:bg-gray-300 disabled:cursor-not-allowed flex items-center gap-2"
-          >
-            📊 Portfolio PDF Report
-          </button>
-          <button
-            onClick={downloadCSV}
-            disabled={filteredProjects.length === 0}
-            className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition font-medium disabled:bg-gray-300 disabled:cursor-not-allowed flex items-center gap-2"
-          >
-            📥 Download CSV
-          </button>
-          {selectedForComparison.size > 1 && (
+          <div className="flex items-center gap-3 flex-wrap">
             <button
-              onClick={() => generatePortfolioComparisionPDF(projectsForComparison)}
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-medium flex items-center gap-2"
+              onClick={() => generatePortfolioComparisionPDF(projects)}
+              disabled={projects.length === 0}
+              className="px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition font-medium disabled:bg-zinc-700 disabled:cursor-not-allowed flex items-center gap-2 text-sm"
             >
-              ⚖️ Compare ({selectedForComparison.size})
+              📊 Portfolio PDF
             </button>
-          )}
-        </div>
-      </div>
+            <button
+              onClick={downloadCSV}
+              disabled={filteredProjects.length === 0}
+              className="px-4 py-2 bg-zinc-800 text-zinc-300 border border-zinc-700 rounded-lg hover:bg-zinc-700 transition font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 text-sm"
+            >
+              📥 Download CSV
+            </button>
+            {selectedForComparison.size > 1 && (
+              <button
+                onClick={() => generatePortfolioComparisionPDF(projectsForComparison)}
+                className="px-4 py-2 bg-cyan-600 text-white rounded-lg hover:bg-cyan-700 transition font-medium flex items-center gap-2 text-sm"
+              >
+                ⚖️ Compare ({selectedForComparison.size})
+              </button>
+            )}
+          </div>
+        </header>
+
+        {/* Portfolio Summary Stats */}
+        <PortfolioStats projects={projects} />
 
       {/* Filters & Sorting */}
       <PortfolioFilters projects={projects} onFiltersChange={setFilteredProjects} />
@@ -132,13 +155,13 @@ export function Portfolio() {
       {/* Projects Grid */}
       <div className="space-y-4">
         <div className="flex items-center justify-between">
-          <h2 className="text-xl font-bold text-gray-900">
+          <h2 className="text-xl font-bold text-white">
             Projects ({filteredProjects.length})
           </h2>
           {selectedForComparison.size > 0 && (
             <button
               onClick={() => setShowComparisonView(!showComparisonView)}
-              className="px-3 py-1.5 bg-blue-100 text-blue-700 rounded-lg text-sm font-medium hover:bg-blue-200 transition"
+              className="px-3 py-1.5 bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 rounded-lg text-sm font-medium hover:bg-cyan-500/30 transition"
             >
               Comparing {selectedForComparison.size} projects
             </button>
@@ -146,8 +169,8 @@ export function Portfolio() {
         </div>
 
         {filteredProjects.length === 0 ? (
-          <div className="bg-white rounded-lg border border-gray-200 p-8 text-center">
-            <p className="text-gray-600">No projects match your filters</p>
+          <div className="bg-zinc-900 rounded-xl border border-zinc-800 p-8 text-center">
+            <p className="text-zinc-400">No projects match your filters</p>
           </div>
         ) : (
           <>
@@ -157,13 +180,13 @@ export function Portfolio() {
                 <div key={project.id} className="relative">
                   {selectedForComparison.has(project.id) && (
                     <div className="absolute -top-2 -right-2 z-10">
-                      <div className="w-6 h-6 bg-blue-600 text-white rounded-full flex items-center justify-center text-xs font-bold">
+                      <div className="w-6 h-6 bg-emerald-500 text-white rounded-full flex items-center justify-center text-xs font-bold">
                         ✓
                       </div>
                     </div>
                   )}
                   <div
-                    className={`cursor-pointer transition-opacity ${selectedForComparison.has(project.id) ? 'opacity-100 ring-2 ring-blue-500 rounded-lg' : 'opacity-100'}`}
+                    className={`cursor-pointer transition-opacity ${selectedForComparison.has(project.id) ? 'opacity-100 ring-2 ring-emerald-500 rounded-xl' : 'opacity-100'}`}
                     onClick={() => handleToggleComparison(project.id)}
                   >
                     <ProjectCard
@@ -179,41 +202,41 @@ export function Portfolio() {
 
             {/* Comparison View */}
             {showComparisonView && projectsForComparison.length > 1 && (
-              <div className="bg-white rounded-lg border border-gray-200 p-6 mt-6">
-                <h3 className="text-lg font-bold text-gray-900 mb-4">Project Comparison</h3>
+              <div className="bg-zinc-900 rounded-xl border border-zinc-800 p-6 mt-6">
+                <h3 className="text-lg font-bold text-white mb-4">Project Comparison</h3>
                 <div className="overflow-x-auto">
                   <table className="w-full text-sm">
-                    <thead className="bg-gray-50 border-b border-gray-200">
+                    <thead className="bg-zinc-800 border-b border-zinc-700">
                       <tr>
-                        <th className="px-4 py-3 text-left font-semibold text-gray-900">Project</th>
-                        <th className="px-4 py-3 text-right font-semibold text-gray-900">Investment</th>
-                        <th className="px-4 py-3 text-right font-semibold text-gray-900">ROI %</th>
-                        <th className="px-4 py-3 text-right font-semibold text-gray-900">Cash Flow</th>
-                        <th className="px-4 py-3 text-right font-semibold text-gray-900">Break-even</th>
-                        <th className="px-4 py-3 text-right font-semibold text-gray-900">Score</th>
-                        <th className="px-4 py-3 text-right font-semibold text-gray-900">Strategy</th>
+                        <th className="px-4 py-3 text-left font-semibold text-zinc-300">Project</th>
+                        <th className="px-4 py-3 text-right font-semibold text-zinc-300">Investment</th>
+                        <th className="px-4 py-3 text-right font-semibold text-zinc-300">ROI %</th>
+                        <th className="px-4 py-3 text-right font-semibold text-zinc-300">Cash Flow</th>
+                        <th className="px-4 py-3 text-right font-semibold text-zinc-300">Break-even</th>
+                        <th className="px-4 py-3 text-right font-semibold text-zinc-300">Score</th>
+                        <th className="px-4 py-3 text-right font-semibold text-zinc-300">Strategy</th>
                       </tr>
                     </thead>
                     <tbody>
                       {projectsForComparison.map((project, idx) => (
-                        <tr key={project.id} className={idx % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
-                          <td className="px-4 py-3 font-semibold text-gray-900">{project.projectName}</td>
-                          <td className="px-4 py-3 text-right text-gray-700">
+                        <tr key={project.id} className={`border-b border-zinc-800 ${idx % 2 === 0 ? 'bg-zinc-900' : 'bg-zinc-800/50'}`}>
+                          <td className="px-4 py-3 font-semibold text-white">{project.projectName}</td>
+                          <td className="px-4 py-3 text-right text-zinc-400">
                             {(project.totalInvestment / 1_000_000).toFixed(1)}M
                           </td>
-                          <td className={`px-4 py-3 text-right font-semibold ${(project.roi || 0) >= 20 ? 'text-green-600' : 'text-orange-600'}`}>
+                          <td className={`px-4 py-3 text-right font-semibold ${(project.roi || 0) >= 20 ? 'text-emerald-400' : 'text-orange-400'}`}>
                             {(project.roi || 0).toFixed(1)}%
                           </td>
-                          <td className="px-4 py-3 text-right text-gray-700">
+                          <td className="px-4 py-3 text-right text-zinc-400">
                             {(project.avgCashFlow / 1_000).toFixed(0)}K
                           </td>
-                          <td className="px-4 py-3 text-right text-gray-700">{project.breakEvenMonths}m</td>
+                          <td className="px-4 py-3 text-right text-zinc-400">{project.breakEvenMonths}m</td>
                           <td className="px-4 py-3 text-right font-bold">
-                            <span className={`px-2 py-1 rounded ${project.investmentScore >= 85 ? 'bg-green-100 text-green-700' : project.investmentScore >= 70 ? 'bg-blue-100 text-blue-700' : 'bg-orange-100 text-orange-700'}`}>
+                            <span className={`px-2 py-1 rounded ${project.investmentScore >= 85 ? 'bg-emerald-500/20 text-emerald-400' : project.investmentScore >= 70 ? 'bg-cyan-500/20 text-cyan-400' : 'bg-orange-500/20 text-orange-400'}`}>
                               {project.investmentScore}/100
                             </span>
                           </td>
-                          <td className="px-4 py-3 text-right text-gray-700 capitalize">
+                          <td className="px-4 py-3 text-right text-zinc-400 capitalize">
                             {project.strategy || 'N/A'}
                           </td>
                         </tr>
@@ -229,16 +252,16 @@ export function Portfolio() {
 
       {/* Project Details Modal */}
       {selectedProject && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-            <div className="sticky top-0 bg-white border-b border-gray-200 p-6 flex justify-between items-start">
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-zinc-900 rounded-2xl border border-zinc-800 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="sticky top-0 bg-zinc-900 border-b border-zinc-800 p-6 flex justify-between items-start">
               <div>
-                <h3 className="text-2xl font-bold text-gray-900">{selectedProject.projectName}</h3>
-                <p className="text-gray-600">{selectedProject.location}</p>
+                <h3 className="text-2xl font-bold text-white">{selectedProject.projectName}</h3>
+                <p className="text-zinc-400">{selectedProject.location}</p>
               </div>
               <button
                 onClick={() => setSelectedProject(null)}
-                className="text-gray-400 hover:text-gray-600 text-2xl font-bold"
+                className="text-zinc-500 hover:text-white text-2xl font-bold transition"
               >
                 ✕
               </button>
@@ -247,84 +270,84 @@ export function Portfolio() {
             <div className="p-6 space-y-6">
               {/* Key Metrics Grid */}
               <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                <div className="bg-gray-50 p-4 rounded-lg">
-                  <div className="text-xs text-gray-600 font-medium">Investment</div>
-                  <div className="text-2xl font-bold text-gray-900 mt-1">
+                <div className="bg-zinc-800 p-4 rounded-xl border border-zinc-700">
+                  <div className="text-xs text-zinc-500 font-medium">Investment</div>
+                  <div className="text-2xl font-bold text-white mt-1">
                     ${(selectedProject.totalInvestment / 1_000_000).toFixed(1)}M
                   </div>
                 </div>
-                <div className="bg-gray-50 p-4 rounded-lg">
-                  <div className="text-xs text-gray-600 font-medium">ROI</div>
-                  <div className={`text-2xl font-bold mt-1 ${(selectedProject.roi || 0) >= 20 ? 'text-green-600' : 'text-orange-600'}`}>
+                <div className="bg-zinc-800 p-4 rounded-xl border border-zinc-700">
+                  <div className="text-xs text-zinc-500 font-medium">ROI</div>
+                  <div className={`text-2xl font-bold mt-1 ${(selectedProject.roi || 0) >= 20 ? 'text-emerald-400' : 'text-orange-400'}`}>
                     {(selectedProject.roi || 0).toFixed(1)}%
                   </div>
                 </div>
-                <div className="bg-gray-50 p-4 rounded-lg">
-                  <div className="text-xs text-gray-600 font-medium">Score</div>
-                  <div className="text-2xl font-bold text-gray-900 mt-1">
+                <div className="bg-zinc-800 p-4 rounded-xl border border-zinc-700">
+                  <div className="text-xs text-zinc-500 font-medium">Score</div>
+                  <div className="text-2xl font-bold text-white mt-1">
                     {Math.round(selectedProject.investmentScore)}/100
                   </div>
                 </div>
-                <div className="bg-gray-50 p-4 rounded-lg">
-                  <div className="text-xs text-gray-600 font-medium">Annual Cash Flow</div>
-                  <div className="text-2xl font-bold text-gray-900 mt-1">
+                <div className="bg-zinc-800 p-4 rounded-xl border border-zinc-700">
+                  <div className="text-xs text-zinc-500 font-medium">Annual Cash Flow</div>
+                  <div className="text-2xl font-bold text-white mt-1">
                     ${(selectedProject.avgCashFlow / 1_000).toFixed(0)}K
                   </div>
                 </div>
-                <div className="bg-gray-50 p-4 rounded-lg">
-                  <div className="text-xs text-gray-600 font-medium">Break-Even</div>
-                  <div className="text-2xl font-bold text-gray-900 mt-1">
+                <div className="bg-zinc-800 p-4 rounded-xl border border-zinc-700">
+                  <div className="text-xs text-zinc-500 font-medium">Break-Even</div>
+                  <div className="text-2xl font-bold text-white mt-1">
                     {selectedProject.breakEvenMonths} months
                   </div>
                 </div>
-                <div className="bg-gray-50 p-4 rounded-lg">
-                  <div className="text-xs text-gray-600 font-medium">Status</div>
-                  <div className="text-lg font-bold text-gray-900 mt-1 capitalize">
+                <div className="bg-zinc-800 p-4 rounded-xl border border-zinc-700">
+                  <div className="text-xs text-zinc-500 font-medium">Status</div>
+                  <div className="text-lg font-bold text-white mt-1 capitalize">
                     {selectedProject.status || 'Active'}
                   </div>
                 </div>
               </div>
 
               {/* Additional Info */}
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                <div className="text-xs text-gray-600 font-medium mb-2">Score Breakdown</div>
+              <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-xl p-4">
+                <div className="text-xs text-zinc-400 font-medium mb-2">Score Breakdown</div>
                 <div className="grid grid-cols-4 gap-2 text-center">
                   <div>
-                    <div className="text-sm font-bold text-gray-900">
+                    <div className="text-sm font-bold text-white">
                       {Math.round((selectedProject.roi_score || 0 / 5) * 100)}%
                     </div>
-                    <div className="text-xs text-gray-600">ROI</div>
+                    <div className="text-xs text-zinc-500">ROI</div>
                   </div>
                   <div>
-                    <div className="text-sm font-bold text-gray-900">
+                    <div className="text-sm font-bold text-white">
                       {Math.round((selectedProject.cashflow_score || 0 / 3) * 100)}%
                     </div>
-                    <div className="text-xs text-gray-600">Cash Flow</div>
+                    <div className="text-xs text-zinc-500">Cash Flow</div>
                   </div>
                   <div>
-                    <div className="text-sm font-bold text-gray-900">
+                    <div className="text-sm font-bold text-white">
                       {Math.round((selectedProject.stability_score || 0 / 2) * 100)}%
                     </div>
-                    <div className="text-xs text-gray-600">Stability</div>
+                    <div className="text-xs text-zinc-500">Stability</div>
                   </div>
                   <div>
-                    <div className="text-sm font-bold text-gray-900">
+                    <div className="text-sm font-bold text-white">
                       {Math.round((selectedProject.location_score || 0) * 100)}%
                     </div>
-                    <div className="text-xs text-gray-600">Location</div>
+                    <div className="text-xs text-zinc-500">Location</div>
                   </div>
                 </div>
               </div>
 
-              <div className="text-xs text-gray-500 border-t border-gray-200 pt-4">
+              <div className="text-xs text-zinc-500 border-t border-zinc-800 pt-4">
                 Created: {new Date(selectedProject.createdAt).toLocaleDateString()}
               </div>
 
               {/* Action Buttons */}
-              <div className="flex gap-3 border-t border-gray-200 pt-4">
+              <div className="flex gap-3 border-t border-zinc-800 pt-4">
                 <button
                   onClick={() => setSelectedProject(null)}
-                  className="flex-1 px-4 py-2 text-gray-700 border border-gray-300 rounded hover:bg-gray-50 transition font-medium"
+                  className="flex-1 px-4 py-2 text-zinc-300 border border-zinc-700 rounded-lg hover:bg-zinc-800 transition font-medium"
                 >
                   Close
                 </button>
@@ -333,7 +356,7 @@ export function Portfolio() {
                     generateProjectPDF(selectedProject);
                     setSelectedProject(null);
                   }}
-                  className="flex-1 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition font-medium"
+                  className="flex-1 px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition font-medium"
                 >
                   Download PDF
                 </button>
@@ -342,7 +365,7 @@ export function Portfolio() {
                     setShowDeleteConfirm(selectedProject.id);
                     setSelectedProject(null);
                   }}
-                  className="flex-1 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition font-medium"
+                  className="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition font-medium"
                 >
                   Delete
                 </button>
@@ -354,22 +377,22 @@ export function Portfolio() {
 
       {/* Delete Confirmation Modal */}
       {showDeleteConfirm && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg p-6 max-w-sm w-full">
-            <h3 className="text-lg font-bold text-gray-900 mb-2">Delete Project?</h3>
-            <p className="text-gray-600 mb-6">
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-zinc-900 rounded-2xl border border-zinc-800 p-6 max-w-sm w-full">
+            <h3 className="text-lg font-bold text-white mb-2">Delete Project?</h3>
+            <p className="text-zinc-400 mb-6">
               This action cannot be undone. The project and all its data will be permanently deleted.
             </p>
             <div className="flex gap-3">
               <button
                 onClick={() => setShowDeleteConfirm(null)}
-                className="flex-1 px-4 py-2 text-gray-700 border border-gray-300 rounded hover:bg-gray-50 transition font-medium"
+                className="flex-1 px-4 py-2 text-zinc-300 border border-zinc-700 rounded-lg hover:bg-zinc-800 transition font-medium"
               >
                 Cancel
               </button>
               <button
                 onClick={() => handleDeleteProject(showDeleteConfirm)}
-                className="flex-1 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition font-medium"
+                className="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition font-medium"
               >
                 Delete
               </button>
@@ -377,6 +400,14 @@ export function Portfolio() {
           </div>
         </div>
       )}
+
+      {/* Comparison Modal */}
+      <ComparisonView
+        isOpen={showComparisonView}
+        onClose={() => setShowComparisonView(false)}
+        calculatorType="rental-roi"
+      />
+      </div>
     </div>
   );
 }

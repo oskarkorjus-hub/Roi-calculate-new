@@ -38,14 +38,14 @@ export function InputField({
   return (
     <div className="space-y-2">
       <div className="flex items-center gap-2">
-        <label className="block text-sm font-semibold text-slate-900">
+        <label className="block text-sm font-medium text-zinc-300">
           {icon && <span className="mr-1">{icon}</span>}
           {label}
-          {required && <span className="text-red-500">*</span>}
+          {required && <span className="text-red-400">*</span>}
         </label>
         {helperText && <Tooltip text={helperText} />}
       </div>
-      
+
       <div className="relative">
         <input
           type={type}
@@ -58,31 +58,26 @@ export function InputField({
           max={max}
           inputMode={inputMode}
           className={`
-            w-full px-4 py-3 rounded-xl border-2 transition-all font-medium
-            text-slate-900 placeholder-slate-400
+            w-full px-4 py-3 rounded-lg border transition-all font-medium
+            text-white placeholder-zinc-500
             ${
               error
-                ? 'border-red-500 focus:border-red-600 focus:ring-4 focus:ring-red-500/10'
-                : 'border-slate-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10'
+                ? 'border-red-500 focus:border-red-400 focus:ring-2 focus:ring-red-500/20'
+                : 'border-zinc-700 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20'
             }
-            ${disabled ? 'bg-slate-50 text-slate-500 cursor-not-allowed' : 'bg-white'}
+            ${disabled ? 'bg-zinc-800/50 text-zinc-500 cursor-not-allowed' : 'bg-zinc-800'}
             outline-none
           `}
         />
-        {unit && !disabled && (
-          <span className="absolute right-4 top-1/2 -translate-y-1/2 text-sm font-semibold text-slate-400 pointer-events-none">
-            {unit}
-          </span>
-        )}
-        {unit && disabled && (
-          <span className="absolute right-4 top-1/2 -translate-y-1/2 text-sm font-semibold text-slate-300 pointer-events-none">
+        {unit && (
+          <span className={`absolute right-4 top-1/2 -translate-y-1/2 text-sm font-medium pointer-events-none ${disabled ? 'text-zinc-600' : 'text-zinc-400'}`}>
             {unit}
           </span>
         )}
       </div>
-      
+
       {error && (
-        <p className="text-sm text-red-600 font-medium">{error}</p>
+        <p className="text-sm text-red-400 font-medium">{error}</p>
       )}
     </div>
   );

@@ -1,7 +1,9 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import { AdvancedSection } from '../../components/AdvancedSection';
 import { SaveToPortfolioButton } from '../../components/SaveToPortfolioButton';
 import { Toast } from '../../components/ui/Toast';
+import { ReportPreviewModal } from '../../components/ui/ReportPreviewModal';
+import { generateIRRReport } from '../../hooks/useReportGenerator';
 import { CashFlowInputs } from './components/CashFlowInputs';
 import { IRRResults } from './components/IRRResults';
 
@@ -20,6 +22,10 @@ interface IRRResult {
   profitabilityIndex?: number;
 }
 
+type CurrencyType = 'IDR' | 'USD' | 'AUD' | 'EUR' | 'GBP' | 'INR' | 'CNY' | 'AED' | 'RUB';
+
+const symbols: Record<CurrencyType, string> = { IDR: 'Rp', USD: '$', AUD: 'A$', EUR: '€', GBP: '£', INR: '₹', CNY: '¥', AED: 'د.إ', RUB: '₽' };
+
 const INITIAL_CASH_FLOWS: CashFlow[] = [
   { year: 0, amount: -1_000_000 },
   { year: 1, amount: 200_000 },
@@ -30,13 +36,14 @@ const INITIAL_CASH_FLOWS: CashFlow[] = [
 ];
 
 export function IRRCalculator() {
-  const [currency] = useState<'IDR' | 'USD' | 'AUD' | 'EUR'>('USD');
+  const [currency, setCurrency] = useState<CurrencyType>('USD');
   const [discountRate, setDiscountRate] = useState(10);
   const [cashFlows, setCashFlows] = useState<CashFlow[]>(INITIAL_CASH_FLOWS);
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [reinvestmentRate, setReinvestmentRate] = useState(10);
   const [alternativeDiscountRate, setAlternativeDiscountRate] = useState(12);
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
+  const [showReportModal, setShowReportModal] = useState(false);
 
   const calculateNPV = (flows: CashFlow[], rate: number) => {
     return flows.reduce((npv, cf) => {
@@ -69,15 +76,15 @@ export function IRRCalculator() {
 
   const calculateMIRR = (flows: CashFlow[], financeRate: number, reinvestRate: number): number => {
     const maxYear = Math.max(...flows.map(cf => cf.year));
-    
+
     let positiveFlows = 0;
     let negativeFlows = 0;
 
     for (const cf of flows) {
-      const discountedNegative = cf.amount < 0 
+      const discountedNegative = cf.amount < 0
         ? cf.amount / Math.pow(1 + financeRate / 100, cf.year)
         : 0;
-      const compoundedPositive = cf.amount > 0 
+      const compoundedPositive = cf.amount > 0
         ? cf.amount * Math.pow(1 + reinvestRate / 100, maxYear - cf.year)
         : 0;
 
@@ -86,7 +93,7 @@ export function IRRCalculator() {
     }
 
     if (negativeFlows === 0) return 0;
-    
+
     const mirr = (Math.pow(positiveFlows / Math.abs(negativeFlows), 1 / maxYear) - 1) * 100;
     return isNaN(mirr) ? 0 : mirr;
   };
@@ -135,6 +142,27 @@ export function IRRCalculator() {
     profitabilityIndex,
   };
 
+  const symbol = symbols[currency];
+
+  // Generate report data
+  const reportData = useMemo(() => {
+    return generateIRRReport(
+      {
+        initialInvestment: totalInvested,
+        cashFlows: cashFlows.filter(cf => cf.year > 0).map(cf => ({ year: cf.year, amount: cf.amount })),
+        discountRate,
+      },
+      {
+        irr: result.irr,
+        npv: result.npv,
+        mirr: result.mirr,
+        paybackPeriod: result.paybackPeriod,
+        profitabilityIndex: result.profitabilityIndex || 0,
+      },
+      symbol
+    );
+  }, [cashFlows, discountRate, result, symbol, totalInvested]);
+
   const handleCashFlowChange = (index: number, field: keyof CashFlow, value: string) => {
     const newFlows = [...cashFlows];
     newFlows[index] = {
@@ -161,7 +189,7 @@ export function IRRCalculator() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-background text-text-primary selection:bg-primary-light selection:text-primary -mx-4 md:-mx-10 lg:-mx-20 -my-8 px-6 py-8">
+    <div className="min-h-screen bg-[#0a0a0a] text-white -mx-4 md:-mx-10 lg:-mx-20 -my-8 px-6 py-8">
       {toast && (
         <Toast
           message={toast.message}
@@ -170,29 +198,62 @@ export function IRRCalculator() {
         />
       )}
 
+      <ReportPreviewModal
+        isOpen={showReportModal}
+        onClose={() => setShowReportModal(false)}
+        reportData={reportData}
+      />
+
       <div className="max-w-[100%] mx-auto">
         {/* Header */}
         <header className="mb-8 flex flex-col xl:flex-row xl:items-center justify-between gap-6">
           <div className="flex items-center gap-4">
-            <div className="bg-primary p-2.5 rounded-lg shadow-sm">
-              <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-              </svg>
+            <div className="w-12 h-12 rounded-xl bg-zinc-800 flex items-center justify-center text-2xl">
+              📈
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-text-primary tracking-tight">IRR Calculator</h1>
-              <p className="text-text-muted text-xs mt-1 max-w-md">
+              <h1 className="text-2xl font-bold text-white">IRR Calculator</h1>
+              <p className="text-zinc-500 text-sm mt-1">
                 Calculate Internal Rate of Return and NPV for your investment project
               </p>
             </div>
           </div>
 
-          <div className="flex items-center gap-4 flex-wrap">
+          <div className="flex items-center gap-3 flex-wrap">
+            <div className="flex items-center bg-zinc-800 px-4 py-2 rounded-lg border border-zinc-700">
+              <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest mr-3">Currency</span>
+              <select
+                value={currency}
+                onChange={(e) => setCurrency(e.target.value as CurrencyType)}
+                className="bg-transparent text-white text-xs font-bold focus:outline-none cursor-pointer"
+              >
+                <option value="IDR" className="bg-zinc-800 text-white">Rp IDR</option>
+                <option value="USD" className="bg-zinc-800 text-white">$ USD</option>
+                <option value="EUR" className="bg-zinc-800 text-white">€ EUR</option>
+                <option value="AUD" className="bg-zinc-800 text-white">A$ AUD</option>
+                <option value="GBP" className="bg-zinc-800 text-white">£ GBP</option>
+                <option value="INR" className="bg-zinc-800 text-white">₹ INR</option>
+                <option value="CNY" className="bg-zinc-800 text-white">¥ CNY</option>
+                <option value="AED" className="bg-zinc-800 text-white">د.إ AED</option>
+                <option value="RUB" className="bg-zinc-800 text-white">₽ RUB</option>
+              </select>
+            </div>
+
             <button
               onClick={handleReset}
-              className="px-5 py-2 rounded-lg text-xs font-bold shadow-sm bg-red-500 text-white hover:bg-red-600 transition-all active:scale-95"
+              className="px-4 py-2 rounded-lg text-sm font-medium bg-zinc-800 text-zinc-300 border border-zinc-700 hover:bg-zinc-700 transition-all"
             >
               Reset
+            </button>
+
+            <button
+              onClick={() => setShowReportModal(true)}
+              className="px-4 py-2 rounded-lg text-sm font-medium bg-cyan-600 text-white hover:bg-cyan-700 transition-all flex items-center gap-2"
+            >
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+              PDF Report
             </button>
 
             <SaveToPortfolioButton
@@ -213,68 +274,82 @@ export function IRRCalculator() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
           <div className="lg:col-span-9 space-y-6">
             {/* Description */}
-            <div className="bg-white rounded-lg border border-gray-200 p-6">
-              <h2 className="text-xl font-bold text-gray-900 mb-4">IRR (Internal Rate of Return)</h2>
-              <p className="text-sm text-gray-600 mb-3">
+            <div className="rounded-xl border border-zinc-800 bg-zinc-900 p-6">
+              <div className="mb-6 flex items-center border-b border-zinc-800 pb-4">
+                <div className="flex items-center gap-2">
+                  <span className="material-symbols-outlined text-emerald-400">info</span>
+                  <h2 className="text-xl font-bold text-white">IRR (Internal Rate of Return)</h2>
+                </div>
+              </div>
+              <p className="text-sm text-zinc-400 mb-3">
                 IRR is the discount rate that makes NPV = 0. It represents the annualized return on your investment.
               </p>
-              <p className="text-sm text-gray-600">
+              <p className="text-sm text-zinc-400">
                 NPV at {discountRate}% discount rate shows the present value of all future cash flows.
               </p>
             </div>
 
             {/* Settings */}
-            <div className="bg-white rounded-lg border border-gray-200 p-6 space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Discount Rate for NPV Calculation (%)
-                </label>
-                <input
-                  type="number"
-                  value={discountRate}
-                  onChange={(e) => setDiscountRate(parseFloat(e.target.value) || 0)}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                />
-                <p className="text-xs text-gray-500 mt-2">Typically 8-12%. Higher = more conservative.</p>
+            <div className="rounded-xl border border-zinc-800 bg-zinc-900 p-6">
+              <div className="mb-6 flex items-center border-b border-zinc-800 pb-4">
+                <div className="flex items-center gap-2">
+                  <span className="material-symbols-outlined text-emerald-400">tune</span>
+                  <h2 className="text-xl font-bold text-white">Settings</h2>
+                </div>
               </div>
 
-              <AdvancedSection
-                title="Advanced Assumptions"
-                icon="🔧"
-                isOpen={showAdvanced}
-                onToggle={() => setShowAdvanced(!showAdvanced)}
-                description="MIRR and sensitivity analysis"
-              >
-                <div className="space-y-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Reinvestment Rate for MIRR (%)
-                    </label>
-                    <input
-                      type="number"
-                      step={0.1}
-                      value={reinvestmentRate}
-                      onChange={(e) => setReinvestmentRate(parseFloat(e.target.value) || 0)}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                    />
-                    <p className="text-xs text-gray-500 mt-1">Rate at which positive cash flows are reinvested</p>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Alternative Discount Rate (%)
-                    </label>
-                    <input
-                      type="number"
-                      step={0.1}
-                      value={alternativeDiscountRate}
-                      onChange={(e) => setAlternativeDiscountRate(parseFloat(e.target.value) || 0)}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                    />
-                    <p className="text-xs text-gray-500 mt-1">Scenario analysis with different discount rate</p>
-                  </div>
+              <div className="space-y-6">
+                <div className="space-y-3">
+                  <label className="flex items-center gap-1.5 text-sm font-medium text-zinc-400">
+                    Discount Rate for NPV Calculation (%)
+                  </label>
+                  <input
+                    type="number"
+                    value={discountRate}
+                    onChange={(e) => setDiscountRate(parseFloat(e.target.value) || 0)}
+                    className="w-full bg-zinc-800 border border-zinc-700 rounded-2xl px-6 py-4 text-[16px] font-bold text-white placeholder:text-zinc-500 outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all tabular-nums"
+                  />
+                  <p className="text-xs text-zinc-500">Typically 8-12%. Higher = more conservative.</p>
                 </div>
-              </AdvancedSection>
+
+                <AdvancedSection
+                  title="Advanced Assumptions"
+                  icon="🔧"
+                  isOpen={showAdvanced}
+                  onToggle={() => setShowAdvanced(!showAdvanced)}
+                  description="MIRR and sensitivity analysis"
+                >
+                  <div className="space-y-6 pt-4">
+                    <div className="space-y-3">
+                      <label className="flex items-center gap-1.5 text-sm font-medium text-zinc-400">
+                        Reinvestment Rate for MIRR (%)
+                      </label>
+                      <input
+                        type="number"
+                        step={0.1}
+                        value={reinvestmentRate}
+                        onChange={(e) => setReinvestmentRate(parseFloat(e.target.value) || 0)}
+                        className="w-full bg-zinc-800 border border-zinc-700 rounded-2xl px-6 py-4 text-[16px] font-bold text-white placeholder:text-zinc-500 outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all tabular-nums"
+                      />
+                      <p className="text-xs text-zinc-500">Rate at which positive cash flows are reinvested</p>
+                    </div>
+
+                    <div className="space-y-3">
+                      <label className="flex items-center gap-1.5 text-sm font-medium text-zinc-400">
+                        Alternative Discount Rate (%)
+                      </label>
+                      <input
+                        type="number"
+                        step={0.1}
+                        value={alternativeDiscountRate}
+                        onChange={(e) => setAlternativeDiscountRate(parseFloat(e.target.value) || 0)}
+                        className="w-full bg-zinc-800 border border-zinc-700 rounded-2xl px-6 py-4 text-[16px] font-bold text-white placeholder:text-zinc-500 outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all tabular-nums"
+                      />
+                      <p className="text-xs text-zinc-500">Scenario analysis with different discount rate</p>
+                    </div>
+                  </div>
+                </AdvancedSection>
+              </div>
             </div>
 
             {/* Cash Flows */}
@@ -288,16 +363,23 @@ export function IRRCalculator() {
           </div>
 
           <div className="lg:col-span-3">
-            <div className="bg-indigo-50 rounded-lg shadow-sm p-6 border border-indigo-200 sticky top-24">
-              <h3 className="text-xl font-bold text-gray-900 mb-6">Results</h3>
-              <IRRResults
-                result={result}
-                discountRate={discountRate}
-                alternativeDiscountRate={alternativeDiscountRate}
-                npvAlt={npvAlt}
-                showAdvanced={showAdvanced}
-                reinvestmentRate={reinvestmentRate}
-              />
+            <div className="sticky top-24 flex flex-col gap-4">
+              <div className="bg-zinc-900 rounded-xl border border-zinc-800 p-6">
+                <div className="mb-4 flex items-center border-b border-zinc-800 pb-4">
+                  <div className="flex items-center gap-2">
+                    <span className="material-symbols-outlined text-emerald-400">analytics</span>
+                    <h3 className="text-lg font-bold text-white">Results</h3>
+                  </div>
+                </div>
+                <IRRResults
+                  result={result}
+                  discountRate={discountRate}
+                  alternativeDiscountRate={alternativeDiscountRate}
+                  npvAlt={npvAlt}
+                  showAdvanced={showAdvanced}
+                  reinvestmentRate={reinvestmentRate}
+                />
+              </div>
             </div>
           </div>
         </div>
