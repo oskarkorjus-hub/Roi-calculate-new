@@ -1,48 +1,76 @@
 @import "tailwindcss";
 
 @theme {
-  /* Unified light theme - slate/indigo palette */
-  --color-primary: #4f46e5;
-  --color-primary-dark: #4338ca;
-  --color-primary-light: #eef2ff;
+  /* Enterprise Dark Theme - Emerald/Cyan accent for finance */
+  --color-primary: #10b981;
+  --color-primary-dark: #059669;
+  --color-primary-light: #d1fae5;
 
-  --color-accent: #10b981;
-  --color-accent-dark: #059669;
-  --color-accent-light: #d1fae5;
+  --color-accent: #06b6d4;
+  --color-accent-dark: #0891b2;
+  --color-accent-light: #cffafe;
 
-  --color-background: #f1f5f9;
-  --color-surface: #ffffff;
-  --color-surface-alt: #f8fafc;
+  --color-background: #0a0a0a;
+  --color-surface: #18181b;
+  --color-surface-alt: #27272a;
 
-  --color-border: #e2e8f0;
-  --color-border-light: #f1f5f9;
+  --color-border: #3f3f46;
+  --color-border-light: #27272a;
 
-  --color-text-primary: #0f172a;
-  --color-text-secondary: #475569;
-  --color-text-muted: #94a3b8;
+  --color-text-primary: #fafafa;
+  --color-text-secondary: #a1a1aa;
+  --color-text-muted: #71717a;
 
   --color-negative: #ef4444;
-  --color-negative-light: #fee2e2;
+  --color-negative-light: #450a0a;
   --color-warning: #f97316;
-  --color-warning-light: #ffedd5;
+  --color-warning-light: #431407;
 
-  --font-family-display: "Inter", sans-serif;
+  --font-family-display: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 
-/* Custom scrollbar - light theme */
+/* Base styles */
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  scroll-padding-top: 80px;
+}
+
+body {
+  background-color: #0a0a0a;
+  color: #fafafa;
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  overflow-x: hidden;
+}
+
+::selection {
+  background-color: #10b981;
+  color: #ffffff;
+}
+
+/* Focus visible styles for accessibility */
+:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px #10b981, 0 0 0 4px rgba(16, 185, 129, 0.3);
+}
+
+/* Custom scrollbar - dark theme */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
 }
 ::-webkit-scrollbar-track {
-  background: #f1f5f9;
+  background: #18181b;
 }
 ::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
+  background: #3f3f46;
   border-radius: 4px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #4f46e5;
+  background: #52525b;
 }
 
 /* Material symbols styling */
@@ -50,20 +78,240 @@
   font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
 }
 
-/* Date input styling - light theme */
-input[type="date"]::-webkit-calendar-picker-indicator {
-  cursor: pointer;
+/* ============================================
+ * Glass Morphism Utilities
+ * ============================================ */
+.glass {
+  background: rgba(24, 24, 27, 0.5);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(63, 63, 70, 0.5);
 }
 
-/* Radio card styles */
+.glass-card {
+  background: rgba(24, 24, 27, 0.8);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(63, 63, 70, 0.5);
+  border-radius: 1rem;
+}
+
+.glass-light {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* ============================================
+ * Gradient Utilities
+ * ============================================ */
+.gradient-text {
+  background: linear-gradient(135deg, #10b981 0%, #06b6d4 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.gradient-text-gold {
+  background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 50%, #d97706 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.gradient-border {
+  position: relative;
+  background: linear-gradient(#0a0a0a, #0a0a0a) padding-box,
+              linear-gradient(135deg, rgba(16, 185, 129, 0.5), rgba(6, 182, 212, 0.5)) border-box;
+  border: 1px solid transparent;
+}
+
+/* ============================================
+ * Glow Effects
+ * ============================================ */
+.glow-emerald {
+  box-shadow: 0 0 20px rgba(16, 185, 129, 0.3), 0 0 40px rgba(16, 185, 129, 0.1);
+}
+
+.glow-cyan {
+  box-shadow: 0 0 20px rgba(6, 182, 212, 0.3), 0 0 40px rgba(6, 182, 212, 0.1);
+}
+
+.glow-gradient {
+  box-shadow:
+    0 0 20px rgba(16, 185, 129, 0.2),
+    0 0 40px rgba(6, 182, 212, 0.15),
+    0 0 60px rgba(16, 185, 129, 0.1);
+}
+
+/* ============================================
+ * Animation Utilities
+ * ============================================ */
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 20px rgba(16, 185, 129, 0.3); }
+  50% { box-shadow: 0 0 40px rgba(16, 185, 129, 0.6); }
+}
+
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+@keyframes gradient-shift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes spin-slow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.animate-float {
+  animation: float 4s ease-in-out infinite;
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+.animate-shimmer {
+  animation: shimmer 2s linear infinite;
+  background-size: 200% 100%;
+}
+
+.animate-gradient {
+  animation: gradient-shift 3s ease infinite;
+  background-size: 200% 200%;
+}
+
+.animate-spin-slow {
+  animation: spin-slow 20s linear infinite;
+}
+
+/* ============================================
+ * Interactive Utilities
+ * ============================================ */
+.card-lift {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.card-lift:hover {
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 0 20px 40px -15px rgba(16, 185, 129, 0.15), 0 10px 20px -10px rgba(0, 0, 0, 0.4);
+}
+
+.btn-press {
+  transition: transform 0.15s ease;
+}
+
+.btn-press:hover {
+  transform: translateY(-2px);
+}
+
+.btn-press:active {
+  transform: translateY(1px);
+}
+
+.link-underline {
+  position: relative;
+}
+
+.link-underline::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: linear-gradient(90deg, #10b981, #06b6d4);
+  transition: width 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.link-underline:hover::after {
+  width: 100%;
+}
+
+/* ============================================
+ * Noise Texture Overlay
+ * ============================================ */
+.noise-overlay {
+  position: relative;
+}
+
+.noise-overlay::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  opacity: 0.03;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+  z-index: 1;
+}
+
+/* ============================================
+ * Elevation Levels
+ * ============================================ */
+.elevation-0 { background-color: #0a0a0a; }
+.elevation-1 { background-color: #18181b; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2); }
+.elevation-2 { background-color: #27272a; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.25); }
+.elevation-3 { background-color: #3f3f46; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3); }
+
+/* ============================================
+ * Focus Glow States
+ * ============================================ */
+.focus-glow:focus {
+  outline: none;
+  box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.25), 0 0 20px rgba(16, 185, 129, 0.2);
+  border-color: rgba(16, 185, 129, 0.5);
+}
+
+/* ============================================
+ * Inner Glow for Cards
+ * ============================================ */
+.inner-glow {
+  box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.05);
+}
+
+/* ============================================
+ * Text Glow
+ * ============================================ */
+.text-glow {
+  text-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+}
+
+.text-glow-emerald {
+  text-shadow: 0 0 20px rgba(16, 185, 129, 0.5);
+}
+
+.text-glow-cyan {
+  text-shadow: 0 0 20px rgba(6, 182, 212, 0.5);
+}
+
+/* Radio card styles - dark theme */
 .radio-card-input:checked + .radio-card-content {
-  border-color: #4f46e5;
-  background-color: rgba(79, 70, 229, 0.05);
+  border-color: #10b981;
+  background-color: rgba(16, 185, 129, 0.1);
 }
+
 .radio-card-input:checked + .radio-card-content .radio-indicator {
-  border-color: #4f46e5;
-  background-color: #4f46e5;
+  border-color: #10b981;
+  background-color: #10b981;
 }
+
 .radio-card-input:checked + .radio-card-content .radio-indicator::after {
   opacity: 1;
+}
+
+/* Date input styling - dark theme */
+input[type="date"]::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+  filter: invert(1);
 }
