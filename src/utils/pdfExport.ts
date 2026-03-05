@@ -166,55 +166,338 @@ export function generatePortfolioComparisionPDF(
   projects: PortfolioProject[]
 ) {
   const doc = new jsPDF({
-    orientation: 'landscape',
+    orientation: 'portrait',
     unit: 'mm',
     format: 'a4',
   });
 
   const pageWidth = doc.internal.pageSize.getWidth();
-  let yPosition = 20;
+  const pageHeight = doc.internal.pageSize.getHeight();
+  const margin = 20;
+  const contentWidth = pageWidth - margin * 2;
 
-  // Title
-  doc.setFontSize(20);
-  doc.setTextColor(79, 70, 229);
-  doc.text('Portfolio Comparison Report', 20, yPosition);
-  yPosition += 10;
+  // Enterprise color palette
+  const COLORS = {
+    primary: { r: 16, g: 185, b: 129 },      // emerald-500
+    primaryDark: { r: 5, g: 150, b: 105 },   // emerald-600
+    dark: { r: 24, g: 24, b: 27 },           // zinc-900
+    gray: { r: 113, g: 113, b: 122 },        // zinc-500
+    lightGray: { r: 244, g: 244, b: 245 },   // zinc-100
+    white: { r: 255, g: 255, b: 255 },
+    success: { r: 22, g: 163, b: 74 },       // green-600
+    warning: { r: 217, g: 119, b: 6 },       // amber-600
+    danger: { r: 220, g: 38, b: 38 },        // red-600
+  };
 
-  doc.setFontSize(10);
-  doc.setTextColor(107, 114, 128);
-  doc.text(`Generated: ${new Date().toLocaleString()}`, 20, yPosition);
-  yPosition += 10;
+  let currentPage = 1;
+  let y = 0;
 
-  // Summary Stats
+  // Helper: Draw gradient header
+  const drawHeader = () => {
+    // Header background with gradient effect (simulate with rectangles)
+    const headerHeight = 35;
+    for (let i = 0; i < headerHeight; i++) {
+      const ratio = i / headerHeight;
+      const r = Math.round(COLORS.primary.r + (COLORS.primaryDark.r - COLORS.primary.r) * ratio);
+      const g = Math.round(COLORS.primary.g + (COLORS.primaryDark.g - COLORS.primary.g) * ratio);
+      const b = Math.round(COLORS.primary.b + (COLORS.primaryDark.b - COLORS.primary.b) * ratio);
+      doc.setFillColor(r, g, b);
+      doc.rect(0, i, pageWidth, 1, 'F');
+    }
+
+    // Logo text
+    doc.setFontSize(18);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(COLORS.white.r, COLORS.white.g, COLORS.white.b);
+    doc.text('ROI CALCULATE', margin, 22);
+
+    // Report type badge
+    doc.setFontSize(9);
+    doc.setFont('helvetica', 'normal');
+    doc.setFillColor(255, 255, 255);
+    doc.roundedRect(pageWidth - margin - 45, 12, 45, 12, 2, 2, 'F');
+    doc.setTextColor(COLORS.primaryDark.r, COLORS.primaryDark.g, COLORS.primaryDark.b);
+    doc.text('Portfolio Report', pageWidth - margin - 40, 20);
+
+    return headerHeight + 10;
+  };
+
+  // Helper: Add footer to all pages
+  const addFooters = () => {
+    const totalPages = doc.getNumberOfPages();
+    for (let i = 1; i <= totalPages; i++) {
+      doc.setPage(i);
+      doc.setDrawColor(COLORS.lightGray.r, COLORS.lightGray.g, COLORS.lightGray.b);
+      doc.line(margin, pageHeight - 15, pageWidth - margin, pageHeight - 15);
+      doc.setFontSize(8);
+      doc.setTextColor(COLORS.gray.r, COLORS.gray.g, COLORS.gray.b);
+      doc.text('ROI Calculate | roicalculate.com', margin, pageHeight - 10);
+      doc.text(`Page ${i} of ${totalPages}`, pageWidth - margin, pageHeight - 10, { align: 'right' });
+    }
+  };
+
+  // Calculate portfolio stats
   const totalInvestment = projects.reduce((sum, p) => sum + (p.totalInvestment || 0), 0);
+  const totalCashFlow = projects.reduce((sum, p) => sum + (p.avgCashFlow || 0), 0);
   const avgROI = projects.length > 0
     ? projects.reduce((sum, p) => sum + (p.roi || 0), 0) / projects.length
     : 0;
+  const avgScore = projects.length > 0
+    ? projects.reduce((sum, p) => sum + (p.investmentScore || 0), 0) / projects.length
+    : 0;
+
+  // Get portfolio grade
+  const getPortfolioGrade = (score: number) => {
+    if (score >= 85) return { grade: 'A+', label: 'Excellent', color: COLORS.success };
+    if (score >= 75) return { grade: 'A', label: 'Very Good', color: COLORS.success };
+    if (score >= 65) return { grade: 'B+', label: 'Good', color: COLORS.primary };
+    if (score >= 55) return { grade: 'B', label: 'Above Average', color: COLORS.warning };
+    if (score >= 45) return { grade: 'C', label: 'Average', color: COLORS.warning };
+    return { grade: 'D', label: 'Needs Review', color: COLORS.danger };
+  };
+
+  const portfolioGrade = getPortfolioGrade(avgScore);
+
+  // === PAGE 1: Cover & Summary ===
+  y = drawHeader();
+
+  // Title section
+  doc.setFontSize(24);
+  doc.setFont('helvetica', 'bold');
+  doc.setTextColor(COLORS.dark.r, COLORS.dark.g, COLORS.dark.b);
+  doc.text('Investment Portfolio Analysis', margin, y + 10);
 
   doc.setFontSize(11);
-  doc.setTextColor(0, 0, 0);
-  doc.text(`Total Projects: ${projects.length}`, 20, yPosition);
-  doc.text(`Total Investment: ${formatCurrency(totalInvestment)}`, 80, yPosition);
-  doc.text(`Average ROI: ${avgROI.toFixed(1)}%`, 140, yPosition);
-  yPosition += 10;
+  doc.setFont('helvetica', 'normal');
+  doc.setTextColor(COLORS.gray.r, COLORS.gray.g, COLORS.gray.b);
+  doc.text(`${projects.length} Projects | Generated ${new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}`, margin, y + 20);
 
-  // Comparison Table
-  const tableData = [
-    ['Project Name', 'Location', 'Investment', 'ROI %', 'Cash Flow', 'Break-Even', 'Score'],
-    ...projects.map(p => [
-      (p.projectName || 'Unnamed').substring(0, 20),
-      (p.location || 'N/A').substring(0, 15),
-      formatCurrency(p.totalInvestment || 0),
-      `${(p.roi || 0).toFixed(1)}%`,
-      formatCurrency(p.avgCashFlow || 0),
-      `${p.breakEvenMonths || 0}m`,
-      `${Math.round(p.investmentScore || 0)}/100`,
-    ]),
+  y += 35;
+
+  // Portfolio Grade Card
+  const gradeCardX = margin;
+  const gradeCardY = y;
+  const gradeCardWidth = 60;
+  const gradeCardHeight = 50;
+
+  doc.setFillColor(portfolioGrade.color.r, portfolioGrade.color.g, portfolioGrade.color.b);
+  doc.roundedRect(gradeCardX, gradeCardY, gradeCardWidth, gradeCardHeight, 3, 3, 'F');
+
+  doc.setFontSize(32);
+  doc.setFont('helvetica', 'bold');
+  doc.setTextColor(COLORS.white.r, COLORS.white.g, COLORS.white.b);
+  doc.text(portfolioGrade.grade, gradeCardX + gradeCardWidth / 2, gradeCardY + 25, { align: 'center' });
+
+  doc.setFontSize(9);
+  doc.setFont('helvetica', 'normal');
+  doc.text('PORTFOLIO GRADE', gradeCardX + gradeCardWidth / 2, gradeCardY + 35, { align: 'center' });
+  doc.text(portfolioGrade.label, gradeCardX + gradeCardWidth / 2, gradeCardY + 43, { align: 'center' });
+
+  // Key Metrics (beside grade card)
+  const metricsX = gradeCardX + gradeCardWidth + 15;
+  const metricWidth = (contentWidth - gradeCardWidth - 15) / 2 - 5;
+  const metricHeight = 22;
+
+  const keyMetrics = [
+    { label: 'TOTAL INVESTMENT', value: formatCurrency(totalInvestment), color: COLORS.dark },
+    { label: 'AVERAGE ROI', value: `${avgROI.toFixed(1)}%`, color: avgROI >= 15 ? COLORS.success : avgROI >= 8 ? COLORS.warning : COLORS.danger },
+    { label: 'ANNUAL CASH FLOW', value: formatCurrency(totalCashFlow), color: totalCashFlow >= 0 ? COLORS.success : COLORS.danger },
+    { label: 'AVG SCORE', value: `${Math.round(avgScore)}/100`, color: portfolioGrade.color },
   ];
 
-  addTable(doc, tableData, 20, yPosition, pageWidth - 40);
+  keyMetrics.forEach((metric, idx) => {
+    const col = idx % 2;
+    const row = Math.floor(idx / 2);
+    const mx = metricsX + col * (metricWidth + 10);
+    const my = gradeCardY + row * (metricHeight + 6);
 
-  doc.save('portfolio-comparison.pdf');
+    doc.setFillColor(COLORS.lightGray.r, COLORS.lightGray.g, COLORS.lightGray.b);
+    doc.roundedRect(mx, my, metricWidth, metricHeight, 2, 2, 'F');
+
+    doc.setFontSize(7);
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(COLORS.gray.r, COLORS.gray.g, COLORS.gray.b);
+    doc.text(metric.label, mx + 5, my + 8);
+
+    doc.setFontSize(13);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(metric.color.r, metric.color.g, metric.color.b);
+    doc.text(metric.value, mx + 5, my + 17);
+  });
+
+  y = gradeCardY + gradeCardHeight + 20;
+
+  // Projects Table Section
+  doc.setFillColor(COLORS.primary.r, COLORS.primary.g, COLORS.primary.b);
+  doc.rect(margin, y, 3, 12, 'F');
+  doc.setFontSize(14);
+  doc.setFont('helvetica', 'bold');
+  doc.setTextColor(COLORS.dark.r, COLORS.dark.g, COLORS.dark.b);
+  doc.text('Project Overview', margin + 8, y + 8);
+
+  y += 20;
+
+  // Table header
+  const columns = [
+    { label: 'Project', width: 45 },
+    { label: 'Location', width: 30 },
+    { label: 'Type', width: 30 },
+    { label: 'Investment', width: 25 },
+    { label: 'ROI', width: 18 },
+    { label: 'Cash Flow', width: 22 },
+    { label: 'Score', width: 20 },
+  ];
+
+  doc.setFillColor(COLORS.dark.r, COLORS.dark.g, COLORS.dark.b);
+  doc.rect(margin, y, contentWidth, 10, 'F');
+
+  doc.setFontSize(8);
+  doc.setFont('helvetica', 'bold');
+  doc.setTextColor(COLORS.white.r, COLORS.white.g, COLORS.white.b);
+
+  let colX = margin + 3;
+  columns.forEach(col => {
+    doc.text(col.label.toUpperCase(), colX, y + 7);
+    colX += col.width;
+  });
+
+  y += 10;
+
+  // Table rows
+  const rowHeight = 12;
+  projects.forEach((project, idx) => {
+    // Check if we need a new page
+    if (y + rowHeight > pageHeight - 25) {
+      doc.addPage();
+      currentPage++;
+      y = 20;
+
+      // Repeat table header on new page
+      doc.setFillColor(COLORS.dark.r, COLORS.dark.g, COLORS.dark.b);
+      doc.rect(margin, y, contentWidth, 10, 'F');
+      doc.setFontSize(8);
+      doc.setFont('helvetica', 'bold');
+      doc.setTextColor(COLORS.white.r, COLORS.white.g, COLORS.white.b);
+      colX = margin + 3;
+      columns.forEach(col => {
+        doc.text(col.label.toUpperCase(), colX, y + 7);
+        colX += col.width;
+      });
+      y += 10;
+    }
+
+    // Alternating row background
+    if (idx % 2 === 0) {
+      doc.setFillColor(COLORS.lightGray.r, COLORS.lightGray.g, COLORS.lightGray.b);
+      doc.rect(margin, y, contentWidth, rowHeight, 'F');
+    }
+
+    doc.setFontSize(8);
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(COLORS.dark.r, COLORS.dark.g, COLORS.dark.b);
+
+    colX = margin + 3;
+
+    // Project name
+    doc.setFont('helvetica', 'bold');
+    doc.text((project.projectName || 'Unnamed').substring(0, 22), colX, y + 8);
+    colX += columns[0].width;
+    doc.setFont('helvetica', 'normal');
+
+    // Location
+    doc.setTextColor(COLORS.gray.r, COLORS.gray.g, COLORS.gray.b);
+    doc.text((project.location || 'N/A').substring(0, 15), colX, y + 8);
+    colX += columns[1].width;
+
+    // Type
+    doc.text(getCalculatorDisplayName(project.calculatorId).substring(0, 15), colX, y + 8);
+    colX += columns[2].width;
+
+    // Investment
+    doc.setTextColor(COLORS.dark.r, COLORS.dark.g, COLORS.dark.b);
+    doc.text(formatCurrency(project.totalInvestment || 0), colX, y + 8);
+    colX += columns[3].width;
+
+    // ROI (colored)
+    const roi = project.roi || 0;
+    const roiColor = roi >= 15 ? COLORS.success : roi >= 8 ? COLORS.warning : COLORS.danger;
+    doc.setTextColor(roiColor.r, roiColor.g, roiColor.b);
+    doc.setFont('helvetica', 'bold');
+    doc.text(`${roi.toFixed(1)}%`, colX, y + 8);
+    colX += columns[4].width;
+    doc.setFont('helvetica', 'normal');
+
+    // Cash Flow
+    const cf = project.avgCashFlow || 0;
+    doc.setTextColor(cf >= 0 ? COLORS.success.r : COLORS.danger.r, cf >= 0 ? COLORS.success.g : COLORS.danger.g, cf >= 0 ? COLORS.success.b : COLORS.danger.b);
+    doc.text(formatCurrency(cf), colX, y + 8);
+    colX += columns[5].width;
+
+    // Score
+    const score = project.investmentScore || 0;
+    const scoreColor = score >= 70 ? COLORS.success : score >= 50 ? COLORS.warning : COLORS.danger;
+    doc.setTextColor(scoreColor.r, scoreColor.g, scoreColor.b);
+    doc.setFont('helvetica', 'bold');
+    doc.text(`${Math.round(score)}`, colX, y + 8);
+
+    y += rowHeight;
+  });
+
+  y += 15;
+
+  // Portfolio Analysis Section
+  if (y + 60 > pageHeight - 25) {
+    doc.addPage();
+    currentPage++;
+    y = 20;
+  }
+
+  doc.setFillColor(COLORS.primary.r, COLORS.primary.g, COLORS.primary.b);
+  doc.rect(margin, y, 3, 12, 'F');
+  doc.setFontSize(14);
+  doc.setFont('helvetica', 'bold');
+  doc.setTextColor(COLORS.dark.r, COLORS.dark.g, COLORS.dark.b);
+  doc.text('Portfolio Analysis', margin + 8, y + 8);
+
+  y += 20;
+
+  // Analysis text
+  const topPerformers = [...projects].sort((a, b) => (b.investmentScore || 0) - (a.investmentScore || 0)).slice(0, 3);
+  const highestROI = [...projects].sort((a, b) => (b.roi || 0) - (a.roi || 0))[0];
+  const strategies = [...new Set(projects.map(p => p.strategy).filter(Boolean))];
+
+  doc.setFontSize(10);
+  doc.setFont('helvetica', 'normal');
+  doc.setTextColor(COLORS.dark.r, COLORS.dark.g, COLORS.dark.b);
+
+  const analysisPoints = [
+    `Portfolio Grade: ${portfolioGrade.grade} (${portfolioGrade.label}) - Based on weighted average of all project scores`,
+    `Top Performer: ${topPerformers[0]?.projectName || 'N/A'} with a score of ${Math.round(topPerformers[0]?.investmentScore || 0)}/100`,
+    `Highest ROI: ${highestROI?.projectName || 'N/A'} at ${(highestROI?.roi || 0).toFixed(1)}%`,
+    `Investment Strategies: ${strategies.length > 0 ? strategies.map(s => s?.charAt(0).toUpperCase() + s?.slice(1)).join(', ') : 'Various'}`,
+    `Average Break-Even: ${Math.round(projects.reduce((sum, p) => sum + (p.breakEvenMonths || 0), 0) / (projects.length || 1))} months`,
+  ];
+
+  analysisPoints.forEach((point, idx) => {
+    doc.setFillColor(COLORS.lightGray.r, COLORS.lightGray.g, COLORS.lightGray.b);
+    doc.circle(margin + 3, y + 3, 1.5, 'F');
+    doc.text(point, margin + 10, y + 5);
+    y += 10;
+  });
+
+  // Disclaimer
+  y += 10;
+  doc.setFillColor(250, 250, 250);
+  doc.roundedRect(margin, y, contentWidth, 20, 2, 2, 'F');
+  doc.setFontSize(8);
+  doc.setTextColor(COLORS.gray.r, COLORS.gray.g, COLORS.gray.b);
+  doc.text('Disclaimer: This report is for informational purposes only and does not constitute financial advice.', margin + 5, y + 8);
+  doc.text('Past performance does not guarantee future results. Please consult a financial advisor before making investment decisions.', margin + 5, y + 15);
+
+  // Add footers to all pages
+  addFooters();
+
+  doc.save('portfolio-analysis-report.pdf');
 }
 
 function getMetricsForCategory(

@@ -1,8 +1,8 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import type { PortfolioProject } from '../types/portfolio';
 import { generateProjectPDF } from '../utils/pdfExport';
 import { generateEnterpriseReport, generatePitchDeck } from '../utils/enterprisePdfGenerator';
-import { getScoreColor } from '../utils/investmentScoring';
+import { getScoreColor, recalculateProjectScore } from '../utils/investmentScoring';
 
 interface ProjectDetailsModalProps {
   project: PortfolioProject;
@@ -78,15 +78,289 @@ const getCalculatorDisplayName = (calculatorId: string): string => {
 
 // Calculator-specific metric configurations
 const getCategoryConfig = (calculatorId: string): CategoryConfig => {
-  const category = getCalculatorCategory(calculatorId);
+  // First check for specific calculator configs
+  switch (calculatorId) {
+    // ===== RENTAL PROJECTION =====
+    case 'rental-projection':
+      return {
+        category: 'investment',
+        showScore: true,
+        showScoreBreakdown: true,
+        accentColor: '#10b981',
+        metrics: [
+          {
+            label: 'Nightly Rate',
+            getValue: (p) => formatCurrency(p.data?.nightlyRate || p.data?.result?.averageNightlyRate || 0),
+          },
+          {
+            label: 'Occupancy Rate',
+            getValue: (p) => `${(p.data?.baseOccupancyRate || p.data?.result?.averageOccupancy || 0).toFixed(0)}%`,
+            getColor: (p) => (p.data?.baseOccupancyRate || p.data?.result?.averageOccupancy || 0) >= 70 ? 'text-emerald-400' : 'text-yellow-400',
+          },
+          {
+            label: 'Annual Revenue',
+            getValue: (p) => formatCurrency(p.data?.result?.annualRevenue || 0),
+            getColor: () => 'text-emerald-400',
+          },
+          {
+            label: 'Annual Net Income',
+            getValue: (p) => formatCurrency(p.data?.result?.annualNetIncome || p.avgCashFlow || 0),
+            getColor: (p) => (p.data?.result?.annualNetIncome || p.avgCashFlow || 0) > 0 ? 'text-emerald-400' : 'text-red-400',
+          },
+          {
+            label: 'Break-Even',
+            getValue: (p) => `${p.data?.result?.breakEvenMonths || p.breakEvenMonths || 0} months`,
+            getColor: (p) => (p.data?.result?.breakEvenMonths || p.breakEvenMonths || 0) <= 36 ? 'text-emerald-400' : 'text-orange-400',
+          },
+          {
+            label: 'Platform Fee',
+            getValue: (p) => `${(p.data?.platformFeePercent || 0).toFixed(0)}%`,
+          },
+        ],
+      };
 
-  switch (category) {
-    case 'financing':
+    // ===== RENTAL ROI =====
+    case 'rental-roi':
+      return {
+        category: 'investment',
+        showScore: true,
+        showScoreBreakdown: true,
+        accentColor: '#10b981',
+        metrics: [
+          {
+            label: 'Initial Investment',
+            getValue: (p) => formatCurrency(p.data?.initialInvestment || p.totalInvestment || 0),
+          },
+          {
+            label: 'ADR (Y1)',
+            getValue: (p) => formatCurrency(p.data?.y1ADR || 0),
+          },
+          {
+            label: 'Occupancy (Y1)',
+            getValue: (p) => `${(p.data?.y1Occupancy || 0).toFixed(0)}%`,
+            getColor: (p) => (p.data?.y1Occupancy || 0) >= 70 ? 'text-emerald-400' : 'text-yellow-400',
+          },
+          {
+            label: 'ROI After Mgmt',
+            getValue: (p) => `${(p.data?.averages?.roiAfterManagement || p.roi || 0).toFixed(1)}%`,
+            getColor: (p) => (p.data?.averages?.roiAfterManagement || p.roi || 0) >= 10 ? 'text-emerald-400' : 'text-orange-400',
+          },
+          {
+            label: 'Annual Profit',
+            getValue: (p) => formatCurrency(p.data?.averages?.takeHomeProfit || p.avgCashFlow || 0),
+            getColor: () => 'text-emerald-400',
+          },
+          {
+            label: 'GOP Margin',
+            getValue: (p) => `${(p.data?.averages?.gopMargin || 0).toFixed(1)}%`,
+          },
+        ],
+      };
+
+    // ===== XIRR =====
+    case 'xirr':
+      return {
+        category: 'investment',
+        showScore: true,
+        showScoreBreakdown: true,
+        accentColor: '#8b5cf6', // violet
+        metrics: [
+          {
+            label: 'Total Investment',
+            getValue: (p) => formatCurrency(p.data?.result?.totalInvested || p.data?.property?.totalPrice || p.totalInvestment || 0),
+          },
+          {
+            label: 'XIRR',
+            getValue: (p) => `${((p.data?.result?.rate || 0) * 100).toFixed(1)}%`,
+            getColor: (p) => ((p.data?.result?.rate || 0) * 100) >= 12 ? 'text-emerald-400' : ((p.data?.result?.rate || 0) * 100) >= 8 ? 'text-yellow-400' : 'text-orange-400',
+          },
+          {
+            label: 'Net Profit',
+            getValue: (p) => formatCurrency(p.data?.result?.netProfit || 0),
+            getColor: (p) => (p.data?.result?.netProfit || 0) > 0 ? 'text-emerald-400' : 'text-red-400',
+          },
+          {
+            label: 'Exit Price',
+            getValue: (p) => formatCurrency(p.data?.exit?.exitPrice || p.data?.result?.exitValue || 0),
+          },
+          {
+            label: 'Hold Period',
+            getValue: (p) => `${p.data?.result?.holdPeriodMonths || p.data?.exit?.holdPeriodYears * 12 || 0} months`,
+          },
+          {
+            label: 'Total Return',
+            getValue: (p) => formatCurrency(p.data?.result?.totalReturn || 0),
+            getColor: () => 'text-emerald-400',
+          },
+        ],
+      };
+
+    // ===== CAP RATE =====
+    case 'cap-rate':
+      return {
+        category: 'investment',
+        showScore: true,
+        showScoreBreakdown: true,
+        accentColor: '#06b6d4', // cyan
+        metrics: [
+          {
+            label: 'Property Value',
+            getValue: (p) => formatCurrency(p.data?.propertyValue || p.totalInvestment || 0),
+          },
+          {
+            label: 'Cap Rate',
+            getValue: (p) => `${(p.data?.result?.capRate || p.data?.result?.adjustedCapRate || p.roi || 0).toFixed(2)}%`,
+            getColor: (p) => (p.data?.result?.capRate || p.roi || 0) >= 6 ? 'text-emerald-400' : 'text-orange-400',
+          },
+          {
+            label: 'Yearly NOI',
+            getValue: (p) => formatCurrency(p.data?.result?.yearlyNOI || 0),
+            getColor: () => 'text-emerald-400',
+          },
+          {
+            label: 'Monthly NOI',
+            getValue: (p) => formatCurrency(p.data?.result?.monthlyNOI || p.data?.result?.adjustedMonthlyNOI || 0),
+          },
+          {
+            label: 'Gross Revenue',
+            getValue: (p) => formatCurrency(p.data?.monthlyRent * 12 || p.data?.result?.grossRevenue || 0),
+          },
+          {
+            label: 'Expense Ratio',
+            getValue: (p) => `${(p.data?.result?.expenseRatio || 0).toFixed(1)}%`,
+          },
+        ],
+      };
+
+    // ===== IRR =====
+    case 'irr':
+      return {
+        category: 'investment',
+        showScore: true,
+        showScoreBreakdown: true,
+        accentColor: '#f59e0b', // amber
+        metrics: [
+          {
+            label: 'Total Investment',
+            getValue: (p) => formatCurrency(p.data?.result?.totalInvested || p.totalInvestment || 0),
+          },
+          {
+            label: 'IRR',
+            getValue: (p) => `${(p.data?.result?.irr || p.roi || 0).toFixed(1)}%`,
+            getColor: (p) => (p.data?.result?.irr || p.roi || 0) >= 15 ? 'text-emerald-400' : (p.data?.result?.irr || p.roi || 0) >= 10 ? 'text-yellow-400' : 'text-orange-400',
+          },
+          {
+            label: 'Total Cash Flow',
+            getValue: (p) => formatCurrency(p.data?.result?.totalCashFlow || 0),
+            getColor: (p) => (p.data?.result?.totalCashFlow || 0) > 0 ? 'text-emerald-400' : 'text-red-400',
+          },
+          {
+            label: 'Payback Period',
+            getValue: (p) => `${(p.data?.result?.paybackPeriod || 0).toFixed(1)} years`,
+          },
+          {
+            label: 'Total Return',
+            getValue: (p) => formatCurrency(p.data?.result?.totalReturn || 0),
+          },
+          {
+            label: 'ROI Multiple',
+            getValue: (p) => `${(p.data?.result?.roiMultiple || 0).toFixed(2)}x`,
+            getColor: (p) => (p.data?.result?.roiMultiple || 0) >= 1.5 ? 'text-emerald-400' : 'text-yellow-400',
+          },
+        ],
+      };
+
+    // ===== DEV FEASIBILITY =====
+    case 'dev-feasibility':
+      return {
+        category: 'investment',
+        showScore: true,
+        showScoreBreakdown: true,
+        accentColor: '#ec4899', // pink
+        metrics: [
+          {
+            label: 'Total Project Cost',
+            getValue: (p) => formatCurrency(p.data?.scenarios?.[0]?.totalProjectCost || p.data?.totalProjectCost || p.totalInvestment || 0),
+          },
+          {
+            label: 'ROI (Flip)',
+            getValue: (p) => `${(p.data?.scenarios?.[0]?.roiFlip || p.roi || 0).toFixed(1)}%`,
+            getColor: (p) => (p.data?.scenarios?.[0]?.roiFlip || p.roi || 0) >= 20 ? 'text-emerald-400' : 'text-orange-400',
+          },
+          {
+            label: 'Gross Profit',
+            getValue: (p) => formatCurrency(p.data?.scenarios?.[0]?.grossProfit || 0),
+            getColor: (p) => (p.data?.scenarios?.[0]?.grossProfit || 0) > 0 ? 'text-emerald-400' : 'text-red-400',
+          },
+          {
+            label: 'Sale Price',
+            getValue: (p) => formatCurrency(p.data?.scenarios?.[0]?.projectedSalePrice || p.data?.salePrice || 0),
+          },
+          {
+            label: 'Profit Margin',
+            getValue: (p) => `${(p.data?.scenarios?.[0]?.profitMargin || 0).toFixed(1)}%`,
+          },
+          {
+            label: 'Land Cost',
+            getValue: (p) => formatCurrency(p.data?.landCost || p.data?.scenarios?.[0]?.landCost || 0),
+          },
+        ],
+      };
+
+    // ===== CASHFLOW =====
+    case 'cashflow':
+      return {
+        category: 'investment',
+        showScore: true,
+        showScoreBreakdown: true,
+        accentColor: '#22c55e', // green
+        metrics: [
+          {
+            label: 'Monthly Rental',
+            getValue: (p) => formatCurrency(p.data?.monthlyRentalIncome || 0),
+          },
+          {
+            label: 'Monthly Mortgage',
+            getValue: (p) => formatCurrency(p.data?.monthlyMortgage || 0),
+            getColor: () => 'text-orange-400',
+          },
+          {
+            label: 'Net Monthly',
+            getValue: (p) => {
+              const income = p.data?.monthlyRentalIncome || 0;
+              const expenses = (p.data?.monthlyMortgage || 0) + (p.data?.monthlyMaintenance || 0) + (p.data?.monthlyPropertyTax || 0) + (p.data?.monthlyInsurance || 0);
+              return formatCurrency(income - expenses);
+            },
+            getColor: (p) => {
+              const income = p.data?.monthlyRentalIncome || 0;
+              const expenses = (p.data?.monthlyMortgage || 0) + (p.data?.monthlyMaintenance || 0) + (p.data?.monthlyPropertyTax || 0) + (p.data?.monthlyInsurance || 0);
+              return (income - expenses) > 0 ? 'text-emerald-400' : 'text-red-400';
+            },
+          },
+          {
+            label: 'Annual Cash Flow',
+            getValue: (p) => formatCurrency(p.avgCashFlow * 12 || 0),
+            getColor: (p) => (p.avgCashFlow || 0) > 0 ? 'text-emerald-400' : 'text-red-400',
+          },
+          {
+            label: 'Maintenance',
+            getValue: (p) => formatCurrency(p.data?.monthlyMaintenance || 0),
+          },
+          {
+            label: 'Cash on Cash',
+            getValue: (p) => `${(p.roi || 0).toFixed(1)}%`,
+            getColor: (p) => (p.roi || 0) >= 8 ? 'text-emerald-400' : 'text-orange-400',
+          },
+        ],
+      };
+
+    // ===== MORTGAGE =====
+    case 'mortgage':
       return {
         category: 'financing',
         showScore: false,
         showScoreBreakdown: false,
-        accentColor: '#3b82f6', // blue
+        accentColor: '#3b82f6',
         metrics: [
           {
             label: 'Loan Amount',
@@ -94,7 +368,7 @@ const getCategoryConfig = (calculatorId: string): CategoryConfig => {
           },
           {
             label: 'Monthly Payment',
-            getValue: (p) => formatCurrency(p.data?.result?.monthlyPayment || p.data?.monthlyPayment || 0),
+            getValue: (p) => formatCurrency(p.data?.result?.monthlyPayment || 0),
           },
           {
             label: 'Interest Rate',
@@ -108,7 +382,7 @@ const getCategoryConfig = (calculatorId: string): CategoryConfig => {
           },
           {
             label: 'Loan Term',
-            getValue: (p) => `${p.data?.loanTerm || 0} years`,
+            getValue: (p) => `${p.data?.loanTermYears || p.data?.loanTerm || 0} years`,
           },
           {
             label: 'Total Payment',
@@ -117,12 +391,50 @@ const getCategoryConfig = (calculatorId: string): CategoryConfig => {
         ],
       };
 
-    case 'budget':
+    // ===== FINANCING =====
+    case 'financing':
+      return {
+        category: 'financing',
+        showScore: false,
+        showScoreBreakdown: false,
+        accentColor: '#3b82f6',
+        metrics: [
+          {
+            label: 'Loan Amount',
+            getValue: (p) => formatCurrency(p.data?.loanAmount || p.totalInvestment),
+          },
+          {
+            label: 'Monthly Payment',
+            getValue: (p) => formatCurrency(p.data?.results?.[0]?.monthlyPayment || p.data?.result?.monthlyPayment || 0),
+          },
+          {
+            label: 'Interest Rate',
+            getValue: (p) => `${(p.data?.results?.[0]?.interestRate || p.data?.interestRate || 0).toFixed(2)}%`,
+            getColor: (p) => (p.data?.results?.[0]?.interestRate || p.data?.interestRate || 0) <= 5 ? 'text-emerald-400' : 'text-yellow-400',
+          },
+          {
+            label: 'Total Interest',
+            getValue: (p) => formatCurrency(p.data?.results?.[0]?.totalInterest || p.data?.result?.totalInterest || 0),
+            getColor: () => 'text-orange-400',
+          },
+          {
+            label: 'Loan Term',
+            getValue: (p) => `${p.data?.loanTermYears || 0} years`,
+          },
+          {
+            label: 'Options Compared',
+            getValue: (p) => `${p.data?.results?.length || 1} loans`,
+          },
+        ],
+      };
+
+    // ===== DEV BUDGET =====
+    case 'dev-budget':
       return {
         category: 'budget',
         showScore: false,
         showScoreBreakdown: false,
-        accentColor: '#eab308', // yellow
+        accentColor: '#eab308',
         metrics: [
           {
             label: 'Total Budget',
@@ -160,24 +472,25 @@ const getCategoryConfig = (calculatorId: string): CategoryConfig => {
         ],
       };
 
-    case 'tax':
+    // ===== INDONESIA TAX =====
+    case 'indonesia-tax':
       return {
         category: 'tax',
         showScore: false,
         showScoreBreakdown: false,
-        accentColor: '#f97316', // orange
+        accentColor: '#f97316',
         metrics: [
           {
             label: 'Property Value',
             getValue: (p) => formatCurrency(p.data?.purchasePrice || p.totalInvestment),
           },
           {
-            label: 'Total Tax Liability',
+            label: 'Total Tax',
             getValue: (p) => formatCurrency(p.data?.result?.totalTaxLiability || 0),
             getColor: () => 'text-orange-400',
           },
           {
-            label: 'Effective Tax Rate',
+            label: 'Effective Rate',
             getValue: (p) => `${(p.data?.result?.effectiveTaxRate || 0).toFixed(1)}%`,
           },
           {
@@ -198,16 +511,17 @@ const getCategoryConfig = (calculatorId: string): CategoryConfig => {
         ],
       };
 
-    case 'risk':
+    // ===== RISK ASSESSMENT =====
+    case 'risk-assessment':
       return {
         category: 'risk',
         showScore: false,
         showScoreBreakdown: false,
-        accentColor: '#f43f5e', // rose
+        accentColor: '#f43f5e',
         metrics: [
           {
             label: 'Investment Amount',
-            getValue: (p) => formatCurrency(p.totalInvestment),
+            getValue: (p) => formatCurrency(p.data?.propertyValue || p.data?.investmentAmount || p.totalInvestment),
           },
           {
             label: 'Risk Score',
@@ -243,12 +557,13 @@ const getCategoryConfig = (calculatorId: string): CategoryConfig => {
         ],
       };
 
+    // ===== NPV =====
     case 'npv':
       return {
         category: 'npv',
         showScore: true,
         showScoreBreakdown: false,
-        accentColor: '#14b8a6', // teal
+        accentColor: '#14b8a6',
         metrics: [
           {
             label: 'Initial Investment',
@@ -279,13 +594,13 @@ const getCategoryConfig = (calculatorId: string): CategoryConfig => {
         ],
       };
 
-    // Investment calculators (rental-roi, xirr, cap-rate, irr, dev-feasibility, rental-projection, cashflow)
+    // ===== DEFAULT FALLBACK =====
     default:
       return {
         category: 'investment',
         showScore: true,
         showScoreBreakdown: true,
-        accentColor: '#10b981', // emerald
+        accentColor: '#10b981',
         metrics: [
           {
             label: 'Total Investment',
