@@ -1,6 +1,6 @@
 import { createContext, useContext, useState, useCallback, useEffect, useRef, type ReactNode } from 'react';
 import { v4 as uuidv4 } from 'uuid';
-import type { PortfolioProject, EmailLog } from '../types/portfolio';
+import type { PortfolioProject, EmailLog, ComparisonSnapshot } from '../types/portfolio';
 import { useAuth } from './auth-context';
 import {
   fetchUserDrafts,
@@ -11,10 +11,12 @@ import {
 
 const PORTFOLIO_STORAGE_KEY = 'baliinvest_portfolio';
 const EMAIL_LOG_STORAGE_KEY = 'baliinvest_email_log';
+const COMPARISONS_STORAGE_KEY = 'baliinvest_comparisons';
 
 interface PortfolioContextType {
   projects: PortfolioProject[];
   emailLog: EmailLog[];
+  savedComparisons: ComparisonSnapshot[];
   loading: boolean;
   error: string | null;
   isAuthenticated: boolean;
@@ -34,6 +36,10 @@ interface PortfolioContextType {
   getEmailLog: () => EmailLog[];
   canAddProject: (maxProjects: number) => boolean;
   getProjectCount: () => number;
+  // Saved comparisons
+  saveComparison: (name: string, projectIds: string[]) => ComparisonSnapshot | null;
+  deleteComparison: (id: string) => void;
+  getComparisonById: (id: string) => ComparisonSnapshot | undefined;
 }
 
 const PortfolioContext = createContext<PortfolioContextType | null>(null);
@@ -47,6 +53,11 @@ export function PortfolioProvider({ children }: { children: ReactNode }) {
 
   const [emailLog, setEmailLog] = useState<EmailLog[]>(() => {
     const saved = localStorage.getItem(EMAIL_LOG_STORAGE_KEY);
+    return saved ? JSON.parse(saved) : [];
+  });
+
+  const [savedComparisons, setSavedComparisons] = useState<ComparisonSnapshot[]>(() => {
+    const saved = localStorage.getItem(COMPARISONS_STORAGE_KEY);
     return saved ? JSON.parse(saved) : [];
   });
 
@@ -91,6 +102,10 @@ export function PortfolioProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     localStorage.setItem(EMAIL_LOG_STORAGE_KEY, JSON.stringify(emailLog));
   }, [emailLog]);
+
+  useEffect(() => {
+    localStorage.setItem(COMPARISONS_STORAGE_KEY, JSON.stringify(savedComparisons));
+  }, [savedComparisons]);
 
   const addProject = useCallback(async (project: Omit<PortfolioProject, 'id' | 'createdAt' | 'updatedAt'>) => {
     if (user) {
@@ -223,10 +238,36 @@ export function PortfolioProvider({ children }: { children: ReactNode }) {
     return projects.length;
   }, [projects.length]);
 
+  const saveComparison = useCallback((name: string, projectIds: string[]): ComparisonSnapshot | null => {
+    if (!name.trim() || projectIds.length < 2) return null;
+
+    const comparisonProjects = projects.filter(p => projectIds.includes(p.id));
+    if (comparisonProjects.length < 2) return null;
+
+    const newComparison: ComparisonSnapshot = {
+      id: uuidv4(),
+      name: name.trim(),
+      projects: comparisonProjects,
+      createdAt: new Date().toISOString(),
+    };
+
+    setSavedComparisons(prev => [newComparison, ...prev]);
+    return newComparison;
+  }, [projects]);
+
+  const deleteComparison = useCallback((id: string) => {
+    setSavedComparisons(prev => prev.filter(c => c.id !== id));
+  }, []);
+
+  const getComparisonById = useCallback((id: string) => {
+    return savedComparisons.find(c => c.id === id);
+  }, [savedComparisons]);
+
   return (
     <PortfolioContext.Provider value={{
       projects,
       emailLog,
+      savedComparisons,
       loading,
       error,
       isAuthenticated: !!user,
@@ -240,6 +281,9 @@ export function PortfolioProvider({ children }: { children: ReactNode }) {
       getEmailLog,
       canAddProject,
       getProjectCount,
+      saveComparison,
+      deleteComparison,
+      getComparisonById,
     }}>
       {children}
     </PortfolioContext.Provider>

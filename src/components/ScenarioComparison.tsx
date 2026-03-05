@@ -12,10 +12,12 @@ import {
 } from '../utils/crossCalculatorComparison';
 
 export function ScenarioComparison() {
-  const { projects } = usePortfolio();
+  const { projects, savedComparisons, saveComparison, deleteComparison } = usePortfolio();
   const [selectedProjects, setSelectedProjects] = useState<string[]>([]);
   const [showSavePrompt, setShowSavePrompt] = useState(false);
   const [comparisonName, setComparisonName] = useState('');
+  const [saveSuccess, setSaveSuccess] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState<string | null>(null);
 
   const handleSelectProject = (id: string) => {
     setSelectedProjects(prev =>
@@ -50,10 +52,26 @@ export function ScenarioComparison() {
   }, [selectedProjectsList]);
 
   const handleSaveComparison = () => {
-    if (comparisonName.trim()) {
+    if (comparisonName.trim() && selectedProjects.length >= 2) {
+      const saved = saveComparison(comparisonName, selectedProjects);
+      if (saved) {
+        setSaveSuccess(true);
+        setTimeout(() => setSaveSuccess(false), 3000);
+      }
       setComparisonName('');
       setShowSavePrompt(false);
     }
+  };
+
+  const handleLoadComparison = (projectIds: string[]) => {
+    // Only select projects that still exist
+    const validIds = projectIds.filter(id => projects.some(p => p.id === id));
+    setSelectedProjects(validIds);
+  };
+
+  const handleDeleteComparison = (id: string) => {
+    deleteComparison(id);
+    setShowDeleteConfirm(null);
   };
 
   const getCategoryStyles = (category: string) => {
@@ -73,6 +91,65 @@ export function ScenarioComparison() {
 
   return (
     <div className="space-y-6">
+      {/* Success Message */}
+      {saveSuccess && (
+        <div className="bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 px-4 py-3 rounded-lg flex items-center gap-2">
+          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+          </svg>
+          Comparison saved successfully!
+        </div>
+      )}
+
+      {/* Saved Comparisons */}
+      {savedComparisons.length > 0 && (
+        <div className="bg-zinc-900 rounded-xl border border-zinc-800 p-6">
+          <h2 className="text-lg font-bold text-white mb-4">Saved Comparisons</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+            {savedComparisons.map(comparison => (
+              <div
+                key={comparison.id}
+                className="border border-zinc-700 rounded-lg p-4 hover:border-zinc-600 transition"
+              >
+                <div className="flex items-start justify-between mb-2">
+                  <h3 className="font-semibold text-white">{comparison.name}</h3>
+                  <button
+                    onClick={() => setShowDeleteConfirm(comparison.id)}
+                    className="text-zinc-500 hover:text-red-400 transition p-1"
+                    title="Delete comparison"
+                  >
+                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    </svg>
+                  </button>
+                </div>
+                <p className="text-xs text-zinc-500 mb-3">
+                  {comparison.projects.length} projects • {new Date(comparison.createdAt).toLocaleDateString()}
+                </p>
+                <div className="flex flex-wrap gap-1 mb-3">
+                  {comparison.projects.slice(0, 3).map(p => (
+                    <span key={p.id} className="text-[10px] bg-zinc-800 text-zinc-400 px-2 py-0.5 rounded">
+                      {p.projectName.length > 15 ? p.projectName.slice(0, 15) + '...' : p.projectName}
+                    </span>
+                  ))}
+                  {comparison.projects.length > 3 && (
+                    <span className="text-[10px] bg-zinc-800 text-zinc-400 px-2 py-0.5 rounded">
+                      +{comparison.projects.length - 3} more
+                    </span>
+                  )}
+                </div>
+                <button
+                  onClick={() => handleLoadComparison(comparison.projects.map(p => p.id))}
+                  className="w-full text-sm px-3 py-2 bg-cyan-500/10 text-cyan-400 border border-cyan-500/30 rounded-lg hover:bg-cyan-500/20 transition"
+                >
+                  Load Comparison
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* Selection Panel */}
       <div className="bg-zinc-900 rounded-xl border border-zinc-800 p-6">
         <div className="flex items-center justify-between mb-4">
@@ -421,6 +498,9 @@ export function ScenarioComparison() {
         <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
           <div className="bg-zinc-900 rounded-2xl border border-zinc-800 p-6 max-w-sm w-full">
             <h3 className="text-lg font-bold text-white mb-4">Save Comparison</h3>
+            <p className="text-sm text-zinc-400 mb-4">
+              Save this comparison of {selectedProjects.length} projects for quick access later.
+            </p>
             <input
               type="text"
               value={comparisonName}
@@ -428,6 +508,7 @@ export function ScenarioComparison() {
               placeholder="e.g., Portfolio vs Alternatives"
               className="w-full px-4 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white placeholder:text-zinc-500 focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none mb-4"
               autoFocus
+              onKeyDown={(e) => e.key === 'Enter' && handleSaveComparison()}
             />
             <div className="flex gap-3">
               <button
@@ -438,9 +519,36 @@ export function ScenarioComparison() {
               </button>
               <button
                 onClick={handleSaveComparison}
-                className="flex-1 px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition font-medium"
+                disabled={!comparisonName.trim()}
+                className="flex-1 px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition font-medium disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Save
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Comparison Confirmation Modal */}
+      {showDeleteConfirm && (
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-zinc-900 rounded-2xl border border-zinc-800 p-6 max-w-sm w-full">
+            <h3 className="text-lg font-bold text-white mb-2">Delete Comparison?</h3>
+            <p className="text-zinc-400 mb-6">
+              This will permanently delete this saved comparison. This action cannot be undone.
+            </p>
+            <div className="flex gap-3">
+              <button
+                onClick={() => setShowDeleteConfirm(null)}
+                className="flex-1 px-4 py-2 text-zinc-300 border border-zinc-700 rounded-lg hover:bg-zinc-800 transition font-medium"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => handleDeleteComparison(showDeleteConfirm)}
+                className="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition font-medium"
+              >
+                Delete
               </button>
             </div>
           </div>
