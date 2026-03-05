@@ -400,25 +400,50 @@ const getCategoryConfig = (calculatorId: string): CategoryConfig => {
         metrics: [
           {
             label: 'Loan Amount',
-            getValue: (p) => formatCurrency(p.data?.loanAmount || p.totalInvestment),
+            getValue: (p) => {
+              const results = p.data?.results || [];
+              const winnerLoan = results.find((r: any) => r.isWinner) || results[0];
+              return formatCurrency(winnerLoan?.amount || p.data?.propertyValue || p.totalInvestment);
+            },
           },
           {
             label: 'Monthly Payment',
-            getValue: (p) => formatCurrency(p.data?.results?.[0]?.monthlyPayment || p.data?.result?.monthlyPayment || 0),
+            getValue: (p) => {
+              const results = p.data?.results || [];
+              const winnerLoan = results.find((r: any) => r.isWinner) || results[0];
+              return formatCurrency(winnerLoan?.monthlyPayment || 0);
+            },
           },
           {
             label: 'Interest Rate',
-            getValue: (p) => `${(p.data?.results?.[0]?.interestRate || p.data?.interestRate || 0).toFixed(2)}%`,
-            getColor: (p) => (p.data?.results?.[0]?.interestRate || p.data?.interestRate || 0) <= 5 ? 'text-emerald-400' : 'text-yellow-400',
+            getValue: (p) => {
+              const results = p.data?.results || [];
+              const winnerLoan = results.find((r: any) => r.isWinner) || results[0];
+              return `${(winnerLoan?.interestRate || 0).toFixed(2)}%`;
+            },
+            getColor: (p) => {
+              const results = p.data?.results || [];
+              const winnerLoan = results.find((r: any) => r.isWinner) || results[0];
+              const rate = winnerLoan?.interestRate || 0;
+              return rate <= 5 ? 'text-emerald-400' : rate <= 8 ? 'text-yellow-400' : 'text-orange-400';
+            },
           },
           {
             label: 'Total Interest',
-            getValue: (p) => formatCurrency(p.data?.results?.[0]?.totalInterest || p.data?.result?.totalInterest || 0),
+            getValue: (p) => {
+              const results = p.data?.results || [];
+              const winnerLoan = results.find((r: any) => r.isWinner) || results[0];
+              return formatCurrency(winnerLoan?.totalInterest || 0);
+            },
             getColor: () => 'text-orange-400',
           },
           {
             label: 'Loan Term',
-            getValue: (p) => `${p.data?.loanTermYears || 0} years`,
+            getValue: (p) => {
+              const results = p.data?.results || [];
+              const winnerLoan = results.find((r: any) => r.isWinner) || results[0];
+              return `${winnerLoan?.term || 0} years`;
+            },
           },
           {
             label: 'Options Compared',
