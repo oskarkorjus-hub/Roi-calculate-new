@@ -118,6 +118,13 @@ export function Navigation() {
                           >
                             Calculators
                           </Link>
+                          <Link
+                            to="/settings"
+                            onClick={() => setUserMenuOpen(false)}
+                            className="block px-4 py-3 text-sm text-zinc-300 hover:bg-zinc-800 transition-colors"
+                          >
+                            Account Settings
+                          </Link>
                           <button
                             onClick={handleSignOut}
                             className="w-full text-left px-4 py-3 text-sm text-red-400 hover:bg-zinc-800 transition-colors border-t border-zinc-800"
@@ -231,9 +238,15 @@ export function Navigation() {
                         >
                           Go to Calculators
                         </Link>
+                        <Link
+                          to="/settings"
+                          className="block w-full py-3 text-center border border-zinc-700 text-zinc-300 font-medium rounded-xl hover:bg-zinc-800 transition-all"
+                        >
+                          Account Settings
+                        </Link>
                         <button
                           onClick={handleSignOut}
-                          className="block w-full py-3 text-center border border-zinc-700 text-zinc-300 font-medium rounded-xl hover:bg-zinc-800 transition-all"
+                          className="block w-full py-3 text-center border border-red-500/30 text-red-400 font-medium rounded-xl hover:bg-red-500/10 transition-all"
                         >
                           Sign Out
                         </button>

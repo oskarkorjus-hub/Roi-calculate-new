@@ -16,6 +16,7 @@ import { Contact } from './pages/Contact';
 import { Login } from './pages/Login';
 import { Signup } from './pages/Signup';
 import { ResetPassword } from './pages/ResetPassword';
+import { Settings } from './pages/Settings';
 import { useAuth } from './lib/auth-context';
 import { ProtectedRoute } from './components/ProtectedRoute';
 
@@ -170,6 +171,7 @@ function AppRoutes() {
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/reset-password" element={<ResetPassword />} />
+          <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
           <Route path="*" element={<Landing />} />
         </Routes>
       </main>
