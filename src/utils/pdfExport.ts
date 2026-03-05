@@ -687,6 +687,18 @@ export function generatePortfolioComparisionPDF(
   doc.save('portfolio-analysis-report.pdf');
 }
 
+// Short strategy labels for metrics grid
+const getShortStrategyLabel = (strategy?: string): string => {
+  if (!strategy) return '';
+  const labels: Record<string, string> = {
+    'flip': 'Flip',
+    'hold': 'Hold',
+    'rental': 'Rental',
+    'development': 'Development',
+  };
+  return labels[strategy] || strategy.charAt(0).toUpperCase() + strategy.slice(1);
+};
+
 function getMetricsForCategory(
   project: PortfolioProject,
   category: CalculatorCategory,
@@ -694,11 +706,19 @@ function getMetricsForCategory(
 ): Array<{ label: string; value: string; color: { r: number; g: number; b: number } }> {
   // First check for specific calculator types
   const calculatorId = project.calculatorId;
+  const strategy = project.strategy;
+
+  // Strategy metric to optionally include
+  const strategyMetric = strategy ? {
+    label: 'Strategy',
+    value: getShortStrategyLabel(strategy),
+    color: colors.primary,
+  } : null;
 
   switch (calculatorId) {
     // ===== RENTAL PROJECTION =====
-    case 'rental-projection':
-      return [
+    case 'rental-projection': {
+      const metrics = [
         {
           label: 'Nightly Rate',
           value: formatCurrency(project.data?.nightlyRate || project.data?.result?.averageNightlyRate || 0),
@@ -724,16 +744,19 @@ function getMetricsForCategory(
           value: `${project.data?.result?.breakEvenMonths || project.breakEvenMonths || 0} months`,
           color: (project.breakEvenMonths || 0) <= 36 ? colors.success : colors.warning,
         },
-        {
-          label: 'Platform Fee',
-          value: `${(project.data?.platformFeePercent || 0).toFixed(0)}%`,
-          color: colors.gray,
-        },
       ];
+      if (strategyMetric) metrics.push(strategyMetric);
+      else metrics.push({
+        label: 'Platform Fee',
+        value: `${(project.data?.platformFeePercent || 0).toFixed(0)}%`,
+        color: colors.gray,
+      });
+      return metrics;
+    }
 
     // ===== RENTAL ROI =====
-    case 'rental-roi':
-      return [
+    case 'rental-roi': {
+      const metrics = [
         {
           label: 'Initial Investment',
           value: formatCurrency(project.data?.initialInvestment || project.totalInvestment || 0),
@@ -759,12 +782,15 @@ function getMetricsForCategory(
           value: formatCurrency(project.data?.averages?.takeHomeProfit || project.avgCashFlow || 0),
           color: colors.success,
         },
-        {
-          label: 'GOP Margin',
-          value: `${(project.data?.averages?.gopMargin || 0).toFixed(1)}%`,
-          color: colors.gray,
-        },
       ];
+      if (strategyMetric) metrics.push(strategyMetric);
+      else metrics.push({
+        label: 'GOP Margin',
+        value: `${(project.data?.averages?.gopMargin || 0).toFixed(1)}%`,
+        color: colors.gray,
+      });
+      return metrics;
+    }
 
     // ===== XIRR =====
     case 'xirr':
@@ -1197,8 +1223,21 @@ function addMetricsSection(
   });
 }
 
+// Helper to format strategy for display
+const formatStrategy = (strategy?: string): string => {
+  if (!strategy) return '';
+  const strategyLabels: Record<string, string> = {
+    'flip': 'Flip (Short-term Buy & Sell)',
+    'hold': 'Hold (Long-term Appreciation)',
+    'rental': 'Rental (Cash Flow Focus)',
+    'development': 'Development (Renovation/Build)',
+  };
+  return strategyLabels[strategy] || strategy.charAt(0).toUpperCase() + strategy.slice(1);
+};
+
 function getAnalysisForCategory(project: PortfolioProject, category: CalculatorCategory): string[] {
   const calculatorId = project.calculatorId;
+  const strategy = project.strategy;
 
   // Calculator-specific analysis
   switch (calculatorId) {
@@ -1210,13 +1249,15 @@ function getAnalysisForCategory(project: PortfolioProject, category: CalculatorC
       const annualNet = project.data?.result?.annualNetIncome || project.avgCashFlow || 0;
       const occupancyRating = occupancy >= 80 ? 'Excellent' : occupancy >= 65 ? 'Good' : occupancy >= 50 ? 'Moderate' : 'Low';
       const platformFee = project.data?.platformFeePercent || 0;
-      return [
+      const analysis = [
         `Occupancy Assessment: ${occupancyRating} (${occupancy.toFixed(0)}% projected)`,
         `Average Daily Rate: ${formatCurrency(nightlyRate)}/night`,
         `Gross Annual Revenue: ${formatCurrency(annualRevenue)}`,
         `Net Operating Income: ${formatCurrency(annualNet)} annually`,
-        `Platform & Booking Fees: ${platformFee.toFixed(0)}% of gross revenue`,
       ];
+      if (strategy) analysis.push(`Investment Strategy: ${formatStrategy(strategy)}`);
+      else analysis.push(`Platform & Booking Fees: ${platformFee.toFixed(0)}% of gross revenue`);
+      return analysis;
     }
 
     // ===== RENTAL ROI =====
@@ -1227,13 +1268,15 @@ function getAnalysisForCategory(project: PortfolioProject, category: CalculatorC
       const roiAfterMgmt = project.data?.averages?.roiAfterManagement || project.roi || 0;
       const gopMargin = project.data?.averages?.gopMargin || 0;
       const roiRating = roiAfterMgmt >= 15 ? 'Excellent' : roiAfterMgmt >= 10 ? 'Good' : roiAfterMgmt >= 5 ? 'Moderate' : 'Low';
-      return [
+      const analysis = [
         `10-Year ROI Performance: ${roiRating} (${roiAfterMgmt.toFixed(1)}% avg annual)`,
         `Year 1 Average Daily Rate: ${formatCurrency(y1ADR)}`,
         `Year 1 Occupancy Target: ${y1Occupancy.toFixed(0)}%`,
         `Gross Operating Profit Margin: ${gopMargin.toFixed(1)}%`,
-        `Total Capital Deployed: ${formatCurrency(investment)}`,
       ];
+      if (strategy) analysis.push(`Investment Strategy: ${formatStrategy(strategy)}`);
+      else analysis.push(`Total Capital Deployed: ${formatCurrency(investment)}`);
+      return analysis;
     }
 
     // ===== XIRR =====
@@ -1244,13 +1287,15 @@ function getAnalysisForCategory(project: PortfolioProject, category: CalculatorC
       const exitPrice = project.data?.exit?.exitPrice || project.data?.result?.exitValue || 0;
       const totalInvested = project.data?.result?.totalInvested || project.data?.property?.totalPrice || project.totalInvestment || 0;
       const xirrRating = xirr >= 20 ? 'Excellent' : xirr >= 15 ? 'Very Good' : xirr >= 10 ? 'Good' : xirr >= 5 ? 'Moderate' : 'Below Target';
-      return [
+      const analysis = [
         `XIRR Performance: ${xirrRating} (${xirr.toFixed(1)}% annualized)`,
         `Total Capital Invested: ${formatCurrency(totalInvested)}`,
         `Projected Exit Value: ${formatCurrency(exitPrice)}`,
         `Net Profit on Exit: ${formatCurrency(netProfit)}`,
-        `Investment Hold Period: ${holdPeriod} months (${(holdPeriod / 12).toFixed(1)} years)`,
       ];
+      if (strategy) analysis.push(`Investment Strategy: ${formatStrategy(strategy)}`);
+      else analysis.push(`Investment Hold Period: ${holdPeriod} months (${(holdPeriod / 12).toFixed(1)} years)`);
+      return analysis;
     }
 
     // ===== CAP RATE =====
@@ -1260,13 +1305,15 @@ function getAnalysisForCategory(project: PortfolioProject, category: CalculatorC
       const propertyValue = project.data?.propertyValue || project.totalInvestment || 0;
       const expenseRatio = project.data?.result?.expenseRatio || 0;
       const capRateRating = capRate >= 8 ? 'Strong' : capRate >= 6 ? 'Good' : capRate >= 4 ? 'Moderate' : 'Low';
-      return [
+      const analysis = [
         `Capitalization Rate: ${capRateRating} (${capRate.toFixed(2)}%)`,
         `Property Valuation: ${formatCurrency(propertyValue)}`,
         `Annual Net Operating Income: ${formatCurrency(yearlyNOI)}`,
         `Operating Expense Ratio: ${expenseRatio.toFixed(1)}%`,
-        `Monthly NOI: ${formatCurrency((project.data?.result?.monthlyNOI || project.data?.result?.adjustedMonthlyNOI || 0))}`,
       ];
+      if (strategy) analysis.push(`Investment Strategy: ${formatStrategy(strategy)}`);
+      else analysis.push(`Monthly NOI: ${formatCurrency((project.data?.result?.monthlyNOI || project.data?.result?.adjustedMonthlyNOI || 0))}`);
+      return analysis;
     }
 
     // ===== IRR =====
@@ -1276,13 +1323,15 @@ function getAnalysisForCategory(project: PortfolioProject, category: CalculatorC
       const paybackPeriod = project.data?.result?.paybackPeriod || 0;
       const roiMultiple = project.data?.result?.roiMultiple || 0;
       const irrRating = irr >= 25 ? 'Exceptional' : irr >= 18 ? 'Excellent' : irr >= 12 ? 'Good' : irr >= 8 ? 'Moderate' : 'Below Target';
-      return [
+      const analysis = [
         `Internal Rate of Return: ${irrRating} (${irr.toFixed(1)}%)`,
         `Total Cash Flow Generated: ${formatCurrency(totalCashFlow)}`,
         `Payback Period: ${paybackPeriod.toFixed(1)} years`,
         `Return on Investment Multiple: ${roiMultiple.toFixed(2)}x`,
-        `Investment Classification: ${irr >= 15 ? 'High Growth' : irr >= 10 ? 'Stable Return' : 'Income Focus'}`,
       ];
+      if (strategy) analysis.push(`Investment Strategy: ${formatStrategy(strategy)}`);
+      else analysis.push(`Investment Classification: ${irr >= 15 ? 'High Growth' : irr >= 10 ? 'Stable Return' : 'Income Focus'}`);
+      return analysis;
     }
 
     // ===== DEV FEASIBILITY =====
@@ -1293,13 +1342,15 @@ function getAnalysisForCategory(project: PortfolioProject, category: CalculatorC
       const profitMargin = project.data?.scenarios?.[0]?.profitMargin || 0;
       const salePrice = project.data?.scenarios?.[0]?.projectedSalePrice || project.data?.salePrice || 0;
       const feasibilityRating = roiFlip >= 30 ? 'Highly Feasible' : roiFlip >= 20 ? 'Feasible' : roiFlip >= 10 ? 'Marginal' : 'Not Recommended';
-      return [
+      const analysis = [
         `Development Feasibility: ${feasibilityRating} (${roiFlip.toFixed(1)}% ROI)`,
         `Total Project Cost: ${formatCurrency(totalCost)}`,
         `Projected Sale Price: ${formatCurrency(salePrice)}`,
         `Gross Development Profit: ${formatCurrency(grossProfit)}`,
-        `Profit Margin on Cost: ${profitMargin.toFixed(1)}%`,
       ];
+      if (strategy) analysis.push(`Investment Strategy: ${formatStrategy(strategy)}`);
+      else analysis.push(`Profit Margin on Cost: ${profitMargin.toFixed(1)}%`);
+      return analysis;
     }
 
     // ===== CASHFLOW =====
@@ -1310,13 +1361,15 @@ function getAnalysisForCategory(project: PortfolioProject, category: CalculatorC
       const netMonthly = monthlyRental - monthlyMortgage - monthlyMaintenance - (project.data?.monthlyPropertyTax || 0) - (project.data?.monthlyInsurance || 0);
       const cashOnCash = project.roi || 0;
       const cashflowRating = netMonthly > 0 ? (cashOnCash >= 10 ? 'Excellent' : cashOnCash >= 6 ? 'Good' : 'Moderate') : 'Negative';
-      return [
+      const analysis = [
         `Cash Flow Assessment: ${cashflowRating} (${formatCurrency(netMonthly)}/month)`,
         `Monthly Rental Income: ${formatCurrency(monthlyRental)}`,
         `Monthly Debt Service: ${formatCurrency(monthlyMortgage)}`,
         `Monthly Operating Costs: ${formatCurrency(monthlyMaintenance + (project.data?.monthlyPropertyTax || 0) + (project.data?.monthlyInsurance || 0))}`,
-        `Cash-on-Cash Return: ${cashOnCash.toFixed(1)}%`,
       ];
+      if (strategy) analysis.push(`Investment Strategy: ${formatStrategy(strategy)}`);
+      else analysis.push(`Cash-on-Cash Return: ${cashOnCash.toFixed(1)}%`);
+      return analysis;
     }
   }
 
