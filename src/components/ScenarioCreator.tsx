@@ -81,10 +81,14 @@ const CALCULATOR_FIELDS: Record<string, Array<{
     { key: 'exitValue', label: 'Exit Value', type: 'currency' },
   ],
   'npv': [
-    { key: 'initialInvestment', label: 'Initial Investment', type: 'currency' },
-    { key: 'discountRate', label: 'Discount Rate', type: 'percent', suffix: '%' },
-    { key: 'annualCashFlow', label: 'Annual Cash Flow', type: 'currency' },
-    { key: 'holdingPeriod', label: 'Holding Period', type: 'years', suffix: ' years' },
+    { key: 'discountRate', label: 'Discount Rate', type: 'percent', suffix: '%', description: 'Required rate of return' },
+    { key: 'projectLength', label: 'Project Length', type: 'years', suffix: ' years', description: 'Number of years' },
+    { key: 'cashFlows.0.amount', label: 'Year 0 Cash Flow', type: 'currency', description: 'Initial investment (negative)' },
+    { key: 'cashFlows.1.amount', label: 'Year 1 Cash Flow', type: 'currency' },
+    { key: 'cashFlows.2.amount', label: 'Year 2 Cash Flow', type: 'currency' },
+    { key: 'cashFlows.3.amount', label: 'Year 3 Cash Flow', type: 'currency' },
+    { key: 'cashFlows.4.amount', label: 'Year 4 Cash Flow', type: 'currency' },
+    { key: 'cashFlows.5.amount', label: 'Year 5 Cash Flow', type: 'currency' },
   ],
   'rental-projection': [
     { key: 'nightlyRate', label: 'Nightly Rate', type: 'currency' },

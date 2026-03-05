@@ -213,7 +213,20 @@ export function NPVCalculator() {
               onReset={handleReset}
               onOpenReport={() => setShowReportModal(true)}
               calculatorType="npv"
-              projectData={{ projectName: "NPV Analysis", totalInvestment: result.totalCashOutflows, roi: (result.npv / result.totalCashOutflows) * 100, currency }}
+              projectData={{
+                projectName: "NPV Analysis",
+                discountRate,
+                cashFlows,
+                projectLength: cashFlows.length - 1,
+                currency,
+                result: {
+                  npv: result.npv,
+                  totalCashInflows: result.totalCashInflows,
+                  totalCashOutflows: result.totalCashOutflows,
+                  netCashFlow: result.netCashFlow,
+                  profitabilityIndex: result.profitabilityIndex,
+                },
+              }}
               projectName="NPV Analysis"
               showResetConfirm={showResetConfirm}
             />
