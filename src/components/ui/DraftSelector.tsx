@@ -67,31 +67,31 @@ export function DraftSelector<T>({
 
   return (
     <div className="relative" ref={dropdownRef}>
-      {/* Trigger Button - Enterprise Design */}
+      {/* Trigger Button - Dark Theme */}
       <button
         onClick={() => setIsOpen(!isOpen)}
         className={`
           group relative flex items-center gap-3 px-4 py-2.5
-          bg-gradient-to-b from-white to-zinc-50
-          border border-zinc-200/80
+          bg-zinc-800/80 backdrop-blur-sm
+          border border-zinc-700/60
           rounded-xl
-          shadow-[0_1px_3px_rgba(0,0,0,0.04),0_4px_12px_rgba(0,0,0,0.03)]
-          hover:shadow-[0_2px_8px_rgba(0,0,0,0.06),0_8px_24px_rgba(0,0,0,0.04)]
-          hover:border-zinc-300/80
-          hover:from-white hover:to-zinc-50/80
+          shadow-[0_1px_2px_rgba(0,0,0,0.2)]
+          hover:bg-zinc-700/80
+          hover:border-zinc-600/60
+          hover:shadow-[0_2px_8px_rgba(0,0,0,0.3)]
           active:scale-[0.99]
           transition-all duration-200 ease-out
-          ${isOpen ? 'ring-2 ring-emerald-500/20 border-emerald-300/60' : ''}
+          ${isOpen ? 'ring-2 ring-emerald-500/30 border-emerald-500/50' : ''}
         `}
       >
-        {/* Folder Icon with subtle gradient */}
-        <div className="relative flex items-center justify-center w-7 h-7 rounded-lg bg-gradient-to-br from-emerald-50 to-emerald-100/80 border border-emerald-200/50">
-          <svg className="w-4 h-4 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.75}>
+        {/* Folder Icon */}
+        <div className="relative flex items-center justify-center w-7 h-7 rounded-lg bg-emerald-500/20 border border-emerald-500/30">
+          <svg className="w-4 h-4 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.75}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
           </svg>
         </div>
 
-        <span className="text-sm font-semibold text-zinc-700 tracking-tight">
+        <span className="text-sm font-semibold text-zinc-200 tracking-tight">
           {currentName || 'Saved Drafts'}
         </span>
 
@@ -108,27 +108,27 @@ export function DraftSelector<T>({
 
         {/* Count Badge */}
         {drafts.length > 0 && (
-          <span className="absolute -top-1.5 -right-1.5 flex items-center justify-center min-w-[20px] h-5 px-1.5 text-[10px] font-bold text-white bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-full shadow-sm ring-2 ring-white">
+          <span className="absolute -top-1.5 -right-1.5 flex items-center justify-center min-w-[20px] h-5 px-1.5 text-[10px] font-bold text-white bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-full shadow-sm ring-2 ring-zinc-900">
             {drafts.length}
           </span>
         )}
       </button>
 
-      {/* Dropdown Menu - Enterprise Design */}
+      {/* Dropdown Menu - Dark Theme */}
       {isOpen && (
-        <div className="absolute top-full left-0 mt-2 w-80 bg-white/95 backdrop-blur-xl rounded-2xl shadow-[0_4px_24px_rgba(0,0,0,0.08),0_12px_48px_rgba(0,0,0,0.05)] border border-zinc-200/60 z-50 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
+        <div className="absolute top-full left-0 mt-2 w-80 bg-zinc-900/95 backdrop-blur-xl rounded-2xl shadow-[0_4px_24px_rgba(0,0,0,0.4),0_12px_48px_rgba(0,0,0,0.3)] border border-zinc-700/60 z-50 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
           {/* Header */}
-          <div className="px-4 py-3.5 bg-gradient-to-b from-zinc-50/80 to-zinc-100/50 border-b border-zinc-200/60 flex items-center justify-between">
+          <div className="px-4 py-3.5 bg-zinc-800/50 border-b border-zinc-700/60 flex items-center justify-between">
             <div className="flex items-center gap-2">
               <div className="w-1.5 h-1.5 rounded-full bg-emerald-500"></div>
-              <span className="text-sm font-semibold text-zinc-700 tracking-tight">Saved Calculations</span>
+              <span className="text-sm font-semibold text-zinc-200 tracking-tight">Saved Calculations</span>
             </div>
             <button
               onClick={() => {
                 setShowSaveModal(true);
                 setIsOpen(false);
               }}
-              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-emerald-600 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200/60 rounded-lg transition-all duration-150 hover:shadow-sm"
+              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-emerald-400 bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/30 rounded-lg transition-all duration-150"
             >
               <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
@@ -141,20 +141,20 @@ export function DraftSelector<T>({
           <div className="max-h-64 overflow-y-auto">
             {drafts.length === 0 ? (
               <div className="px-4 py-10 text-center">
-                <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-gradient-to-br from-zinc-100 to-zinc-200/80 mb-3">
-                  <svg className="w-6 h-6 text-zinc-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-zinc-800 border border-zinc-700 mb-3">
+                  <svg className="w-6 h-6 text-zinc-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
                   </svg>
                 </div>
-                <p className="text-sm font-medium text-zinc-600">No saved calculations yet</p>
-                <p className="text-xs text-zinc-400 mt-1">Click "Save Current" to save your first draft</p>
+                <p className="text-sm font-medium text-zinc-400">No saved calculations yet</p>
+                <p className="text-xs text-zinc-500 mt-1">Click "Save Current" to save your first draft</p>
               </div>
             ) : (
-              <ul className="divide-y divide-zinc-100/80">
+              <ul className="divide-y divide-zinc-800">
                 {drafts.map((draft) => (
                   <li
                     key={draft.id}
-                    className="px-4 py-3.5 hover:bg-gradient-to-r hover:from-emerald-50/50 hover:to-transparent cursor-pointer transition-all duration-150 group"
+                    className="px-4 py-3.5 hover:bg-zinc-800/80 cursor-pointer transition-all duration-150 group"
                     onClick={() => {
                       onSelect(draft);
                       setIsOpen(false);
@@ -162,10 +162,10 @@ export function DraftSelector<T>({
                   >
                     <div className="flex items-center justify-between gap-3">
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium text-zinc-800 truncate group-hover:text-emerald-700 transition-colors">
+                        <p className="text-sm font-medium text-zinc-200 truncate group-hover:text-emerald-400 transition-colors">
                           {draft.name}
                         </p>
-                        <p className="text-xs text-zinc-400 mt-0.5 font-medium">
+                        <p className="text-xs text-zinc-500 mt-0.5">
                           {formatDate(draft.updatedAt)}
                         </p>
                       </div>
@@ -173,8 +173,8 @@ export function DraftSelector<T>({
                         onClick={(e) => handleDelete(draft.id, e)}
                         className={`p-1.5 rounded-lg transition-all duration-150 ${
                           deleteConfirm === draft.id
-                            ? 'bg-red-100 text-red-600 shadow-sm'
-                            : 'opacity-0 group-hover:opacity-100 hover:bg-red-50 text-zinc-400 hover:text-red-500'
+                            ? 'bg-red-500/20 text-red-400'
+                            : 'opacity-0 group-hover:opacity-100 hover:bg-red-500/10 text-zinc-500 hover:text-red-400'
                         }`}
                         title={deleteConfirm === draft.id ? 'Click again to confirm' : 'Delete'}
                       >
@@ -191,20 +191,20 @@ export function DraftSelector<T>({
         </div>
       )}
 
-      {/* Save Modal - Enterprise Design */}
+      {/* Save Modal - Dark Theme */}
       {showSaveModal && (
-        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 animate-in fade-in duration-200">
-          <div className="bg-white/95 backdrop-blur-xl rounded-2xl shadow-[0_8px_40px_rgba(0,0,0,0.12),0_20px_80px_rgba(0,0,0,0.08)] w-full max-w-md mx-4 overflow-hidden border border-zinc-200/60 animate-in zoom-in-95 duration-200">
-            <div className="px-6 py-5 border-b border-zinc-200/60 bg-gradient-to-b from-zinc-50/50 to-transparent">
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 animate-in fade-in duration-200">
+          <div className="bg-zinc-900/95 backdrop-blur-xl rounded-2xl shadow-[0_8px_40px_rgba(0,0,0,0.4),0_20px_80px_rgba(0,0,0,0.3)] w-full max-w-md mx-4 overflow-hidden border border-zinc-700/60 animate-in zoom-in-95 duration-200">
+            <div className="px-6 py-5 border-b border-zinc-800 bg-zinc-800/50">
               <div className="flex items-center gap-3 mb-1">
-                <div className="flex items-center justify-center w-8 h-8 rounded-xl bg-gradient-to-br from-emerald-100 to-emerald-200/80 border border-emerald-200/60">
-                  <svg className="w-4 h-4 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <div className="flex items-center justify-center w-8 h-8 rounded-xl bg-emerald-500/20 border border-emerald-500/30">
+                  <svg className="w-4 h-4 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
                   </svg>
                 </div>
-                <h3 className="text-lg font-bold text-zinc-800 tracking-tight">Save Calculation</h3>
+                <h3 className="text-lg font-bold text-white tracking-tight">Save Calculation</h3>
               </div>
-              <p className="text-sm text-zinc-500 pl-11">
+              <p className="text-sm text-zinc-400 pl-11">
                 Give your calculation a name to easily find it later
               </p>
             </div>
@@ -217,7 +217,7 @@ export function DraftSelector<T>({
                 value={draftName}
                 onChange={(e) => setDraftName(e.target.value)}
                 placeholder="e.g., Villa Canggu 3BR, Investment Option A..."
-                className="w-full px-4 py-3 bg-zinc-50 border border-zinc-200/80 rounded-xl text-zinc-800 placeholder:text-zinc-400 focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-400 focus:bg-white outline-none transition-all duration-200"
+                className="w-full px-4 py-3 bg-zinc-800 border border-zinc-700 rounded-xl text-white placeholder:text-zinc-500 focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500/50 outline-none transition-all duration-200"
                 autoFocus
                 onKeyDown={(e) => {
                   if (e.key === 'Enter') handleSave();
@@ -225,17 +225,17 @@ export function DraftSelector<T>({
                 }}
               />
             </div>
-            <div className="px-6 py-4 bg-gradient-to-b from-zinc-50/80 to-zinc-100/50 flex justify-end gap-3 border-t border-zinc-200/60">
+            <div className="px-6 py-4 bg-zinc-800/30 flex justify-end gap-3 border-t border-zinc-800">
               <button
                 onClick={() => setShowSaveModal(false)}
-                className="px-5 py-2.5 text-sm font-semibold text-zinc-600 hover:text-zinc-800 hover:bg-zinc-200/50 rounded-xl transition-all duration-150"
+                className="px-5 py-2.5 text-sm font-semibold text-zinc-400 hover:text-white hover:bg-zinc-700/50 rounded-xl transition-all duration-150"
               >
                 Cancel
               </button>
               <button
                 onClick={handleSave}
                 disabled={!draftName.trim()}
-                className="px-5 py-2.5 bg-gradient-to-b from-emerald-500 to-emerald-600 hover:from-emerald-400 hover:to-emerald-500 text-white text-sm font-semibold rounded-xl shadow-[0_1px_2px_rgba(0,0,0,0.1),0_2px_8px_rgba(16,185,129,0.25)] hover:shadow-[0_2px_4px_rgba(0,0,0,0.1),0_4px_12px_rgba(16,185,129,0.35)] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:shadow-none transition-all duration-200"
+                className="px-5 py-2.5 bg-gradient-to-b from-emerald-500 to-emerald-600 hover:from-emerald-400 hover:to-emerald-500 text-white text-sm font-semibold rounded-xl shadow-[0_1px_2px_rgba(0,0,0,0.2),0_2px_8px_rgba(16,185,129,0.25)] hover:shadow-[0_2px_4px_rgba(0,0,0,0.2),0_4px_12px_rgba(16,185,129,0.35)] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:shadow-none transition-all duration-200"
               >
                 Save Draft
               </button>
