@@ -90,27 +90,35 @@ export function RentalROICalculator() {
 
   // Generate report data for modal
   const reportData = useMemo(() => {
+    // Convert values based on currency rate for display
+    const rate = currency.rate || 1;
+
     return generateRentalROIReport(
       {
-        initialInvestment: assumptions.initialInvestment,
-        y1ADR: assumptions.y1ADR,
+        initialInvestment: assumptions.initialInvestment / rate,
+        y1ADR: assumptions.y1ADR / rate,
         y1Occupancy: assumptions.y1Occupancy,
         adrGrowth: assumptions.adrGrowth,
         incentiveFeePct: assumptions.incentiveFeePct,
         isPropertyReady: assumptions.isPropertyReady,
         propertyReadyDate: assumptions.propertyReadyDate,
       },
-      data,
+      data.map(row => ({
+        ...row,
+        adr: row.adr / rate,
+        totalRevenue: row.totalRevenue / rate,
+        takeHomeProfit: row.takeHomeProfit / rate,
+      })),
       {
-        avgProfit: averages.takeHomeProfit,
+        avgProfit: (averages.takeHomeProfit || 0) / rate,
         avgROI: averages.roiAfterManagement,
-        totalRevenue: data.reduce((s, i) => s + i.totalRevenue, 0),
-        totalProfit: data.reduce((s, i) => s + i.takeHomeProfit, 0),
+        totalRevenue: data.reduce((s, i) => s + i.totalRevenue, 0) / rate,
+        totalProfit: data.reduce((s, i) => s + i.takeHomeProfit, 0) / rate,
         avgGopMargin: averages.gopMargin,
       },
       currency.symbol
     );
-  }, [assumptions, data, averages, currency.symbol]);
+  }, [assumptions, data, averages, currency]);
 
   return (
     <div className="min-h-screen bg-[#0a0a0a] text-white -mx-4 md:-mx-10 lg:-mx-20 -my-8 px-6 py-8">
