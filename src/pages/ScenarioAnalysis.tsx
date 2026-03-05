@@ -6,6 +6,225 @@ import { ScenarioComparatorTable } from '../components/ScenarioComparatorTable';
 import { ScenarioComparisonCharts } from '../components/ScenarioComparisonCharts';
 import { Toast } from '../components/ui/Toast';
 
+// Calculator-specific preview metrics for scenario cards
+const CALCULATOR_PREVIEW_METRICS: Record<string, Array<{
+  key: string;
+  label: string;
+  format: (v: any) => string;
+}>> = {
+  'mortgage': [
+    { key: 'monthlyPayment', label: 'Payment', format: (v) => `$${formatNum(v)}/mo` },
+    { key: 'totalInterest', label: 'Interest', format: (v) => `$${formatNum(v)}` },
+    { key: 'totalInvestment', label: 'Loan', format: (v) => `$${formatNum(v)}` },
+  ],
+  'financing': [
+    { key: 'monthlyPayment', label: 'Payment', format: (v) => `$${formatNum(v)}/mo` },
+    { key: 'totalInterest', label: 'Interest', format: (v) => `$${formatNum(v)}` },
+    { key: 'effectiveRate', label: 'Rate', format: (v) => `${(v || 0).toFixed(2)}%` },
+  ],
+  'rental-roi': [
+    { key: 'roi', label: 'ROI', format: (v) => `${(v || 0).toFixed(1)}%` },
+    { key: 'avgCashFlow', label: 'Profit', format: (v) => `$${formatNum(v)}/yr` },
+    { key: 'totalRevenue', label: '10-Yr Rev', format: (v) => `$${formatNum(v)}` },
+  ],
+  'rental-projection': [
+    { key: 'avgCashFlow', label: 'Net Income', format: (v) => `$${formatNum(v)}/yr` },
+    { key: 'annualRevenue', label: 'Revenue', format: (v) => `$${formatNum(v)}/yr` },
+    { key: 'occupancyRate', label: 'Occupancy', format: (v) => `${(v || 0).toFixed(0)}%` },
+  ],
+  'cashflow': [
+    { key: 'avgCashFlow', label: 'Cash Flow', format: (v) => `$${formatNum(v)}/mo` },
+    { key: 'annualCashFlow', label: 'Annual', format: (v) => `$${formatNum(v)}` },
+    { key: 'expenseRatio', label: 'Expenses', format: (v) => `${(v || 0).toFixed(1)}%` },
+  ],
+  'cap-rate': [
+    { key: 'capRate', label: 'Cap Rate', format: (v) => `${(v || 0).toFixed(2)}%` },
+    { key: 'noi', label: 'NOI', format: (v) => `$${formatNum(v)}` },
+    { key: 'grm', label: 'GRM', format: (v) => (v || 0).toFixed(1) },
+  ],
+  'xirr': [
+    { key: 'roi', label: 'XIRR', format: (v) => `${(v || 0).toFixed(2)}%` },
+    { key: 'netProfit', label: 'Profit', format: (v) => `$${formatNum(v)}` },
+    { key: 'totalReturn', label: 'Return', format: (v) => `$${formatNum(v)}` },
+  ],
+  'irr': [
+    { key: 'irr', label: 'IRR', format: (v) => `${(v || 0).toFixed(2)}%` },
+    { key: 'npv', label: 'NPV', format: (v) => `$${formatNum(v)}` },
+    { key: 'paybackPeriod', label: 'Payback', format: (v) => `${(v || 0).toFixed(1)} yrs` },
+  ],
+  'npv': [
+    { key: 'npv', label: 'NPV', format: (v) => `$${formatNum(v)}` },
+    { key: 'profitabilityIndex', label: 'PI', format: (v) => (v || 0).toFixed(2) },
+    { key: 'discountRate', label: 'Discount', format: (v) => `${(v || 0).toFixed(1)}%` },
+  ],
+  'dev-feasibility': [
+    { key: 'roi', label: 'ROI', format: (v) => `${(v || 0).toFixed(1)}%` },
+    { key: 'profitMargin', label: 'Margin', format: (v) => `${(v || 0).toFixed(1)}%` },
+    { key: 'projectedValue', label: 'Value', format: (v) => `$${formatNum(v)}` },
+  ],
+  'indonesia-tax': [
+    { key: 'effectiveTaxRate', label: 'Tax Rate', format: (v) => `${(v || 0).toFixed(2)}%` },
+    { key: 'totalTax', label: 'Tax', format: (v) => `$${formatNum(v)}` },
+    { key: 'netIncome', label: 'Net', format: (v) => `$${formatNum(v)}` },
+  ],
+  'dev-budget': [
+    { key: 'variance', label: 'Variance', format: (v) => `${(v || 0).toFixed(1)}%` },
+    { key: 'completionPct', label: 'Complete', format: (v) => `${(v || 0).toFixed(0)}%` },
+    { key: 'actualSpent', label: 'Spent', format: (v) => `$${formatNum(v)}` },
+  ],
+  'risk-assessment': [
+    { key: 'riskScore', label: 'Risk', format: (v) => `${(v || 0).toFixed(0)}/100` },
+    { key: 'roi', label: 'ROI', format: (v) => `${(v || 0).toFixed(1)}%` },
+    { key: 'sharpeRatio', label: 'Sharpe', format: (v) => (v || 0).toFixed(2) },
+  ],
+};
+
+// Default preview metrics
+const DEFAULT_PREVIEW_METRICS = [
+  { key: 'roi', label: 'ROI', format: (v: any) => `${(v || 0).toFixed(1)}%` },
+  { key: 'avgCashFlow', label: 'Cash Flow', format: (v: any) => `$${formatNum(v)}` },
+  { key: 'totalInvestment', label: 'Investment', format: (v: any) => `$${formatNum(v)}` },
+];
+
+// Calculator-specific summary metrics
+const CALCULATOR_SUMMARY_METRICS: Record<string, Array<{
+  key: string;
+  label: string;
+  format: (v: any) => string;
+  showRange?: boolean;
+}>> = {
+  'mortgage': [
+    { key: 'monthlyPayment', label: 'Payment Range', format: (v) => `$${formatNum(v)}/mo`, showRange: true },
+    { key: 'totalInterest', label: 'Interest Range', format: (v) => `$${formatNum(v)}`, showRange: true },
+  ],
+  'financing': [
+    { key: 'monthlyPayment', label: 'Payment Range', format: (v) => `$${formatNum(v)}/mo`, showRange: true },
+    { key: 'effectiveRate', label: 'Rate Range', format: (v) => `${(v || 0).toFixed(2)}%`, showRange: true },
+  ],
+  'rental-roi': [
+    { key: 'roi', label: 'ROI Range', format: (v) => `${(v || 0).toFixed(1)}%`, showRange: true },
+    { key: 'avgCashFlow', label: 'Profit Range', format: (v) => `$${formatNum(v)}/yr`, showRange: true },
+  ],
+  'rental-projection': [
+    { key: 'avgCashFlow', label: 'Income Range', format: (v) => `$${formatNum(v)}/yr`, showRange: true },
+    { key: 'occupancyRate', label: 'Occupancy Range', format: (v) => `${(v || 0).toFixed(0)}%`, showRange: true },
+  ],
+};
+
+function formatNum(value: any): string {
+  const num = Number(value) || 0;
+  if (num >= 1_000_000) return (num / 1_000_000).toFixed(1) + 'M';
+  if (num >= 1_000) return (num / 1_000).toFixed(0) + 'K';
+  return num.toFixed(0);
+}
+
+// Calculate baseline results from project data based on calculator type
+function calculateBaselineResults(project: PortfolioProject): Record<string, any> {
+  const data = project.data || {};
+  const baseResults: Record<string, any> = {
+    roi: project.roi,
+    avgCashFlow: project.avgCashFlow,
+    breakEvenMonths: project.breakEvenMonths,
+    totalInvestment: project.totalInvestment,
+  };
+
+  switch (project.calculatorId) {
+    case 'mortgage':
+    case 'financing': {
+      const principal = data.loanAmount || project.totalInvestment || 0;
+      const annualRate = (data.interestRate || 0) / 100;
+      const monthlyRate = annualRate / 12;
+      const termMonths = (data.loanTermYears || 0) * 12;
+
+      let monthlyPayment = 0;
+      let totalInterest = 0;
+
+      if (monthlyRate > 0 && termMonths > 0 && principal > 0) {
+        monthlyPayment = principal * (monthlyRate * Math.pow(1 + monthlyRate, termMonths)) /
+                        (Math.pow(1 + monthlyRate, termMonths) - 1);
+        totalInterest = (monthlyPayment * termMonths) - principal;
+      } else if (termMonths > 0 && principal > 0) {
+        monthlyPayment = principal / termMonths;
+      }
+
+      return {
+        ...baseResults,
+        totalInvestment: principal,
+        monthlyPayment: Math.round(monthlyPayment),
+        totalInterest: Math.round(totalInterest),
+        totalCost: Math.round(principal + totalInterest),
+        effectiveRate: annualRate * 100,
+      };
+    }
+
+    case 'rental-roi': {
+      const investment = data.initialInvestment || project.totalInvestment || 0;
+      const dailyRate = data.y1ADR || 0;
+      const occupancy = (data.y1Occupancy || 0) / 100;
+      const annualRevenue = dailyRate * 365 * occupancy;
+      const incentiveFee = (data.incentiveFeePct || 0) / 100;
+      const netIncome = annualRevenue * (1 - incentiveFee);
+
+      return {
+        ...baseResults,
+        totalInvestment: investment,
+        avgCashFlow: Math.round(netIncome),
+        annualRevenue: Math.round(annualRevenue),
+        totalRevenue: Math.round(annualRevenue * 10),
+        occupancyRate: data.y1Occupancy || 0,
+      };
+    }
+
+    case 'rental-projection': {
+      const nightlyRate = data.nightlyRate || 0;
+      const occupancy = (data.baseOccupancyRate || 0) / 100;
+      const monthlyExpenses = data.monthlyExpenses || 0;
+      const platformFee = (data.platformFeePercent || 0) / 100;
+      const annualRevenue = nightlyRate * 365 * occupancy * (1 - platformFee);
+      const annualExpenses = monthlyExpenses * 12;
+
+      return {
+        ...baseResults,
+        annualRevenue: Math.round(annualRevenue),
+        avgCashFlow: Math.round(annualRevenue - annualExpenses),
+        occupancyRate: data.baseOccupancyRate || 0,
+        averageNightlyRate: nightlyRate,
+      };
+    }
+
+    case 'cap-rate': {
+      const propertyValue = data.propertyValue || project.totalInvestment || 0;
+      const noi = data.annualNOI || 0;
+      const capRate = propertyValue > 0 ? (noi / propertyValue) * 100 : 0;
+
+      return {
+        ...baseResults,
+        totalInvestment: propertyValue,
+        capRate: capRate,
+        noi: noi,
+        grm: noi > 0 ? propertyValue / noi : 0,
+      };
+    }
+
+    case 'cashflow': {
+      const monthlyIncome = data.monthlyRentalIncome || 0;
+      const totalExpenses = (data.monthlyMortgage || 0) + (data.monthlyMaintenance || 0) +
+                           (data.monthlyPropertyTax || 0) + (data.monthlyInsurance || 0);
+      const monthlyCashFlow = monthlyIncome - totalExpenses;
+
+      return {
+        ...baseResults,
+        avgCashFlow: Math.round(monthlyCashFlow),
+        annualCashFlow: Math.round(monthlyCashFlow * 12),
+        expenseRatio: monthlyIncome > 0 ? (totalExpenses / monthlyIncome) * 100 : 0,
+      };
+    }
+
+    default:
+      return baseResults;
+  }
+}
+
 interface ScenarioAnalysisPageProps {
   projectId: string;
   onBack?: () => void;
@@ -39,17 +258,19 @@ export function ScenarioAnalysisPage({ projectId, onBack }: ScenarioAnalysisPage
 
   const scenarios = project.scenarios || [];
   const selectedScenarios = scenarios.filter(s => selectedScenarioIds.includes(s.id));
+
+  // Get calculator-specific preview metrics
+  const previewMetrics = CALCULATOR_PREVIEW_METRICS[project.calculatorId] || DEFAULT_PREVIEW_METRICS;
+
+  // Calculate baseline results with calculator-specific metrics
+  const baselineResults = useMemo(() => calculateBaselineResults(project), [project]);
+
   const baselineScenario: ProjectScenario = {
     id: project.id,
     name: 'Baseline (Original)',
     baseProjectId: project.id,
     inputs: project.data || {},
-    results: {
-      roi: project.roi,
-      avgCashFlow: project.avgCashFlow,
-      breakEvenMonths: project.breakEvenMonths,
-      totalInvestment: project.totalInvestment,
-    },
+    results: baselineResults,
     createdAt: project.createdAt,
     isBaseline: true,
   };
@@ -145,9 +366,17 @@ export function ScenarioAnalysisPage({ projectId, onBack }: ScenarioAnalysisPage
                   <div className="pr-8">
                     <h3 className="font-semibold text-white">{scenario.name}</h3>
                     <div className="mt-2 space-y-1 text-sm text-zinc-400">
-                      <div>ROI: <span className="text-emerald-400">{(scenario.results.roi || 0).toFixed(1)}%</span></div>
-                      <div>Cash Flow: ${(scenario.results.avgCashFlow || 0).toLocaleString()}</div>
-                      <div>Break-Even: {scenario.results.breakEvenMonths || 0}m</div>
+                      {previewMetrics.map((metric, idx) => {
+                        const value = scenario.results[metric.key];
+                        const hasValue = value !== undefined && value !== null && value !== 0;
+                        return (
+                          <div key={metric.key}>
+                            {metric.label}: <span className={hasValue ? 'text-emerald-400' : 'text-zinc-500'}>
+                              {metric.format(value)}
+                            </span>
+                          </div>
+                        );
+                      })}
                     </div>
                   </div>
 
@@ -262,13 +491,33 @@ export function ScenarioAnalysisPage({ projectId, onBack }: ScenarioAnalysisPage
                 <p>
                   <strong className="text-white">Scenarios Compared:</strong> {selectedScenarios.length + 1} (including baseline)
                 </p>
-                <p>
-                  <strong className="text-white">ROI Range:</strong> <span className="text-emerald-400">{Math.min(baselineScenario.results.roi, ...selectedScenarios.map(s => s.results.roi)).toFixed(1)}%</span> -{' '}
-                  <span className="text-emerald-400">{Math.max(baselineScenario.results.roi, ...selectedScenarios.map(s => s.results.roi)).toFixed(1)}%</span>
-                </p>
-                <p>
-                  <strong className="text-white">Cash Flow Variation:</strong> ${(Math.max(baselineScenario.results.avgCashFlow, ...selectedScenarios.map(s => s.results.avgCashFlow)) - Math.min(baselineScenario.results.avgCashFlow, ...selectedScenarios.map(s => s.results.avgCashFlow))).toLocaleString()}/month
-                </p>
+                {/* Calculator-specific summary metrics */}
+                {(CALCULATOR_SUMMARY_METRICS[project.calculatorId] || [
+                  { key: 'roi', label: 'ROI Range', format: (v: any) => `${(v || 0).toFixed(1)}%`, showRange: true },
+                  { key: 'avgCashFlow', label: 'Cash Flow Range', format: (v: any) => `$${formatNum(v)}`, showRange: true },
+                ]).map((metric) => {
+                  const allValues = [baselineScenario, ...selectedScenarios]
+                    .map(s => Number(s.results[metric.key]) || 0)
+                    .filter(v => !isNaN(v));
+
+                  if (allValues.length === 0 || allValues.every(v => v === 0)) return null;
+
+                  const minVal = Math.min(...allValues);
+                  const maxVal = Math.max(...allValues);
+
+                  return (
+                    <p key={metric.key}>
+                      <strong className="text-white">{metric.label}:</strong>{' '}
+                      <span className="text-emerald-400">{metric.format(minVal)}</span>
+                      {minVal !== maxVal && (
+                        <>
+                          {' - '}
+                          <span className="text-emerald-400">{metric.format(maxVal)}</span>
+                        </>
+                      )}
+                    </p>
+                  );
+                })}
                 <p className="pt-2 italic text-zinc-500">
                   All metrics are based on calculator inputs. Consider external factors when making investment decisions.
                 </p>
