@@ -793,8 +793,8 @@ function getMetricsForCategory(
     }
 
     // ===== XIRR =====
-    case 'xirr':
-      return [
+    case 'xirr': {
+      const metrics = [
         {
           label: 'Total Investment',
           value: formatCurrency(project.data?.result?.totalInvested || project.data?.property?.totalPrice || project.totalInvestment || 0),
@@ -820,16 +820,19 @@ function getMetricsForCategory(
           value: `${project.data?.result?.holdPeriodMonths || (project.data?.exit?.holdPeriodYears || 0) * 12 || 0} months`,
           color: colors.gray,
         },
-        {
-          label: 'Total Return',
-          value: formatCurrency(project.data?.result?.totalReturn || 0),
-          color: colors.success,
-        },
       ];
+      if (strategyMetric) metrics.push(strategyMetric);
+      else metrics.push({
+        label: 'Total Return',
+        value: formatCurrency(project.data?.result?.totalReturn || 0),
+        color: colors.success,
+      });
+      return metrics;
+    }
 
     // ===== CAP RATE =====
-    case 'cap-rate':
-      return [
+    case 'cap-rate': {
+      const metrics = [
         {
           label: 'Property Value',
           value: formatCurrency(project.data?.propertyValue || project.totalInvestment || 0),
@@ -855,16 +858,19 @@ function getMetricsForCategory(
           value: formatCurrency((project.data?.monthlyRent || 0) * 12 || project.data?.result?.grossRevenue || 0),
           color: colors.blue,
         },
-        {
-          label: 'Expense Ratio',
-          value: `${(project.data?.result?.expenseRatio || 0).toFixed(1)}%`,
-          color: colors.gray,
-        },
       ];
+      if (strategyMetric) metrics.push(strategyMetric);
+      else metrics.push({
+        label: 'Expense Ratio',
+        value: `${(project.data?.result?.expenseRatio || 0).toFixed(1)}%`,
+        color: colors.gray,
+      });
+      return metrics;
+    }
 
     // ===== IRR =====
-    case 'irr':
-      return [
+    case 'irr': {
+      const metrics = [
         {
           label: 'Total Investment',
           value: formatCurrency(project.data?.result?.totalInvested || project.totalInvestment || 0),
@@ -890,16 +896,19 @@ function getMetricsForCategory(
           value: formatCurrency(project.data?.result?.totalReturn || 0),
           color: colors.success,
         },
-        {
-          label: 'ROI Multiple',
-          value: `${(project.data?.result?.roiMultiple || 0).toFixed(2)}x`,
-          color: (project.data?.result?.roiMultiple || 0) >= 1.5 ? colors.success : colors.warning,
-        },
       ];
+      if (strategyMetric) metrics.push(strategyMetric);
+      else metrics.push({
+        label: 'ROI Multiple',
+        value: `${(project.data?.result?.roiMultiple || 0).toFixed(2)}x`,
+        color: (project.data?.result?.roiMultiple || 0) >= 1.5 ? colors.success : colors.warning,
+      });
+      return metrics;
+    }
 
     // ===== DEV FEASIBILITY =====
-    case 'dev-feasibility':
-      return [
+    case 'dev-feasibility': {
+      const metrics = [
         {
           label: 'Total Project Cost',
           value: formatCurrency(project.data?.scenarios?.[0]?.totalProjectCost || project.data?.totalProjectCost || project.totalInvestment || 0),
@@ -925,20 +934,23 @@ function getMetricsForCategory(
           value: `${(project.data?.scenarios?.[0]?.profitMargin || 0).toFixed(1)}%`,
           color: colors.blue,
         },
-        {
-          label: 'Land Cost',
-          value: formatCurrency(project.data?.landCost || project.data?.scenarios?.[0]?.landCost || 0),
-          color: colors.gray,
-        },
       ];
+      if (strategyMetric) metrics.push(strategyMetric);
+      else metrics.push({
+        label: 'Land Cost',
+        value: formatCurrency(project.data?.landCost || project.data?.scenarios?.[0]?.landCost || 0),
+        color: colors.gray,
+      });
+      return metrics;
+    }
 
     // ===== CASHFLOW =====
-    case 'cashflow':
+    case 'cashflow': {
       const income = project.data?.monthlyRentalIncome || 0;
       const expenses = (project.data?.monthlyMortgage || 0) + (project.data?.monthlyMaintenance || 0) +
                       (project.data?.monthlyPropertyTax || 0) + (project.data?.monthlyInsurance || 0);
       const netMonthly = income - expenses;
-      return [
+      const metrics = [
         {
           label: 'Monthly Rental',
           value: formatCurrency(project.data?.monthlyRentalIncome || 0),
@@ -959,17 +971,15 @@ function getMetricsForCategory(
           value: formatCurrency((project.avgCashFlow || 0) * 12),
           color: (project.avgCashFlow || 0) > 0 ? colors.success : colors.danger,
         },
-        {
-          label: 'Maintenance',
-          value: formatCurrency(project.data?.monthlyMaintenance || 0),
-          color: colors.gray,
-        },
-        {
-          label: 'Cash on Cash',
-          value: `${(project.roi || 0).toFixed(1)}%`,
-          color: (project.roi || 0) >= 8 ? colors.success : colors.warning,
-        },
       ];
+      if (strategyMetric) metrics.push(strategyMetric);
+      else metrics.push({
+        label: 'Maintenance',
+        value: formatCurrency(project.data?.monthlyMaintenance || 0),
+        color: colors.gray,
+      });
+      return metrics;
+    }
   }
 
   // Fall back to category-based metrics
