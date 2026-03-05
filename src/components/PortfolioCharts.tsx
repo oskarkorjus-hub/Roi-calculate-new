@@ -210,9 +210,9 @@ export function PortfolioCharts({ projects }: PortfolioChartsProps) {
                     backgroundColor: '#27272a',
                     border: '1px solid #3f3f46',
                     borderRadius: '8px',
-                    color: '#fff'
                   }}
                   labelStyle={{ color: '#a1a1aa' }}
+                  itemStyle={{ color: '#fff' }}
                 />
               </PieChart>
             </ResponsiveContainer>
@@ -234,9 +234,9 @@ export function PortfolioCharts({ projects }: PortfolioChartsProps) {
                     backgroundColor: '#27272a',
                     border: '1px solid #3f3f46',
                     borderRadius: '8px',
-                    color: '#fff'
                   }}
                   labelStyle={{ color: '#a1a1aa' }}
+                  itemStyle={{ color: '#fff' }}
                 />
                 <Scatter name="Projects" data={scoreVsROI} fill="#8b5cf6" />
               </ScatterChart>
