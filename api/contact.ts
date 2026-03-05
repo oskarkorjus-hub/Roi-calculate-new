@@ -75,7 +75,7 @@ export default async function handler(request: Request) {
 
   const apiToken = process.env.POSTMARK_API_TOKEN;
   const fromAddress = process.env.POSTMARK_FROM_EMAIL || 'reports@investlandgroup.com';
-  const toAddress = process.env.CONTACT_EMAIL || 'hello@investlandgroup.com';
+  const toAddress = process.env.CONTACT_EMAIL || 'reports@investlandgroup.com';
 
   if (!apiToken) {
     return new Response(JSON.stringify({ error: 'Email service not configured' }), {
