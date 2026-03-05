@@ -335,13 +335,19 @@ function calculateScenarioResults(inputs: Record<string, any>, calculatorId: str
       const contingency = data.contingency || 0;
       const financing = data.financing || 0;
       const marketing = data.marketing || 0;
-      const contingencyPercent = data.contingencyPercent || 0;
+
+      // Actual costs
+      const landCostActual = data.landCostActual || 0;
+      const constructionHardActual = data.constructionHardActual || 0;
+      const softCostsActual = data.softCostsActual || 0;
+      const contingencyUsed = data.contingencyUsed || 0;
+      const financingActual = data.financingActual || 0;
+      const marketingActual = data.marketingActual || 0;
 
       const totalBudget = landCost + constructionHard + softCosts + contingency + financing + marketing;
-      const actualSpent = data.actualSpent || data.landCostActual || 0;
+      const actualSpent = landCostActual + constructionHardActual + softCostsActual + contingencyUsed + financingActual + marketingActual;
       const variance = totalBudget > 0 ? ((actualSpent - totalBudget) / totalBudget) * 100 : 0;
       const completionPct = data.completionPct || 0;
-      const contingencyUsed = data.contingencyUsed || 0;
       const contingencyRemaining = contingency - contingencyUsed;
 
       return {
@@ -351,8 +357,8 @@ function calculateScenarioResults(inputs: Record<string, any>, calculatorId: str
         actualSpent: Math.round(actualSpent),
         variance: variance,
         completionPct: completionPct,
-        contingencyPercent: contingencyPercent,
         contingencyRemaining: Math.round(contingencyRemaining),
+        contingencyUsed: Math.round(contingencyUsed),
         landCost: Math.round(landCost),
         constructionCost: Math.round(constructionHard),
         softCosts: Math.round(softCosts),
@@ -552,10 +558,19 @@ function calculateBaselineResults(project: PortfolioProject): Record<string, any
       const financing = data.financing || 0;
       const marketing = data.marketing || 0;
 
+      // Actual costs
+      const landCostActual = data.landCostActual || 0;
+      const constructionHardActual = data.constructionHardActual || 0;
+      const softCostsActual = data.softCostsActual || 0;
+      const contingencyUsed = data.contingencyUsed || 0;
+      const financingActual = data.financingActual || 0;
+      const marketingActual = data.marketingActual || 0;
+
       const totalBudget = landCost + constructionHard + softCosts + contingency + financing + marketing;
-      const actualSpent = data.actualSpent || 0;
+      const actualSpent = landCostActual + constructionHardActual + softCostsActual + contingencyUsed + financingActual + marketingActual;
       const variance = totalBudget > 0 ? ((actualSpent - totalBudget) / totalBudget) * 100 : 0;
       const completionPct = data.completionPct || 0;
+      const contingencyRemaining = contingency - contingencyUsed;
 
       return {
         ...baseResults,
@@ -564,6 +579,7 @@ function calculateBaselineResults(project: PortfolioProject): Record<string, any
         actualSpent: Math.round(actualSpent),
         variance: variance,
         completionPct: completionPct,
+        contingencyRemaining: Math.round(contingencyRemaining),
         landCost: Math.round(landCost),
         constructionCost: Math.round(constructionHard),
         softCosts: Math.round(softCosts),
