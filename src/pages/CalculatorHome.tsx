@@ -34,9 +34,9 @@ export function CalculatorHome({ onSelectCalculator }: CalculatorHomeProps) {
 
   return (
     <div className="min-h-screen bg-[#0a0a0a]">
-      {/* Compact Dashboard Header */}
-      <div className="border-b border-zinc-800">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+      {/* Clean Header */}
+      <div className="border-b border-zinc-800/50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
@@ -44,9 +44,9 @@ export function CalculatorHome({ onSelectCalculator }: CalculatorHomeProps) {
             className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4"
           >
             <div>
-              <h1 className="text-2xl font-bold text-white">Dashboard</h1>
-              <p className="text-zinc-500 text-sm mt-1">
-                Select a calculator to start your analysis
+              <h1 className="text-3xl font-bold text-white">Calculators</h1>
+              <p className="text-zinc-500 mt-2">
+                Professional tools for real estate investment analysis
               </p>
             </div>
 
@@ -54,22 +54,17 @@ export function CalculatorHome({ onSelectCalculator }: CalculatorHomeProps) {
             <div className="flex items-center gap-3">
               <a
                 href="/contact"
-                className="flex items-center gap-2 px-4 py-2 text-sm text-zinc-400 hover:text-white border border-zinc-800 rounded-lg hover:border-zinc-700 transition-all"
+                className="flex items-center gap-2 px-4 py-2.5 text-sm text-zinc-400 hover:text-white border border-zinc-800 rounded-xl hover:border-zinc-700 hover:bg-zinc-900 transition-all"
               >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                Support
+                <span className="material-symbols-outlined text-lg">help</span>
+                <span className="hidden sm:inline">Help</span>
               </a>
               <button
                 onClick={() => setShowSettings(true)}
-                className="flex items-center gap-2 px-4 py-2 text-sm bg-zinc-800 text-white rounded-lg hover:bg-zinc-700 transition-all"
+                className="flex items-center gap-2 px-4 py-2.5 text-sm bg-zinc-900 text-white rounded-xl hover:bg-zinc-800 border border-zinc-800 transition-all"
               >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                </svg>
-                Settings
+                <span className="material-symbols-outlined text-lg">settings</span>
+                <span className="hidden sm:inline">Settings</span>
               </button>
             </div>
           </motion.div>
@@ -115,7 +110,7 @@ export function CalculatorHome({ onSelectCalculator }: CalculatorHomeProps) {
                 <h2 className="text-xl font-bold text-white">Settings</h2>
                 <button
                   onClick={() => setShowSettings(false)}
-                  className="p-2 text-zinc-400 hover:text-white transition-colors"
+                  className="p-2 text-zinc-400 hover:text-white transition-colors rounded-lg hover:bg-zinc-800"
                 >
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -129,7 +124,7 @@ export function CalculatorHome({ onSelectCalculator }: CalculatorHomeProps) {
                 {user && (
                   <div className="space-y-3">
                     <label className="block text-sm font-medium text-zinc-400">Account</label>
-                    <div className="flex items-center justify-between p-4 bg-zinc-800/50 rounded-xl">
+                    <div className="flex items-center justify-between p-4 bg-zinc-800/50 rounded-xl border border-zinc-700/50">
                       <div className="flex items-center gap-3">
                         <div className="w-10 h-10 bg-emerald-500/20 border border-emerald-500/30 rounded-full flex items-center justify-center text-emerald-400 font-bold">
                           {user.name?.charAt(0).toUpperCase() || user.email?.charAt(0).toUpperCase()}
@@ -152,7 +147,7 @@ export function CalculatorHome({ onSelectCalculator }: CalculatorHomeProps) {
                       setDefaultCurrency(e.target.value);
                       localStorage.setItem(CURRENCY_KEY, e.target.value);
                     }}
-                    className="w-full px-4 py-3 bg-zinc-800 border border-zinc-700 rounded-xl text-white focus:outline-none focus:border-emerald-500"
+                    className="w-full px-4 py-3 bg-zinc-800 border border-zinc-700 rounded-xl text-white focus:outline-none focus:border-emerald-500 transition-colors"
                   >
                     <option value="USD">USD - US Dollar</option>
                     <option value="EUR">EUR - Euro</option>
@@ -174,8 +169,9 @@ export function CalculatorHome({ onSelectCalculator }: CalculatorHomeProps) {
                         window.location.reload();
                       }
                     }}
-                    className="w-full px-4 py-3 bg-zinc-800 border border-zinc-700 rounded-xl text-zinc-300 hover:bg-zinc-700 transition-all text-left"
+                    className="w-full px-4 py-3 bg-zinc-800 border border-zinc-700 rounded-xl text-zinc-300 hover:bg-zinc-700 transition-all text-left flex items-center gap-3"
                   >
+                    <span className="material-symbols-outlined text-zinc-500">history</span>
                     Clear Recent History
                   </button>
                 </div>
@@ -188,8 +184,9 @@ export function CalculatorHome({ onSelectCalculator }: CalculatorHomeProps) {
                         await signOut();
                         setShowSettings(false);
                       }}
-                      className="w-full px-4 py-3 bg-red-500/10 border border-red-500/30 rounded-xl text-red-400 hover:bg-red-500/20 transition-all"
+                      className="w-full px-4 py-3 bg-red-500/10 border border-red-500/30 rounded-xl text-red-400 hover:bg-red-500/20 transition-all flex items-center justify-center gap-2"
                     >
+                      <span className="material-symbols-outlined">logout</span>
                       Sign Out
                     </button>
                   </div>
