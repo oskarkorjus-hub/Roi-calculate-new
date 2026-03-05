@@ -360,9 +360,7 @@ function CalculatorCard({ calculator, index }: { calculator: CalculatorFeature; 
   const navigate = useNavigate();
 
   const handleOpenCalculator = () => {
-    localStorage.setItem('baliinvest_active_calculator', calculator.id);
-    localStorage.setItem('baliinvest_active_view', 'calculator');
-    navigate('/calculators');
+    navigate('/pricing');
   };
 
   return (
@@ -485,12 +483,12 @@ function CalculatorCard({ calculator, index }: { calculator: CalculatorFeature; 
             </div>
           </div>
 
-          {/* Try Calculator Button */}
+          {/* Get Access Button */}
           <button
             onClick={handleOpenCalculator}
             className={`mt-5 w-full py-2.5 ${info.bgLight} ${info.text} rounded-xl font-medium text-sm flex items-center justify-center gap-2 hover:opacity-80 transition-opacity`}
           >
-            Try {calculator.name}
+            Get Access
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
             </svg>
