@@ -4,12 +4,14 @@ import { SaveToPortfolioButton } from '../SaveToPortfolioButton';
 
 type CurrencyType = 'IDR' | 'USD' | 'AUD' | 'EUR' | 'GBP' | 'INR' | 'CNY' | 'AED' | 'RUB';
 
+type CalculatorType = 'xirr' | 'rental-roi' | 'mortgage' | 'cashflow' | 'dev-feasibility' | 'cap-rate' | 'irr' | 'npv' | 'indonesia-tax' | 'rental-projection' | 'financing' | 'dev-budget' | 'risk-assessment';
+
 interface CalculatorToolbarProps {
   currency: CurrencyType;
   onCurrencyChange: (currency: CurrencyType) => void;
   onReset: () => void;
   onOpenReport: () => void;
-  calculatorType: string;
+  calculatorType: CalculatorType;
   projectData: Record<string, unknown>;
   projectName: string;
   showResetConfirm?: boolean;
