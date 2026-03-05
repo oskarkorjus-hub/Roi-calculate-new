@@ -68,10 +68,26 @@ export default async function handler(request: Request) {
   }
 
   try {
-    const { email, pdfBase64, fileName, reportType } = await request.json();
+    const body = await request.json();
+    const { email, pdfBase64, fileName, reportType } = body;
+
+    // Debug: log what we received
+    console.log('Received request:', {
+      hasEmail: !!email,
+      hasFileName: !!fileName,
+      hasPdfBase64: !!pdfBase64,
+      pdfBase64Length: pdfBase64?.length || 0,
+    });
 
     if (!email || !pdfBase64 || !fileName) {
-      return new Response(JSON.stringify({ error: 'Missing required fields' }), {
+      return new Response(JSON.stringify({
+        error: 'Missing required fields',
+        details: {
+          email: !email ? 'missing' : 'ok',
+          pdfBase64: !pdfBase64 ? 'missing' : 'ok',
+          fileName: !fileName ? 'missing' : 'ok',
+        }
+      }), {
         status: 400,
         headers: securityHeaders,
       });

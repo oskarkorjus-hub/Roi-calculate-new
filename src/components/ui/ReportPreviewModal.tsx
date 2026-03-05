@@ -302,6 +302,14 @@ export function ReportPreviewModal({ isOpen, onClose, reportData }: Props) {
       const pdfBase64 = doc.output('datauristring').split(',')[1];
       const fileName = `${reportData.title.replace(/\s+/g, '-')}.pdf`;
 
+      // Debug logging
+      console.log('Email payload:', {
+        email: trimmed,
+        fileName,
+        reportType: reportData.title,
+        pdfBase64Length: pdfBase64?.length || 0,
+      });
+
       const response = await fetch('/api/send-email', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -500,7 +508,7 @@ export function ReportPreviewModal({ isOpen, onClose, reportData }: Props) {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="Enter your email address"
-                  className="flex-1 px-4 py-3 bg-zinc-800 border border-zinc-700 rounded-xl text-white placeholder:text-zinc-500 focus:ring-2 focus:ring-cyan-500 focus:border-transparent outline-none"
+                  className="flex-1 px-4 py-3 bg-zinc-800 border border-zinc-700 rounded-xl text-white placeholder:text-zinc-500 focus:ring-2 focus:ring-cyan-500 focus:border-transparent outline-none [&:-webkit-autofill]:bg-zinc-800 [&:-webkit-autofill]:[-webkit-text-fill-color:white] [&:-webkit-autofill]:[box-shadow:0_0_0_1000px_#27272a_inset] [&:-webkit-autofill]:border-zinc-700"
                   autoFocus
                 />
                 <button
