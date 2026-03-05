@@ -10,8 +10,7 @@ import {
 import { Toast } from '../../components/ui/Toast';
 import { DraftSelector } from '../../components/ui/DraftSelector';
 import { ComparisonView } from '../../components/ui/ComparisonView';
-import { UsageBadge } from '../../components/ui/UsageBadge';
-import { SaveToPortfolioButton } from '../../components/SaveToPortfolioButton';
+import { CalculatorToolbar } from '../../components/ui/CalculatorToolbar';
 import { useAuth } from '../../lib/auth-context';
 import { useComparison } from '../../lib/comparison-context';
 import { ReportView } from './components/ReportView';
@@ -45,7 +44,6 @@ export function XIRRCalculator() {
   } = useInvestment();
 
   const [currentDraftName, setCurrentDraftName] = useState<string | undefined>();
-  const [isSaving, setIsSaving] = useState(false);
   const [showResetConfirm, setShowResetConfirm] = useState(false);
   const { user } = useAuth();
   const { getCount } = useComparison();
@@ -54,19 +52,6 @@ export function XIRRCalculator() {
 
   // Pass user ID to isolate drafts per user
   const { drafts, saveDraft: saveArchivedDraft, deleteDraft } = useArchivedDrafts<InvestmentData>('xirr', user?.id);
-
-  const handleSaveDraft = useCallback(() => {
-    setIsSaving(true);
-    const success = saveDraft();
-    setTimeout(() => {
-      setIsSaving(false);
-      if (success) {
-        setToast({ message: 'Draft saved successfully!', type: 'success' });
-      } else {
-        setToast({ message: 'Failed to save draft', type: 'error' });
-      }
-    }, 300);
-  }, [saveDraft]);
 
   const handleReset = useCallback(() => {
     if (showResetConfirm) {
@@ -178,9 +163,7 @@ export function XIRRCalculator() {
               </div>
             </div>
 
-            <div className="flex items-center gap-4 flex-wrap">
-            <UsageBadge />
-
+          <div className="flex items-center gap-3 flex-wrap">
             {currency !== 'IDR' && (
               <div className="flex items-center gap-3 bg-zinc-800 px-4 py-2 rounded-lg border border-zinc-700">
                 <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">
@@ -203,25 +186,6 @@ export function XIRRCalculator() {
               </div>
             )}
 
-            <div className="flex items-center bg-zinc-800 px-4 py-2 rounded-lg border border-zinc-700">
-              <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest mr-3">Currency</span>
-              <select
-                value={currency}
-                onChange={(e) => updateProperty('currency', e.target.value as 'IDR' | 'USD' | 'AUD' | 'EUR' | 'GBP' | 'INR' | 'CNY' | 'AED' | 'RUB')}
-                className="bg-transparent text-white text-xs font-bold focus:outline-none cursor-pointer"
-              >
-                <option value="IDR" className="bg-zinc-800 text-white">Rp IDR</option>
-                <option value="USD" className="bg-zinc-800 text-white">$ USD</option>
-                <option value="EUR" className="bg-zinc-800 text-white">€ EUR</option>
-                <option value="AUD" className="bg-zinc-800 text-white">A$ AUD</option>
-                <option value="GBP" className="bg-zinc-800 text-white">£ GBP</option>
-                <option value="INR" className="bg-zinc-800 text-white">₹ INR</option>
-                <option value="CNY" className="bg-zinc-800 text-white">¥ CNY</option>
-                <option value="AED" className="bg-zinc-800 text-white">د.إ AED</option>
-                <option value="RUB" className="bg-zinc-800 text-white">₽ RUB</option>
-              </select>
-            </div>
-
             {user && (
               <DraftSelector
                 drafts={drafts}
@@ -232,42 +196,15 @@ export function XIRRCalculator() {
               />
             )}
 
-            <button
-              onClick={handleReset}
-              className={`px-3 sm:px-4 py-3 min-h-[44px] rounded-lg text-xs sm:text-sm font-medium transition-all ${
-                showResetConfirm
-                  ? 'bg-red-500 text-white'
-                  : 'bg-zinc-800 text-zinc-300 border border-zinc-700 hover:bg-zinc-700'
-              }`}
-            >
-              {showResetConfirm ? 'Click to Confirm' : 'Reset'}
-            </button>
-
-            <button
-              onClick={handleSaveDraft}
-              disabled={isSaving}
-              className="px-3 sm:px-4 py-3 min-h-[44px] rounded-lg text-xs sm:text-sm font-medium bg-zinc-800 text-zinc-300 border border-zinc-700 hover:bg-zinc-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
-            >
-              {isSaving ? (
-                <>
-                  <svg className="w-3 h-3 animate-spin" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                  </svg>
-                  <span>Saving...</span>
-                </>
-              ) : (
-                <span>Save Draft</span>
-              )}
-            </button>
-
-            <SaveToPortfolioButton
+            <CalculatorToolbar
+              currency={currency}
+              onCurrencyChange={(c) => updateProperty('currency', c as 'IDR' | 'USD' | 'AUD' | 'EUR' | 'GBP' | 'INR' | 'CNY' | 'AED' | 'RUB')}
+              onReset={handleReset}
+              onOpenReport={() => setShowReportView(true)}
               calculatorType="xirr"
-              projectData={{
-                ...data,
-                result,
-              }}
-              defaultProjectName={data.property.projectName || 'XIRR Project'}
+              projectData={{ ...data, result }}
+              projectName={data.property.projectName || 'XIRR Project'}
+              showResetConfirm={showResetConfirm}
             />
           </div>
         </header>

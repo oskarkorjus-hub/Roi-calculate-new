@@ -1,7 +1,6 @@
 import { useState, useCallback, useMemo } from 'react';
 import { Toast } from '../../components/ui/Toast';
-import { UsageBadge } from '../../components/ui/UsageBadge';
-import { SaveToPortfolioButton } from '../../components/SaveToPortfolioButton';
+import { CalculatorToolbar } from '../../components/ui/CalculatorToolbar';
 import { ReportPreviewModal } from '../../components/ui/ReportPreviewModal';
 import { generateDevBudgetReport } from '../../hooks/useReportGenerator';
 import { formatCurrency, parseDecimalInput } from '../../utils/numberParsing';
@@ -279,55 +278,16 @@ export function DevBudgetTracker() {
             </div>
           </div>
 
-          <div className="flex items-center gap-3 flex-wrap">
-            <UsageBadge />
-
-            <div className="flex items-center bg-zinc-800 px-4 py-2 rounded-lg border border-zinc-700">
-              <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest mr-3">Currency</span>
-              <select
-                value={inputs.currency}
-                onChange={(e) => handleInputChange('currency', e.target.value as CurrencyType)}
-                className="bg-transparent text-white text-xs font-bold focus:outline-none cursor-pointer"
-              >
-                <option value="IDR" className="bg-zinc-800 text-white">Rp IDR</option>
-                <option value="USD" className="bg-zinc-800 text-white">$ USD</option>
-                <option value="EUR" className="bg-zinc-800 text-white">€ EUR</option>
-                <option value="AUD" className="bg-zinc-800 text-white">A$ AUD</option>
-                <option value="GBP" className="bg-zinc-800 text-white">£ GBP</option>
-              </select>
-            </div>
-
-            <button
-              onClick={handleReset}
-              className={`px-3 sm:px-4 py-3 min-h-[44px] rounded-lg text-xs sm:text-sm font-medium transition-all ${
-                showResetConfirm
-                  ? 'bg-red-500 text-white'
-                  : 'bg-zinc-800 text-zinc-300 border border-zinc-700 hover:bg-zinc-700'
-              }`}
-            >
-              {showResetConfirm ? 'Click to Confirm' : 'Reset'}
-            </button>
-
-            <button
-              onClick={() => setShowReportModal(true)}
-              className="px-3 sm:px-4 py-3 min-h-[44px] rounded-lg text-xs sm:text-sm font-medium bg-amber-600 text-white hover:bg-amber-700 transition-all flex items-center gap-2"
-            >
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-              </svg>
-              PDF Report
-            </button>
-
-            <SaveToPortfolioButton
-              calculatorType="dev-feasibility"
-              projectData={{
-                ...inputs,
-                calculations,
-              }}
-              defaultProjectName={inputs.projectName}
-              strategy="development"
-            />
-          </div>
+          <CalculatorToolbar
+            currency={inputs.currency}
+            onCurrencyChange={(c) => handleInputChange('currency', c)}
+            onReset={handleReset}
+            onOpenReport={() => setShowReportModal(true)}
+            calculatorType="dev-budget"
+            projectData={{ ...inputs, calculations }}
+            projectName={inputs.projectName || "Development Budget"}
+            showResetConfirm={showResetConfirm}
+          />
         </header>
 
         {/* Project Health Overview */}

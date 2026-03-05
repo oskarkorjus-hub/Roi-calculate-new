@@ -1,8 +1,7 @@
 import { useState, useCallback, useMemo } from 'react';
 import { AdvancedSection } from '../../components/AdvancedSection';
-import { SaveToPortfolioButton } from '../../components/SaveToPortfolioButton';
 import { Toast } from '../../components/ui/Toast';
-import { UsageBadge } from '../../components/ui/UsageBadge';
+import { CalculatorToolbar } from '../../components/ui/CalculatorToolbar';
 import { ReportPreviewModal } from '../../components/ui/ReportPreviewModal';
 import { generateIRRReport } from '../../hooks/useReportGenerator';
 import { parseDecimalInput } from '../../utils/numberParsing';
@@ -46,6 +45,7 @@ export function IRRCalculator() {
   const [alternativeDiscountRate, setAlternativeDiscountRate] = useState(0);
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
   const [showReportModal, setShowReportModal] = useState(false);
+  const [showResetConfirm, setShowResetConfirm] = useState(false);
 
   const calculateNPV = (flows: CashFlow[], rate: number) => {
     return flows.reduce((npv, cf) => {
@@ -186,9 +186,15 @@ export function IRRCalculator() {
   }, [cashFlows]);
 
   const handleReset = useCallback(() => {
-    setCashFlows(INITIAL_CASH_FLOWS);
-    setToast({ message: 'Cash flows reset', type: 'success' });
-  }, []);
+    if (showResetConfirm) {
+      setCashFlows(INITIAL_CASH_FLOWS);
+      setShowResetConfirm(false);
+      setToast({ message: 'All values reset', type: 'success' });
+    } else {
+      setShowResetConfirm(true);
+      setTimeout(() => setShowResetConfirm(false), 3000);
+    }
+  }, [showResetConfirm]);
 
   return (
     <div className="min-h-screen bg-[#0a0a0a] text-white -mx-4 md:-mx-10 lg:-mx-20 -my-8 px-6 py-8">
@@ -223,57 +229,16 @@ export function IRRCalculator() {
             </div>
           </div>
 
-          <div className="flex items-center gap-3 flex-wrap">
-            <UsageBadge />
-
-            <div className="flex items-center bg-zinc-800 px-4 py-2 rounded-lg border border-zinc-700">
-              <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest mr-3">Currency</span>
-              <select
-                value={currency}
-                onChange={(e) => setCurrency(e.target.value as CurrencyType)}
-                className="bg-transparent text-white text-xs font-bold focus:outline-none cursor-pointer"
-              >
-                <option value="IDR" className="bg-zinc-800 text-white">Rp IDR</option>
-                <option value="USD" className="bg-zinc-800 text-white">$ USD</option>
-                <option value="EUR" className="bg-zinc-800 text-white">€ EUR</option>
-                <option value="AUD" className="bg-zinc-800 text-white">A$ AUD</option>
-                <option value="GBP" className="bg-zinc-800 text-white">£ GBP</option>
-                <option value="INR" className="bg-zinc-800 text-white">₹ INR</option>
-                <option value="CNY" className="bg-zinc-800 text-white">¥ CNY</option>
-                <option value="AED" className="bg-zinc-800 text-white">د.إ AED</option>
-                <option value="RUB" className="bg-zinc-800 text-white">₽ RUB</option>
-              </select>
-            </div>
-
-            <button
-              onClick={handleReset}
-              className="px-3 sm:px-4 py-3 min-h-[44px] rounded-lg text-xs sm:text-sm font-medium bg-zinc-800 text-zinc-300 border border-zinc-700 hover:bg-zinc-700 transition-all"
-            >
-              Reset
-            </button>
-
-            <button
-              onClick={() => setShowReportModal(true)}
-              className="px-3 sm:px-4 py-3 min-h-[44px] rounded-lg text-xs sm:text-sm font-medium bg-cyan-600 text-white hover:bg-cyan-700 transition-all flex items-center gap-2"
-            >
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-              </svg>
-              PDF Report
-            </button>
-
-            <SaveToPortfolioButton
-              calculatorType="irr"
-              projectData={{
-                projectName: "IRR Analysis",
-                totalInvestment: result.totalInvested,
-                roi: result.irr,
-                breakEvenMonths: Math.round(result.paybackPeriod * 12),
-                currency: currency,
-              }}
-              defaultProjectName="IRR Analysis"
-            />
-          </div>
+          <CalculatorToolbar
+            currency={currency}
+            onCurrencyChange={(c) => setCurrency(c as CurrencyType)}
+            onReset={handleReset}
+            onOpenReport={() => setShowReportModal(true)}
+            calculatorType="irr"
+            projectData={{ projectName: "IRR Analysis", totalInvestment: result.totalInvested, roi: result.irr, breakEvenMonths: Math.round(result.paybackPeriod * 12), currency }}
+            projectName="IRR Analysis"
+            showResetConfirm={showResetConfirm}
+          />
         </header>
 
         {/* Main Content */}

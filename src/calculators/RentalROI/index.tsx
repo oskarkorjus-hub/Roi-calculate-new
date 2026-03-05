@@ -10,7 +10,7 @@ import ReportView from './components/ReportView';
 import { Toast } from '../../components/ui/Toast';
 import { DraftSelector } from '../../components/ui/DraftSelector';
 import { ComparisonView } from '../../components/ui/ComparisonView';
-import { UsageBadge } from '../../components/ui/UsageBadge';
+import { CalculatorToolbar } from '../../components/ui/CalculatorToolbar';
 import { useArchivedDrafts, type ArchivedDraft } from '../../hooks/useArchivedDrafts';
 import { useAuth } from '../../lib/auth-context';
 
@@ -44,7 +44,6 @@ export function RentalROICalculator() {
     return INITIAL_ASSUMPTIONS;
   });
 
-  const [isSaving, setIsSaving] = useState(false);
   const [showResetConfirm, setShowResetConfirm] = useState(false);
   const [resetKey, setResetKey] = useState(0);
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
@@ -52,21 +51,6 @@ export function RentalROICalculator() {
 
   // Pass user ID to isolate drafts per user
   const { drafts, saveDraft: saveArchivedDraft, deleteDraft } = useArchivedDrafts<Assumptions>('rental-roi', user?.id);
-
-  const handleSaveDraft = useCallback(() => {
-    setIsSaving(true);
-    try {
-      localStorage.setItem(DRAFT_STORAGE_KEY, JSON.stringify(assumptions));
-      setTimeout(() => {
-        setIsSaving(false);
-        setToast({ message: 'Draft saved successfully!', type: 'success' });
-      }, 300);
-    } catch (e) {
-      console.error('Failed to save draft:', e);
-      setIsSaving(false);
-      setToast({ message: 'Failed to save draft', type: 'error' });
-    }
-  }, [assumptions]);
 
   const handleReset = useCallback(() => {
     if (showResetConfirm) {
@@ -143,22 +127,7 @@ export function RentalROICalculator() {
             </div>
           </div>
 
-          <div className="flex items-center gap-4 flex-wrap">
-            <UsageBadge />
-
-            <div className="flex items-center gap-3 bg-zinc-800 px-4 py-2 rounded-lg border border-zinc-700">
-              <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">Currency</span>
-              <select
-                value={currencyCode}
-                onChange={(e) => setCurrencyCode(e.target.value as CurrencyCode)}
-                className="bg-transparent text-white text-xs font-bold focus:outline-none cursor-pointer appearance-none pr-4"
-              >
-                {Object.values(CURRENCIES).map(c => (
-                  <option key={c.code} value={c.code} className="bg-zinc-800 text-white">{c.symbol} {c.code}</option>
-                ))}
-              </select>
-            </div>
-
+          <div className="flex items-center gap-3 flex-wrap">
             {user && (
               <DraftSelector
                 drafts={drafts}
@@ -169,34 +138,16 @@ export function RentalROICalculator() {
               />
             )}
 
-            <button
-              onClick={handleReset}
-              className={`px-3 sm:px-4 py-3 min-h-[44px] rounded-lg text-xs sm:text-sm font-medium transition-all ${
-                showResetConfirm
-                  ? 'bg-red-500 text-white'
-                  : 'bg-zinc-800 text-zinc-300 border border-zinc-700 hover:bg-zinc-700'
-              }`}
-            >
-              {showResetConfirm ? 'Click to Confirm' : 'Reset'}
-            </button>
-
-            <button
-              onClick={handleSaveDraft}
-              disabled={isSaving}
-              className="px-3 sm:px-4 py-3 min-h-[44px] rounded-lg text-xs sm:text-sm font-medium bg-zinc-800 text-zinc-300 border border-zinc-700 hover:bg-zinc-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
-            >
-              {isSaving ? (
-                <>
-                  <svg className="w-3 h-3 animate-spin" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                  </svg>
-                  <span>Saving...</span>
-                </>
-              ) : (
-                <span>Save Draft</span>
-              )}
-            </button>
+            <CalculatorToolbar
+              currency={currencyCode as 'IDR' | 'USD' | 'AUD' | 'EUR' | 'GBP'}
+              onCurrencyChange={(c) => setCurrencyCode(c as CurrencyCode)}
+              onReset={handleReset}
+              onOpenReport={() => setView('report')}
+              calculatorType="rental-roi"
+              projectData={{ ...assumptions, data, averages }}
+              projectName="10 Year Annualized ROI"
+              showResetConfirm={showResetConfirm}
+            />
           </div>
         </header>
 
