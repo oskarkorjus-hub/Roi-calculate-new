@@ -68,7 +68,21 @@ export default async function handler(request: Request) {
   }
 
   try {
-    const body = await request.json();
+    // Get the raw body text first to check size
+    const bodyText = await request.text();
+    console.log('Raw body length:', bodyText.length);
+
+    let body;
+    try {
+      body = JSON.parse(bodyText);
+    } catch (parseError) {
+      console.error('JSON parse error:', parseError);
+      return new Response(JSON.stringify({ error: 'Invalid JSON in request body' }), {
+        status: 400,
+        headers: securityHeaders,
+      });
+    }
+
     const { email, pdfBase64, fileName, reportType } = body;
 
     // Debug: log what we received
@@ -77,6 +91,7 @@ export default async function handler(request: Request) {
       hasFileName: !!fileName,
       hasPdfBase64: !!pdfBase64,
       pdfBase64Length: pdfBase64?.length || 0,
+      reportType,
     });
 
     if (!email || !pdfBase64 || !fileName) {
