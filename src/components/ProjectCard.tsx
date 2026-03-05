@@ -60,6 +60,40 @@ const formatCurrency = (value: number | undefined, short = true) => {
 
 // Calculator-specific metric configurations
 const getCategoryConfig = (calculatorId: string): CategoryConfig => {
+  // Handle specific calculators first before falling through to category-based config
+
+  // Rental Projection specific metrics
+  if (calculatorId === 'rental-projection') {
+    return {
+      category: 'investment',
+      showScore: true,
+      showScoreBreakdown: true,
+      accentColor: '#10b981', // emerald
+      metrics: [
+        {
+          label: 'Revenue',
+          getValue: (p) => formatCurrency(p.data?.result?.annualRevenue || 0),
+          getColor: () => 'text-emerald-400',
+        },
+        {
+          label: 'Net Income',
+          getValue: (p) => formatCurrency(p.data?.result?.annualNetIncome || p.avgCashFlow || 0),
+          getColor: (p) => (p.data?.result?.annualNetIncome || p.avgCashFlow || 0) > 0 ? 'text-emerald-400' : 'text-red-400',
+        },
+        {
+          label: 'Occupancy',
+          getValue: (p) => `${(p.data?.result?.averageOccupancy || p.data?.baseOccupancyRate || 0).toFixed(0)}%`,
+          getColor: (p) => (p.data?.result?.averageOccupancy || p.data?.baseOccupancyRate || 0) >= 70 ? 'text-emerald-400' : 'text-yellow-400',
+        },
+        {
+          label: 'Break-Even',
+          getValue: (p) => `${p.data?.result?.breakEvenMonths || p.breakEvenMonths || 0}mo`,
+          getColor: (p) => (p.data?.result?.breakEvenMonths || p.breakEvenMonths || 0) <= 36 ? 'text-emerald-400' : 'text-orange-400',
+        },
+      ],
+    };
+  }
+
   const category = getCalculatorCategory(calculatorId);
 
   switch (category) {
@@ -220,47 +254,41 @@ const getCategoryConfig = (calculatorId: string): CategoryConfig => {
         accentColor: '#14b8a6', // teal
         metrics: [
           {
-            label: 'Initial Investment',
-            getValue: (p) => formatCurrency(p.data?.result?.totalCashOutflows || p.data?.totalInvestment || p.totalInvestment),
+            label: 'Investment',
+            getValue: (p) => formatCurrency(p.data?.initialInvestment || p.data?.result?.totalCashOutflows || p.totalInvestment),
           },
           {
             label: 'NPV',
             getValue: (p) => {
-              // Calculate NPV from stored data if result not available
               const npv = p.data?.result?.npv;
               if (npv !== undefined) return formatCurrency(npv);
-              // Fallback: estimate from ROI and investment
-              const investment = p.data?.result?.totalCashOutflows || p.totalInvestment || 0;
-              const roi = p.roi || 0;
-              return formatCurrency(investment * (roi / 100));
+              return formatCurrency(0);
             },
             getColor: (p) => {
-              const npv = p.data?.result?.npv ?? (p.totalInvestment * ((p.roi || 0) / 100));
+              const npv = p.data?.result?.npv ?? 0;
               return npv >= 0 ? 'text-emerald-400' : 'text-red-400';
             },
           },
           {
-            label: 'Discount Rate',
-            getValue: (p) => `${(p.data?.discountRate || 10).toFixed(1)}%`,
+            label: 'Discount',
+            getValue: (p) => `${(p.data?.discountRate || 0).toFixed(1)}%`,
           },
           {
-            label: 'Profitability',
+            label: 'PI',
             getValue: (p) => {
               const pi = p.data?.result?.profitabilityIndex;
               if (pi !== undefined) return `${pi.toFixed(2)}x`;
-              // Estimate from ROI if not available
-              const roi = p.roi || 0;
-              return `${(1 + roi / 100).toFixed(2)}x`;
+              return '0.00x';
             },
             getColor: (p) => {
-              const pi = p.data?.result?.profitabilityIndex ?? (1 + (p.roi || 0) / 100);
+              const pi = p.data?.result?.profitabilityIndex ?? 0;
               return pi >= 1 ? 'text-emerald-400' : 'text-red-400';
             },
           },
         ],
       };
 
-    // Investment calculators (rental-roi, xirr, cap-rate, irr, dev-feasibility, rental-projection, cashflow)
+    // Investment calculators (rental-roi, xirr, cap-rate, irr, dev-feasibility, cashflow)
     default:
       return {
         category: 'investment',
