@@ -60,7 +60,8 @@ export default async function handler(request: Request) {
   const apiToken = process.env.POSTMARK_API_TOKEN;
 
   if (!apiToken) {
-    return new Response(JSON.stringify({ error: 'Email service not configured' }), {
+    console.error('POSTMARK_API_TOKEN environment variable is not set');
+    return new Response(JSON.stringify({ error: 'Email service not configured. Please set POSTMARK_API_TOKEN in Vercel environment variables.' }), {
       status: 500,
       headers: securityHeaders,
     });
@@ -140,9 +141,14 @@ export default async function handler(request: Request) {
         headers: securityHeaders,
       });
     } else {
-      // Don't expose internal error details
       console.error('Postmark error:', data);
-      return new Response(JSON.stringify({ error: 'Failed to send email' }), {
+      // Return Postmark error details for debugging
+      const errorMessage = data.Message || data.ErrorCode || 'Failed to send email';
+      return new Response(JSON.stringify({
+        error: errorMessage,
+        errorCode: data.ErrorCode,
+        details: data.Message
+      }), {
         status: 500,
         headers: securityHeaders,
       });

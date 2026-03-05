@@ -300,48 +300,29 @@ export function ReportPreviewModal({ isOpen, onClose, reportData }: Props) {
     try {
       const doc = generatePDF();
       const pdfBase64 = doc.output('datauristring').split(',')[1];
+      const fileName = `${reportData.title.replace(/\s+/g, '-')}.pdf`;
 
       const response = await fetch('/api/send-email', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          to: trimmed,
-          subject: `Your ${reportData.title} Report`,
-          html: `
-            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-              <div style="background: linear-gradient(135deg, #10b981, #06b6d4); padding: 30px; text-align: center;">
-                <h1 style="color: white; margin: 0;">${reportData.title}</h1>
-                ${reportData.subtitle ? `<p style="color: rgba(255,255,255,0.8); margin: 10px 0 0;">${reportData.subtitle}</p>` : ''}
-              </div>
-              <div style="padding: 30px; background: #f9fafb;">
-                <p style="color: #374151; font-size: 16px; line-height: 1.6;">
-                  Your investment analysis report is attached to this email as a PDF.
-                </p>
-                <p style="color: #6b7280; font-size: 14px;">
-                  Generated on ${reportData.generatedDate}
-                </p>
-              </div>
-              <div style="padding: 20px; text-align: center; background: #1f2937;">
-                <p style="color: #9ca3af; font-size: 12px; margin: 0;">
-                  Powered by <strong style="color: #10b981;">ROI Calculate</strong>
-                </p>
-              </div>
-            </div>
-          `,
-          attachments: [{
-            Name: `${reportData.title.replace(/\s+/g, '-')}.pdf`,
-            Content: pdfBase64,
-            ContentType: 'application/pdf',
-          }],
+          email: trimmed,
+          pdfBase64,
+          fileName,
+          reportType: reportData.title,
         }),
       });
 
-      if (!response.ok) throw new Error('Failed to send email');
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || errorData.details || 'Failed to send email');
+      }
 
       setToast({ message: `Report sent to ${trimmed}!`, type: 'success' });
       setTimeout(() => onClose(), 2000);
     } catch (error) {
-      setToast({ message: 'Failed to send email. Try downloading instead.', type: 'error' });
+      const errorMsg = error instanceof Error ? error.message : 'Failed to send email';
+      setToast({ message: `${errorMsg}. Try downloading instead.`, type: 'error' });
     } finally {
       setIsExporting(false);
     }
