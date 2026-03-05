@@ -11,6 +11,7 @@ interface ScenarioCreatorProps {
 }
 
 // Calculator-specific field configurations with friendly labels and descriptions
+// Key can use dot notation for nested paths (e.g., 'property.totalPrice')
 const CALCULATOR_FIELDS: Record<string, Array<{
   key: string;
   label: string;
@@ -22,83 +23,84 @@ const CALCULATOR_FIELDS: Record<string, Array<{
   'mortgage': [
     { key: 'loanAmount', label: 'Loan Amount', type: 'currency', description: 'Total amount borrowed' },
     { key: 'interestRate', label: 'Interest Rate', type: 'percent', suffix: '%', description: 'Annual interest rate' },
-    { key: 'loanTerm', label: 'Loan Term', type: 'years', suffix: ' years', description: 'Length of the loan' },
-    { key: 'propertyTaxRate', label: 'Property Tax Rate', type: 'percent', suffix: '%' },
-    { key: 'homeInsuranceAnnual', label: 'Annual Insurance', type: 'currency' },
+    { key: 'loanTermYears', label: 'Loan Term', type: 'years', suffix: ' years', description: 'Length of the loan' },
+    { key: 'propertyTax', label: 'Property Tax', type: 'currency' },
+    { key: 'insurance', label: 'Annual Insurance', type: 'currency' },
   ],
   'rental-roi': [
-    { key: 'purchasePrice', label: 'Purchase Price', type: 'currency', description: 'Property purchase price' },
-    { key: 'monthlyRent', label: 'Monthly Rent', type: 'currency', description: 'Expected monthly rental income' },
-    { key: 'downPaymentPercent', label: 'Down Payment', type: 'percent', suffix: '%' },
-    { key: 'annualAppreciation', label: 'Annual Appreciation', type: 'percent', suffix: '%' },
-    { key: 'vacancyRate', label: 'Vacancy Rate', type: 'percent', suffix: '%' },
+    { key: 'initialInvestment', label: 'Initial Investment', type: 'currency', description: 'Total initial investment' },
+    { key: 'y1ADR', label: 'Year 1 Daily Rate', type: 'currency', description: 'Average daily rate in year 1' },
+    { key: 'y1Occupancy', label: 'Year 1 Occupancy', type: 'percent', suffix: '%' },
+    { key: 'adrGrowth', label: 'ADR Growth Rate', type: 'percent', suffix: '%' },
+    { key: 'incentiveFeePct', label: 'Incentive Fee', type: 'percent', suffix: '%' },
   ],
   'cashflow': [
     { key: 'monthlyRentalIncome', label: 'Monthly Rental Income', type: 'currency' },
     { key: 'monthlyMortgage', label: 'Monthly Mortgage', type: 'currency' },
-    { key: 'monthlyExpenses', label: 'Monthly Expenses', type: 'currency' },
-    { key: 'vacancyRate', label: 'Vacancy Rate', type: 'percent', suffix: '%' },
-    { key: 'managementFee', label: 'Management Fee', type: 'percent', suffix: '%' },
+    { key: 'monthlyMaintenance', label: 'Monthly Maintenance', type: 'currency' },
+    { key: 'monthlyPropertyTax', label: 'Monthly Property Tax', type: 'currency' },
+    { key: 'monthlyInsurance', label: 'Monthly Insurance', type: 'currency' },
   ],
   'dev-feasibility': [
     { key: 'landCost', label: 'Land Cost', type: 'currency', description: 'Cost of land acquisition' },
     { key: 'constructionCost', label: 'Construction Cost', type: 'currency', description: 'Total build cost' },
-    { key: 'projectTimeline', label: 'Project Timeline', type: 'months', suffix: ' months' },
+    { key: 'softCosts', label: 'Soft Costs', type: 'currency', description: 'Permits, fees, design' },
     { key: 'expectedSalePrice', label: 'Expected Sale Price', type: 'currency' },
-    { key: 'contingency', label: 'Contingency', type: 'percent', suffix: '%' },
+    { key: 'contingencyPercent', label: 'Contingency', type: 'percent', suffix: '%' },
   ],
   'cap-rate': [
     { key: 'propertyValue', label: 'Property Value', type: 'currency' },
-    { key: 'annualRentalIncome', label: 'Annual Rental Income', type: 'currency' },
-    { key: 'operatingExpenses', label: 'Annual Operating Expenses', type: 'currency' },
-    { key: 'vacancyRate', label: 'Vacancy Rate', type: 'percent', suffix: '%' },
+    { key: 'annualNOI', label: 'Annual NOI', type: 'currency' },
+    { key: 'vacancyRatePercent', label: 'Vacancy Rate', type: 'percent', suffix: '%' },
+    { key: 'annualPropertyTaxes', label: 'Annual Property Taxes', type: 'currency' },
+    { key: 'annualInsurance', label: 'Annual Insurance', type: 'currency' },
   ],
   'xirr': [
-    { key: 'initialInvestment', label: 'Initial Investment', type: 'currency' },
-    { key: 'salePrice', label: 'Expected Sale Price', type: 'currency' },
-    { key: 'holdingPeriod', label: 'Holding Period', type: 'months', suffix: ' months' },
-    { key: 'rentalIncome', label: 'Monthly Rental Income', type: 'currency' },
+    { key: 'property.totalPrice', label: 'Total Property Price', type: 'currency' },
+    { key: 'property.propertySize', label: 'Property Size', type: 'number', suffix: ' m²' },
+    { key: 'payment.downPaymentPercent', label: 'Down Payment', type: 'percent', suffix: '%' },
+    { key: 'exit.exitPrice', label: 'Exit Price', type: 'currency' },
+    { key: 'rental.monthlyRate', label: 'Monthly Rental Rate', type: 'currency' },
+    { key: 'rental.occupancyRate', label: 'Occupancy Rate', type: 'percent', suffix: '%' },
   ],
   'irr': [
     { key: 'initialInvestment', label: 'Initial Investment', type: 'currency' },
-    { key: 'annualCashFlow', label: 'Annual Cash Flow', type: 'currency' },
-    { key: 'terminalValue', label: 'Terminal Value', type: 'currency' },
-    { key: 'holdingPeriod', label: 'Holding Period', type: 'years', suffix: ' years' },
+    { key: 'cashFlows', label: 'Annual Cash Flows', type: 'currency', description: 'Comma-separated values' },
+    { key: 'holdingPeriodYears', label: 'Holding Period', type: 'years', suffix: ' years' },
   ],
   'npv': [
     { key: 'initialInvestment', label: 'Initial Investment', type: 'currency' },
     { key: 'discountRate', label: 'Discount Rate', type: 'percent', suffix: '%' },
-    { key: 'annualCashFlow', label: 'Annual Cash Flow', type: 'currency' },
-    { key: 'projectLength', label: 'Project Length', type: 'years', suffix: ' years' },
+    { key: 'cashFlows', label: 'Cash Flows', type: 'currency' },
   ],
   'rental-projection': [
-    { key: 'purchasePrice', label: 'Purchase Price', type: 'currency' },
-    { key: 'averageDailyRate', label: 'Average Daily Rate', type: 'currency' },
-    { key: 'occupancyRate', label: 'Occupancy Rate', type: 'percent', suffix: '%' },
-    { key: 'seasonalAdjustment', label: 'Peak Season Multiplier', type: 'number', suffix: 'x' },
-    { key: 'managementFee', label: 'Management Fee', type: 'percent', suffix: '%' },
+    { key: 'nightlyRate', label: 'Nightly Rate', type: 'currency' },
+    { key: 'baseOccupancyRate', label: 'Base Occupancy', type: 'percent', suffix: '%' },
+    { key: 'projectionYears', label: 'Projection Years', type: 'years', suffix: ' years' },
+    { key: 'monthlyExpenses', label: 'Monthly Expenses', type: 'currency' },
+    { key: 'platformFeePercent', label: 'Platform Fee', type: 'percent', suffix: '%' },
+    { key: 'annualGrowthRate', label: 'Annual Growth Rate', type: 'percent', suffix: '%' },
   ],
   'financing': [
     { key: 'loanAmount', label: 'Loan Amount', type: 'currency' },
     { key: 'interestRate', label: 'Interest Rate', type: 'percent', suffix: '%' },
-    { key: 'loanTerm', label: 'Loan Term', type: 'years', suffix: ' years' },
+    { key: 'loanTermYears', label: 'Loan Term', type: 'years', suffix: ' years' },
     { key: 'downPayment', label: 'Down Payment', type: 'currency' },
   ],
   'indonesia-tax': [
-    { key: 'propertyValue', label: 'Property Value', type: 'currency' },
-    { key: 'rentalIncome', label: 'Annual Rental Income', type: 'currency' },
-    { key: 'ownershipType', label: 'Ownership Type', type: 'number' },
+    { key: 'purchasePrice', label: 'Purchase Price', type: 'currency' },
+    { key: 'salePrice', label: 'Sale Price', type: 'currency' },
+    { key: 'holdingPeriodYears', label: 'Holding Period', type: 'years', suffix: ' years' },
+    { key: 'annualRentalIncome', label: 'Annual Rental Income', type: 'currency' },
   ],
   'dev-budget': [
-    { key: 'totalBudget', label: 'Total Budget', type: 'currency' },
-    { key: 'spentToDate', label: 'Spent to Date', type: 'currency' },
-    { key: 'contingency', label: 'Contingency', type: 'percent', suffix: '%' },
-    { key: 'timeline', label: 'Timeline', type: 'months', suffix: ' months' },
+    { key: 'projectName', label: 'Project Name', type: 'number' },
+    { key: 'contingencyPercent', label: 'Contingency', type: 'percent', suffix: '%' },
   ],
   'risk-assessment': [
-    { key: 'investmentAmount', label: 'Investment Amount', type: 'currency' },
+    { key: 'propertyValue', label: 'Property Value', type: 'currency' },
     { key: 'expectedReturn', label: 'Expected Return', type: 'percent', suffix: '%' },
-    { key: 'riskTolerance', label: 'Risk Tolerance', type: 'number' },
+    { key: 'investmentHorizon', label: 'Investment Horizon', type: 'years', suffix: ' years' },
   ],
 };
 
@@ -116,6 +118,28 @@ const DEFAULT_FIELDS: Array<{
   { key: 'timeline', label: 'Timeline', type: 'years', suffix: ' years' },
 ];
 
+// Helper to get nested value from object using dot notation
+const getNestedValue = (obj: any, path: string): any => {
+  if (!obj || !path) return undefined;
+  return path.split('.').reduce((current, key) => current?.[key], obj);
+};
+
+// Helper to set nested value in object using dot notation
+const setNestedValue = (obj: any, path: string, value: any): any => {
+  const keys = path.split('.');
+  const result = { ...obj };
+  let current = result;
+
+  for (let i = 0; i < keys.length - 1; i++) {
+    const key = keys[i];
+    current[key] = { ...current[key] };
+    current = current[key];
+  }
+
+  current[keys[keys.length - 1]] = value;
+  return result;
+};
+
 export function ScenarioCreator({ project, onScenarioCreated, variant = 'default', onClose }: ScenarioCreatorProps) {
   const { createScenario } = useScenarios();
   const [showModal, setShowModal] = useState(false);
@@ -127,24 +151,25 @@ export function ScenarioCreator({ project, onScenarioCreated, variant = 'default
   // Get calculator-specific fields
   const fields = useMemo(() => {
     const calculatorFields = CALCULATOR_FIELDS[project.calculatorId] || DEFAULT_FIELDS;
-    // Filter to only fields that exist in the project data
-    return calculatorFields.filter(field =>
-      project.data && (project.data[field.key] !== undefined || field.key in project.data)
-    );
+    // Filter to only fields that have values in the project data (supports nested paths)
+    return calculatorFields.filter(field => {
+      const value = getNestedValue(project.data, field.key);
+      return value !== undefined && value !== null;
+    });
   }, [project.calculatorId, project.data]);
 
   // Check if there are meaningful changes
   const changedFields = useMemo(() => {
     if (!project.data) return [];
     return fields.filter(field => {
-      const original = project.data[field.key];
-      const current = inputs[field.key];
+      const original = getNestedValue(project.data, field.key);
+      const current = getNestedValue(inputs, field.key);
       return original !== current && current !== undefined && current !== '';
     });
   }, [inputs, project.data, fields]);
 
   const handleInputChange = (key: string, value: any) => {
-    setInputs(prev => ({ ...prev, [key]: value }));
+    setInputs(prev => setNestedValue(prev, key, value));
   };
 
   const handleCreate = async () => {
@@ -260,8 +285,8 @@ export function ScenarioCreator({ project, onScenarioCreated, variant = 'default
                 <div className="space-y-3">
                   {fields.length > 0 ? (
                     fields.map((field) => {
-                      const originalValue = project.data?.[field.key];
-                      const currentValue = inputs[field.key];
+                      const originalValue = getNestedValue(project.data, field.key);
+                      const currentValue = getNestedValue(inputs, field.key);
                       const hasChanged = originalValue !== currentValue && currentValue !== undefined && currentValue !== '';
 
                       return (
