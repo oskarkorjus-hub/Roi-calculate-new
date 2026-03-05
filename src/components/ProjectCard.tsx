@@ -13,6 +13,263 @@ interface ProjectCardProps {
   compact?: boolean;
 }
 
+// Calculator category configuration
+type CalculatorCategory = 'investment' | 'financing' | 'budget' | 'tax' | 'risk' | 'npv';
+
+interface MetricConfig {
+  label: string;
+  getValue: (project: PortfolioProject) => string | number;
+  getColor?: (project: PortfolioProject) => string;
+}
+
+interface CategoryConfig {
+  category: CalculatorCategory;
+  showScore: boolean;
+  showScoreBreakdown: boolean;
+  accentColor: string;
+  metrics: MetricConfig[];
+}
+
+// Get calculator category
+const getCalculatorCategory = (calculatorId: string): CalculatorCategory => {
+  switch (calculatorId) {
+    case 'mortgage':
+    case 'financing':
+      return 'financing';
+    case 'dev-budget':
+      return 'budget';
+    case 'indonesia-tax':
+      return 'tax';
+    case 'risk-assessment':
+      return 'risk';
+    case 'npv':
+      return 'npv';
+    default:
+      return 'investment';
+  }
+};
+
+// Format currency helper
+const formatCurrency = (value: number | undefined, short = true) => {
+  if (!value || value === 0) return '$0';
+  if (short) {
+    if (Math.abs(value) >= 1_000_000) return '$' + (value / 1_000_000).toFixed(1) + 'M';
+    if (Math.abs(value) >= 1_000) return '$' + (value / 1_000).toFixed(0) + 'K';
+  }
+  return '$' + value.toLocaleString();
+};
+
+// Calculator-specific metric configurations
+const getCategoryConfig = (calculatorId: string): CategoryConfig => {
+  const category = getCalculatorCategory(calculatorId);
+
+  switch (category) {
+    case 'financing':
+      return {
+        category: 'financing',
+        showScore: false,
+        showScoreBreakdown: false,
+        accentColor: '#3b82f6', // blue
+        metrics: [
+          {
+            label: 'Loan Amount',
+            getValue: (p) => formatCurrency(p.data?.loanAmount || p.totalInvestment),
+          },
+          {
+            label: 'Monthly Payment',
+            getValue: (p) => formatCurrency(p.data?.result?.monthlyPayment || p.data?.monthlyPayment || 0),
+          },
+          {
+            label: 'Interest Rate',
+            getValue: (p) => `${(p.data?.interestRate || 0).toFixed(2)}%`,
+            getColor: (p) => (p.data?.interestRate || 0) <= 5 ? 'text-emerald-400' : (p.data?.interestRate || 0) <= 8 ? 'text-yellow-400' : 'text-orange-400',
+          },
+          {
+            label: 'Total Interest',
+            getValue: (p) => formatCurrency(p.data?.result?.totalInterest || 0),
+            getColor: () => 'text-orange-400',
+          },
+        ],
+      };
+
+    case 'budget':
+      return {
+        category: 'budget',
+        showScore: false,
+        showScoreBreakdown: false,
+        accentColor: '#eab308', // yellow
+        metrics: [
+          {
+            label: 'Total Budget',
+            getValue: (p) => formatCurrency(p.data?.calculations?.totalBudgeted || p.totalInvestment),
+          },
+          {
+            label: 'Spent',
+            getValue: (p) => formatCurrency(p.data?.calculations?.totalActual || 0),
+          },
+          {
+            label: 'Variance',
+            getValue: (p) => {
+              const variance = p.data?.calculations?.variancePercent || 0;
+              return `${variance > 0 ? '+' : ''}${variance.toFixed(1)}%`;
+            },
+            getColor: (p) => (p.data?.calculations?.variancePercent || 0) > 0 ? 'text-red-400' : 'text-emerald-400',
+          },
+          {
+            label: 'Health',
+            getValue: (p) => `${(p.data?.calculations?.healthScore || 0).toFixed(0)}%`,
+            getColor: (p) => {
+              const score = p.data?.calculations?.healthScore || 0;
+              return score >= 80 ? 'text-emerald-400' : score >= 60 ? 'text-yellow-400' : 'text-red-400';
+            },
+          },
+        ],
+      };
+
+    case 'tax':
+      return {
+        category: 'tax',
+        showScore: false,
+        showScoreBreakdown: false,
+        accentColor: '#f97316', // orange
+        metrics: [
+          {
+            label: 'Property Value',
+            getValue: (p) => formatCurrency(p.data?.purchasePrice || p.totalInvestment),
+          },
+          {
+            label: 'Total Tax',
+            getValue: (p) => formatCurrency(p.data?.result?.totalTaxLiability || 0),
+            getColor: () => 'text-orange-400',
+          },
+          {
+            label: 'Effective Rate',
+            getValue: (p) => `${(p.data?.result?.effectiveTaxRate || 0).toFixed(1)}%`,
+          },
+          {
+            label: 'Net Profit',
+            getValue: (p) => formatCurrency(p.data?.result?.netProfit || 0),
+            getColor: (p) => (p.data?.result?.netProfit || 0) >= 0 ? 'text-emerald-400' : 'text-red-400',
+          },
+        ],
+      };
+
+    case 'risk':
+      return {
+        category: 'risk',
+        showScore: true, // Show risk score instead of investment score
+        showScoreBreakdown: false,
+        accentColor: '#f43f5e', // rose
+        metrics: [
+          {
+            label: 'Investment',
+            getValue: (p) => formatCurrency(p.totalInvestment),
+          },
+          {
+            label: 'Risk Score',
+            getValue: (p) => `${p.data?.result?.riskScore || p.investmentScore || 0}/100`,
+            getColor: (p) => {
+              const score = p.data?.result?.riskScore || p.investmentScore || 0;
+              return score >= 70 ? 'text-emerald-400' : score >= 50 ? 'text-yellow-400' : 'text-red-400';
+            },
+          },
+          {
+            label: 'Risk Level',
+            getValue: (p) => p.data?.result?.riskLevel || 'Unknown',
+            getColor: (p) => {
+              const level = p.data?.result?.riskLevel?.toLowerCase() || '';
+              if (level.includes('low')) return 'text-emerald-400';
+              if (level.includes('medium')) return 'text-yellow-400';
+              return 'text-red-400';
+            },
+          },
+          {
+            label: 'Expected Return',
+            getValue: (p) => `${(p.data?.expectedReturn || p.roi || 0).toFixed(1)}%`,
+            getColor: (p) => (p.data?.expectedReturn || p.roi || 0) >= 15 ? 'text-emerald-400' : 'text-yellow-400',
+          },
+        ],
+      };
+
+    case 'npv':
+      return {
+        category: 'npv',
+        showScore: true,
+        showScoreBreakdown: false,
+        accentColor: '#14b8a6', // teal
+        metrics: [
+          {
+            label: 'Initial Investment',
+            getValue: (p) => formatCurrency(p.data?.result?.totalCashOutflows || p.totalInvestment),
+          },
+          {
+            label: 'NPV',
+            getValue: (p) => formatCurrency(p.data?.result?.npv || 0),
+            getColor: (p) => (p.data?.result?.npv || 0) >= 0 ? 'text-emerald-400' : 'text-red-400',
+          },
+          {
+            label: 'Discount Rate',
+            getValue: (p) => `${(p.data?.discountRate || 0).toFixed(1)}%`,
+          },
+          {
+            label: 'Profitability',
+            getValue: (p) => `${(p.data?.result?.profitabilityIndex || 0).toFixed(2)}x`,
+            getColor: (p) => (p.data?.result?.profitabilityIndex || 0) >= 1 ? 'text-emerald-400' : 'text-red-400',
+          },
+        ],
+      };
+
+    // Investment calculators (rental-roi, xirr, cap-rate, irr, dev-feasibility, rental-projection, cashflow)
+    default:
+      return {
+        category: 'investment',
+        showScore: true,
+        showScoreBreakdown: true,
+        accentColor: '#10b981', // emerald
+        metrics: [
+          {
+            label: 'Investment',
+            getValue: (p) => formatCurrency(p.totalInvestment),
+          },
+          {
+            label: 'ROI',
+            getValue: (p) => `${(p.roi || 0).toFixed(1)}%`,
+            getColor: (p) => (p.roi || 0) >= 15 ? 'text-emerald-400' : (p.roi || 0) >= 8 ? 'text-yellow-400' : 'text-orange-400',
+          },
+          {
+            label: 'Cash Flow',
+            getValue: (p) => formatCurrency(p.avgCashFlow),
+          },
+          {
+            label: 'Break-Even',
+            getValue: (p) => `${p.breakEvenMonths || 0}mo`,
+            getColor: (p) => (p.breakEvenMonths || 0) <= 24 ? 'text-emerald-400' : 'text-orange-400',
+          },
+        ],
+      };
+  }
+};
+
+// Get friendly calculator name
+const getCalculatorDisplayName = (calculatorId: string): string => {
+  const names: Record<string, string> = {
+    'rental-roi': 'Rental ROI',
+    'xirr': 'XIRR',
+    'mortgage': 'Mortgage',
+    'cashflow': 'Cash Flow',
+    'dev-feasibility': 'Dev Feasibility',
+    'cap-rate': 'Cap Rate',
+    'irr': 'IRR',
+    'npv': 'NPV',
+    'indonesia-tax': 'Tax Optimizer',
+    'rental-projection': 'Rental Projection',
+    'financing': 'Financing',
+    'dev-budget': 'Budget Tracker',
+    'risk-assessment': 'Risk Assessment',
+  };
+  return names[calculatorId] || calculatorId?.replace('-', ' ') || 'Calculator';
+};
+
 export function ProjectCard({
   project,
   onDelete,
@@ -21,6 +278,8 @@ export function ProjectCard({
   compact = false,
 }: ProjectCardProps) {
   const [showActions, setShowActions] = useState(false);
+
+  const categoryConfig = getCategoryConfig(project.calculatorId);
 
   const getStrategyConfig = (strategy?: string) => {
     switch (strategy) {
@@ -57,17 +316,10 @@ export function ProjectCard({
     return { label: 'High Risk', color: 'text-red-400' };
   };
 
-  const formatCurrency = (value: number | undefined) => {
-    if (!value || value === 0) return '$0';
-    if (value >= 1_000_000) return '$' + (value / 1_000_000).toFixed(1) + 'M';
-    if (value >= 1_000) return '$' + (value / 1_000).toFixed(0) + 'K';
-    return '$' + value.toFixed(0);
-  };
-
   const strategyConfig = getStrategyConfig(project.strategy);
   const statusConfig = getStatusConfig(project.status);
   const riskInfo = getRiskLabel(project.investmentScore || 0);
-  const scoreColor = getScoreColor(project.investmentScore || 0);
+  const scoreColor = categoryConfig.showScore ? getScoreColor(project.investmentScore || 0) : categoryConfig.accentColor;
 
   // Compact view for dashboards
   if (compact) {
@@ -78,21 +330,23 @@ export function ProjectCard({
             <h3 className="font-semibold text-white truncate text-sm">{project.projectName}</h3>
             <p className="text-xs text-zinc-500 mt-0.5">{project.location}</p>
           </div>
-          <div
-            className="flex-shrink-0 w-10 h-10 rounded-lg flex items-center justify-center font-bold text-sm"
-            style={{ backgroundColor: `${scoreColor}15`, color: scoreColor }}
-          >
-            {Math.round(project.investmentScore || 0)}
-          </div>
+          {categoryConfig.showScore && (
+            <div
+              className="flex-shrink-0 w-10 h-10 rounded-lg flex items-center justify-center font-bold text-sm"
+              style={{ backgroundColor: `${scoreColor}15`, color: scoreColor }}
+            >
+              {Math.round(project.investmentScore || 0)}
+            </div>
+          )}
         </div>
 
         <div className="flex items-center justify-between mt-3 pt-3 border-t border-zinc-800">
           <div className="flex items-center gap-3 text-xs">
             <span className="text-zinc-400">
-              <span className="text-white font-medium">{formatCurrency(project.totalInvestment)}</span>
+              <span className="text-white font-medium">{categoryConfig.metrics[0].getValue(project)}</span>
             </span>
-            <span className={`font-medium ${(project.roi || 0) >= 15 ? 'text-emerald-400' : 'text-orange-400'}`}>
-              {(project.roi || 0).toFixed(1)}% ROI
+            <span className={categoryConfig.metrics[1].getColor?.(project) || 'text-white'}>
+              {categoryConfig.metrics[1].getValue(project)}
             </span>
           </div>
           {onView && (
@@ -131,25 +385,48 @@ export function ProjectCard({
             <div className="flex items-center gap-2 text-xs">
               <span className="text-zinc-500">{project.location}</span>
               <span className="text-zinc-700">•</span>
-              <span className="text-zinc-500 capitalize">{project.calculatorId?.replace('-', ' ')}</span>
+              <span
+                className="px-1.5 py-0.5 rounded text-[10px] font-medium"
+                style={{ backgroundColor: `${categoryConfig.accentColor}20`, color: categoryConfig.accentColor }}
+              >
+                {getCalculatorDisplayName(project.calculatorId)}
+              </span>
             </div>
           </div>
 
-          {/* Score Badge */}
-          <div className="flex-shrink-0 text-right">
-            <div
-              className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg"
-              style={{ backgroundColor: `${scoreColor}12` }}
-            >
-              <span className="text-lg font-bold" style={{ color: scoreColor }}>
-                {Math.round(project.investmentScore || 0)}
-              </span>
-              <span className="text-xs text-zinc-500">/100</span>
+          {/* Score Badge - only for scored calculators */}
+          {categoryConfig.showScore && (
+            <div className="flex-shrink-0 text-right">
+              <div
+                className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg"
+                style={{ backgroundColor: `${scoreColor}12` }}
+              >
+                <span className="text-lg font-bold" style={{ color: scoreColor }}>
+                  {Math.round(project.investmentScore || 0)}
+                </span>
+                <span className="text-xs text-zinc-500">/100</span>
+              </div>
+              <div className={`text-xs font-medium mt-1 ${riskInfo.color}`}>
+                {riskInfo.label}
+              </div>
             </div>
-            <div className={`text-xs font-medium mt-1 ${riskInfo.color}`}>
-              {riskInfo.label}
+          )}
+
+          {/* Category Badge - for non-scored calculators */}
+          {!categoryConfig.showScore && (
+            <div className="flex-shrink-0">
+              <div
+                className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg"
+                style={{ backgroundColor: `${categoryConfig.accentColor}15` }}
+              >
+                <span className="text-sm font-bold" style={{ color: categoryConfig.accentColor }}>
+                  {categoryConfig.category === 'financing' && '💰'}
+                  {categoryConfig.category === 'budget' && '📊'}
+                  {categoryConfig.category === 'tax' && '🧾'}
+                </span>
+              </div>
             </div>
-          </div>
+          )}
         </div>
 
         {/* Status Tag */}
@@ -166,71 +443,84 @@ export function ProjectCard({
         </div>
       </div>
 
-      {/* Metrics Grid */}
+      {/* Calculator-Specific Metrics Grid */}
       <div className="grid grid-cols-4 gap-px bg-zinc-800">
-        <div className="bg-zinc-900 p-3 text-center">
-          <div className="text-xs text-zinc-500 mb-1">Investment</div>
-          <div className="text-sm font-semibold text-white">{formatCurrency(project.totalInvestment)}</div>
-        </div>
-        <div className="bg-zinc-900 p-3 text-center">
-          <div className="text-xs text-zinc-500 mb-1">ROI</div>
-          <div className={`text-sm font-semibold ${(project.roi || 0) >= 15 ? 'text-emerald-400' : (project.roi || 0) >= 8 ? 'text-yellow-400' : 'text-orange-400'}`}>
-            {(project.roi || 0).toFixed(1)}%
+        {categoryConfig.metrics.map((metric, idx) => (
+          <div key={idx} className="bg-zinc-900 p-3 text-center">
+            <div className="text-xs text-zinc-500 mb-1">{metric.label}</div>
+            <div className={`text-sm font-semibold ${metric.getColor?.(project) || 'text-white'}`}>
+              {metric.getValue(project)}
+            </div>
           </div>
-        </div>
-        <div className="bg-zinc-900 p-3 text-center">
-          <div className="text-xs text-zinc-500 mb-1">Cash Flow</div>
-          <div className="text-sm font-semibold text-white">{formatCurrency(project.avgCashFlow)}</div>
-        </div>
-        <div className="bg-zinc-900 p-3 text-center">
-          <div className="text-xs text-zinc-500 mb-1">Break-Even</div>
-          <div className={`text-sm font-semibold ${(project.breakEvenMonths || 0) <= 24 ? 'text-emerald-400' : 'text-orange-400'}`}>
-            {project.breakEvenMonths || 0}mo
-          </div>
-        </div>
+        ))}
       </div>
 
-      {/* Score Breakdown - Compact */}
-      <div className="px-4 py-3 bg-zinc-800/30">
-        <div className="flex items-center gap-2">
-          <div className="flex-1 flex items-center gap-1">
-            <span className="text-xs text-zinc-500 w-8">ROI</span>
-            <div className="flex-1 h-1 bg-zinc-700 rounded-full overflow-hidden">
-              <div
-                className="h-full bg-emerald-500 rounded-full transition-all"
-                style={{ width: `${Math.min(((project.roi_score || 0) / 5) * 100, 100)}%` }}
-              />
+      {/* Score Breakdown - Only for investment calculators */}
+      {categoryConfig.showScoreBreakdown && (
+        <div className="px-4 py-3 bg-zinc-800/30">
+          <div className="flex items-center gap-2">
+            <div className="flex-1 flex items-center gap-1">
+              <span className="text-xs text-zinc-500 w-8">ROI</span>
+              <div className="flex-1 h-1 bg-zinc-700 rounded-full overflow-hidden">
+                <div
+                  className="h-full bg-emerald-500 rounded-full transition-all"
+                  style={{ width: `${Math.min(((project.roi_score || 0) / 5) * 100, 100)}%` }}
+                />
+              </div>
             </div>
-          </div>
-          <div className="flex-1 flex items-center gap-1">
-            <span className="text-xs text-zinc-500 w-8">Cash</span>
-            <div className="flex-1 h-1 bg-zinc-700 rounded-full overflow-hidden">
-              <div
-                className="h-full bg-blue-500 rounded-full transition-all"
-                style={{ width: `${Math.min(((project.cashflow_score || 0) / 3) * 100, 100)}%` }}
-              />
+            <div className="flex-1 flex items-center gap-1">
+              <span className="text-xs text-zinc-500 w-8">Cash</span>
+              <div className="flex-1 h-1 bg-zinc-700 rounded-full overflow-hidden">
+                <div
+                  className="h-full bg-blue-500 rounded-full transition-all"
+                  style={{ width: `${Math.min(((project.cashflow_score || 0) / 3) * 100, 100)}%` }}
+                />
+              </div>
             </div>
-          </div>
-          <div className="flex-1 flex items-center gap-1">
-            <span className="text-xs text-zinc-500 w-8">Stab</span>
-            <div className="flex-1 h-1 bg-zinc-700 rounded-full overflow-hidden">
-              <div
-                className="h-full bg-yellow-500 rounded-full transition-all"
-                style={{ width: `${Math.min(((project.stability_score || 0) / 2) * 100, 100)}%` }}
-              />
+            <div className="flex-1 flex items-center gap-1">
+              <span className="text-xs text-zinc-500 w-8">Stab</span>
+              <div className="flex-1 h-1 bg-zinc-700 rounded-full overflow-hidden">
+                <div
+                  className="h-full bg-yellow-500 rounded-full transition-all"
+                  style={{ width: `${Math.min(((project.stability_score || 0) / 2) * 100, 100)}%` }}
+                />
+              </div>
             </div>
-          </div>
-          <div className="flex-1 flex items-center gap-1">
-            <span className="text-xs text-zinc-500 w-8">Loc</span>
-            <div className="flex-1 h-1 bg-zinc-700 rounded-full overflow-hidden">
-              <div
-                className="h-full bg-purple-500 rounded-full transition-all"
-                style={{ width: `${Math.min((project.location_score || 0) * 100, 100)}%` }}
-              />
+            <div className="flex-1 flex items-center gap-1">
+              <span className="text-xs text-zinc-500 w-8">Loc</span>
+              <div className="flex-1 h-1 bg-zinc-700 rounded-full overflow-hidden">
+                <div
+                  className="h-full bg-purple-500 rounded-full transition-all"
+                  style={{ width: `${Math.min((project.location_score || 0) * 100, 100)}%` }}
+                />
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      )}
+
+      {/* Budget Progress Bar - Only for budget calculator */}
+      {categoryConfig.category === 'budget' && (
+        <div className="px-4 py-3 bg-zinc-800/30">
+          <div className="flex items-center justify-between text-xs mb-1">
+            <span className="text-zinc-500">Budget Progress</span>
+            <span className="text-zinc-400">
+              {((project.data?.calculations?.totalActual || 0) / (project.data?.calculations?.totalBudgeted || 1) * 100).toFixed(0)}%
+            </span>
+          </div>
+          <div className="h-2 bg-zinc-700 rounded-full overflow-hidden">
+            <div
+              className={`h-full rounded-full transition-all ${
+                (project.data?.calculations?.variancePercent || 0) > 10 ? 'bg-red-500' :
+                (project.data?.calculations?.variancePercent || 0) > 0 ? 'bg-yellow-500' : 'bg-emerald-500'
+              }`}
+              style={{
+                width: `${Math.min(((project.data?.calculations?.totalActual || 0) / (project.data?.calculations?.totalBudgeted || 1) * 100), 100)}%`
+              }}
+            />
+          </div>
+        </div>
+      )}
 
       {/* Footer with Actions */}
       <div className="px-4 py-3 border-t border-zinc-800 flex items-center justify-between">
