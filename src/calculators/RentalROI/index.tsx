@@ -6,20 +6,21 @@ import DashboardHeader from './components/DashboardHeader';
 import TopInputsPanel from './components/TopInputsPanel';
 import AssumptionsPanel from './components/AssumptionsPanel';
 import ProjectionsTable from './components/ProjectionsTable';
-import ReportView from './components/ReportView';
 import { Toast } from '../../components/ui/Toast';
 import { DraftSelector } from '../../components/ui/DraftSelector';
 import { ComparisonView } from '../../components/ui/ComparisonView';
 import { CalculatorToolbar } from '../../components/ui/CalculatorToolbar';
+import { ReportPreviewModal } from '../../components/ui/ReportPreviewModal';
+import { generateRentalROIReport } from '../../hooks/useReportGenerator';
 import { useArchivedDrafts, type ArchivedDraft } from '../../hooks/useArchivedDrafts';
 import { useAuth } from '../../lib/auth-context';
 
 const DRAFT_STORAGE_KEY = 'rental_roi_draft';
 
 export function RentalROICalculator() {
-  const [view, setView] = useState<'dashboard' | 'report'>('dashboard');
   const { user } = useAuth();
   const [showComparison, setShowComparison] = useState(false);
+  const [showReportModal, setShowReportModal] = useState(false);
 
   const [currencyCode, setCurrencyCode] = useState<CurrencyCode>(() => {
     const saved = localStorage.getItem('rental_roi_currency');
@@ -87,19 +88,29 @@ export function RentalROICalculator() {
   const data = useMemo(() => calculateProjections(assumptions), [assumptions]);
   const averages = useMemo(() => calculateAverage(data), [data]);
 
-  if (view === 'report') {
-    return (
-      <ReportView
-        data={data}
-        averages={averages}
-        assumptions={assumptions}
-        currency={currency}
-        user={user}
-        onLogin={() => {}}
-        onBack={() => setView('dashboard')}
-      />
+  // Generate report data for modal
+  const reportData = useMemo(() => {
+    return generateRentalROIReport(
+      {
+        initialInvestment: assumptions.initialInvestment,
+        y1ADR: assumptions.y1ADR,
+        y1Occupancy: assumptions.y1Occupancy,
+        adrGrowth: assumptions.adrGrowth,
+        incentiveFeePct: assumptions.incentiveFeePct,
+        isPropertyReady: assumptions.isPropertyReady,
+        propertyReadyDate: assumptions.propertyReadyDate,
+      },
+      data,
+      {
+        avgProfit: averages.takeHomeProfit,
+        avgROI: averages.roiAfterManagement,
+        totalRevenue: data.reduce((s, i) => s + i.totalRevenue, 0),
+        totalProfit: data.reduce((s, i) => s + i.takeHomeProfit, 0),
+        avgGopMargin: averages.gopMargin,
+      },
+      currency.symbol
     );
-  }
+  }, [assumptions, data, averages, currency.symbol]);
 
   return (
     <div className="min-h-screen bg-[#0a0a0a] text-white -mx-4 md:-mx-10 lg:-mx-20 -my-8 px-6 py-8">
@@ -142,7 +153,7 @@ export function RentalROICalculator() {
               currency={currencyCode as 'IDR' | 'USD' | 'AUD' | 'EUR' | 'GBP'}
               onCurrencyChange={(c) => setCurrencyCode(c as CurrencyCode)}
               onReset={handleReset}
-              onOpenReport={() => setView('report')}
+              onOpenReport={() => setShowReportModal(true)}
               calculatorType="rental-roi"
               projectData={{ ...assumptions, data, averages }}
               projectName="10 Year Annualized ROI"
@@ -163,7 +174,7 @@ export function RentalROICalculator() {
             <div className="flex flex-col items-center justify-center pt-8 pb-20 border-t border-zinc-800 mt-12">
               <button
                 className="bg-emerald-500 hover:bg-emerald-600 text-white px-10 py-5 rounded-2xl text-[13px] font-black uppercase tracking-[0.15em] shadow-xl transition-all active:scale-95 flex items-center gap-4"
-                onClick={() => setView('report')}
+                onClick={() => setShowReportModal(true)}
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -202,6 +213,13 @@ export function RentalROICalculator() {
         isOpen={showComparison}
         onClose={() => setShowComparison(false)}
         calculatorType="rental-roi"
+      />
+
+      {/* Report Preview Modal */}
+      <ReportPreviewModal
+        isOpen={showReportModal}
+        onClose={() => setShowReportModal(false)}
+        reportData={reportData}
       />
     </div>
   );

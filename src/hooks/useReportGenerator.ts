@@ -1369,4 +1369,159 @@ export function generateXIRRReport(
   };
 }
 
+// 10 Year Annualized Rental ROI Report
+export function generateRentalROIReport(
+  assumptions: {
+    initialInvestment: number;
+    y1ADR: number;
+    y1Occupancy: number;
+    adrGrowth: number;
+    incentiveFeePct: number;
+    isPropertyReady: boolean;
+    propertyReadyDate?: string;
+  },
+  data: Array<{
+    year: number;
+    occupancy: number;
+    adr: number;
+    totalRevenue: number;
+    gopMargin: number;
+    takeHomeProfit: number;
+    roiAfterManagement: number;
+  }>,
+  averages: {
+    avgProfit?: number;
+    avgROI?: number;
+    totalRevenue?: number;
+    totalProfit?: number;
+    avgGopMargin?: number;
+  },
+  symbol: string
+): ReportData {
+  // Calculate metrics
+  const avgProfit = averages.avgProfit ?? data.reduce((s, i) => s + i.takeHomeProfit, 0) / data.length;
+  const avgROI = averages.avgROI ?? data.reduce((s, i) => s + i.roiAfterManagement, 0) / data.length;
+  const totalRevenue = averages.totalRevenue ?? data.reduce((s, i) => s + i.totalRevenue, 0);
+  const totalProfit = averages.totalProfit ?? data.reduce((s, i) => s + i.takeHomeProfit, 0);
+  const avgGopMargin = averages.avgGopMargin ?? data.reduce((s, i) => s + i.gopMargin, 0) / data.length;
+  const paybackYears = assumptions.initialInvestment > 0 && totalProfit > 0
+    ? assumptions.initialInvestment / (totalProfit / 10)
+    : 0;
+
+  // Investment rating based on ROI
+  const getInvestmentRating = () => {
+    if (avgROI >= 12) return { grade: 'A+', label: 'Excellent', color: 'emerald' as const };
+    if (avgROI >= 10) return { grade: 'A', label: 'Very Good', color: 'emerald' as const };
+    if (avgROI >= 8) return { grade: 'B+', label: 'Good', color: 'blue' as const };
+    if (avgROI >= 6) return { grade: 'B', label: 'Fair', color: 'cyan' as const };
+    if (avgROI >= 4) return { grade: 'C', label: 'Marginal', color: 'orange' as const };
+    return { grade: 'D', label: 'Poor', color: 'red' as const };
+  };
+
+  const rating = getInvestmentRating();
+
+  const sections: ReportSection[] = [
+    {
+      title: 'Key Metrics',
+      color: 'emerald',
+      type: 'metrics',
+      data: [
+        { label: 'Initial Investment', value: formatCurrency(assumptions.initialInvestment, symbol) },
+        { label: 'Avg Annual Cash Flow', value: formatCurrency(avgProfit, symbol), positive: avgProfit >= 0, negative: avgProfit < 0 },
+        { label: '10Y Total Profit', value: formatCurrency(totalProfit, symbol), positive: totalProfit >= 0, negative: totalProfit < 0 },
+        { label: 'Payback Period', value: paybackYears > 0 ? `${paybackYears.toFixed(1)} years` : 'N/A' },
+      ] as ReportMetric[],
+    },
+    {
+      title: 'Investment Parameters',
+      color: 'blue',
+      type: 'metrics',
+      data: [
+        { label: 'Starting ADR', value: formatCurrency(assumptions.y1ADR, symbol) },
+        { label: 'Y1 Occupancy', value: formatPercent(assumptions.y1Occupancy) },
+        { label: 'ADR Growth', value: `${assumptions.adrGrowth}% p.a.` },
+        { label: 'Incentive Fee', value: formatPercent(assumptions.incentiveFeePct) },
+        ...((!assumptions.isPropertyReady && assumptions.propertyReadyDate) ? [
+          { label: 'Property Ready', value: assumptions.propertyReadyDate }
+        ] : []),
+      ] as ReportMetric[],
+    },
+    {
+      title: 'Operating Performance',
+      color: 'cyan',
+      type: 'metrics',
+      data: [
+        { label: '10Y Gross Revenue', value: formatCurrency(totalRevenue, symbol) },
+        { label: 'Avg GOP Margin', value: `${avgGopMargin.toFixed(1)}%`, positive: avgGopMargin >= 50 },
+        { label: '10Y Net Profit', value: formatCurrency(totalProfit, symbol), positive: totalProfit >= 0 },
+        { label: 'Avg Annual ROI', value: `${avgROI.toFixed(2)}%`, positive: avgROI >= 8 },
+      ] as ReportMetric[],
+    },
+  ];
+
+  // 10-Year Projections Table
+  const tableRows: ReportTableRow[] = [
+    { cells: ['Year', 'Occupancy', 'ADR', 'Revenue', 'GOP', 'Net Profit', 'ROI'] },
+    ...data.map(row => ({
+      cells: [
+        `Year ${row.year}`,
+        `${row.occupancy.toFixed(1)}%`,
+        formatCurrency(row.adr, symbol),
+        formatCurrency(row.totalRevenue, symbol),
+        `${row.gopMargin.toFixed(1)}%`,
+        formatCurrency(row.takeHomeProfit, symbol),
+        `${row.roiAfterManagement.toFixed(2)}%`,
+      ],
+    })),
+    {
+      cells: [
+        'Average',
+        `${(data.reduce((s, r) => s + r.occupancy, 0) / data.length).toFixed(1)}%`,
+        formatCurrency(data.reduce((s, r) => s + r.adr, 0) / data.length, symbol),
+        formatCurrency(data.reduce((s, r) => s + r.totalRevenue, 0) / data.length, symbol),
+        `${avgGopMargin.toFixed(1)}%`,
+        formatCurrency(avgProfit, symbol),
+        `${avgROI.toFixed(2)}%`,
+      ],
+    },
+  ];
+
+  sections.push({
+    title: '10-Year Projections',
+    color: 'purple',
+    type: 'table',
+    data: tableRows,
+  });
+
+  // Summary highlight
+  const summaryText = avgROI >= 8
+    ? `This property projects a ${avgROI.toFixed(2)}% average annual return with ${formatCurrency(totalProfit, symbol)} total profit over 10 years. Strong investment potential.`
+    : avgROI >= 4
+    ? `This property projects a ${avgROI.toFixed(2)}% average annual return. Consider ways to improve occupancy or reduce costs.`
+    : `This property projects a ${avgROI.toFixed(2)}% average annual return. Review assumptions and consider alternative investments.`;
+
+  sections.push({
+    title: 'Investment Summary',
+    color: rating.color,
+    type: 'highlight',
+    data: summaryText,
+  });
+
+  return {
+    calculatorType: 'rental-roi',
+    title: '10-Year Rental ROI Report',
+    subtitle: 'Annualized Return Analysis',
+    currency: symbol,
+    symbol,
+    generatedDate: getDate(),
+    rating: {
+      grade: rating.grade,
+      label: rating.label,
+      value: `${avgROI.toFixed(2)}%`,
+      description: 'Average Annual ROI',
+    },
+    sections,
+  };
+}
+
 export { formatCurrency, formatPercent, getDate };
