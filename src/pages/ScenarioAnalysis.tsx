@@ -118,6 +118,206 @@ function formatNum(value: any): string {
   return num.toFixed(0);
 }
 
+// Calculate scenario results from inputs based on calculator type
+function calculateScenarioResults(inputs: Record<string, any>, calculatorId: string, project: PortfolioProject): Record<string, any> {
+  const data = inputs || {};
+  const baseResults: Record<string, any> = {
+    roi: project.roi,
+    avgCashFlow: project.avgCashFlow,
+    breakEvenMonths: project.breakEvenMonths,
+    totalInvestment: project.totalInvestment,
+  };
+
+  switch (calculatorId) {
+    case 'mortgage':
+    case 'financing': {
+      const principal = data.loanAmount || project.totalInvestment || 0;
+      const annualRate = (data.interestRate || 0) / 100;
+      const monthlyRate = annualRate / 12;
+      // Support both loanTerm (mortgage) and loanTermYears (financing)
+      const termYears = data.loanTerm || data.loanTermYears || 0;
+      const termMonths = termYears * 12;
+
+      let monthlyPayment = 0;
+      let totalInterest = 0;
+
+      if (monthlyRate > 0 && termMonths > 0 && principal > 0) {
+        monthlyPayment = principal * (monthlyRate * Math.pow(1 + monthlyRate, termMonths)) /
+                        (Math.pow(1 + monthlyRate, termMonths) - 1);
+        totalInterest = (monthlyPayment * termMonths) - principal;
+      } else if (termMonths > 0 && principal > 0) {
+        monthlyPayment = principal / termMonths;
+      }
+
+      return {
+        ...baseResults,
+        totalInvestment: principal,
+        monthlyPayment: Math.round(monthlyPayment),
+        totalInterest: Math.round(totalInterest),
+        totalCost: Math.round(principal + totalInterest),
+        effectiveRate: annualRate * 100,
+        roi: annualRate * 100,
+      };
+    }
+
+    case 'rental-roi': {
+      const investment = data.initialInvestment || project.totalInvestment || 0;
+      const dailyRate = data.y1ADR || 0;
+      const occupancy = (data.y1Occupancy || 0) / 100;
+      const annualRevenue = dailyRate * 365 * occupancy;
+      const incentiveFee = (data.incentiveFeePct || 0) / 100;
+      const netIncome = annualRevenue * (1 - incentiveFee);
+      const roi = investment > 0 ? (netIncome / investment) * 100 : 0;
+
+      return {
+        ...baseResults,
+        totalInvestment: investment,
+        roi: roi,
+        avgCashFlow: Math.round(netIncome),
+        annualRevenue: Math.round(annualRevenue),
+        totalRevenue: Math.round(annualRevenue * 10),
+        occupancyRate: data.y1Occupancy || 0,
+      };
+    }
+
+    case 'rental-projection': {
+      const nightlyRate = data.nightlyRate || 0;
+      const occupancy = (data.baseOccupancyRate || 0) / 100;
+      const monthlyExpenses = data.monthlyExpenses || 0;
+      const platformFee = (data.platformFeePercent || 0) / 100;
+      const annualRevenue = nightlyRate * 365 * occupancy * (1 - platformFee);
+      const annualExpenses = monthlyExpenses * 12;
+
+      return {
+        ...baseResults,
+        annualRevenue: Math.round(annualRevenue),
+        avgCashFlow: Math.round(annualRevenue - annualExpenses),
+        occupancyRate: data.baseOccupancyRate || 0,
+        averageNightlyRate: nightlyRate,
+      };
+    }
+
+    case 'cap-rate': {
+      const propertyValue = data.propertyValue || project.totalInvestment || 0;
+      const noi = data.annualNOI || 0;
+      const capRate = propertyValue > 0 ? (noi / propertyValue) * 100 : 0;
+
+      return {
+        ...baseResults,
+        totalInvestment: propertyValue,
+        capRate: capRate,
+        noi: noi,
+        grm: noi > 0 ? propertyValue / noi : 0,
+        roi: capRate,
+      };
+    }
+
+    case 'cashflow': {
+      const monthlyIncome = data.monthlyRentalIncome || 0;
+      const totalExpenses = (data.monthlyMortgage || 0) + (data.monthlyMaintenance || 0) +
+                           (data.monthlyPropertyTax || 0) + (data.monthlyInsurance || 0);
+      const monthlyCashFlow = monthlyIncome - totalExpenses;
+
+      return {
+        ...baseResults,
+        avgCashFlow: Math.round(monthlyCashFlow),
+        annualCashFlow: Math.round(monthlyCashFlow * 12),
+        expenseRatio: monthlyIncome > 0 ? (totalExpenses / monthlyIncome) * 100 : 0,
+      };
+    }
+
+    case 'xirr': {
+      const totalPrice = data.property?.totalPrice || data.totalInvestment || project.totalInvestment || 0;
+      const exitPrice = data.exit?.exitPrice || 0;
+      const monthlyRental = data.rental?.monthlyRate || 0;
+      const occupancy = (data.rental?.occupancyRate || 100) / 100;
+      const netProfit = exitPrice - totalPrice + (monthlyRental * 12 * occupancy);
+      const roi = totalPrice > 0 ? (netProfit / totalPrice) * 100 : 0;
+
+      return {
+        ...baseResults,
+        totalInvestment: totalPrice,
+        roi: roi,
+        totalReturn: exitPrice,
+        netProfit: Math.round(netProfit),
+        avgCashFlow: Math.round(monthlyRental * occupancy),
+      };
+    }
+
+    case 'irr': {
+      const investment = data.initialInvestment || project.totalInvestment || 0;
+      const irr = data.irr || data.roi || 0;
+      const npv = data.npv || 0;
+
+      return {
+        ...baseResults,
+        totalInvestment: investment,
+        irr: irr,
+        npv: npv,
+        roi: irr,
+        paybackPeriod: data.paybackPeriod || data.holdingPeriodYears || 0,
+      };
+    }
+
+    case 'npv': {
+      const investment = data.initialInvestment || project.totalInvestment || 0;
+      const npv = data.npv || 0;
+      const pi = investment > 0 ? (npv + investment) / investment : 0;
+
+      return {
+        ...baseResults,
+        totalInvestment: investment,
+        npv: npv,
+        discountRate: data.discountRate || 0,
+        profitabilityIndex: pi,
+        roi: investment > 0 ? (npv / investment) * 100 : 0,
+      };
+    }
+
+    case 'dev-feasibility': {
+      const landCost = data.landCost || 0;
+      const constructionCost = data.constructionCost || 0;
+      const softCosts = data.softCosts || 0;
+      const contingency = (data.contingencyPercent || 0) / 100;
+      const totalCost = (landCost + constructionCost + softCosts) * (1 + contingency);
+      const salePrice = data.expectedSalePrice || 0;
+      const profit = salePrice - totalCost;
+      const roi = totalCost > 0 ? (profit / totalCost) * 100 : 0;
+
+      return {
+        ...baseResults,
+        totalInvestment: Math.round(totalCost),
+        roi: roi,
+        projectedValue: salePrice,
+        profitMargin: salePrice > 0 ? (profit / salePrice) * 100 : 0,
+        avgCashFlow: Math.round(profit),
+      };
+    }
+
+    case 'indonesia-tax': {
+      const purchasePrice = data.purchasePrice || project.totalInvestment || 0;
+      const salePrice = data.salePrice || 0;
+      const rentalIncome = data.annualRentalIncome || 0;
+      const holdingYears = data.holdingPeriodYears || 1;
+      const capitalGains = salePrice - purchasePrice;
+      const totalIncome = rentalIncome * holdingYears + capitalGains;
+      const estimatedTax = totalIncome * 0.1;
+
+      return {
+        ...baseResults,
+        totalInvestment: purchasePrice,
+        effectiveTaxRate: totalIncome > 0 ? (estimatedTax / totalIncome) * 100 : 0,
+        totalTax: Math.round(estimatedTax),
+        netIncome: Math.round(totalIncome - estimatedTax),
+        roi: purchasePrice > 0 ? ((totalIncome - estimatedTax) / purchasePrice) * 100 : 0,
+      };
+    }
+
+    default:
+      return baseResults;
+  }
+}
+
 // Calculate baseline results from project data based on calculator type
 function calculateBaselineResults(project: PortfolioProject): Record<string, any> {
   const data = project.data || {};
@@ -261,7 +461,16 @@ export function ScenarioAnalysisPage({ projectId, onBack }: ScenarioAnalysisPage
   }
 
   const scenarios = project.scenarios || [];
-  const selectedScenarios = scenarios.filter(s => selectedScenarioIds.includes(s.id));
+
+  // Recalculate scenario results from inputs to ensure they're always up-to-date
+  const scenariosWithRecalculatedResults = useMemo(() => {
+    return scenarios.map(scenario => ({
+      ...scenario,
+      results: calculateScenarioResults(scenario.inputs, project.calculatorId, project),
+    }));
+  }, [scenarios, project]);
+
+  const selectedScenarios = scenariosWithRecalculatedResults.filter(s => selectedScenarioIds.includes(s.id));
 
   // Get calculator-specific preview metrics
   const previewMetrics = CALCULATOR_PREVIEW_METRICS[project.calculatorId] || DEFAULT_PREVIEW_METRICS;

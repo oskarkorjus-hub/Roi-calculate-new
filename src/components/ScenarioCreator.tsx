@@ -25,7 +25,7 @@ const CALCULATOR_FIELDS: Record<string, Array<{
   'mortgage': [
     { key: 'loanAmount', label: 'Loan Amount', type: 'currency', description: 'Total amount borrowed' },
     { key: 'interestRate', label: 'Interest Rate', type: 'percent', suffix: '%', description: 'Annual interest rate' },
-    { key: 'loanTermYears', label: 'Loan Term', type: 'years', suffix: ' years', description: 'Length of the loan' },
+    { key: 'loanTerm', label: 'Loan Term', type: 'years', suffix: ' years', description: 'Length of the loan' },
     { key: 'propertyTax', label: 'Property Tax', type: 'currency' },
     { key: 'insurance', label: 'Annual Insurance', type: 'currency' },
   ],
