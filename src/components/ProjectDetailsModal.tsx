@@ -1,5 +1,7 @@
+import { useState } from 'react';
 import type { PortfolioProject } from '../types/portfolio';
 import { generateProjectPDF } from '../utils/pdfExport';
+import { generateEnterpriseReport, generatePitchDeck } from '../utils/enterprisePdfGenerator';
 import { getScoreColor } from '../utils/investmentScoring';
 
 interface ProjectDetailsModalProps {
@@ -323,6 +325,7 @@ const getCategoryConfig = (calculatorId: string): CategoryConfig => {
 export function ProjectDetailsModal({ project, onClose, onDelete }: ProjectDetailsModalProps) {
   const categoryConfig = getCategoryConfig(project.calculatorId);
   const scoreColor = categoryConfig.showScore ? getScoreColor(project.investmentScore || 0) : categoryConfig.accentColor;
+  const [showExportMenu, setShowExportMenu] = useState(false);
 
   const getRiskLabel = (score: number) => {
     if (score >= 85) return 'Excellent';
@@ -480,31 +483,65 @@ export function ProjectDetailsModal({ project, onClose, onDelete }: ProjectDetai
           </div>
 
           {/* Action Buttons */}
-          <div className="flex gap-3 border-t border-zinc-800 pt-4">
-            <button
-              onClick={onClose}
-              className="flex-1 px-3 sm:px-4 py-3 min-h-[44px] text-zinc-300 border border-zinc-700 rounded-lg hover:bg-zinc-800 transition font-medium text-xs sm:text-sm"
-            >
-              Close
-            </button>
-            <button
-              onClick={() => {
-                generateProjectPDF(project);
-                onClose();
-              }}
-              className="flex-1 px-3 sm:px-4 py-3 min-h-[44px] bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition font-medium text-xs sm:text-sm"
-            >
-              Download PDF
-            </button>
-            <button
-              onClick={() => {
-                onDelete(project.id);
-                onClose();
-              }}
-              className="flex-1 px-3 sm:px-4 py-3 min-h-[44px] bg-red-600 text-white rounded-lg hover:bg-red-700 transition font-medium text-xs sm:text-sm"
-            >
-              Delete
-            </button>
+          <div className="flex flex-col gap-4 border-t border-zinc-800 pt-4">
+            {/* Export Options */}
+            <div className="space-y-2">
+              <div className="text-xs font-medium text-zinc-500 uppercase tracking-wider">Export Options</div>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                <button
+                  onClick={() => {
+                    generateProjectPDF(project);
+                  }}
+                  className="flex items-center justify-center gap-2 px-4 py-3 bg-zinc-800 border border-zinc-700 text-white rounded-lg hover:bg-zinc-700 transition font-medium text-sm"
+                >
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  </svg>
+                  Summary PDF
+                </button>
+                <button
+                  onClick={() => {
+                    generateEnterpriseReport(project);
+                  }}
+                  className="flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-violet-600 to-purple-600 text-white rounded-lg hover:from-violet-700 hover:to-purple-700 transition font-medium text-sm"
+                >
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                  </svg>
+                  Enterprise Report
+                </button>
+                <button
+                  onClick={() => {
+                    generatePitchDeck(project);
+                  }}
+                  className="flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-lg hover:from-amber-600 hover:to-orange-600 transition font-medium text-sm"
+                >
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z" />
+                  </svg>
+                  Pitch Deck
+                </button>
+              </div>
+            </div>
+
+            {/* Main Actions */}
+            <div className="flex gap-3">
+              <button
+                onClick={onClose}
+                className="flex-1 px-3 sm:px-4 py-3 min-h-[44px] text-zinc-300 border border-zinc-700 rounded-lg hover:bg-zinc-800 transition font-medium text-xs sm:text-sm"
+              >
+                Close
+              </button>
+              <button
+                onClick={() => {
+                  onDelete(project.id);
+                  onClose();
+                }}
+                className="flex-1 px-3 sm:px-4 py-3 min-h-[44px] bg-red-600 text-white rounded-lg hover:bg-red-700 transition font-medium text-xs sm:text-sm"
+              >
+                Delete Project
+              </button>
+            </div>
           </div>
         </div>
       </div>

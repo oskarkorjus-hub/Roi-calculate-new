@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import type { PortfolioProject } from '../types/portfolio';
 import { generateProjectPDF } from '../utils/pdfExport';
+import { generateEnterpriseReport, generatePitchDeck } from '../utils/enterprisePdfGenerator';
 import { ScenarioCreator } from './ScenarioCreator';
 import { PitchDeckCustomizer } from './PitchDeckCustomizer';
 import { getScoreColor } from '../utils/investmentScoring';
@@ -278,6 +279,7 @@ export function ProjectCard({
   compact = false,
 }: ProjectCardProps) {
   const [showActions, setShowActions] = useState(false);
+  const [showExportMenu, setShowExportMenu] = useState(false);
 
   const categoryConfig = getCategoryConfig(project.calculatorId);
 
@@ -367,7 +369,10 @@ export function ProjectCard({
     <div
       className="bg-zinc-900 rounded-xl border border-zinc-800 overflow-hidden hover:border-zinc-700/80 transition-all group"
       onMouseEnter={() => setShowActions(true)}
-      onMouseLeave={() => setShowActions(false)}
+      onMouseLeave={() => {
+        setShowActions(false);
+        setShowExportMenu(false);
+      }}
     >
       {/* Header */}
       <div className="p-4 pb-3">
@@ -537,13 +542,62 @@ export function ProjectCard({
               Details
             </button>
           )}
-          <button
-            onClick={() => generateProjectPDF(project)}
-            className="px-3 py-1.5 text-xs font-medium text-zinc-300 hover:text-white hover:bg-zinc-800 rounded-lg transition"
-            title="Download PDF"
-          >
-            PDF
-          </button>
+          {/* Export Dropdown */}
+          <div className="relative">
+            <button
+              onClick={() => setShowExportMenu(!showExportMenu)}
+              className="px-3 py-1.5 text-xs font-medium text-zinc-300 hover:text-white hover:bg-zinc-800 rounded-lg transition flex items-center gap-1"
+              title="Export Options"
+            >
+              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+              </svg>
+              Export
+              <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+            {showExportMenu && (
+              <div className="absolute right-0 mt-1 w-44 bg-zinc-800 border border-zinc-700 rounded-lg shadow-xl z-50 overflow-hidden">
+                <button
+                  onClick={() => {
+                    generateProjectPDF(project);
+                    setShowExportMenu(false);
+                  }}
+                  className="w-full px-3 py-2 text-left text-xs text-zinc-300 hover:bg-zinc-700 flex items-center gap-2"
+                >
+                  <svg className="w-4 h-4 text-zinc-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  </svg>
+                  Summary PDF
+                </button>
+                <button
+                  onClick={() => {
+                    generateEnterpriseReport(project);
+                    setShowExportMenu(false);
+                  }}
+                  className="w-full px-3 py-2 text-left text-xs text-zinc-300 hover:bg-zinc-700 flex items-center gap-2"
+                >
+                  <svg className="w-4 h-4 text-violet-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                  </svg>
+                  Enterprise Report
+                </button>
+                <button
+                  onClick={() => {
+                    generatePitchDeck(project);
+                    setShowExportMenu(false);
+                  }}
+                  className="w-full px-3 py-2 text-left text-xs text-zinc-300 hover:bg-zinc-700 flex items-center gap-2"
+                >
+                  <svg className="w-4 h-4 text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z" />
+                  </svg>
+                  Pitch Deck
+                </button>
+              </div>
+            )}
+          </div>
           <ScenarioCreator project={project} variant="minimal" />
           <PitchDeckCustomizer project={project} variant="minimal" />
           {(project.scenarios?.length ?? 0) > 0 && onViewScenarios && (
