@@ -57,217 +57,404 @@ export function ReportPreviewModal({ isOpen, onClose, reportData }: Props) {
     const pageWidth = doc.internal.pageSize.getWidth();
     const pageHeight = doc.internal.pageSize.getHeight();
     const margin = 20;
-    let y = margin;
+    const contentWidth = pageWidth - 2 * margin;
+    let y = 0;
 
-    // Helper functions
-    const addPage = () => {
-      doc.addPage();
-      y = margin;
+    // Enterprise Color Palette
+    const COLORS = {
+      primary: { r: 16, g: 185, b: 129 },      // emerald-500
+      primaryDark: { r: 5, g: 150, b: 105 },   // emerald-600
+      dark: { r: 24, g: 24, b: 27 },           // zinc-900
+      gray: { r: 113, g: 113, b: 122 },        // zinc-500
+      lightGray: { r: 244, g: 244, b: 245 },   // zinc-100
+      mediumGray: { r: 228, g: 228, b: 231 },  // zinc-200
+      white: { r: 255, g: 255, b: 255 },
+      success: { r: 22, g: 163, b: 74 },       // green-600
+      warning: { r: 217, g: 119, b: 6 },       // amber-600
+      danger: { r: 220, g: 38, b: 38 },        // red-600
     };
 
+    // Helper: Draw gradient header
+    const drawHeader = () => {
+      const headerHeight = 35;
+      // Draw gradient effect with multiple rectangles
+      for (let i = 0; i < headerHeight; i++) {
+        const ratio = i / headerHeight;
+        const r = Math.round(COLORS.primaryDark.r + (COLORS.primary.r - COLORS.primaryDark.r) * ratio * 0.3);
+        const g = Math.round(COLORS.primaryDark.g + (COLORS.primary.g - COLORS.primaryDark.g) * ratio * 0.3);
+        const b = Math.round(COLORS.primaryDark.b + (COLORS.primary.b - COLORS.primaryDark.b) * ratio * 0.3);
+        doc.setFillColor(r, g, b);
+        doc.rect(0, i, pageWidth, 1, 'F');
+      }
+
+      // Logo text
+      doc.setTextColor(COLORS.white.r, COLORS.white.g, COLORS.white.b);
+      doc.setFontSize(14);
+      doc.setFont('helvetica', 'bold');
+      doc.text('ROI CALCULATE', margin, 22);
+
+      // Report type badge on right
+      const badgeText = reportData.calculatorType.replace(/-/g, ' ').toUpperCase();
+      const badgeWidth = doc.getTextWidth(badgeText) + 12;
+      doc.setFillColor(255, 255, 255, 0.2);
+      doc.roundedRect(pageWidth - margin - badgeWidth, 14, badgeWidth, 10, 2, 2, 'F');
+      doc.setFontSize(8);
+      doc.setFont('helvetica', 'bold');
+      doc.text(badgeText, pageWidth - margin - badgeWidth + 6, 21);
+
+      return headerHeight + 10;
+    };
+
+    // Helper: Draw title section
+    const drawTitleSection = (startY: number) => {
+      let currentY = startY;
+
+      // Main title
+      doc.setTextColor(COLORS.dark.r, COLORS.dark.g, COLORS.dark.b);
+      doc.setFontSize(28);
+      doc.setFont('helvetica', 'bold');
+      const titleLines = doc.splitTextToSize(reportData.title, contentWidth);
+      doc.text(titleLines, margin, currentY);
+      currentY += titleLines.length * 10 + 3;
+
+      // Subtitle
+      if (reportData.subtitle) {
+        doc.setTextColor(COLORS.gray.r, COLORS.gray.g, COLORS.gray.b);
+        doc.setFontSize(14);
+        doc.setFont('helvetica', 'normal');
+        doc.text(reportData.subtitle, margin, currentY);
+        currentY += 8;
+      }
+
+      // Generated date
+      doc.setTextColor(COLORS.gray.r, COLORS.gray.g, COLORS.gray.b);
+      doc.setFontSize(10);
+      doc.setFont('helvetica', 'normal');
+      doc.text(`Generated: ${reportData.generatedDate}`, margin, currentY);
+      currentY += 12;
+
+      return currentY;
+    };
+
+    // Helper: Draw investment grade card
+    const drawRatingCard = (startY: number) => {
+      if (!reportData.rating) return startY;
+
+      const cardHeight = 40;
+
+      // Card background
+      doc.setFillColor(COLORS.lightGray.r, COLORS.lightGray.g, COLORS.lightGray.b);
+      doc.roundedRect(margin, startY, contentWidth, cardHeight, 4, 4, 'F');
+
+      // Left accent bar
+      doc.setFillColor(COLORS.primary.r, COLORS.primary.g, COLORS.primary.b);
+      doc.roundedRect(margin, startY, 4, cardHeight, 2, 2, 'F');
+
+      // Grade letter (large)
+      doc.setTextColor(COLORS.primary.r, COLORS.primary.g, COLORS.primary.b);
+      doc.setFontSize(36);
+      doc.setFont('helvetica', 'bold');
+      doc.text(reportData.rating.grade, margin + 16, startY + 28);
+
+      // Grade label and description
+      const labelX = margin + 55;
+      doc.setTextColor(COLORS.dark.r, COLORS.dark.g, COLORS.dark.b);
+      doc.setFontSize(14);
+      doc.setFont('helvetica', 'bold');
+      doc.text(reportData.rating.label, labelX, startY + 18);
+
+      doc.setTextColor(COLORS.gray.r, COLORS.gray.g, COLORS.gray.b);
+      doc.setFontSize(10);
+      doc.setFont('helvetica', 'normal');
+      doc.text(reportData.rating.description, labelX, startY + 28);
+
+      // Key value on right
+      doc.setTextColor(COLORS.primary.r, COLORS.primary.g, COLORS.primary.b);
+      doc.setFontSize(20);
+      doc.setFont('helvetica', 'bold');
+      doc.text(reportData.rating.value, pageWidth - margin - 12, startY + 24, { align: 'right' });
+
+      return startY + cardHeight + 15;
+    };
+
+    // Helper: Draw section title
+    const drawSectionTitle = (title: string, color: number[], currentY: number) => {
+      // Colored left bar
+      doc.setFillColor(color[0], color[1], color[2]);
+      doc.rect(margin, currentY, 3, 10, 'F');
+
+      // Title text
+      doc.setTextColor(COLORS.dark.r, COLORS.dark.g, COLORS.dark.b);
+      doc.setFontSize(12);
+      doc.setFont('helvetica', 'bold');
+      doc.text(title.toUpperCase(), margin + 8, currentY + 7);
+
+      return currentY + 16;
+    };
+
+    // Helper: Draw metric card
+    const drawMetricCard = (metric: ReportMetric, x: number, y: number, width: number, height: number) => {
+      // Background
+      doc.setFillColor(COLORS.lightGray.r, COLORS.lightGray.g, COLORS.lightGray.b);
+      doc.roundedRect(x, y, width, height, 3, 3, 'F');
+
+      // Label
+      doc.setFontSize(8);
+      doc.setTextColor(COLORS.gray.r, COLORS.gray.g, COLORS.gray.b);
+      doc.setFont('helvetica', 'normal');
+      const labelText = metric.label.toUpperCase();
+      const labelLines = doc.splitTextToSize(labelText, width - 10);
+      doc.text(labelLines, x + 5, y + 8);
+
+      // Value
+      doc.setFontSize(14);
+      doc.setFont('helvetica', 'bold');
+      if (metric.positive) {
+        doc.setTextColor(COLORS.success.r, COLORS.success.g, COLORS.success.b);
+      } else if (metric.negative) {
+        doc.setTextColor(COLORS.danger.r, COLORS.danger.g, COLORS.danger.b);
+      } else {
+        doc.setTextColor(COLORS.dark.r, COLORS.dark.g, COLORS.dark.b);
+      }
+
+      // Truncate value if too long
+      let valueText = metric.value;
+      const maxValueWidth = width - 10;
+      while (doc.getTextWidth(valueText) > maxValueWidth && valueText.length > 5) {
+        valueText = valueText.slice(0, -1);
+      }
+      doc.text(valueText, x + 5, y + height - 6);
+    };
+
+    // Helper: Check page break and add new page if needed
     const checkPageBreak = (neededHeight: number) => {
-      if (y + neededHeight > pageHeight - margin) {
-        addPage();
+      if (y + neededHeight > pageHeight - 25) {
+        doc.addPage();
+        y = 20;
         return true;
       }
       return false;
     };
 
-    // Header
-    doc.setFillColor(16, 185, 129); // emerald
-    doc.rect(0, 0, pageWidth, 40, 'F');
+    // Helper: Add footers to all pages
+    const addFooters = () => {
+      const totalPages = doc.getNumberOfPages();
+      for (let i = 1; i <= totalPages; i++) {
+        doc.setPage(i);
+        const footerY = pageHeight - 12;
 
-    doc.setTextColor(255, 255, 255);
-    doc.setFontSize(24);
-    doc.setFont('helvetica', 'bold');
-    doc.text(reportData.title, margin, 25);
+        // Separator line
+        doc.setDrawColor(COLORS.mediumGray.r, COLORS.mediumGray.g, COLORS.mediumGray.b);
+        doc.setLineWidth(0.3);
+        doc.line(margin, footerY - 5, pageWidth - margin, footerY - 5);
 
-    if (reportData.subtitle) {
-      doc.setFontSize(12);
-      doc.setFont('helvetica', 'normal');
-      doc.text(reportData.subtitle, margin, 33);
+        // Footer text
+        doc.setTextColor(COLORS.gray.r, COLORS.gray.g, COLORS.gray.b);
+        doc.setFontSize(8);
+        doc.setFont('helvetica', 'normal');
+        doc.text('ROI Calculate | roicalculate.com', margin, footerY);
+        doc.text(`Page ${i} of ${totalPages}`, pageWidth - margin, footerY, { align: 'right' });
+      }
+    };
+
+    // Color map for sections
+    const colorMap: Record<string, number[]> = {
+      emerald: [COLORS.primary.r, COLORS.primary.g, COLORS.primary.b],
+      cyan: [6, 182, 212],
+      orange: [249, 115, 22],
+      red: [COLORS.danger.r, COLORS.danger.g, COLORS.danger.b],
+      purple: [168, 85, 247],
+      blue: [59, 130, 246],
+    };
+
+    // ============ PAGE 1: Cover & Summary ============
+    y = drawHeader();
+    y = drawTitleSection(y);
+    y = drawRatingCard(y);
+
+    // Find first metrics section for cover page
+    const firstMetricsSection = reportData.sections.find(s => s.type === 'metrics');
+    if (firstMetricsSection && Array.isArray(firstMetricsSection.data)) {
+      const color = colorMap[firstMetricsSection.color || 'emerald'];
+      y = drawSectionTitle(firstMetricsSection.title, color, y);
+
+      const metrics = firstMetricsSection.data as ReportMetric[];
+      const cols = 2;
+      const cardWidth = (contentWidth - 8) / cols;
+      const cardHeight = 28;
+      const gap = 8;
+
+      let col = 0;
+      let rowY = y;
+
+      for (const metric of metrics) {
+        if (checkPageBreak(cardHeight + 5)) {
+          rowY = y;
+          col = 0;
+        }
+
+        const x = margin + col * (cardWidth + gap);
+        drawMetricCard(metric, x, rowY, cardWidth, cardHeight);
+
+        col++;
+        if (col >= cols) {
+          col = 0;
+          rowY += cardHeight + 6;
+        }
+      }
+      y = rowY + (col > 0 ? cardHeight + 6 : 0) + 10;
     }
 
-    // Date on right
-    doc.setFontSize(10);
-    doc.text(reportData.generatedDate, pageWidth - margin, 25, { align: 'right' });
-
-    y = 55;
-
-    // Rating section if present
-    if (reportData.rating) {
-      doc.setFillColor(240, 253, 244); // light emerald bg
-      doc.roundedRect(margin, y, pageWidth - 2 * margin, 30, 3, 3, 'F');
-
-      doc.setTextColor(16, 185, 129);
-      doc.setFontSize(28);
-      doc.setFont('helvetica', 'bold');
-      doc.text(reportData.rating.grade, margin + 10, y + 20);
-
-      doc.setTextColor(60, 60, 60);
-      doc.setFontSize(14);
-      doc.text(reportData.rating.label, margin + 35, y + 15);
-
-      doc.setFontSize(10);
-      doc.setTextColor(100, 100, 100);
-      doc.text(reportData.rating.description, margin + 35, y + 23);
-
-      // Value on right
-      doc.setTextColor(16, 185, 129);
-      doc.setFontSize(20);
-      doc.setFont('helvetica', 'bold');
-      doc.text(reportData.rating.value, pageWidth - margin - 10, y + 18, { align: 'right' });
-
-      y += 40;
-    }
-
-    // Sections
+    // ============ PAGE 2+: Detailed Sections ============
     for (const section of reportData.sections) {
-      checkPageBreak(40);
+      // Skip first metrics section (already on cover)
+      if (section === firstMetricsSection) continue;
 
-      // Section title
-      const colorMap = {
-        emerald: [16, 185, 129],
-        cyan: [6, 182, 212],
-        orange: [249, 115, 22],
-        red: [239, 68, 68],
-        purple: [168, 85, 247],
-        blue: [59, 130, 246],
-      };
       const color = colorMap[section.color || 'emerald'];
 
-      doc.setFillColor(color[0], color[1], color[2]);
-      doc.rect(margin, y, 3, 8, 'F');
+      checkPageBreak(50);
+      y = drawSectionTitle(section.title, color, y);
 
-      doc.setTextColor(30, 30, 30);
-      doc.setFontSize(14);
-      doc.setFont('helvetica', 'bold');
-      doc.text(section.title.toUpperCase(), margin + 8, y + 6);
-      y += 15;
-
-      // Section content based on type
+      // Metrics section
       if (section.type === 'metrics' && Array.isArray(section.data)) {
         const metrics = section.data as ReportMetric[];
-        const cols = Math.min(4, metrics.length);
-        const colWidth = (pageWidth - 2 * margin) / cols;
+        const cols = 2;
+        const cardWidth = (contentWidth - 8) / cols;
+        const cardHeight = 28;
+        const gap = 8;
 
         let col = 0;
         let rowY = y;
 
         for (const metric of metrics) {
-          checkPageBreak(25);
-
-          const x = margin + col * colWidth;
-
-          // Background
-          doc.setFillColor(250, 250, 250);
-          doc.roundedRect(x + 2, rowY, colWidth - 4, 22, 2, 2, 'F');
-
-          // Label
-          doc.setFontSize(8);
-          doc.setTextColor(120, 120, 120);
-          doc.setFont('helvetica', 'normal');
-          doc.text(metric.label.toUpperCase(), x + 6, rowY + 8);
-
-          // Value
-          doc.setFontSize(12);
-          doc.setFont('helvetica', 'bold');
-          if (metric.positive) {
-            doc.setTextColor(16, 185, 129);
-          } else if (metric.negative) {
-            doc.setTextColor(239, 68, 68);
-          } else {
-            doc.setTextColor(30, 30, 30);
+          if (checkPageBreak(cardHeight + 5)) {
+            rowY = y;
+            col = 0;
           }
-          doc.text(metric.value, x + 6, rowY + 17);
+
+          const x = margin + col * (cardWidth + gap);
+          drawMetricCard(metric, x, rowY, cardWidth, cardHeight);
 
           col++;
           if (col >= cols) {
             col = 0;
-            rowY += 26;
+            rowY += cardHeight + 6;
           }
         }
-        y = rowY + (col > 0 ? 26 : 0) + 5;
+        y = rowY + (col > 0 ? cardHeight + 6 : 0) + 10;
       }
 
+      // Table section
       if (section.type === 'table' && Array.isArray(section.data)) {
         const rows = section.data as ReportTableRow[];
         if (rows.length > 0) {
           const numCols = rows[0].cells.length;
-          const colWidth = (pageWidth - 2 * margin) / numCols;
+          const colWidth = contentWidth / numCols;
+          const rowHeight = 8;
+
+          // Table border
+          doc.setDrawColor(COLORS.mediumGray.r, COLORS.mediumGray.g, COLORS.mediumGray.b);
+          doc.setLineWidth(0.3);
 
           // Header row
-          doc.setFillColor(240, 240, 240);
-          doc.rect(margin, y, pageWidth - 2 * margin, 8, 'F');
-          doc.setFontSize(8);
-          doc.setTextColor(80, 80, 80);
+          doc.setFillColor(COLORS.lightGray.r, COLORS.lightGray.g, COLORS.lightGray.b);
+          doc.rect(margin, y, contentWidth, rowHeight, 'F');
+          doc.rect(margin, y, contentWidth, rowHeight, 'S');
+
+          doc.setFontSize(9);
+          doc.setTextColor(COLORS.dark.r, COLORS.dark.g, COLORS.dark.b);
           doc.setFont('helvetica', 'bold');
 
           rows[0].cells.forEach((cell, i) => {
             doc.text(cell.toUpperCase(), margin + i * colWidth + 4, y + 5.5);
           });
-          y += 10;
+          y += rowHeight;
 
           // Data rows
           doc.setFont('helvetica', 'normal');
-          for (let i = 1; i < Math.min(rows.length, 12); i++) {
-            checkPageBreak(8);
+          doc.setTextColor(COLORS.dark.r, COLORS.dark.g, COLORS.dark.b);
 
-            if (i % 2 === 0) {
-              doc.setFillColor(250, 250, 250);
-              doc.rect(margin, y, pageWidth - 2 * margin, 7, 'F');
+          const maxRows = 25;
+          for (let i = 1; i < Math.min(rows.length, maxRows); i++) {
+            if (checkPageBreak(rowHeight + 2)) {
+              // Redraw header on new page
+              doc.setFillColor(COLORS.lightGray.r, COLORS.lightGray.g, COLORS.lightGray.b);
+              doc.rect(margin, y, contentWidth, rowHeight, 'F');
+              doc.rect(margin, y, contentWidth, rowHeight, 'S');
+              doc.setFont('helvetica', 'bold');
+              rows[0].cells.forEach((cell, j) => {
+                doc.text(cell.toUpperCase(), margin + j * colWidth + 4, y + 5.5);
+              });
+              y += rowHeight;
+              doc.setFont('helvetica', 'normal');
             }
 
-            doc.setTextColor(60, 60, 60);
+            // Alternating row background
+            if (i % 2 === 0) {
+              doc.setFillColor(250, 250, 252);
+              doc.rect(margin, y, contentWidth, rowHeight, 'F');
+            }
+
+            // Row border
+            doc.setDrawColor(COLORS.mediumGray.r, COLORS.mediumGray.g, COLORS.mediumGray.b);
+            doc.rect(margin, y, contentWidth, rowHeight, 'S');
+
             doc.setFontSize(9);
             rows[i].cells.forEach((cell, j) => {
-              doc.text(cell, margin + j * colWidth + 4, y + 5);
+              // Truncate if too long
+              let cellText = cell;
+              const maxCellWidth = colWidth - 8;
+              while (doc.getTextWidth(cellText) > maxCellWidth && cellText.length > 3) {
+                cellText = cellText.slice(0, -1);
+              }
+              doc.text(cellText, margin + j * colWidth + 4, y + 5.5);
             });
-            y += 7;
+            y += rowHeight;
           }
 
-          if (rows.length > 12) {
-            doc.setTextColor(120, 120, 120);
+          if (rows.length > maxRows) {
+            doc.setTextColor(COLORS.gray.r, COLORS.gray.g, COLORS.gray.b);
             doc.setFontSize(8);
-            doc.text(`+ ${rows.length - 12} more rows`, margin + 4, y + 5);
-            y += 8;
+            doc.setFont('helvetica', 'italic');
+            doc.text(`+ ${rows.length - maxRows} additional rows`, margin + 4, y + 6);
+            y += 10;
           }
-          y += 5;
+          y += 8;
         }
       }
 
+      // Highlight section
       if (section.type === 'highlight' && typeof section.data === 'string') {
-        checkPageBreak(25);
+        checkPageBreak(24);
+
+        // Background with accent border
         doc.setFillColor(240, 253, 244);
-        doc.roundedRect(margin, y, pageWidth - 2 * margin, 18, 2, 2, 'F');
-        doc.setTextColor(16, 185, 129);
-        doc.setFontSize(10);
+        doc.roundedRect(margin, y, contentWidth, 20, 3, 3, 'F');
+        doc.setFillColor(color[0], color[1], color[2]);
+        doc.roundedRect(margin, y, 4, 20, 2, 2, 'F');
+
+        doc.setTextColor(COLORS.dark.r, COLORS.dark.g, COLORS.dark.b);
+        doc.setFontSize(11);
         doc.setFont('helvetica', 'bold');
-        doc.text(section.data, margin + 8, y + 11);
-        y += 25;
+        const highlightLines = doc.splitTextToSize(section.data, contentWidth - 20);
+        doc.text(highlightLines, margin + 12, y + 12);
+        y += 28;
       }
 
+      // Text section
       if (section.type === 'text' && typeof section.data === 'string') {
-        checkPageBreak(15);
-        doc.setTextColor(80, 80, 80);
+        checkPageBreak(20);
+        doc.setTextColor(COLORS.dark.r, COLORS.dark.g, COLORS.dark.b);
         doc.setFontSize(10);
         doc.setFont('helvetica', 'normal');
-        const lines = doc.splitTextToSize(section.data, pageWidth - 2 * margin);
+        const lines = doc.splitTextToSize(section.data, contentWidth);
         doc.text(lines, margin, y + 5);
-        y += lines.length * 5 + 10;
+        y += lines.length * 5 + 12;
       }
     }
 
-    // Footer
-    const footerY = pageHeight - 15;
-    doc.setDrawColor(200, 200, 200);
-    doc.line(margin, footerY - 5, pageWidth - margin, footerY - 5);
-
-    doc.setTextColor(150, 150, 150);
-    doc.setFontSize(8);
-    doc.setFont('helvetica', 'normal');
-    doc.text('Generated by ROI Calculate | roicalculate.com', margin, footerY);
-    doc.text(`Page 1 of ${doc.getNumberOfPages()}`, pageWidth - margin, footerY, { align: 'right' });
+    // Add footers to all pages
+    addFooters();
 
     return doc;
   }, [reportData]);

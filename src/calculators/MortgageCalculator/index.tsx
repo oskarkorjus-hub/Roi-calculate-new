@@ -1,8 +1,11 @@
 import { useState, useCallback, useMemo } from 'react';
 import { Toast } from '../../components/ui/Toast';
+import { DraftSelector } from '../../components/ui/DraftSelector';
 import { CalculatorToolbar } from '../../components/ui/CalculatorToolbar';
 import { ReportPreviewModal } from '../../components/ui/ReportPreviewModal';
 import { generateMortgageReport } from '../../hooks/useReportGenerator';
+import { useArchivedDrafts, type ArchivedDraft } from '../../hooks/useArchivedDrafts';
+import { useAuth } from '../../lib/auth-context';
 import { parseDecimalInput } from '../../utils/numberParsing';
 import { MortgageInputs } from './components/MortgageInputs';
 import { MortgageResults } from './components/MortgageResults';
@@ -69,10 +72,31 @@ const INITIAL_INPUTS: MortgageInputsType = {
 const symbols: Record<CurrencyType, string> = { IDR: 'Rp', USD: '$', AUD: 'A$', EUR: '€', GBP: '£', INR: '₹', CNY: '¥', AED: 'د.إ', RUB: '₽' };
 
 export function MortgageCalculator() {
+  const { user } = useAuth();
   const [inputs, setInputs] = useState<MortgageInputsType>(INITIAL_INPUTS);
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
   const [showResetConfirm, setShowResetConfirm] = useState(false);
   const [showReportModal, setShowReportModal] = useState(false);
+  const [currentDraftName, setCurrentDraftName] = useState<string | undefined>();
+
+  const { drafts, saveDraft: saveArchivedDraft, deleteDraft } = useArchivedDrafts<MortgageInputsType>('mortgage', user?.id);
+
+  const handleSelectDraft = useCallback((draft: ArchivedDraft<MortgageInputsType>) => {
+    setInputs(draft.data);
+    setCurrentDraftName(draft.name);
+    setToast({ message: `Loaded "${draft.name}"`, type: 'success' });
+  }, []);
+
+  const handleSaveArchive = useCallback((name: string) => {
+    saveArchivedDraft(name, inputs);
+    setCurrentDraftName(name);
+    setToast({ message: `Saved "${name}"`, type: 'success' });
+  }, [saveArchivedDraft, inputs]);
+
+  const handleDeleteDraft = useCallback((id: string) => {
+    deleteDraft(id);
+    setToast({ message: 'Draft deleted', type: 'success' });
+  }, [deleteDraft]);
 
   const calculateMortgage = useCallback((): MortgageResult => {
     const {
@@ -170,6 +194,7 @@ export function MortgageCalculator() {
   const handleReset = useCallback(() => {
     if (showResetConfirm) {
       setInputs(INITIAL_INPUTS);
+      setCurrentDraftName(undefined);
       setShowResetConfirm(false);
       setToast({ message: 'All values reset', type: 'success' });
     } else {
@@ -211,16 +236,28 @@ export function MortgageCalculator() {
             </div>
           </div>
 
-          <CalculatorToolbar
-            currency={inputs.currency}
-            onCurrencyChange={(c) => handleInputChange('currency', c)}
-            onReset={handleReset}
-            onOpenReport={() => setShowReportModal(true)}
-            calculatorType="mortgage"
-            projectData={{ ...inputs, result }}
-            projectName="Mortgage Calculation"
-            showResetConfirm={showResetConfirm}
-          />
+          <div className="flex items-center gap-3 flex-wrap">
+            {user && (
+              <DraftSelector
+                drafts={drafts}
+                onSelect={handleSelectDraft}
+                onSave={handleSaveArchive}
+                onDelete={handleDeleteDraft}
+                currentName={currentDraftName}
+              />
+            )}
+
+            <CalculatorToolbar
+              currency={inputs.currency}
+              onCurrencyChange={(c) => handleInputChange('currency', c)}
+              onReset={handleReset}
+              onOpenReport={() => setShowReportModal(true)}
+              calculatorType="mortgage"
+              projectData={{ ...inputs, result }}
+              projectName="Mortgage Calculation"
+              showResetConfirm={showResetConfirm}
+            />
+          </div>
         </header>
 
         {/* Main Content */}

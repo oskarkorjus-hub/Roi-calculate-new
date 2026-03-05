@@ -2,6 +2,7 @@ import { useState, useCallback, useMemo, useEffect } from 'react';
 import { Toast } from '../../components/ui/Toast';
 import { CalculatorToolbar } from '../../components/ui/CalculatorToolbar';
 import { ReportPreviewModal } from '../../components/ui/ReportPreviewModal';
+import { DraftSelector } from '../../components/ui/DraftSelector';
 import { generateRiskAssessmentReport } from '../../hooks/useReportGenerator';
 import { formatCurrency, parseDecimalInput } from '../../utils/numberParsing';
 import { Tooltip } from '../../components/ui/Tooltip';
@@ -10,6 +11,8 @@ import { RiskBreakdown } from './components/RiskBreakdown';
 import { ScenarioAnalysis } from './components/ScenarioAnalysis';
 import { SensitivityChart } from './components/SensitivityChart';
 import { RiskMitigation } from './components/RiskMitigation';
+import { useArchivedDrafts, type ArchivedDraft } from '../../hooks/useArchivedDrafts';
+import { useAuth } from '../../lib/auth-context';
 
 type CurrencyType = 'IDR' | 'USD' | 'AUD' | 'EUR' | 'GBP';
 type PropertyType = 'villa' | 'apartment' | 'land' | 'commercial' | 'hotel';
@@ -169,6 +172,27 @@ export function RiskAssessment() {
   const [showResetConfirm, setShowResetConfirm] = useState(false);
   const [showReportModal, setShowReportModal] = useState(false);
   const [activeTab, setActiveTab] = useState<'overview' | 'breakdown' | 'scenarios' | 'mitigation'>('overview');
+  const [currentDraftName, setCurrentDraftName] = useState<string | undefined>();
+
+  const { user } = useAuth();
+  const { drafts, saveDraft: saveArchivedDraft, deleteDraft } = useArchivedDrafts<RiskInputs>('risk-assessment', user?.id);
+
+  const handleSelectDraft = useCallback((draft: ArchivedDraft<RiskInputs>) => {
+    setInputs(draft.data);
+    setCurrentDraftName(draft.name);
+    setToast({ message: `Loaded "${draft.name}"`, type: 'success' });
+  }, []);
+
+  const handleSaveArchive = useCallback((name: string) => {
+    saveArchivedDraft(name, inputs);
+    setCurrentDraftName(name);
+    setToast({ message: `Saved "${name}"`, type: 'success' });
+  }, [saveArchivedDraft, inputs]);
+
+  const handleDeleteDraft = useCallback((id: string) => {
+    deleteDraft(id);
+    setToast({ message: 'Draft deleted', type: 'success' });
+  }, [deleteDraft]);
 
   // Calculate risk scores
   const riskScore = useMemo((): RiskScore => {
@@ -537,6 +561,7 @@ export function RiskAssessment() {
   const handleReset = useCallback(() => {
     if (showResetConfirm) {
       setInputs(INITIAL_INPUTS);
+      setCurrentDraftName(undefined);
       setShowResetConfirm(false);
       setToast({ message: 'All values reset', type: 'success' });
     } else {
@@ -585,16 +610,27 @@ export function RiskAssessment() {
             </div>
           </div>
 
-          <CalculatorToolbar
-            currency={inputs.currency}
-            onCurrencyChange={(c) => handleInputChange('currency', c)}
-            onReset={handleReset}
-            onOpenReport={() => setShowReportModal(true)}
-            calculatorType="risk-assessment"
-            projectData={{ ...inputs, riskScore, scenarios }}
-            projectName="Risk Assessment"
-            showResetConfirm={showResetConfirm}
-          />
+          <div className="flex items-center gap-3 flex-wrap">
+            {user && (
+              <DraftSelector
+                drafts={drafts}
+                onSelect={handleSelectDraft}
+                onSave={handleSaveArchive}
+                onDelete={handleDeleteDraft}
+                currentName={currentDraftName}
+              />
+            )}
+            <CalculatorToolbar
+              currency={inputs.currency}
+              onCurrencyChange={(c) => handleInputChange('currency', c)}
+              onReset={handleReset}
+              onOpenReport={() => setShowReportModal(true)}
+              calculatorType="risk-assessment"
+              projectData={{ ...inputs, riskScore, scenarios }}
+              projectName="Risk Assessment"
+              showResetConfirm={showResetConfirm}
+            />
+          </div>
         </header>
 
         {/* Main Risk Score Panel */}

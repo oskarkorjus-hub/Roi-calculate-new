@@ -1,8 +1,11 @@
 import { useState, useCallback, useMemo } from 'react';
 import { Toast } from '../../components/ui/Toast';
+import { DraftSelector } from '../../components/ui/DraftSelector';
 import { CalculatorToolbar } from '../../components/ui/CalculatorToolbar';
 import { ReportPreviewModal } from '../../components/ui/ReportPreviewModal';
 import { generateCashFlowReport } from '../../hooks/useReportGenerator';
+import { useArchivedDrafts, type ArchivedDraft } from '../../hooks/useArchivedDrafts';
+import { useAuth } from '../../lib/auth-context';
 import { parseDecimalInput } from '../../utils/numberParsing';
 import { CashFlowInputs } from './components/CashFlowInputs';
 import { ProjectionVisualization } from './components/ProjectionVisualization';
@@ -61,10 +64,31 @@ const INITIAL_INPUTS: CashFlowInputsType = {
 const symbols: Record<CurrencyType, string> = { IDR: 'Rp', USD: '$', AUD: 'A$', EUR: '€', GBP: '£', INR: '₹', CNY: '¥', AED: 'د.إ', RUB: '₽' };
 
 export function CashFlowProjector() {
+  const { user } = useAuth();
   const [inputs, setInputs] = useState<CashFlowInputsType>(INITIAL_INPUTS);
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
   const [showResetConfirm, setShowResetConfirm] = useState(false);
   const [showReportModal, setShowReportModal] = useState(false);
+  const [currentDraftName, setCurrentDraftName] = useState<string | undefined>();
+
+  const { drafts, saveDraft: saveArchivedDraft, deleteDraft } = useArchivedDrafts<CashFlowInputsType>('cashflow', user?.id);
+
+  const handleSelectDraft = useCallback((draft: ArchivedDraft<CashFlowInputsType>) => {
+    setInputs(draft.data);
+    setCurrentDraftName(draft.name);
+    setToast({ message: `Loaded "${draft.name}"`, type: 'success' });
+  }, []);
+
+  const handleSaveArchive = useCallback((name: string) => {
+    saveArchivedDraft(name, inputs);
+    setCurrentDraftName(name);
+    setToast({ message: `Saved "${name}"`, type: 'success' });
+  }, [saveArchivedDraft, inputs]);
+
+  const handleDeleteDraft = useCallback((id: string) => {
+    deleteDraft(id);
+    setToast({ message: 'Draft deleted', type: 'success' });
+  }, [deleteDraft]);
 
   const calculateCashFlow = useCallback((): CashFlowYear[] => {
     const {
@@ -182,6 +206,7 @@ export function CashFlowProjector() {
   const handleReset = useCallback(() => {
     if (showResetConfirm) {
       setInputs(INITIAL_INPUTS);
+      setCurrentDraftName(undefined);
       setShowResetConfirm(false);
       setToast({ message: 'All values reset', type: 'success' });
     } else {
@@ -223,16 +248,28 @@ export function CashFlowProjector() {
             </div>
           </div>
 
-          <CalculatorToolbar
-            currency={inputs.currency}
-            onCurrencyChange={(c) => handleInputChange('currency', c)}
-            onReset={handleReset}
-            onOpenReport={() => setShowReportModal(true)}
-            calculatorType="cashflow"
-            projectData={{ ...inputs, schedule }}
-            projectName="Cash Flow Projection"
-            showResetConfirm={showResetConfirm}
-          />
+          <div className="flex items-center gap-3 flex-wrap">
+            {user && (
+              <DraftSelector
+                drafts={drafts}
+                onSelect={handleSelectDraft}
+                onSave={handleSaveArchive}
+                onDelete={handleDeleteDraft}
+                currentName={currentDraftName}
+              />
+            )}
+
+            <CalculatorToolbar
+              currency={inputs.currency}
+              onCurrencyChange={(c) => handleInputChange('currency', c)}
+              onReset={handleReset}
+              onOpenReport={() => setShowReportModal(true)}
+              calculatorType="cashflow"
+              projectData={{ ...inputs, schedule }}
+              projectName="Cash Flow Projection"
+              showResetConfirm={showResetConfirm}
+            />
+          </div>
         </header>
 
         {/* Main Content */}

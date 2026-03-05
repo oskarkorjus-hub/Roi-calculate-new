@@ -2,6 +2,7 @@ import { useState, useCallback, useMemo, useEffect } from 'react';
 import { Toast } from '../../components/ui/Toast';
 import { CalculatorToolbar } from '../../components/ui/CalculatorToolbar';
 import { ReportPreviewModal } from '../../components/ui/ReportPreviewModal';
+import { DraftSelector } from '../../components/ui/DraftSelector';
 import { generateRentalProjectionReport } from '../../hooks/useReportGenerator';
 import { formatCurrency, parseDecimalInput } from '../../utils/numberParsing';
 import { AdvancedSection } from '../../components/AdvancedSection';
@@ -10,9 +11,11 @@ import { SeasonalityChart } from './components/SeasonalityChart';
 import { OccupancyHeatmap } from './components/OccupancyHeatmap';
 import { CashFlowChart } from './components/CashFlowChart';
 import { ProjectionResults } from './components/ProjectionResults';
+import { useArchivedDrafts, type ArchivedDraft } from '../../hooks/useArchivedDrafts';
+import { useAuth } from '../../lib/auth-context';
 
 type CurrencyType = 'IDR' | 'USD' | 'AUD' | 'EUR' | 'GBP';
-type LocationType = 'ubud' | 'seminyak' | 'canggu' | 'other-bali' | 'off-island';
+type LocationType = 'ubud' | 'seminyak' | 'canggu' | 'other-bali' | 'international';
 
 interface SeasonalMultiplier {
   month: string;
@@ -163,19 +166,19 @@ const LOCATION_SEASONALITY: Record<LocationType, SeasonalMultiplier[]> = {
     { month: 'Nov', rateMultiplier: 0.95, occupancyMultiplier: 0.9 },
     { month: 'Dec', rateMultiplier: 1.25, occupancyMultiplier: 1.1 },
   ],
-  'off-island': [
+  'international': [
     { month: 'Jan', rateMultiplier: 1.0, occupancyMultiplier: 1.0 },
     { month: 'Feb', rateMultiplier: 1.0, occupancyMultiplier: 1.0 },
     { month: 'Mar', rateMultiplier: 1.0, occupancyMultiplier: 1.0 },
     { month: 'Apr', rateMultiplier: 1.0, occupancyMultiplier: 1.0 },
     { month: 'May', rateMultiplier: 1.0, occupancyMultiplier: 1.0 },
-    { month: 'Jun', rateMultiplier: 1.1, occupancyMultiplier: 1.05 },
-    { month: 'Jul', rateMultiplier: 1.2, occupancyMultiplier: 1.1 },
-    { month: 'Aug', rateMultiplier: 1.2, occupancyMultiplier: 1.1 },
+    { month: 'Jun', rateMultiplier: 1.0, occupancyMultiplier: 1.0 },
+    { month: 'Jul', rateMultiplier: 1.0, occupancyMultiplier: 1.0 },
+    { month: 'Aug', rateMultiplier: 1.0, occupancyMultiplier: 1.0 },
     { month: 'Sep', rateMultiplier: 1.0, occupancyMultiplier: 1.0 },
     { month: 'Oct', rateMultiplier: 1.0, occupancyMultiplier: 1.0 },
     { month: 'Nov', rateMultiplier: 1.0, occupancyMultiplier: 1.0 },
-    { month: 'Dec', rateMultiplier: 1.15, occupancyMultiplier: 1.08 },
+    { month: 'Dec', rateMultiplier: 1.0, occupancyMultiplier: 1.0 },
   ],
 };
 
@@ -226,7 +229,7 @@ const locationLabels: Record<LocationType, string> = {
   'seminyak': 'Seminyak',
   'canggu': 'Canggu',
   'other-bali': 'Other Bali',
-  'off-island': 'Off-island',
+  'international': 'International',
 };
 
 export function RentalIncomeProjection() {
@@ -234,6 +237,27 @@ export function RentalIncomeProjection() {
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
   const [showResetConfirm, setShowResetConfirm] = useState(false);
   const [showReportModal, setShowReportModal] = useState(false);
+  const [currentDraftName, setCurrentDraftName] = useState<string | undefined>();
+
+  const { user } = useAuth();
+  const { drafts, saveDraft: saveArchivedDraft, deleteDraft } = useArchivedDrafts<RentalInputs>('rental-projection', user?.id);
+
+  const handleSelectDraft = useCallback((draft: ArchivedDraft<RentalInputs>) => {
+    setInputs(draft.data);
+    setCurrentDraftName(draft.name);
+    setToast({ message: `Loaded "${draft.name}"`, type: 'success' });
+  }, []);
+
+  const handleSaveArchive = useCallback((name: string) => {
+    saveArchivedDraft(name, inputs);
+    setCurrentDraftName(name);
+    setToast({ message: `Saved "${name}"`, type: 'success' });
+  }, [saveArchivedDraft, inputs]);
+
+  const handleDeleteDraft = useCallback((id: string) => {
+    deleteDraft(id);
+    setToast({ message: 'Draft deleted', type: 'success' });
+  }, [deleteDraft]);
 
   const calculateProjections = useCallback((): ProjectionResult => {
     const {
@@ -432,6 +456,7 @@ export function RentalIncomeProjection() {
   const handleReset = useCallback(() => {
     if (showResetConfirm) {
       setInputs(INITIAL_INPUTS);
+      setCurrentDraftName(undefined);
       setShowResetConfirm(false);
       setToast({ message: 'All values reset', type: 'success' });
     } else {
@@ -473,16 +498,27 @@ export function RentalIncomeProjection() {
             </div>
           </div>
 
-          <CalculatorToolbar
-            currency={inputs.currency}
-            onCurrencyChange={(c) => handleInputChange('currency', c)}
-            onReset={handleReset}
-            onOpenReport={() => setShowReportModal(true)}
-            calculatorType="rental-projection"
-            projectData={{ ...inputs, result }}
-            projectName="Rental Income Projection"
-            showResetConfirm={showResetConfirm}
-          />
+          <div className="flex items-center gap-3 flex-wrap">
+            {user && (
+              <DraftSelector
+                drafts={drafts}
+                onSelect={handleSelectDraft}
+                onSave={handleSaveArchive}
+                onDelete={handleDeleteDraft}
+                currentName={currentDraftName}
+              />
+            )}
+            <CalculatorToolbar
+              currency={inputs.currency}
+              onCurrencyChange={(c) => handleInputChange('currency', c)}
+              onReset={handleReset}
+              onOpenReport={() => setShowReportModal(true)}
+              calculatorType="rental-projection"
+              projectData={{ ...inputs, result }}
+              projectName="Rental Income Projection"
+              showResetConfirm={showResetConfirm}
+            />
+          </div>
         </header>
 
         {/* Main Content */}
@@ -537,7 +573,7 @@ export function RentalIncomeProjection() {
                     <option value="seminyak">Seminyak</option>
                     <option value="canggu">Canggu</option>
                     <option value="other-bali">Other Bali</option>
-                    <option value="off-island">Off-island</option>
+                    <option value="international">International</option>
                   </select>
                 </div>
 

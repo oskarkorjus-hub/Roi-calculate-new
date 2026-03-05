@@ -20,7 +20,7 @@ const locationLabels: Record<string, string> = {
   'seminyak': 'Seminyak',
   'canggu': 'Canggu',
   'other-bali': 'Other Bali',
-  'off-island': 'Off-island',
+  'international': 'International',
 };
 
 export function ProjectionResults({ result, inputs, symbol }: Props) {
@@ -154,7 +154,7 @@ export function ProjectionResults({ result, inputs, symbol }: Props) {
           {inputs.location === 'seminyak' && 'Peak: Dec-Feb (holidays). Party/beach crowd.'}
           {inputs.location === 'canggu' && 'Steady year-round. Digital nomad hub.'}
           {inputs.location === 'other-bali' && 'Variable seasonality. Research local patterns.'}
-          {inputs.location === 'off-island' && 'Different market dynamics apply.'}
+          {inputs.location === 'international' && 'Flat seasonality. Adjust rates manually for local patterns.'}
         </p>
       </div>
 

@@ -1,9 +1,12 @@
 import { useState, useCallback, useMemo } from 'react';
 import { AdvancedSection } from '../../components/AdvancedSection';
 import { Toast } from '../../components/ui/Toast';
+import { DraftSelector } from '../../components/ui/DraftSelector';
 import { CalculatorToolbar } from '../../components/ui/CalculatorToolbar';
 import { ReportPreviewModal } from '../../components/ui/ReportPreviewModal';
 import { generateIRRReport } from '../../hooks/useReportGenerator';
+import { useArchivedDrafts, type ArchivedDraft } from '../../hooks/useArchivedDrafts';
+import { useAuth } from '../../lib/auth-context';
 import { parseDecimalInput } from '../../utils/numberParsing';
 import { CashFlowInputs } from './components/CashFlowInputs';
 import { IRRResults } from './components/IRRResults';
@@ -36,7 +39,17 @@ const INITIAL_CASH_FLOWS: CashFlow[] = [
   { year: 5, amount: 0 },
 ];
 
+interface IRRInputs {
+  currency: CurrencyType;
+  discountRate: number;
+  cashFlows: CashFlow[];
+  showAdvanced: boolean;
+  reinvestmentRate: number;
+  alternativeDiscountRate: number;
+}
+
 export function IRRCalculator() {
+  const { user } = useAuth();
   const [currency, setCurrency] = useState<CurrencyType>('USD');
   const [discountRate, setDiscountRate] = useState(0);
   const [cashFlows, setCashFlows] = useState<CashFlow[]>(INITIAL_CASH_FLOWS);
@@ -46,6 +59,31 @@ export function IRRCalculator() {
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
   const [showReportModal, setShowReportModal] = useState(false);
   const [showResetConfirm, setShowResetConfirm] = useState(false);
+  const [currentDraftName, setCurrentDraftName] = useState<string | undefined>();
+
+  const { drafts, saveDraft: saveArchivedDraft, deleteDraft } = useArchivedDrafts<IRRInputs>('irr', user?.id);
+
+  const handleSelectDraft = useCallback((draft: ArchivedDraft<IRRInputs>) => {
+    setCurrency(draft.data.currency);
+    setDiscountRate(draft.data.discountRate);
+    setCashFlows(draft.data.cashFlows);
+    setShowAdvanced(draft.data.showAdvanced);
+    setReinvestmentRate(draft.data.reinvestmentRate);
+    setAlternativeDiscountRate(draft.data.alternativeDiscountRate);
+    setCurrentDraftName(draft.name);
+    setToast({ message: `Loaded "${draft.name}"`, type: 'success' });
+  }, []);
+
+  const handleSaveArchive = useCallback((name: string) => {
+    saveArchivedDraft(name, { currency, discountRate, cashFlows, showAdvanced, reinvestmentRate, alternativeDiscountRate });
+    setCurrentDraftName(name);
+    setToast({ message: `Saved "${name}"`, type: 'success' });
+  }, [saveArchivedDraft, currency, discountRate, cashFlows, showAdvanced, reinvestmentRate, alternativeDiscountRate]);
+
+  const handleDeleteDraft = useCallback((id: string) => {
+    deleteDraft(id);
+    setToast({ message: 'Draft deleted', type: 'success' });
+  }, [deleteDraft]);
 
   const calculateNPV = (flows: CashFlow[], rate: number) => {
     return flows.reduce((npv, cf) => {
@@ -188,6 +226,7 @@ export function IRRCalculator() {
   const handleReset = useCallback(() => {
     if (showResetConfirm) {
       setCashFlows(INITIAL_CASH_FLOWS);
+      setCurrentDraftName(undefined);
       setShowResetConfirm(false);
       setToast({ message: 'All values reset', type: 'success' });
     } else {
@@ -229,16 +268,28 @@ export function IRRCalculator() {
             </div>
           </div>
 
-          <CalculatorToolbar
-            currency={currency}
-            onCurrencyChange={(c) => setCurrency(c as CurrencyType)}
-            onReset={handleReset}
-            onOpenReport={() => setShowReportModal(true)}
-            calculatorType="irr"
-            projectData={{ projectName: "IRR Analysis", totalInvestment: result.totalInvested, roi: result.irr, breakEvenMonths: Math.round(result.paybackPeriod * 12), currency }}
-            projectName="IRR Analysis"
-            showResetConfirm={showResetConfirm}
-          />
+          <div className="flex items-center gap-3 flex-wrap">
+            {user && (
+              <DraftSelector
+                drafts={drafts}
+                onSelect={handleSelectDraft}
+                onSave={handleSaveArchive}
+                onDelete={handleDeleteDraft}
+                currentName={currentDraftName}
+              />
+            )}
+
+            <CalculatorToolbar
+              currency={currency}
+              onCurrencyChange={(c) => setCurrency(c as CurrencyType)}
+              onReset={handleReset}
+              onOpenReport={() => setShowReportModal(true)}
+              calculatorType="irr"
+              projectData={{ projectName: "IRR Analysis", totalInvestment: result.totalInvested, roi: result.irr, breakEvenMonths: Math.round(result.paybackPeriod * 12), currency }}
+              projectName="IRR Analysis"
+              showResetConfirm={showResetConfirm}
+            />
+          </div>
         </header>
 
         {/* Main Content */}

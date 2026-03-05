@@ -2,10 +2,13 @@ import { useState, useCallback, useMemo, useEffect } from 'react';
 import { Toast } from '../../components/ui/Toast';
 import { CalculatorToolbar } from '../../components/ui/CalculatorToolbar';
 import { ReportPreviewModal } from '../../components/ui/ReportPreviewModal';
+import { DraftSelector } from '../../components/ui/DraftSelector';
 import { generateDevFeasibilityReport } from '../../hooks/useReportGenerator';
 import { formatCurrency, parseDecimalInput } from '../../utils/numberParsing';
 import { AdvancedSection } from '../../components/AdvancedSection';
 import { Tooltip } from '../../components/ui/Tooltip';
+import { useArchivedDrafts, type ArchivedDraft } from '../../hooks/useArchivedDrafts';
+import { useAuth } from '../../lib/auth-context';
 
 interface DevInputs {
   landSizeM2: number;
@@ -88,6 +91,27 @@ export function DevFeasibilityCalculator() {
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
   const [showResetConfirm, setShowResetConfirm] = useState(false);
   const [showReportModal, setShowReportModal] = useState(false);
+  const [currentDraftName, setCurrentDraftName] = useState<string | undefined>();
+
+  const { user } = useAuth();
+  const { drafts, saveDraft: saveArchivedDraft, deleteDraft } = useArchivedDrafts<DevInputs>('dev-feasibility', user?.id);
+
+  const handleSelectDraft = useCallback((draft: ArchivedDraft<DevInputs>) => {
+    setInputs(draft.data);
+    setCurrentDraftName(draft.name);
+    setToast({ message: `Loaded "${draft.name}"`, type: 'success' });
+  }, []);
+
+  const handleSaveArchive = useCallback((name: string) => {
+    saveArchivedDraft(name, inputs);
+    setCurrentDraftName(name);
+    setToast({ message: `Saved "${name}"`, type: 'success' });
+  }, [saveArchivedDraft, inputs]);
+
+  const handleDeleteDraft = useCallback((id: string) => {
+    deleteDraft(id);
+    setToast({ message: 'Draft deleted', type: 'success' });
+  }, [deleteDraft]);
 
   const calculateScenarios = useCallback((): VillaScenario[] => {
     const {
@@ -220,6 +244,7 @@ export function DevFeasibilityCalculator() {
   const handleReset = useCallback(() => {
     if (showResetConfirm) {
       setInputs(INITIAL_INPUTS);
+      setCurrentDraftName(undefined);
       setShowResetConfirm(false);
       setToast({ message: 'All values reset', type: 'success' });
     } else {
@@ -283,16 +308,27 @@ export function DevFeasibilityCalculator() {
             </div>
           </div>
 
-          <CalculatorToolbar
-            currency={inputs.currency}
-            onCurrencyChange={(c) => handleInputChange('currency', c)}
-            onReset={handleReset}
-            onOpenReport={() => setShowReportModal(true)}
-            calculatorType="dev-feasibility"
-            projectData={{ ...inputs, scenarios }}
-            projectName="Development Feasibility"
-            showResetConfirm={showResetConfirm}
-          />
+          <div className="flex items-center gap-3 flex-wrap">
+            {user && (
+              <DraftSelector
+                drafts={drafts}
+                onSelect={handleSelectDraft}
+                onSave={handleSaveArchive}
+                onDelete={handleDeleteDraft}
+                currentName={currentDraftName}
+              />
+            )}
+            <CalculatorToolbar
+              currency={inputs.currency}
+              onCurrencyChange={(c) => handleInputChange('currency', c)}
+              onReset={handleReset}
+              onOpenReport={() => setShowReportModal(true)}
+              calculatorType="dev-feasibility"
+              projectData={{ ...inputs, scenarios }}
+              projectName="Development Feasibility"
+              showResetConfirm={showResetConfirm}
+            />
+          </div>
         </header>
 
         {/* Main Content */}

@@ -1,19 +1,34 @@
 import { useState, useCallback, useEffect } from 'react';
 
+export type CalculatorType =
+  | 'xirr'
+  | 'rental-roi'
+  | 'mortgage'
+  | 'cashflow'
+  | 'cap-rate'
+  | 'irr'
+  | 'npv'
+  | 'dev-feasibility'
+  | 'financing'
+  | 'indonesia-tax'
+  | 'rental-projection'
+  | 'risk-assessment'
+  | 'dev-budget';
+
 export interface ArchivedDraft<T> {
   id: string;
   name: string;
   data: T;
   createdAt: string;
   updatedAt: string;
-  calculatorType: 'xirr' | 'rental-roi';
+  calculatorType: CalculatorType;
   userId?: string; // Optional for backward compatibility
 }
 
 const STORAGE_KEY = 'baliinvest_archived_drafts';
 
 // Load drafts from localStorage synchronously
-function loadDraftsFromStorage<T>(calculatorType: 'xirr' | 'rental-roi', userId?: string): ArchivedDraft<T>[] {
+function loadDraftsFromStorage<T>(calculatorType: CalculatorType, userId?: string): ArchivedDraft<T>[] {
   try {
     const saved = localStorage.getItem(STORAGE_KEY);
     if (saved) {
@@ -36,7 +51,7 @@ function loadDraftsFromStorage<T>(calculatorType: 'xirr' | 'rental-roi', userId?
   return [];
 }
 
-export function useArchivedDrafts<T>(calculatorType: 'xirr' | 'rental-roi', userId?: string) {
+export function useArchivedDrafts<T>(calculatorType: CalculatorType, userId?: string) {
   // Initialize state synchronously from localStorage to prevent race conditions
   const [drafts, setDrafts] = useState<ArchivedDraft<T>[]>(() =>
     loadDraftsFromStorage<T>(calculatorType, userId)

@@ -47,6 +47,7 @@ export function SaveToPortfolioButton({
 
     switch (calculatorType) {
       case 'xirr':
+        // XIRR passes: { ...data, result } where data has property.totalPrice, result has rate, netProfit, holdPeriodMonths
         totalInvestment = projectData.result?.totalInvested || projectData.property?.totalPrice || 0;
         // XIRR rate is stored as decimal (e.g., 0.15 for 15%), convert to percentage
         roi = (projectData.result?.rate || 0) * 100;
@@ -59,20 +60,24 @@ export function SaveToPortfolioButton({
         break;
 
       case 'cap-rate':
+        // Cap-rate passes: { ...inputs, result } where inputs has propertyValue, result has capRate, yearlyNOI, monthlyNOI
         totalInvestment = projectData.propertyValue || 0;
-        roi = projectData.result?.capRate || projectData.result?.adjustedCapRate || 0;
-        avgCashFlow = (projectData.result?.yearlyNOI || projectData.annualNOI || 0) / 12;
+        roi = projectData.result?.adjustedCapRate || projectData.result?.capRate || 0;
+        avgCashFlow = projectData.result?.adjustedMonthlyNOI || projectData.result?.monthlyNOI || (projectData.result?.yearlyNOI || 0) / 12;
         breakEvenMonths = roi > 0 ? Math.round(100 / roi * 12) : 0;
         break;
 
       case 'dev-feasibility':
-        totalInvestment = projectData.result?.totalProjectCost || projectData.totalProjectCost || 0;
-        roi = projectData.result?.roiFlip || projectData.result?.roiHold || projectData.roiFlip || projectData.roiHold || 0;
-        avgCashFlow = (projectData.result?.grossProfit || 0) / 12;
+        // Dev-feasibility passes: { ...inputs, scenarios } - scenarios is array with financial data
+        const scenario = projectData.scenarios?.[0] || {};
+        totalInvestment = scenario.totalProjectCost || projectData.totalProjectCost || 0;
+        roi = scenario.roiFlip || scenario.roiHold || 0;
+        avgCashFlow = (scenario.grossProfit || 0) / 12;
         breakEvenMonths = roi > 0 ? Math.round(100 / roi * 12) : 24;
         break;
 
       case 'cashflow':
+        // Cashflow passes: { ...inputs, schedule } where inputs has monthlyRentalIncome, etc.
         totalInvestment = projectData.monthlyRentalIncome ? projectData.monthlyRentalIncome * 12 * 10 : 0;
         const netMonthly = (projectData.monthlyRentalIncome || 0) -
           (projectData.monthlyMaintenance || 0) -
@@ -84,41 +89,90 @@ export function SaveToPortfolioButton({
         break;
 
       case 'irr':
-        totalInvestment = projectData.result?.totalInvested || 0;
-        roi = projectData.result?.irr || 0;
+        // IRR explicitly passes structured data: { projectName, totalInvestment, roi, breakEvenMonths, currency }
+        totalInvestment = projectData.totalInvestment || projectData.result?.totalInvested || 0;
+        roi = projectData.roi || projectData.result?.irr || 0;
         avgCashFlow = (projectData.result?.totalCashFlow || 0) / 5;
-        breakEvenMonths = (projectData.result?.paybackPeriod || 0) * 12;
+        breakEvenMonths = projectData.breakEvenMonths || (projectData.result?.paybackPeriod || 0) * 12;
         break;
 
       case 'rental-projection':
-        totalInvestment = projectData.purchasePrice || 0;
-        roi = projectData.result?.netYield || projectData.result?.projectedYield || 0;
-        avgCashFlow = projectData.result?.monthlyNetIncome || 0;
-        breakEvenMonths = roi > 0 ? Math.round(100 / roi * 12) : 0;
+        // Rental-projection passes: { ...inputs, result }
+        // inputs: nightlyRate, propertySize, location, baseOccupancyRate
+        // result: annualNetIncome, averageOccupancy, breakEvenMonths, annualRevenue
+        const annualRevenue = projectData.result?.annualRevenue || 0;
+        const annualNetIncome = projectData.result?.annualNetIncome || 0;
+        // Use annual revenue * 10 as rough property value proxy (10x gross multiplier)
+        totalInvestment = annualRevenue > 0 ? annualRevenue * 10 : (projectData.nightlyRate || 0) * 365 * 10;
+        // Net yield = annualNetIncome / totalInvestment * 100
+        roi = totalInvestment > 0 ? (annualNetIncome / totalInvestment) * 100 : 0;
+        avgCashFlow = annualNetIncome / 12;
+        breakEvenMonths = projectData.result?.breakEvenMonths || (roi > 0 ? Math.round(100 / roi * 12) : 0);
         break;
 
       case 'rental-roi':
-        totalInvestment = projectData.purchasePrice || projectData.propertyValue || 0;
-        roi = projectData.result?.roi || projectData.result?.cashOnCashReturn || 0;
-        avgCashFlow = projectData.result?.monthlyCashFlow || 0;
-        breakEvenMonths = projectData.result?.breakEvenMonths || 0;
+        // Rental-ROI passes: { ...assumptions, data, averages }
+        // assumptions: initialInvestment, y1ADR, y1Occupancy
+        // averages: roiAfterManagement, takeHomeProfit, gopMargin
+        totalInvestment = projectData.initialInvestment || 0;
+        roi = projectData.averages?.roiAfterManagement || 0;
+        avgCashFlow = (projectData.averages?.takeHomeProfit || 0) / 12;
+        // Calculate break-even from annual profit
+        const annualProfit = projectData.averages?.takeHomeProfit || 0;
+        breakEvenMonths = annualProfit > 0 ? Math.round((totalInvestment / annualProfit) * 12) : 0;
         break;
 
       case 'npv':
-        totalInvestment = projectData.result?.totalCashOutflows || 0;
-        roi = projectData.result?.profitabilityIndex ? (projectData.result.profitabilityIndex - 1) * 100 : 0;
+        // NPV explicitly passes structured data
+        totalInvestment = projectData.totalInvestment || projectData.result?.totalCashOutflows || 0;
+        roi = projectData.roi || (projectData.result?.profitabilityIndex ? (projectData.result.profitabilityIndex - 1) * 100 : 0);
         avgCashFlow = (projectData.result?.netCashFlow || 0) / 5;
         breakEvenMonths = 24;
         break;
 
-      case 'mortgage':
       case 'financing':
-      case 'indonesia-tax':
-      case 'dev-budget':
-      case 'risk-assessment':
-      default:
-        // These calculators don't have meaningful investment scores
+        // Financing passes: { ...inputs, results } where results is array of loan comparisons
+        const bestLoan = projectData.results?.[0] || {};
+        totalInvestment = projectData.loanAmount || bestLoan.loanAmount || 0;
+        roi = 0; // Financing doesn't have ROI
+        avgCashFlow = -(bestLoan.monthlyPayment || 0); // Negative as it's an expense
+        breakEvenMonths = (projectData.loanTermYears || bestLoan.loanTermYears || 0) * 12;
+        break;
+
+      case 'mortgage':
+        // Mortgage passes: { ...inputs, result } where result has monthlyPayment, totalInterest
         totalInvestment = projectData.loanAmount || projectData.propertyValue || 0;
+        roi = 0;
+        avgCashFlow = -(projectData.result?.monthlyPayment || 0);
+        breakEvenMonths = (projectData.loanTermYears || 0) * 12;
+        break;
+
+      case 'indonesia-tax':
+        // Indonesia Tax passes: { ...inputs, result }
+        totalInvestment = projectData.purchasePrice || 0;
+        roi = 0;
+        avgCashFlow = 0;
+        breakEvenMonths = 0;
+        break;
+
+      case 'dev-budget':
+        // Dev Budget passes: { ...inputs, calculations }
+        totalInvestment = projectData.calculations?.totalBudgeted || 0;
+        roi = 0;
+        avgCashFlow = 0;
+        breakEvenMonths = 0;
+        break;
+
+      case 'risk-assessment':
+        // Risk Assessment passes: { ...inputs, riskScore, scenarios }
+        totalInvestment = projectData.propertyValue || projectData.investmentAmount || 0;
+        roi = projectData.expectedReturn || 0;
+        avgCashFlow = 0;
+        breakEvenMonths = 0;
+        break;
+
+      default:
+        totalInvestment = projectData.loanAmount || projectData.propertyValue || projectData.totalInvestment || 0;
         roi = 0;
         avgCashFlow = 0;
         breakEvenMonths = 0;
