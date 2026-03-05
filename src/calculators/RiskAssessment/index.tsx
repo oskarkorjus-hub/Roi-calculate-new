@@ -1,5 +1,6 @@
 import { useState, useCallback, useMemo } from 'react';
 import { Toast } from '../../components/ui/Toast';
+import { UsageBadge } from '../../components/ui/UsageBadge';
 import { SaveToPortfolioButton } from '../../components/SaveToPortfolioButton';
 import { ReportPreviewModal } from '../../components/ui/ReportPreviewModal';
 import { generateRiskAssessmentReport } from '../../hooks/useReportGenerator';
@@ -90,25 +91,25 @@ const INITIAL_INPUTS: RiskInputs = {
   currency: 'IDR',
 
   // Basic
-  projectROI: 15,
-  annualCashFlow: 500_000_000,
+  projectROI: 0,
+  annualCashFlow: 0,
   cashFlowType: 'moderate',
-  breakEvenMonths: 24,
-  investmentAmount: 5_000_000_000,
+  breakEvenMonths: 0,
+  investmentAmount: 0,
   marketLocation: 'bali-canggu',
   propertyType: 'villa',
 
   // Financial
-  debtServiceCoverageRatio: 1.35,
-  leverageRatio: 0.6,
-  equityAmount: 2_000_000_000,
-  debtAmount: 3_000_000_000,
-  monthlyDebtService: 30_000_000,
+  debtServiceCoverageRatio: 0,
+  leverageRatio: 0,
+  equityAmount: 0,
+  debtAmount: 0,
+  monthlyDebtService: 0,
 
   // Market
   marketStability: 'growing',
   rentalStrategy: 'str',
-  averageOccupancy: 65,
+  averageOccupancy: 0,
   priceVolatility: 'moderate',
   demandTrend: 'increasing',
 
@@ -120,7 +121,7 @@ const INITIAL_INPUTS: RiskInputs = {
   politicalStability: 'stable',
 
   // Property
-  propertyAge: 2,
+  propertyAge: 0,
   propertyCondition: 'excellent',
   locationQuality: 'prime',
   amenityLevel: 'luxury',
@@ -570,10 +571,12 @@ export function RiskAssessment() {
 
       <div className="max-w-[100%] mx-auto">
         {/* Header */}
-        <header className="mb-8 flex flex-col xl:flex-row xl:items-center justify-between gap-6">
+        <header className="mb-6 sm:mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4 sm:gap-6">
           <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-red-600 to-orange-600 flex items-center justify-center text-2xl shadow-lg shadow-red-900/30">
-              🎯
+            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-red-600 to-orange-600 flex items-center justify-center shadow-lg shadow-red-900/30">
+              <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+              </svg>
             </div>
             <div>
               <h1 className="text-2xl font-bold text-white">Risk Assessment & Investment Rating</h1>
@@ -584,6 +587,8 @@ export function RiskAssessment() {
           </div>
 
           <div className="flex items-center gap-3 flex-wrap">
+            <UsageBadge />
+
             <div className="flex items-center bg-zinc-800 px-4 py-2 rounded-lg border border-zinc-700">
               <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest mr-3">Currency</span>
               <select
@@ -601,7 +606,7 @@ export function RiskAssessment() {
 
             <button
               onClick={handleReset}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+              className={`px-3 sm:px-4 py-3 min-h-[44px] rounded-lg text-xs sm:text-sm font-medium transition-all ${
                 showResetConfirm
                   ? 'bg-red-500 text-white'
                   : 'bg-zinc-800 text-zinc-300 border border-zinc-700 hover:bg-zinc-700'
@@ -612,7 +617,7 @@ export function RiskAssessment() {
 
             <button
               onClick={() => setShowReportModal(true)}
-              className="px-4 py-2 rounded-lg text-sm font-medium bg-red-600 text-white hover:bg-red-700 transition-all flex items-center gap-2"
+              className="px-3 sm:px-4 py-3 min-h-[44px] rounded-lg text-xs sm:text-sm font-medium bg-red-600 text-white hover:bg-red-700 transition-all flex items-center gap-2"
             >
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -647,21 +652,21 @@ export function RiskAssessment() {
         />
 
         {/* Tab Navigation */}
-        <div className="flex gap-2 my-6">
+        <div className="flex flex-wrap gap-2 my-4 sm:my-6">
           {(['overview', 'breakdown', 'scenarios', 'mitigation'] as const).map(tab => (
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+              className={`px-3 sm:px-4 py-3 min-h-[44px] rounded-lg text-xs sm:text-sm font-medium transition-all ${
                 activeTab === tab
                   ? 'bg-red-600 text-white'
                   : 'bg-zinc-800 text-zinc-400 hover:text-white'
               }`}
             >
-              {tab === 'overview' && '📊 Overview'}
-              {tab === 'breakdown' && '📋 Risk Breakdown'}
-              {tab === 'scenarios' && '🎲 Scenarios'}
-              {tab === 'mitigation' && '🛡️ Mitigation'}
+              {tab === 'overview' && 'Overview'}
+              {tab === 'breakdown' && 'Risk Breakdown'}
+              {tab === 'scenarios' && 'Scenarios'}
+              {tab === 'mitigation' && 'Mitigation'}
             </button>
           ))}
         </div>
@@ -671,10 +676,8 @@ export function RiskAssessment() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Basic Inputs */}
             <div className="rounded-xl border border-zinc-800 bg-zinc-900 p-6">
-              <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
-                <span className="text-emerald-400">📈</span> Basic Metrics
-              </h3>
-              <div className="grid grid-cols-2 gap-4">
+              <h3 className="text-lg font-bold text-white mb-4">Basic Metrics</h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <InputField
                   label="Project ROI"
                   value={inputs.projectROI}
@@ -742,11 +745,10 @@ export function RiskAssessment() {
 
             {/* Financial Risk Factors */}
             <div className="rounded-xl border border-zinc-800 bg-zinc-900 p-6">
-              <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
-                <span className="text-cyan-400">💰</span> Financial Factors
-                <span className="text-xs text-zinc-500 font-normal">(40% weight)</span>
+              <h3 className="text-lg font-bold text-white mb-4">
+                Financial Factors <span className="text-xs text-zinc-500 font-normal">(40% weight)</span>
               </h3>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <InputField
                   label="DSCR"
                   value={inputs.debtServiceCoverageRatio}
@@ -777,11 +779,10 @@ export function RiskAssessment() {
 
             {/* Market Risk Factors */}
             <div className="rounded-xl border border-zinc-800 bg-zinc-900 p-6">
-              <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
-                <span className="text-purple-400">📊</span> Market Factors
-                <span className="text-xs text-zinc-500 font-normal">(30% weight)</span>
+              <h3 className="text-lg font-bold text-white mb-4">
+                Market Factors <span className="text-xs text-zinc-500 font-normal">(30% weight)</span>
               </h3>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="text-xs text-zinc-400 mb-1 block">Market Stability</label>
                   <select
@@ -844,11 +845,10 @@ export function RiskAssessment() {
 
             {/* Regulatory Risk Factors */}
             <div className="rounded-xl border border-zinc-800 bg-zinc-900 p-6">
-              <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
-                <span className="text-amber-400">⚖️</span> Regulatory Factors
-                <span className="text-xs text-zinc-500 font-normal">(15% weight)</span>
+              <h3 className="text-lg font-bold text-white mb-4">
+                Regulatory Factors <span className="text-xs text-zinc-500 font-normal">(15% weight)</span>
               </h3>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="flex items-center gap-3">
                   <label className="relative inline-flex items-center cursor-pointer">
                     <input
@@ -905,9 +905,8 @@ export function RiskAssessment() {
 
             {/* Property-Specific Risk Factors */}
             <div className="rounded-xl border border-zinc-800 bg-zinc-900 p-6 lg:col-span-2">
-              <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
-                <span className="text-pink-400">🏠</span> Property Factors
-                <span className="text-xs text-zinc-500 font-normal">(15% weight)</span>
+              <h3 className="text-lg font-bold text-white mb-4">
+                Property Factors <span className="text-xs text-zinc-500 font-normal">(15% weight)</span>
               </h3>
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
                 <InputField
@@ -1066,9 +1065,21 @@ function InputField({ label, value, onChange, prefix, suffix, tooltip }: {
           <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-zinc-500">{prefix}</span>
         )}
         <input
-          type="number"
-          value={value}
-          onChange={e => onChange(parseFloat(e.target.value) || 0)}
+          type="text"
+          inputMode="decimal"
+          value={value === 0 ? '' : value}
+          onChange={e => {
+            const val = e.target.value;
+            if (val === '' || val === '-') {
+              onChange(0);
+            } else {
+              const parsed = parseFloat(val);
+              if (!isNaN(parsed)) {
+                onChange(parsed);
+              }
+            }
+          }}
+          placeholder="0"
           className={`w-full bg-zinc-800 border border-zinc-700 rounded-lg py-2 text-sm text-white ${
             prefix ? 'pl-10 pr-3' : suffix ? 'pl-3 pr-12' : 'px-3'
           }`}

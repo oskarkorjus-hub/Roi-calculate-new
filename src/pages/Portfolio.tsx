@@ -72,8 +72,10 @@ export function Portfolio() {
       <div className="min-h-screen bg-[#0a0a0a] text-white -mx-4 md:-mx-10 lg:-mx-20 -my-8 px-6 py-8">
         <div className="max-w-[100%] mx-auto">
           <header className="mb-8 flex items-center gap-4">
-            <div className="w-12 h-12 rounded-xl bg-zinc-800 flex items-center justify-center text-2xl">
-              📊
+            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-600 to-purple-800 flex items-center justify-center shadow-lg shadow-purple-900/30">
+              <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+              </svg>
             </div>
             <div>
               <h1 className="text-2xl font-bold text-white">Investment Portfolio</h1>
@@ -85,13 +87,12 @@ export function Portfolio() {
 
           <div className="flex items-center justify-center py-20">
             <div className="text-center p-8 bg-zinc-900 rounded-xl border border-zinc-800">
-              <div className="text-4xl mb-3">📊</div>
               <h3 className="text-2xl font-bold text-white mb-3">No Projects Yet</h3>
               <p className="text-zinc-400 max-w-sm mb-4">
                 Start by using any calculator to create your first investment project. Your portfolio analytics will appear here.
               </p>
               <p className="text-sm text-zinc-500">
-                💡 Tip: Save projects from the calculator results to build your portfolio!
+                Tip: Save projects from the calculator results to build your portfolio!
               </p>
             </div>
           </div>
@@ -104,10 +105,12 @@ export function Portfolio() {
     <div className="min-h-screen bg-[#0a0a0a] text-white -mx-4 md:-mx-10 lg:-mx-20 -my-8 px-6 py-8">
       <div className="max-w-[100%] mx-auto space-y-6">
         {/* Header */}
-        <header className="mb-8 flex flex-col xl:flex-row xl:items-center justify-between gap-6">
+        <header className="mb-6 sm:mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4 sm:gap-6">
           <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-xl bg-zinc-800 flex items-center justify-center text-2xl">
-              📊
+            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-600 to-purple-800 flex items-center justify-center shadow-lg shadow-purple-900/30">
+              <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+              </svg>
             </div>
             <div>
               <h1 className="text-2xl font-bold text-white">Investment Portfolio</h1>
@@ -121,23 +124,23 @@ export function Portfolio() {
             <button
               onClick={() => generatePortfolioComparisionPDF(projects)}
               disabled={projects.length === 0}
-              className="px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition font-medium disabled:bg-zinc-700 disabled:cursor-not-allowed flex items-center gap-2 text-sm"
+              className="px-3 sm:px-4 py-3 min-h-[44px] bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition font-medium disabled:bg-zinc-700 disabled:cursor-not-allowed flex items-center gap-2 text-xs sm:text-sm"
             >
-              📊 Portfolio PDF
+              Portfolio PDF
             </button>
             <button
               onClick={downloadCSV}
               disabled={filteredProjects.length === 0}
-              className="px-4 py-2 bg-zinc-800 text-zinc-300 border border-zinc-700 rounded-lg hover:bg-zinc-700 transition font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 text-sm"
+              className="px-3 sm:px-4 py-3 min-h-[44px] bg-zinc-800 text-zinc-300 border border-zinc-700 rounded-lg hover:bg-zinc-700 transition font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 text-xs sm:text-sm"
             >
-              📥 Download CSV
+              Download CSV
             </button>
             {selectedForComparison.size > 1 && (
               <button
                 onClick={() => generatePortfolioComparisionPDF(projectsForComparison)}
-                className="px-4 py-2 bg-cyan-600 text-white rounded-lg hover:bg-cyan-700 transition font-medium flex items-center gap-2 text-sm"
+                className="px-3 sm:px-4 py-3 min-h-[44px] bg-cyan-600 text-white rounded-lg hover:bg-cyan-700 transition font-medium flex items-center gap-2 text-xs sm:text-sm"
               >
-                ⚖️ Compare ({selectedForComparison.size})
+                Compare ({selectedForComparison.size})
               </button>
             )}
           </div>
@@ -161,7 +164,7 @@ export function Portfolio() {
           {selectedForComparison.size > 0 && (
             <button
               onClick={() => setShowComparisonView(!showComparisonView)}
-              className="px-3 py-1.5 bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 rounded-lg text-sm font-medium hover:bg-cyan-500/30 transition"
+              className="px-3 py-2 min-h-[44px] bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 rounded-lg text-xs sm:text-sm font-medium hover:bg-cyan-500/30 transition"
             >
               Comparing {selectedForComparison.size} projects
             </button>
@@ -202,10 +205,10 @@ export function Portfolio() {
 
             {/* Comparison View */}
             {showComparisonView && projectsForComparison.length > 1 && (
-              <div className="bg-zinc-900 rounded-xl border border-zinc-800 p-6 mt-6">
+              <div className="bg-zinc-900 rounded-xl border border-zinc-800 p-4 sm:p-6 mt-6">
                 <h3 className="text-lg font-bold text-white mb-4">Project Comparison</h3>
-                <div className="overflow-x-auto">
-                  <table className="w-full text-sm">
+                <div className="overflow-x-auto -mx-4 px-4 sm:mx-0 sm:px-0">
+                  <table className="w-full text-xs sm:text-sm min-w-[640px]">
                     <thead className="bg-zinc-800 border-b border-zinc-700">
                       <tr>
                         <th className="px-4 py-3 text-left font-semibold text-zinc-300">Project</th>
@@ -347,7 +350,7 @@ export function Portfolio() {
               <div className="flex gap-3 border-t border-zinc-800 pt-4">
                 <button
                   onClick={() => setSelectedProject(null)}
-                  className="flex-1 px-4 py-2 text-zinc-300 border border-zinc-700 rounded-lg hover:bg-zinc-800 transition font-medium"
+                  className="flex-1 px-3 sm:px-4 py-3 min-h-[44px] text-zinc-300 border border-zinc-700 rounded-lg hover:bg-zinc-800 transition font-medium text-xs sm:text-sm"
                 >
                   Close
                 </button>
@@ -356,7 +359,7 @@ export function Portfolio() {
                     generateProjectPDF(selectedProject);
                     setSelectedProject(null);
                   }}
-                  className="flex-1 px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition font-medium"
+                  className="flex-1 px-3 sm:px-4 py-3 min-h-[44px] bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition font-medium text-xs sm:text-sm"
                 >
                   Download PDF
                 </button>
@@ -365,7 +368,7 @@ export function Portfolio() {
                     setShowDeleteConfirm(selectedProject.id);
                     setSelectedProject(null);
                   }}
-                  className="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition font-medium"
+                  className="flex-1 px-3 sm:px-4 py-3 min-h-[44px] bg-red-600 text-white rounded-lg hover:bg-red-700 transition font-medium text-xs sm:text-sm"
                 >
                   Delete
                 </button>
@@ -386,13 +389,13 @@ export function Portfolio() {
             <div className="flex gap-3">
               <button
                 onClick={() => setShowDeleteConfirm(null)}
-                className="flex-1 px-4 py-2 text-zinc-300 border border-zinc-700 rounded-lg hover:bg-zinc-800 transition font-medium"
+                className="flex-1 px-3 sm:px-4 py-3 min-h-[44px] text-zinc-300 border border-zinc-700 rounded-lg hover:bg-zinc-800 transition font-medium text-xs sm:text-sm"
               >
                 Cancel
               </button>
               <button
                 onClick={() => handleDeleteProject(showDeleteConfirm)}
-                className="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition font-medium"
+                className="flex-1 px-3 sm:px-4 py-3 min-h-[44px] bg-red-600 text-white rounded-lg hover:bg-red-700 transition font-medium text-xs sm:text-sm"
               >
                 Delete
               </button>

@@ -24,8 +24,10 @@ export function CalculatorHeader({ calculator, onNavigateHome }: CalculatorHeade
           <div className="flex items-start justify-between">
             <div className="flex-1">
               <div className="flex items-center gap-3 mb-2">
-                <div className="w-12 h-12 rounded-xl bg-zinc-800 flex items-center justify-center text-2xl">
-                  {calculator.icon}
+                <div className="w-12 h-12 rounded-xl bg-zinc-800 flex items-center justify-center">
+                  <span className="material-symbols-outlined text-2xl text-emerald-400">
+                    {calculator.icon}
+                  </span>
                 </div>
                 <h1 className="text-2xl font-bold text-white">{calculator.name}</h1>
               </div>

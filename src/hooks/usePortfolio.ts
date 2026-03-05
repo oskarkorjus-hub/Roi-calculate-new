@@ -106,6 +106,15 @@ export function usePortfolio() {
     return emailLog;
   }, [emailLog]);
 
+  const canAddProject = useCallback((maxProjects: number): boolean => {
+    if (maxProjects === Infinity) return true;
+    return projects.length < maxProjects;
+  }, [projects.length]);
+
+  const getProjectCount = useCallback((): number => {
+    return projects.length;
+  }, [projects.length]);
+
   return {
     projects,
     emailLog,
@@ -117,5 +126,7 @@ export function usePortfolio() {
     calculatePortfolioMetrics,
     logEmail,
     getEmailLog,
+    canAddProject,
+    getProjectCount,
   };
 }

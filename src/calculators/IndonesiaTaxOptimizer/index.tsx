@@ -1,5 +1,6 @@
 import { useState, useCallback, useMemo } from 'react';
 import { Toast } from '../../components/ui/Toast';
+import { UsageBadge } from '../../components/ui/UsageBadge';
 import { SaveToPortfolioButton } from '../../components/SaveToPortfolioButton';
 import { ReportPreviewModal } from '../../components/ui/ReportPreviewModal';
 import { generateIndonesiaTaxReport } from '../../hooks/useReportGenerator';
@@ -105,35 +106,35 @@ export interface TaxCalculationResult {
 }
 
 const INITIAL_INPUTS: TaxInputs = {
-  purchasePrice: 5_000_000_000, // 5B IDR
-  holdingPeriod: 5,
-  projectedSalePrice: 7_000_000_000, // 7B IDR
+  purchasePrice: 0,
+  holdingPeriod: 0,
+  projectedSalePrice: 0,
   ownershipStructure: 'pt',
-  annualMaintenanceExpenses: 50_000_000,
-  propertyTaxRate: 0.5,
+  annualMaintenanceExpenses: 0,
+  propertyTaxRate: 0,
   currency: 'IDR',
 
   showDepreciation: false,
-  buildingValue: 3_500_000_000, // 70% of purchase is building
-  buildingDepreciationRate: 5,
+  buildingValue: 0,
+  buildingDepreciationRate: 0,
 
   showDeductions: false,
-  annualUtilities: 24_000_000,
-  annualPropertyManagement: 60_000_000,
-  annualInsurance: 12_000_000,
+  annualUtilities: 0,
+  annualPropertyManagement: 0,
+  annualInsurance: 0,
   annualOtherExpenses: 0,
 
   showCapitalGains: false,
-  acquisitionCosts: 250_000_000,
-  sellingCosts: 350_000_000,
+  acquisitionCosts: 0,
+  sellingCosts: 0,
 
   showOwnershipImpact: false,
-  corporateTaxRate: 22,
-  individualCapGainRate: 30,
+  corporateTaxRate: 0,
+  individualCapGainRate: 0,
 
   showReinvestment: false,
   reinvestmentAmount: 0,
-  reinvestmentYield: 8,
+  reinvestmentYield: 0,
 };
 
 const symbols: Record<CurrencyType, string> = {
@@ -388,7 +389,7 @@ export function IndonesiaTaxOptimizer() {
 
       <div className="max-w-[100%] mx-auto">
         {/* Header */}
-        <header className="mb-8 flex flex-col xl:flex-row xl:items-center justify-between gap-6">
+        <header className="mb-6 sm:mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4 sm:gap-6">
           <div className="flex items-center gap-4">
             <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-red-600 to-red-800 flex items-center justify-center text-2xl shadow-lg shadow-red-900/30">
               <span className="text-white font-bold text-lg">ID</span>
@@ -402,6 +403,8 @@ export function IndonesiaTaxOptimizer() {
           </div>
 
           <div className="flex items-center gap-3 flex-wrap">
+            <UsageBadge />
+
             <div className="flex items-center bg-zinc-800 px-4 py-2 rounded-lg border border-zinc-700">
               <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest mr-3">Currency</span>
               <select
@@ -419,7 +422,7 @@ export function IndonesiaTaxOptimizer() {
 
             <button
               onClick={handleReset}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+              className={`px-3 sm:px-4 py-3 min-h-[44px] rounded-lg text-xs sm:text-sm font-medium transition-all ${
                 showResetConfirm
                   ? 'bg-red-500 text-white'
                   : 'bg-zinc-800 text-zinc-300 border border-zinc-700 hover:bg-zinc-700'
@@ -430,14 +433,14 @@ export function IndonesiaTaxOptimizer() {
 
             <button
               onClick={handleSaveDraft}
-              className="px-4 py-2 rounded-lg text-sm font-medium bg-zinc-800 text-zinc-300 border border-zinc-700 hover:bg-zinc-700 transition-all"
+              className="px-3 sm:px-4 py-3 min-h-[44px] rounded-lg text-xs sm:text-sm font-medium bg-zinc-800 text-zinc-300 border border-zinc-700 hover:bg-zinc-700 transition-all"
             >
               Save Draft
             </button>
 
             <button
               onClick={() => setShowReportModal(true)}
-              className="px-4 py-2 rounded-lg text-sm font-medium bg-cyan-600 text-white hover:bg-cyan-700 transition-all flex items-center gap-2"
+              className="px-3 sm:px-4 py-3 min-h-[44px] rounded-lg text-xs sm:text-sm font-medium bg-cyan-600 text-white hover:bg-cyan-700 transition-all flex items-center gap-2"
             >
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -531,8 +534,7 @@ export function IndonesiaTaxOptimizer() {
             {/* Depreciation Section */}
             <AdvancedSection
               title="Depreciation Schedule"
-              icon="📉"
-              isOpen={inputs.showDepreciation}
+                            isOpen={inputs.showDepreciation}
               onToggle={() => handleInputChange('showDepreciation', !inputs.showDepreciation)}
               description="Year-by-year depreciation impact"
             >
@@ -586,8 +588,7 @@ export function IndonesiaTaxOptimizer() {
             {/* Deductions Section */}
             <AdvancedSection
               title="Deduction Categories"
-              icon="🧾"
-              isOpen={inputs.showDeductions}
+                            isOpen={inputs.showDeductions}
               onToggle={() => handleInputChange('showDeductions', !inputs.showDeductions)}
               description="Itemize deductible expenses"
             >
@@ -659,8 +660,7 @@ export function IndonesiaTaxOptimizer() {
             {/* Capital Gains Section */}
             <AdvancedSection
               title="Capital Gains Tax"
-              icon="💹"
-              isOpen={inputs.showCapitalGains}
+                            isOpen={inputs.showCapitalGains}
               onToggle={() => handleInputChange('showCapitalGains', !inputs.showCapitalGains)}
               description="Acquisition and selling costs"
             >
@@ -714,8 +714,7 @@ export function IndonesiaTaxOptimizer() {
             {/* Ownership Impact Section */}
             <AdvancedSection
               title="Ownership Structure Impact"
-              icon="🏛️"
-              isOpen={inputs.showOwnershipImpact}
+                            isOpen={inputs.showOwnershipImpact}
               onToggle={() => handleInputChange('showOwnershipImpact', !inputs.showOwnershipImpact)}
               description="Compare tax by ownership type"
             >
@@ -755,8 +754,7 @@ export function IndonesiaTaxOptimizer() {
             {/* Reinvestment Section */}
             <AdvancedSection
               title="Reinvestment Strategy"
-              icon="🔄"
-              isOpen={inputs.showReinvestment}
+                            isOpen={inputs.showReinvestment}
               onToggle={() => handleInputChange('showReinvestment', !inputs.showReinvestment)}
               description="Tax-deferred reinvestment scenarios"
             >
@@ -845,9 +843,21 @@ function InputField({ label, value, onChange, prefix, suffix, tooltip }: {
           <span className="absolute left-5 top-1/2 -translate-y-1/2 text-[13px] font-bold text-zinc-500">{prefix}</span>
         )}
         <input
-          type="number"
-          value={value}
-          onChange={e => onChange(parseFloat(e.target.value) || 0)}
+          type="text"
+          inputMode="decimal"
+          value={value === 0 ? '' : value}
+          onChange={e => {
+            const val = e.target.value;
+            if (val === '' || val === '-') {
+              onChange(0);
+            } else {
+              const parsed = parseFloat(val);
+              if (!isNaN(parsed)) {
+                onChange(parsed);
+              }
+            }
+          }}
+          placeholder="0"
           className={`w-full bg-zinc-800 border border-zinc-700 rounded-2xl py-4 text-[16px] font-bold text-white placeholder:text-zinc-500 outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500 transition-all tabular-nums ${prefix ? 'pl-12 pr-6' : suffix ? 'pl-6 pr-16' : 'px-6'}`}
         />
         {suffix && (

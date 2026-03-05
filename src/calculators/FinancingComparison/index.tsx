@@ -1,5 +1,6 @@
 import { useState, useCallback, useMemo } from 'react';
 import { Toast } from '../../components/ui/Toast';
+import { UsageBadge } from '../../components/ui/UsageBadge';
 import { SaveToPortfolioButton } from '../../components/SaveToPortfolioButton';
 import { ReportPreviewModal } from '../../components/ui/ReportPreviewModal';
 import { generateFinancingReport } from '../../hooks/useReportGenerator';
@@ -72,18 +73,18 @@ const createDefaultLoan = (id: number): LoanConfig => ({
   name: id === 1 ? 'Bank Loan' : id === 2 ? 'Developer Finance' : id === 3 ? 'Private Lender' : 'Hard Money',
   lenderType: id === 1 ? 'bank' : id === 2 ? 'developer' : id === 3 ? 'private' : 'hard-money',
   amount: 0,
-  interestRate: id === 1 ? 6.5 : id === 2 ? 4 : id === 3 ? 10 : 14,
-  term: id === 1 ? 20 : id === 2 ? 3 : id === 3 ? 5 : 1,
-  originationFeePercent: id === 1 ? 1 : id === 2 ? 0 : id === 3 ? 2 : 3,
-  prepaymentPenaltyPercent: id === 1 ? 2 : id === 2 ? 0 : id === 3 ? 3 : 0,
-  interestOnlyPeriod: id === 1 ? 0 : id === 2 ? 12 : id === 3 ? 0 : 12,
-  balloonPayment: id === 1 ? 0 : id === 2 ? 0 : id === 3 ? 0 : 0,
+  interestRate: 0,
+  term: 0,
+  originationFeePercent: 0,
+  prepaymentPenaltyPercent: 0,
+  interestOnlyPeriod: 0,
+  balloonPayment: 0,
   paymentSchedule: 'monthly',
 });
 
 const INITIAL_INPUTS: FinancingInputs = {
-  propertyValue: 5_000_000_000,
-  downPaymentPercent: 30,
+  propertyValue: 0,
+  downPaymentPercent: 0,
   currency: 'IDR',
   loans: [
     createDefaultLoan(1),
@@ -92,9 +93,9 @@ const INITIAL_INPUTS: FinancingInputs = {
     createDefaultLoan(4),
   ],
   showScenarios: false,
-  refinanceYear: 5,
-  prepayAmount: 500_000_000,
-  rateIncreasePercent: 2,
+  refinanceYear: 0,
+  prepayAmount: 0,
+  rateIncreasePercent: 0,
 };
 
 const symbols: Record<CurrencyType, string> = {
@@ -342,10 +343,12 @@ export function FinancingComparison() {
 
       <div className="max-w-[100%] mx-auto">
         {/* Header */}
-        <header className="mb-8 flex flex-col xl:flex-row xl:items-center justify-between gap-6">
+        <header className="mb-6 sm:mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4 sm:gap-6">
           <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-cyan-600 to-cyan-800 flex items-center justify-center text-2xl shadow-lg shadow-cyan-900/30">
-              🏦
+            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-cyan-600 to-cyan-800 flex items-center justify-center shadow-lg shadow-cyan-900/30">
+              <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 14v3m4-3v3m4-3v3M3 21h18M3 10h18M3 7l9-4 9 4M4 10h16v11H4V10z" />
+              </svg>
             </div>
             <div>
               <h1 className="text-2xl font-bold text-white">Financing Comparison</h1>
@@ -356,6 +359,8 @@ export function FinancingComparison() {
           </div>
 
           <div className="flex items-center gap-3 flex-wrap">
+            <UsageBadge />
+
             <div className="flex items-center bg-zinc-800 px-4 py-2 rounded-lg border border-zinc-700">
               <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest mr-3">Currency</span>
               <select
@@ -373,7 +378,7 @@ export function FinancingComparison() {
 
             <button
               onClick={handleReset}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+              className={`px-3 sm:px-4 py-3 min-h-[44px] rounded-lg text-xs sm:text-sm font-medium transition-all ${
                 showResetConfirm
                   ? 'bg-red-500 text-white'
                   : 'bg-zinc-800 text-zinc-300 border border-zinc-700 hover:bg-zinc-700'
@@ -384,14 +389,14 @@ export function FinancingComparison() {
 
             <button
               onClick={handleSaveDraft}
-              className="px-4 py-2 rounded-lg text-sm font-medium bg-zinc-800 text-zinc-300 border border-zinc-700 hover:bg-zinc-700 transition-all"
+              className="px-3 sm:px-4 py-3 min-h-[44px] rounded-lg text-xs sm:text-sm font-medium bg-zinc-800 text-zinc-300 border border-zinc-700 hover:bg-zinc-700 transition-all"
             >
               Save Draft
             </button>
 
             <button
               onClick={() => setShowReportModal(true)}
-              className="px-4 py-2 rounded-lg text-sm font-medium bg-cyan-600 text-white hover:bg-cyan-700 transition-all flex items-center gap-2"
+              className="px-3 sm:px-4 py-3 min-h-[44px] rounded-lg text-xs sm:text-sm font-medium bg-cyan-600 text-white hover:bg-cyan-700 transition-all flex items-center gap-2"
             >
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -585,9 +590,21 @@ function InputField({ label, value, onChange, prefix, suffix, tooltip }: {
           <span className="absolute left-5 top-1/2 -translate-y-1/2 text-[13px] font-bold text-zinc-500">{prefix}</span>
         )}
         <input
-          type="number"
-          value={value}
-          onChange={e => onChange(parseFloat(e.target.value) || 0)}
+          type="text"
+          inputMode="decimal"
+          value={value === 0 ? '' : value}
+          onChange={e => {
+            const val = e.target.value;
+            if (val === '' || val === '-') {
+              onChange(0);
+            } else {
+              const parsed = parseFloat(val);
+              if (!isNaN(parsed)) {
+                onChange(parsed);
+              }
+            }
+          }}
+          placeholder="0"
           className={`w-full bg-zinc-800 border border-zinc-700 rounded-2xl py-4 text-[16px] font-bold text-white placeholder:text-zinc-500 outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-all tabular-nums ${prefix ? 'pl-12 pr-6' : suffix ? 'pl-6 pr-16' : 'px-6'}`}
         />
         {suffix && (

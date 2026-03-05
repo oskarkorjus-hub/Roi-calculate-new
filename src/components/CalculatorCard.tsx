@@ -6,11 +6,30 @@ interface CalculatorCardProps {
   isRecent?: boolean;
 }
 
+// Color schemes for different calculator types
+const ICON_COLORS: Record<string, { bg: string; text: string; hoverBg: string }> = {
+  'mortgage': { bg: 'bg-emerald-500/20', text: 'text-emerald-400', hoverBg: 'group-hover:bg-emerald-500/30' },
+  'rental-roi': { bg: 'bg-cyan-500/20', text: 'text-cyan-400', hoverBg: 'group-hover:bg-cyan-500/30' },
+  'xirr': { bg: 'bg-purple-500/20', text: 'text-purple-400', hoverBg: 'group-hover:bg-purple-500/30' },
+  'cashflow': { bg: 'bg-green-500/20', text: 'text-green-400', hoverBg: 'group-hover:bg-green-500/30' },
+  'cap-rate': { bg: 'bg-amber-500/20', text: 'text-amber-400', hoverBg: 'group-hover:bg-amber-500/30' },
+  'irr': { bg: 'bg-blue-500/20', text: 'text-blue-400', hoverBg: 'group-hover:bg-blue-500/30' },
+  'npv': { bg: 'bg-teal-500/20', text: 'text-teal-400', hoverBg: 'group-hover:bg-teal-500/30' },
+  'dev-feasibility': { bg: 'bg-orange-500/20', text: 'text-orange-400', hoverBg: 'group-hover:bg-orange-500/30' },
+  'indonesia-tax': { bg: 'bg-red-500/20', text: 'text-red-400', hoverBg: 'group-hover:bg-red-500/30' },
+  'rental-projection': { bg: 'bg-indigo-500/20', text: 'text-indigo-400', hoverBg: 'group-hover:bg-indigo-500/30' },
+  'financing': { bg: 'bg-cyan-500/20', text: 'text-cyan-400', hoverBg: 'group-hover:bg-cyan-500/30' },
+  'dev-budget': { bg: 'bg-yellow-500/20', text: 'text-yellow-400', hoverBg: 'group-hover:bg-yellow-500/30' },
+  'risk-assessment': { bg: 'bg-rose-500/20', text: 'text-rose-400', hoverBg: 'group-hover:bg-rose-500/30' },
+};
+
 export function CalculatorCard({
   calculator,
   onSelect,
   isRecent = false,
 }: CalculatorCardProps) {
+  const colors = ICON_COLORS[calculator.id] || { bg: 'bg-zinc-800', text: 'text-zinc-400', hoverBg: 'group-hover:bg-zinc-700' };
+
   return (
     <button
       onClick={() => onSelect(calculator.id)}
@@ -18,8 +37,10 @@ export function CalculatorCard({
     >
       <div className="flex items-start gap-4">
         {/* Icon */}
-        <div className="w-10 h-10 rounded-lg bg-zinc-800 flex items-center justify-center text-xl shrink-0 group-hover:bg-zinc-700 transition-colors">
-          {calculator.icon}
+        <div className={`w-10 h-10 rounded-lg ${colors.bg} ${colors.hoverBg} flex items-center justify-center shrink-0 transition-colors`}>
+          <span className={`material-symbols-outlined text-xl ${colors.text}`}>
+            {calculator.icon}
+          </span>
         </div>
 
         {/* Content */}

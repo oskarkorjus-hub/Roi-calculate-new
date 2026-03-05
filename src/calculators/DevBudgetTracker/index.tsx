@@ -1,5 +1,6 @@
 import { useState, useCallback, useMemo } from 'react';
 import { Toast } from '../../components/ui/Toast';
+import { UsageBadge } from '../../components/ui/UsageBadge';
 import { SaveToPortfolioButton } from '../../components/SaveToPortfolioButton';
 import { ReportPreviewModal } from '../../components/ui/ReportPreviewModal';
 import { generateDevBudgetReport } from '../../hooks/useReportGenerator';
@@ -72,30 +73,30 @@ const DEFAULT_PHASES: ConstructionPhase[] = [
 ];
 
 const INITIAL_INPUTS: TrackerInputs = {
-  projectName: 'Villa Development Project',
+  projectName: '',
   currency: 'IDR',
-  projectStartDate: new Date().toISOString().split('T')[0],
-  totalProjectDuration: 12,
-  currentMonth: 5,
+  projectStartDate: '',
+  totalProjectDuration: 0,
+  currentMonth: 0,
 
-  landCost: 2_000_000_000,
-  landActual: 2_100_000_000,
-  constructionHard: 3_500_000_000,
-  constructionHardActual: 2_800_000_000,
-  softCosts: 500_000_000,
-  softCostsActual: 450_000_000,
-  contingency: 500_000_000,
-  contingencyActual: 150_000_000,
-  financing: 300_000_000,
-  financingActual: 280_000_000,
-  marketing: 200_000_000,
-  marketingActual: 50_000_000,
+  landCost: 0,
+  landActual: 0,
+  constructionHard: 0,
+  constructionHardActual: 0,
+  softCosts: 0,
+  softCostsActual: 0,
+  contingency: 0,
+  contingencyActual: 0,
+  financing: 0,
+  financingActual: 0,
+  marketing: 0,
+  marketingActual: 0,
 
   lineItems: [],
   phases: DEFAULT_PHASES,
 
-  contingencyPercent: 10,
-  contingencyUsed: 30,
+  contingencyPercent: 0,
+  contingencyUsed: 0,
 };
 
 const symbols: Record<CurrencyType, string> = {
@@ -263,10 +264,12 @@ export function DevBudgetTracker() {
 
       <div className="max-w-[100%] mx-auto">
         {/* Header */}
-        <header className="mb-8 flex flex-col xl:flex-row xl:items-center justify-between gap-6">
+        <header className="mb-6 sm:mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4 sm:gap-6">
           <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-600 to-amber-800 flex items-center justify-center text-2xl shadow-lg shadow-amber-900/30">
-              📋
+            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-600 to-amber-800 flex items-center justify-center shadow-lg shadow-amber-900/30">
+              <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+              </svg>
             </div>
             <div>
               <h1 className="text-2xl font-bold text-white">Development Budget Tracker</h1>
@@ -277,6 +280,8 @@ export function DevBudgetTracker() {
           </div>
 
           <div className="flex items-center gap-3 flex-wrap">
+            <UsageBadge />
+
             <div className="flex items-center bg-zinc-800 px-4 py-2 rounded-lg border border-zinc-700">
               <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest mr-3">Currency</span>
               <select
@@ -294,7 +299,7 @@ export function DevBudgetTracker() {
 
             <button
               onClick={handleReset}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+              className={`px-3 sm:px-4 py-3 min-h-[44px] rounded-lg text-xs sm:text-sm font-medium transition-all ${
                 showResetConfirm
                   ? 'bg-red-500 text-white'
                   : 'bg-zinc-800 text-zinc-300 border border-zinc-700 hover:bg-zinc-700'
@@ -305,7 +310,7 @@ export function DevBudgetTracker() {
 
             <button
               onClick={() => setShowReportModal(true)}
-              className="px-4 py-2 rounded-lg text-sm font-medium bg-amber-600 text-white hover:bg-amber-700 transition-all flex items-center gap-2"
+              className="px-3 sm:px-4 py-3 min-h-[44px] rounded-lg text-xs sm:text-sm font-medium bg-amber-600 text-white hover:bg-amber-700 transition-all flex items-center gap-2"
             >
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -425,20 +430,20 @@ export function DevBudgetTracker() {
         </div>
 
         {/* Tab Navigation */}
-        <div className="flex gap-2 mb-6">
+        <div className="flex flex-wrap gap-2 mb-4 sm:mb-6">
           {(['budget', 'timeline', 'analysis'] as const).map(tab => (
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+              className={`px-3 sm:px-4 py-3 min-h-[44px] rounded-lg text-xs sm:text-sm font-medium transition-all ${
                 activeTab === tab
                   ? 'bg-amber-600 text-white'
                   : 'bg-zinc-800 text-zinc-400 hover:text-white'
               }`}
             >
-              {tab === 'budget' && '💰 Budget'}
-              {tab === 'timeline' && '📅 Timeline'}
-              {tab === 'analysis' && '📊 Analysis'}
+              {tab === 'budget' && 'Budget'}
+              {tab === 'timeline' && 'Timeline'}
+              {tab === 'analysis' && 'Analysis'}
             </button>
           ))}
         </div>
@@ -592,7 +597,7 @@ export function DevBudgetTracker() {
                         Month {phase.startMonth} - {phase.startMonth + phase.duration - 1} • {phase.budgetPercent}% of budget
                       </p>
                     </div>
-                    <div className="w-32">
+                    <div className="w-full sm:w-32">
                       <select
                         value={phase.status}
                         onChange={(e) => handlePhaseChange(phase.id, 'status', e.target.value)}
@@ -604,7 +609,7 @@ export function DevBudgetTracker() {
                         <option value="delayed">Delayed</option>
                       </select>
                     </div>
-                    <div className="w-24">
+                    <div className="w-full sm:w-24">
                       <input
                         type="number"
                         value={phase.completionPercent}
@@ -669,17 +674,41 @@ function BudgetRow({
       </td>
       <td className="p-4">
         <input
-          type="number"
-          value={budgeted}
-          onChange={(e) => onBudgetChange(parseFloat(e.target.value) || 0)}
+          type="text"
+          inputMode="decimal"
+          value={budgeted === 0 ? '' : budgeted}
+          onChange={(e) => {
+            const val = e.target.value;
+            if (val === '' || val === '-') {
+              onBudgetChange(0);
+            } else {
+              const parsed = parseFloat(val);
+              if (!isNaN(parsed)) {
+                onBudgetChange(parsed);
+              }
+            }
+          }}
+          placeholder="0"
           className="w-full bg-zinc-800 border border-zinc-700 rounded px-2 py-1 text-sm text-white text-right"
         />
       </td>
       <td className="p-4">
         <input
-          type="number"
-          value={actual}
-          onChange={(e) => onActualChange(parseFloat(e.target.value) || 0)}
+          type="text"
+          inputMode="decimal"
+          value={actual === 0 ? '' : actual}
+          onChange={(e) => {
+            const val = e.target.value;
+            if (val === '' || val === '-') {
+              onActualChange(0);
+            } else {
+              const parsed = parseFloat(val);
+              if (!isNaN(parsed)) {
+                onActualChange(parsed);
+              }
+            }
+          }}
+          placeholder="0"
           className="w-full bg-zinc-800 border border-zinc-700 rounded px-2 py-1 text-sm text-white text-right"
         />
       </td>

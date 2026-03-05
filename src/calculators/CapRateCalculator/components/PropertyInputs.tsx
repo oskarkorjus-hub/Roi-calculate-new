@@ -51,8 +51,7 @@ export function PropertyInputs({ inputs, onInputChange, symbol }: PropertyInputs
       {/* ADVANCED SECTION */}
       <AdvancedSection
         title="Advanced Expense Analysis"
-        icon="📊"
-        isOpen={inputs.showAdvanced}
+                isOpen={inputs.showAdvanced}
         onToggle={() => onInputChange('showAdvanced', !inputs.showAdvanced)}
         description="Vacancy, reserves, and detailed expenses"
       >
@@ -121,9 +120,21 @@ function InputField({ label, value, onChange, prefix, suffix, tooltip }: {
           <span className="absolute left-5 top-1/2 -translate-y-1/2 text-[13px] font-bold text-zinc-500">{prefix}</span>
         )}
         <input
-          type="number"
-          value={value}
-          onChange={e => onChange(parseFloat(e.target.value) || 0)}
+          type="text"
+          inputMode="decimal"
+          value={value === 0 ? '' : value}
+          onChange={e => {
+            const val = e.target.value;
+            if (val === '' || val === '-') {
+              onChange(0);
+            } else {
+              const parsed = parseFloat(val);
+              if (!isNaN(parsed)) {
+                onChange(parsed);
+              }
+            }
+          }}
+          placeholder="0"
           className={`w-full bg-zinc-800 border border-zinc-700 rounded-2xl py-4 text-[16px] font-bold text-white placeholder:text-zinc-500 outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all tabular-nums ${prefix ? 'pl-12 pr-6' : suffix ? 'pl-6 pr-12' : 'px-6'}`}
         />
         {suffix && (

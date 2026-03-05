@@ -89,7 +89,7 @@ export function ScenarioAnalysisPage({ projectId, onBack }: ScenarioAnalysisPage
 
       <div className="max-w-[100%] mx-auto space-y-8">
         {/* Header */}
-        <header className="mb-8 flex flex-col xl:flex-row xl:items-center justify-between gap-6">
+        <header className="mb-6 sm:mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4 sm:gap-6">
           <div className="flex items-center gap-4">
             <div className="w-12 h-12 rounded-xl bg-zinc-800 flex items-center justify-center text-2xl">
               📊
@@ -102,7 +102,7 @@ export function ScenarioAnalysisPage({ projectId, onBack }: ScenarioAnalysisPage
           {onBack && (
             <button
               onClick={onBack}
-              className="px-4 py-2 bg-zinc-800 text-zinc-300 border border-zinc-700 rounded-lg hover:bg-zinc-700 transition font-medium flex items-center gap-2"
+              className="px-3 sm:px-4 py-3 min-h-[44px] bg-zinc-800 text-zinc-300 border border-zinc-700 rounded-lg hover:bg-zinc-700 transition font-medium flex items-center gap-2 text-xs sm:text-sm"
             >
               ← Back to Portfolio
             </button>
@@ -122,11 +122,11 @@ export function ScenarioAnalysisPage({ projectId, onBack }: ScenarioAnalysisPage
               Choose up to 4 scenarios. Selected: {selectedScenarios.length}
             </p>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {scenarios.map(scenario => (
                 <label
                   key={scenario.id}
-                  className={`relative p-4 rounded-xl border-2 cursor-pointer transition ${
+                  className={`group relative p-4 rounded-xl border-2 cursor-pointer transition ${
                     selectedScenarioIds.includes(scenario.id)
                       ? 'border-emerald-500 bg-emerald-500/10'
                       : 'border-zinc-700 bg-zinc-800 hover:border-zinc-600'
@@ -152,14 +152,14 @@ export function ScenarioAnalysisPage({ projectId, onBack }: ScenarioAnalysisPage
                   </div>
 
                   {/* Action Menu */}
-                  <div className="absolute top-3 left-3 flex gap-1 opacity-0 hover:opacity-100 transition">
+                  <div className="absolute top-3 left-3 flex gap-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition">
                     <button
                       onClick={e => {
                         e.preventDefault();
                         setRenamingId(scenario.id);
                         setNewName(scenario.name);
                       }}
-                      className="text-xs px-2 py-1 bg-cyan-500/20 text-cyan-400 rounded hover:bg-cyan-500/30"
+                      className="text-xs px-3 py-2 min-w-[44px] min-h-[44px] bg-cyan-500/20 text-cyan-400 rounded hover:bg-cyan-500/30 flex items-center justify-center"
                     >
                       ✏️
                     </button>
@@ -170,7 +170,7 @@ export function ScenarioAnalysisPage({ projectId, onBack }: ScenarioAnalysisPage
                           handleDeleteScenario(scenario.id);
                         }
                       }}
-                      className="text-xs px-2 py-1 bg-red-500/20 text-red-400 rounded hover:bg-red-500/30"
+                      className="text-xs px-3 py-2 min-w-[44px] min-h-[44px] bg-red-500/20 text-red-400 rounded hover:bg-red-500/30 flex items-center justify-center"
                     >
                       🗑️
                     </button>

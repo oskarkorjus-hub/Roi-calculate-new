@@ -1,5 +1,6 @@
 import { useState, useCallback, useMemo } from 'react';
 import { Toast } from '../../components/ui/Toast';
+import { UsageBadge } from '../../components/ui/UsageBadge';
 import { SaveToPortfolioButton } from '../../components/SaveToPortfolioButton';
 import { ReportPreviewModal } from '../../components/ui/ReportPreviewModal';
 import { generateDevFeasibilityReport } from '../../hooks/useReportGenerator';
@@ -53,30 +54,30 @@ interface VillaScenario {
 }
 
 const INITIAL_INPUTS: DevInputs = {
-  landSizeM2: 5000,
-  landCost: 2500000000,
-  costPerM2: 8000000,
-  avgVillaSize: 250,
-  avgSalePrice: 3000000000,
-  avgAnnualRentalIncome: 600000000,
-  holdingPeriod: 10,
-  numVillas: 5,
+  landSizeM2: 0,
+  landCost: 0,
+  costPerM2: 0,
+  avgVillaSize: 0,
+  avgSalePrice: 0,
+  avgAnnualRentalIncome: 0,
+  holdingPeriod: 0,
+  numVillas: 0,
   currency: 'IDR',
   showSoftCosts: false,
-  architectureFeePercent: 3,
-  engineeringLegalPercent: 2,
-  marketingSalesCommissionPercent: 2,
-  pmFeePercent: 2,
+  architectureFeePercent: 0,
+  engineeringLegalPercent: 0,
+  marketingSalesCommissionPercent: 0,
+  pmFeePercent: 0,
   showPermits: false,
-  permitsLicenses: 200000000,
-  infrastructureCost: 500000000,
+  permitsLicenses: 0,
+  infrastructureCost: 0,
   showFinancing: false,
-  loanPercent: 70,
-  interestRate: 6,
-  constructionMonths: 12,
+  loanPercent: 0,
+  interestRate: 0,
+  constructionMonths: 0,
   showExitCosts: false,
-  saleSalesCommissionPercent: 3,
-  capitalGainsTaxPercent: 15,
+  saleSalesCommissionPercent: 0,
+  capitalGainsTaxPercent: 0,
 };
 
 type CurrencyType = 'IDR' | 'USD' | 'AUD' | 'EUR' | 'GBP' | 'INR' | 'CNY' | 'AED' | 'RUB';
@@ -249,10 +250,12 @@ export function DevFeasibilityCalculator() {
 
       <div className="max-w-[100%] mx-auto">
         {/* Header */}
-        <header className="mb-8 flex flex-col xl:flex-row xl:items-center justify-between gap-6">
+        <header className="mb-6 sm:mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4 sm:gap-6">
           <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-xl bg-zinc-800 flex items-center justify-center text-2xl">
-              🏗️
+            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-orange-600 to-orange-800 flex items-center justify-center shadow-lg shadow-orange-900/30">
+              <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+              </svg>
             </div>
             <div>
               <h1 className="text-2xl font-bold text-white">Dev Feasibility</h1>
@@ -263,6 +266,8 @@ export function DevFeasibilityCalculator() {
           </div>
 
           <div className="flex items-center gap-3 flex-wrap">
+            <UsageBadge />
+
             <div className="flex items-center bg-zinc-800 px-4 py-2 rounded-lg border border-zinc-700">
               <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest mr-3">Currency</span>
               <select
@@ -284,7 +289,7 @@ export function DevFeasibilityCalculator() {
 
             <button
               onClick={handleReset}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+              className={`px-3 sm:px-4 py-3 min-h-[44px] rounded-lg text-xs sm:text-sm font-medium transition-all ${
                 showResetConfirm
                   ? 'bg-red-500 text-white'
                   : 'bg-zinc-800 text-zinc-300 border border-zinc-700 hover:bg-zinc-700'
@@ -295,14 +300,14 @@ export function DevFeasibilityCalculator() {
 
             <button
               onClick={handleSaveDraft}
-              className="px-4 py-2 rounded-lg text-sm font-medium bg-zinc-800 text-zinc-300 border border-zinc-700 hover:bg-zinc-700 transition-all"
+              className="px-3 sm:px-4 py-3 min-h-[44px] rounded-lg text-xs sm:text-sm font-medium bg-zinc-800 text-zinc-300 border border-zinc-700 hover:bg-zinc-700 transition-all"
             >
               Save Draft
             </button>
 
             <button
               onClick={() => setShowReportModal(true)}
-              className="px-4 py-2 rounded-lg text-sm font-medium bg-cyan-600 text-white hover:bg-cyan-700 transition-all flex items-center gap-2"
+              className="px-3 sm:px-4 py-3 min-h-[44px] rounded-lg text-xs sm:text-sm font-medium bg-cyan-600 text-white hover:bg-cyan-700 transition-all flex items-center gap-2"
             >
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -414,8 +419,7 @@ export function DevFeasibilityCalculator() {
             {/* Advanced Sections */}
             <AdvancedSection
               title="Permits & Infrastructure"
-              icon="📋"
-              isOpen={inputs.showPermits}
+                            isOpen={inputs.showPermits}
               onToggle={() => handleInputChange('showPermits', !inputs.showPermits)}
               description="Permits, licenses, and infrastructure costs"
             >
@@ -440,8 +444,7 @@ export function DevFeasibilityCalculator() {
 
             <AdvancedSection
               title="Soft Costs"
-              icon="💰"
-              isOpen={inputs.showSoftCosts}
+                            isOpen={inputs.showSoftCosts}
               onToggle={() => handleInputChange('showSoftCosts', !inputs.showSoftCosts)}
               description="Professional fees and commissions"
             >
@@ -482,8 +485,7 @@ export function DevFeasibilityCalculator() {
 
             <AdvancedSection
               title="Financing"
-              icon="🏦"
-              isOpen={inputs.showFinancing}
+                            isOpen={inputs.showFinancing}
               onToggle={() => handleInputChange('showFinancing', !inputs.showFinancing)}
               description="Loan and interest calculations"
             >
@@ -516,8 +518,7 @@ export function DevFeasibilityCalculator() {
 
             <AdvancedSection
               title="Exit Costs"
-              icon="📊"
-              isOpen={inputs.showExitCosts}
+                            isOpen={inputs.showExitCosts}
               onToggle={() => handleInputChange('showExitCosts', !inputs.showExitCosts)}
               description="Sales commissions and taxes"
             >
@@ -732,9 +733,21 @@ function InputField({ label, value, onChange, prefix, suffix, tooltip }: {
           <span className="absolute left-5 top-1/2 -translate-y-1/2 text-[13px] font-bold text-zinc-500">{prefix}</span>
         )}
         <input
-          type="number"
-          value={value}
-          onChange={e => onChange(parseFloat(e.target.value) || 0)}
+          type="text"
+          inputMode="decimal"
+          value={value === 0 ? '' : value}
+          onChange={e => {
+            const val = e.target.value;
+            if (val === '' || val === '-') {
+              onChange(0);
+            } else {
+              const parsed = parseFloat(val);
+              if (!isNaN(parsed)) {
+                onChange(parsed);
+              }
+            }
+          }}
+          placeholder="0"
           className={`w-full bg-zinc-800 border border-zinc-700 rounded-2xl py-4 text-[16px] font-bold text-white placeholder:text-zinc-500 outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all tabular-nums ${prefix ? 'pl-12 pr-6' : suffix ? 'pl-6 pr-16' : 'px-6'}`}
         />
         {suffix && (

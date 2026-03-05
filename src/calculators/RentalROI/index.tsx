@@ -10,6 +10,7 @@ import ReportView from './components/ReportView';
 import { Toast } from '../../components/ui/Toast';
 import { DraftSelector } from '../../components/ui/DraftSelector';
 import { ComparisonView } from '../../components/ui/ComparisonView';
+import { UsageBadge } from '../../components/ui/UsageBadge';
 import { useArchivedDrafts, type ArchivedDraft } from '../../hooks/useArchivedDrafts';
 import { useAuth } from '../../lib/auth-context';
 
@@ -127,10 +128,12 @@ export function RentalROICalculator() {
       )}
 
       <div className="max-w-[100%] mx-auto">
-        <header className="mb-8 flex flex-col xl:flex-row xl:items-center justify-between gap-6">
+        <header className="mb-6 sm:mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4 sm:gap-6">
           <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-xl bg-zinc-800 flex items-center justify-center text-2xl">
-              🏘️
+            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-indigo-600 to-indigo-800 flex items-center justify-center shadow-lg shadow-indigo-900/30">
+              <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+              </svg>
             </div>
             <div>
               <h1 className="text-2xl font-bold text-white">10 Year Annualized ROI</h1>
@@ -141,6 +144,8 @@ export function RentalROICalculator() {
           </div>
 
           <div className="flex items-center gap-4 flex-wrap">
+            <UsageBadge />
+
             <div className="flex items-center gap-3 bg-zinc-800 px-4 py-2 rounded-lg border border-zinc-700">
               <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">Currency</span>
               <select
@@ -166,7 +171,7 @@ export function RentalROICalculator() {
 
             <button
               onClick={handleReset}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+              className={`px-3 sm:px-4 py-3 min-h-[44px] rounded-lg text-xs sm:text-sm font-medium transition-all ${
                 showResetConfirm
                   ? 'bg-red-500 text-white'
                   : 'bg-zinc-800 text-zinc-300 border border-zinc-700 hover:bg-zinc-700'
@@ -178,7 +183,7 @@ export function RentalROICalculator() {
             <button
               onClick={handleSaveDraft}
               disabled={isSaving}
-              className="px-4 py-2 rounded-lg text-sm font-medium bg-zinc-800 text-zinc-300 border border-zinc-700 hover:bg-zinc-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+              className="px-3 sm:px-4 py-3 min-h-[44px] rounded-lg text-xs sm:text-sm font-medium bg-zinc-800 text-zinc-300 border border-zinc-700 hover:bg-zinc-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
             >
               {isSaving ? (
                 <>

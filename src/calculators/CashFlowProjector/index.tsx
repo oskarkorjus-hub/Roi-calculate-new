@@ -1,5 +1,6 @@
 import { useState, useCallback, useMemo } from 'react';
 import { Toast } from '../../components/ui/Toast';
+import { UsageBadge } from '../../components/ui/UsageBadge';
 import { SaveToPortfolioButton } from '../../components/SaveToPortfolioButton';
 import { ReportPreviewModal } from '../../components/ui/ReportPreviewModal';
 import { generateCashFlowReport } from '../../hooks/useReportGenerator';
@@ -40,21 +41,21 @@ interface CashFlowYear {
 }
 
 const INITIAL_INPUTS: CashFlowInputsType = {
-  monthlyRentalIncome: 10000000,
-  monthlyMaintenance: 800000,
-  monthlyPropertyTax: 500000,
-  monthlyInsurance: 300000,
-  monthlyUtilities: 200000,
-  monthlyOtherExpenses: 400000,
-  vacancyRate: 20,
-  projectionYears: 10,
+  monthlyRentalIncome: 0,
+  monthlyMaintenance: 0,
+  monthlyPropertyTax: 0,
+  monthlyInsurance: 0,
+  monthlyUtilities: 0,
+  monthlyOtherExpenses: 0,
+  vacancyRate: 0,
+  projectionYears: 0,
   currency: 'IDR',
   showAdvanced: false,
-  annualGrowthRate: 3,
-  expenseGrowthRate: 2,
-  fixedExpensePercent: 60,
-  variableExpensePercent: 40,
-  seasonalMultiplier: 1,
+  annualGrowthRate: 0,
+  expenseGrowthRate: 0,
+  fixedExpensePercent: 0,
+  variableExpensePercent: 0,
+  seasonalMultiplier: 0,
 };
 
 const symbols: Record<CurrencyType, string> = { IDR: 'Rp', USD: '$', AUD: 'A$', EUR: '€', GBP: '£', INR: '₹', CNY: '¥', AED: 'د.إ', RUB: '₽' };
@@ -213,8 +214,10 @@ export function CashFlowProjector() {
         {/* Header */}
         <header className="mb-8 flex flex-col xl:flex-row xl:items-center justify-between gap-6">
           <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-xl bg-zinc-800 flex items-center justify-center text-2xl">
-              📊
+            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-600 to-blue-800 flex items-center justify-center shadow-lg shadow-blue-900/30">
+              <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+              </svg>
             </div>
             <div>
               <h1 className="text-2xl font-bold text-white">Cash Flow Projector</h1>
@@ -225,6 +228,8 @@ export function CashFlowProjector() {
           </div>
 
           <div className="flex items-center gap-3 flex-wrap">
+            <UsageBadge />
+
             <div className="flex items-center bg-zinc-800 px-4 py-2 rounded-lg border border-zinc-700">
               <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest mr-3">Currency</span>
               <select
@@ -246,7 +251,7 @@ export function CashFlowProjector() {
 
             <button
               onClick={handleReset}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+              className={`px-3 sm:px-4 py-3 min-h-[44px] rounded-lg text-xs sm:text-sm font-medium transition-all ${
                 showResetConfirm
                   ? 'bg-red-500 text-white'
                   : 'bg-zinc-800 text-zinc-300 border border-zinc-700 hover:bg-zinc-700'
@@ -257,14 +262,14 @@ export function CashFlowProjector() {
 
             <button
               onClick={handleSaveDraft}
-              className="px-4 py-2 rounded-lg text-sm font-medium bg-zinc-800 text-zinc-300 border border-zinc-700 hover:bg-zinc-700 transition-all"
+              className="px-3 sm:px-4 py-3 min-h-[44px] rounded-lg text-xs sm:text-sm font-medium bg-zinc-800 text-zinc-300 border border-zinc-700 hover:bg-zinc-700 transition-all"
             >
               Save Draft
             </button>
 
             <button
               onClick={() => setShowReportModal(true)}
-              className="px-4 py-2 rounded-lg text-sm font-medium bg-cyan-600 text-white hover:bg-cyan-700 transition-all flex items-center gap-2"
+              className="px-3 sm:px-4 py-3 min-h-[44px] rounded-lg text-xs sm:text-sm font-medium bg-cyan-600 text-white hover:bg-cyan-700 transition-all flex items-center gap-2"
             >
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />

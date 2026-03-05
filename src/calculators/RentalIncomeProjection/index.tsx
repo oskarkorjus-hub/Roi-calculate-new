@@ -1,5 +1,6 @@
 import { useState, useCallback, useMemo } from 'react';
 import { Toast } from '../../components/ui/Toast';
+import { UsageBadge } from '../../components/ui/UsageBadge';
 import { SaveToPortfolioButton } from '../../components/SaveToPortfolioButton';
 import { ReportPreviewModal } from '../../components/ui/ReportPreviewModal';
 import { generateRentalProjectionReport } from '../../hooks/useReportGenerator';
@@ -180,37 +181,37 @@ const LOCATION_SEASONALITY: Record<LocationType, SeasonalMultiplier[]> = {
 };
 
 const INITIAL_INPUTS: RentalInputs = {
-  propertySize: 200,
-  nightlyRate: 2_500_000, // IDR
-  monthlyExpenses: 15_000_000,
-  projectionYears: 10,
+  propertySize: 0,
+  nightlyRate: 0,
+  monthlyExpenses: 0,
+  projectionYears: 0,
   location: 'canggu',
   currency: 'IDR',
 
   showSeasonality: false,
-  peakSeasonMultiplier: 1.4,
-  shoulderSeasonMultiplier: 1.1,
-  lowSeasonMultiplier: 0.9,
+  peakSeasonMultiplier: 0,
+  shoulderSeasonMultiplier: 0,
+  lowSeasonMultiplier: 0,
 
   showOccupancy: false,
-  baseOccupancyRate: 70,
-  turnoverDays: 1,
-  cleaningCostPerGuest: 200_000,
-  cancellationRate: 12,
-  averageStayLength: 4,
+  baseOccupancyRate: 0,
+  turnoverDays: 0,
+  cleaningCostPerGuest: 0,
+  cancellationRate: 0,
+  averageStayLength: 0,
 
   showDynamicPricing: false,
-  priceElasticity: 1.5, // 1.5% occupancy drop per 1% rate increase
-  optimalRateMultiplier: 1.0,
+  priceElasticity: 0,
+  optimalRateMultiplier: 0,
 
   showExpenses: false,
-  propertyTax: 5_000_000, // Annual
-  insurance: 12_000_000, // Annual
-  managerSalary: 8_000_000, // Monthly
-  utilitiesPerMonth: 3_000_000,
-  maintenancePerGuest: 100_000,
-  platformFeePercent: 15,
-  annualGrowthRate: 5,
+  propertyTax: 0,
+  insurance: 0,
+  managerSalary: 0,
+  utilitiesPerMonth: 0,
+  maintenancePerGuest: 0,
+  platformFeePercent: 0,
+  annualGrowthRate: 0,
 };
 
 const symbols: Record<CurrencyType, string> = {
@@ -462,10 +463,12 @@ export function RentalIncomeProjection() {
 
       <div className="max-w-[100%] mx-auto">
         {/* Header */}
-        <header className="mb-8 flex flex-col xl:flex-row xl:items-center justify-between gap-6">
+        <header className="mb-6 sm:mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4 sm:gap-6">
           <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-600 to-purple-800 flex items-center justify-center text-2xl shadow-lg shadow-purple-900/30">
-              📊
+            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-600 to-purple-800 flex items-center justify-center shadow-lg shadow-purple-900/30">
+              <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
             </div>
             <div>
               <h1 className="text-2xl font-bold text-white">Rental Income Projection</h1>
@@ -476,6 +479,8 @@ export function RentalIncomeProjection() {
           </div>
 
           <div className="flex items-center gap-3 flex-wrap">
+            <UsageBadge />
+
             <div className="flex items-center bg-zinc-800 px-4 py-2 rounded-lg border border-zinc-700">
               <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest mr-3">Currency</span>
               <select
@@ -493,7 +498,7 @@ export function RentalIncomeProjection() {
 
             <button
               onClick={handleReset}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+              className={`px-3 sm:px-4 py-3 min-h-[44px] rounded-lg text-xs sm:text-sm font-medium transition-all ${
                 showResetConfirm
                   ? 'bg-red-500 text-white'
                   : 'bg-zinc-800 text-zinc-300 border border-zinc-700 hover:bg-zinc-700'
@@ -504,14 +509,14 @@ export function RentalIncomeProjection() {
 
             <button
               onClick={handleSaveDraft}
-              className="px-4 py-2 rounded-lg text-sm font-medium bg-zinc-800 text-zinc-300 border border-zinc-700 hover:bg-zinc-700 transition-all"
+              className="px-3 sm:px-4 py-3 min-h-[44px] rounded-lg text-xs sm:text-sm font-medium bg-zinc-800 text-zinc-300 border border-zinc-700 hover:bg-zinc-700 transition-all"
             >
               Save Draft
             </button>
 
             <button
               onClick={() => setShowReportModal(true)}
-              className="px-4 py-2 rounded-lg text-sm font-medium bg-cyan-600 text-white hover:bg-cyan-700 transition-all flex items-center gap-2"
+              className="px-3 sm:px-4 py-3 min-h-[44px] rounded-lg text-xs sm:text-sm font-medium bg-cyan-600 text-white hover:bg-cyan-700 transition-all flex items-center gap-2"
             >
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -607,8 +612,7 @@ export function RentalIncomeProjection() {
             {/* Seasonality Section */}
             <AdvancedSection
               title="Seasonality Profile"
-              icon="📅"
-              isOpen={inputs.showSeasonality}
+                            isOpen={inputs.showSeasonality}
               onToggle={() => handleInputChange('showSeasonality', !inputs.showSeasonality)}
               description="Peak, shoulder, and low season adjustments"
             >
@@ -656,8 +660,7 @@ export function RentalIncomeProjection() {
             {/* Occupancy Management */}
             <AdvancedSection
               title="Occupancy Management"
-              icon="🛏️"
-              isOpen={inputs.showOccupancy}
+                            isOpen={inputs.showOccupancy}
               onToggle={() => handleInputChange('showOccupancy', !inputs.showOccupancy)}
               description="Vacancy, turnover, and cancellations"
             >
@@ -723,8 +726,7 @@ export function RentalIncomeProjection() {
             {/* Dynamic Pricing */}
             <AdvancedSection
               title="Dynamic Pricing Impact"
-              icon="💰"
-              isOpen={inputs.showDynamicPricing}
+                            isOpen={inputs.showDynamicPricing}
               onToggle={() => handleInputChange('showDynamicPricing', !inputs.showDynamicPricing)}
               description="Rate vs occupancy optimization"
             >
@@ -766,8 +768,7 @@ export function RentalIncomeProjection() {
             {/* Detailed Expenses */}
             <AdvancedSection
               title="Expense Breakdown"
-              icon="📋"
-              isOpen={inputs.showExpenses}
+                            isOpen={inputs.showExpenses}
               onToggle={() => handleInputChange('showExpenses', !inputs.showExpenses)}
               description="Fixed and variable costs"
             >
@@ -873,9 +874,21 @@ function InputField({ label, value, onChange, prefix, suffix, tooltip }: {
           <span className="absolute left-5 top-1/2 -translate-y-1/2 text-[13px] font-bold text-zinc-500">{prefix}</span>
         )}
         <input
-          type="number"
-          value={value}
-          onChange={e => onChange(parseFloat(e.target.value) || 0)}
+          type="text"
+          inputMode="decimal"
+          value={value === 0 ? '' : value}
+          onChange={e => {
+            const val = e.target.value;
+            if (val === '' || val === '-') {
+              onChange(0);
+            } else {
+              const parsed = parseFloat(val);
+              if (!isNaN(parsed)) {
+                onChange(parsed);
+              }
+            }
+          }}
+          placeholder="0"
           className={`w-full bg-zinc-800 border border-zinc-700 rounded-2xl py-4 text-[16px] font-bold text-white placeholder:text-zinc-500 outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-all tabular-nums ${prefix ? 'pl-12 pr-6' : suffix ? 'pl-6 pr-16' : 'px-6'}`}
         />
         {suffix && (

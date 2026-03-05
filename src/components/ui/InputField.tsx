@@ -58,8 +58,8 @@ export function InputField({
           max={max}
           inputMode={inputMode}
           className={`
-            w-full px-4 py-3 rounded-lg border transition-all font-medium
-            text-white placeholder-zinc-500
+            w-full px-4 py-3 min-h-[44px] rounded-lg border transition-all font-medium
+            text-base sm:text-sm text-white placeholder-zinc-500
             ${
               error
                 ? 'border-red-500 focus:border-red-400 focus:ring-2 focus:ring-red-500/20'

@@ -13,3 +13,5 @@ export { EmailCollectorModal } from './EmailCollectorModal';
 export { DraftSelector } from './DraftSelector';
 export { WelcomePopup } from './WelcomePopup';
 export { ComparisonView } from './ComparisonView';
+export { UpgradeModal } from './UpgradeModal';
+export { UsageBadge } from './UsageBadge';

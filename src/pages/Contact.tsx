@@ -48,12 +48,12 @@ export function Contact() {
   return (
     <div className="min-h-screen bg-[#0a0a0a] pt-20">
       {/* Header */}
-      <section className="pt-16 pb-12 px-6 lg:px-8">
+      <section className="pt-12 sm:pt-16 pb-8 sm:pb-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto text-center">
           <motion.h1
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-4xl sm:text-5xl font-bold text-white mb-4"
+            className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white mb-4"
           >
             Get In Touch
           </motion.h1>
@@ -69,7 +69,7 @@ export function Contact() {
       </section>
 
       {/* Contact Section */}
-      <section className="py-12 px-6 lg:px-8">
+      <section className="py-8 sm:py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-5xl mx-auto">
           <div className="grid md:grid-cols-3 gap-8">
             {/* Contact Info */}
@@ -119,7 +119,7 @@ export function Contact() {
                         href={social.href}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="w-10 h-10 bg-zinc-800 border border-zinc-700 rounded-lg flex items-center justify-center text-zinc-400 hover:bg-emerald-500/20 hover:border-emerald-500/50 hover:text-emerald-400 transition-all"
+                        className="w-11 h-11 min-w-[44px] min-h-[44px] bg-zinc-800 border border-zinc-700 rounded-lg flex items-center justify-center text-zinc-400 hover:bg-emerald-500/20 hover:border-emerald-500/50 hover:text-emerald-400 transition-all"
                       >
                         {social.icon}
                       </a>
@@ -136,7 +136,7 @@ export function Contact() {
               transition={{ delay: 0.3 }}
               className="md:col-span-2"
             >
-              <div className="bg-zinc-900/50 border border-zinc-800 rounded-2xl p-8">
+              <div className="bg-zinc-900/50 border border-zinc-800 rounded-2xl p-4 sm:p-6 lg:p-8">
                 <h2 className="text-xl font-bold text-white mb-6">Send Us a Message</h2>
 
                 {submitted && (
@@ -244,7 +244,7 @@ export function Contact() {
                   <button
                     type="submit"
                     disabled={isSubmitting}
-                    className="w-full px-6 py-3 bg-gradient-to-r from-emerald-500 to-cyan-500 text-white font-bold rounded-xl hover:from-emerald-600 hover:to-cyan-600 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="w-full px-6 py-3 min-h-[44px] bg-gradient-to-r from-emerald-500 to-cyan-500 text-white font-bold rounded-xl hover:from-emerald-600 hover:to-cyan-600 transition-all disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base"
                   >
                     {isSubmitting ? 'Sending...' : 'Send Message'}
                   </button>
@@ -259,63 +259,8 @@ export function Contact() {
         </div>
       </section>
 
-      {/* Quick Links */}
-      <section className="py-16 px-6 lg:px-8">
-        <div className="max-w-5xl mx-auto">
-          <motion.h2
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-xl font-bold text-white text-center mb-8"
-          >
-            Quick Help
-          </motion.h2>
-          <div className="grid md:grid-cols-2 gap-6">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.1 }}
-            >
-              <Link
-                to="/pricing"
-                className="block p-6 bg-zinc-900/50 border border-zinc-800 rounded-xl hover:border-zinc-700 transition-all group"
-              >
-                <div className="text-3xl mb-3">💰</div>
-                <h3 className="font-bold text-lg text-white mb-2 group-hover:text-emerald-400 transition-colors">
-                  Pricing
-                </h3>
-                <p className="text-sm text-zinc-500">
-                  Explore our plans and pricing options
-                </p>
-              </Link>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.2 }}
-            >
-              <Link
-                to="/calculators"
-                className="block p-6 bg-zinc-900/50 border border-zinc-800 rounded-xl hover:border-zinc-700 transition-all group"
-              >
-                <div className="text-3xl mb-3">📊</div>
-                <h3 className="font-bold text-lg text-white mb-2 group-hover:text-emerald-400 transition-colors">
-                  Calculators
-                </h3>
-                <p className="text-sm text-zinc-500">
-                  Start using ROI Calculate for free
-                </p>
-              </Link>
-            </motion.div>
-          </div>
-        </div>
-      </section>
-
       {/* CTA */}
-      <section className="py-16 px-6 lg:px-8 border-t border-zinc-800">
+      <section className="py-12 sm:py-16 px-4 sm:px-6 lg:px-8 border-t border-zinc-800">
         <div className="max-w-3xl mx-auto text-center">
           <motion.h2
             initial={{ opacity: 0, y: 20 }}
@@ -341,8 +286,8 @@ export function Contact() {
             transition={{ delay: 0.2 }}
           >
             <Link
-              to="/calculators"
-              className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-emerald-500 to-cyan-500 text-white font-bold rounded-xl hover:from-emerald-600 hover:to-cyan-600 transition-all"
+              to="/pricing"
+              className="inline-flex items-center gap-2 px-6 sm:px-8 py-3 min-h-[44px] sm:py-4 bg-gradient-to-r from-emerald-500 to-cyan-500 text-white font-bold rounded-xl hover:from-emerald-600 hover:to-cyan-600 transition-all text-sm sm:text-base"
             >
               Start Free Now
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -61,7 +61,7 @@ export function Footer() {
               <span className="font-bold text-lg text-white">ROI Calculate</span>
             </Link>
             <p className="text-sm text-zinc-500 leading-relaxed mb-6">
-              Professional property investment analysis tools. Calculate XIRR, rental ROI, and cash flow projections with institutional-grade accuracy.
+              Professional property investment analysis tools. Calculate ROI, rental yields, and cash flow projections with institutional-grade accuracy.
             </p>
 
             {/* Social Links */}

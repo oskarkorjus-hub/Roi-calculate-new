@@ -10,6 +10,7 @@ import {
 import { Toast } from '../../components/ui/Toast';
 import { DraftSelector } from '../../components/ui/DraftSelector';
 import { ComparisonView } from '../../components/ui/ComparisonView';
+import { UsageBadge } from '../../components/ui/UsageBadge';
 import { SaveToPortfolioButton } from '../../components/SaveToPortfolioButton';
 import { useAuth } from '../../lib/auth-context';
 import { useComparison } from '../../lib/comparison-context';
@@ -162,10 +163,12 @@ export function XIRRCalculator() {
       )}
 
       <div className="max-w-[100%] mx-auto">
-        <header className="mb-8 flex flex-col xl:flex-row xl:items-center justify-between gap-6">
+        <header className="mb-6 sm:mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4 sm:gap-6">
             <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-xl bg-zinc-800 flex items-center justify-center text-2xl">
-                📐
+              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-violet-600 to-violet-800 flex items-center justify-center shadow-lg shadow-violet-900/30">
+                <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                </svg>
               </div>
               <div>
                 <h1 className="text-2xl font-bold text-white">XIRR Calculator</h1>
@@ -176,6 +179,8 @@ export function XIRRCalculator() {
             </div>
 
             <div className="flex items-center gap-4 flex-wrap">
+            <UsageBadge />
+
             {currency !== 'IDR' && (
               <div className="flex items-center gap-3 bg-zinc-800 px-4 py-2 rounded-lg border border-zinc-700">
                 <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">
@@ -229,7 +234,7 @@ export function XIRRCalculator() {
 
             <button
               onClick={handleReset}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+              className={`px-3 sm:px-4 py-3 min-h-[44px] rounded-lg text-xs sm:text-sm font-medium transition-all ${
                 showResetConfirm
                   ? 'bg-red-500 text-white'
                   : 'bg-zinc-800 text-zinc-300 border border-zinc-700 hover:bg-zinc-700'
@@ -241,7 +246,7 @@ export function XIRRCalculator() {
             <button
               onClick={handleSaveDraft}
               disabled={isSaving}
-              className="px-4 py-2 rounded-lg text-sm font-medium bg-zinc-800 text-zinc-300 border border-zinc-700 hover:bg-zinc-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+              className="px-3 sm:px-4 py-3 min-h-[44px] rounded-lg text-xs sm:text-sm font-medium bg-zinc-800 text-zinc-300 border border-zinc-700 hover:bg-zinc-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
             >
               {isSaving ? (
                 <>

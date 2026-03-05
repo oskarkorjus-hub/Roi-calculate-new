@@ -2,6 +2,7 @@ import { useState, useCallback, useMemo } from 'react';
 import { AdvancedSection } from '../../components/AdvancedSection';
 import { SaveToPortfolioButton } from '../../components/SaveToPortfolioButton';
 import { Toast } from '../../components/ui/Toast';
+import { UsageBadge } from '../../components/ui/UsageBadge';
 import { ReportPreviewModal } from '../../components/ui/ReportPreviewModal';
 import { generateIRRReport } from '../../hooks/useReportGenerator';
 import { CashFlowInputs } from './components/CashFlowInputs';
@@ -27,21 +28,21 @@ type CurrencyType = 'IDR' | 'USD' | 'AUD' | 'EUR' | 'GBP' | 'INR' | 'CNY' | 'AED
 const symbols: Record<CurrencyType, string> = { IDR: 'Rp', USD: '$', AUD: 'A$', EUR: '€', GBP: '£', INR: '₹', CNY: '¥', AED: 'د.إ', RUB: '₽' };
 
 const INITIAL_CASH_FLOWS: CashFlow[] = [
-  { year: 0, amount: -1_000_000 },
-  { year: 1, amount: 200_000 },
-  { year: 2, amount: 250_000 },
-  { year: 3, amount: 300_000 },
-  { year: 4, amount: 350_000 },
-  { year: 5, amount: 400_000 },
+  { year: 0, amount: 0 },
+  { year: 1, amount: 0 },
+  { year: 2, amount: 0 },
+  { year: 3, amount: 0 },
+  { year: 4, amount: 0 },
+  { year: 5, amount: 0 },
 ];
 
 export function IRRCalculator() {
   const [currency, setCurrency] = useState<CurrencyType>('USD');
-  const [discountRate, setDiscountRate] = useState(10);
+  const [discountRate, setDiscountRate] = useState(0);
   const [cashFlows, setCashFlows] = useState<CashFlow[]>(INITIAL_CASH_FLOWS);
   const [showAdvanced, setShowAdvanced] = useState(false);
-  const [reinvestmentRate, setReinvestmentRate] = useState(10);
-  const [alternativeDiscountRate, setAlternativeDiscountRate] = useState(12);
+  const [reinvestmentRate, setReinvestmentRate] = useState(0);
+  const [alternativeDiscountRate, setAlternativeDiscountRate] = useState(0);
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
   const [showReportModal, setShowReportModal] = useState(false);
 
@@ -206,10 +207,12 @@ export function IRRCalculator() {
 
       <div className="max-w-[100%] mx-auto">
         {/* Header */}
-        <header className="mb-8 flex flex-col xl:flex-row xl:items-center justify-between gap-6">
+        <header className="mb-6 sm:mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4 sm:gap-6">
           <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-xl bg-zinc-800 flex items-center justify-center text-2xl">
-              📈
+            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-cyan-600 to-cyan-800 flex items-center justify-center shadow-lg shadow-cyan-900/30">
+              <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+              </svg>
             </div>
             <div>
               <h1 className="text-2xl font-bold text-white">IRR Calculator</h1>
@@ -220,6 +223,8 @@ export function IRRCalculator() {
           </div>
 
           <div className="flex items-center gap-3 flex-wrap">
+            <UsageBadge />
+
             <div className="flex items-center bg-zinc-800 px-4 py-2 rounded-lg border border-zinc-700">
               <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest mr-3">Currency</span>
               <select
@@ -241,14 +246,14 @@ export function IRRCalculator() {
 
             <button
               onClick={handleReset}
-              className="px-4 py-2 rounded-lg text-sm font-medium bg-zinc-800 text-zinc-300 border border-zinc-700 hover:bg-zinc-700 transition-all"
+              className="px-3 sm:px-4 py-3 min-h-[44px] rounded-lg text-xs sm:text-sm font-medium bg-zinc-800 text-zinc-300 border border-zinc-700 hover:bg-zinc-700 transition-all"
             >
               Reset
             </button>
 
             <button
               onClick={() => setShowReportModal(true)}
-              className="px-4 py-2 rounded-lg text-sm font-medium bg-cyan-600 text-white hover:bg-cyan-700 transition-all flex items-center gap-2"
+              className="px-3 sm:px-4 py-3 min-h-[44px] rounded-lg text-xs sm:text-sm font-medium bg-cyan-600 text-white hover:bg-cyan-700 transition-all flex items-center gap-2"
             >
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -314,8 +319,7 @@ export function IRRCalculator() {
 
                 <AdvancedSection
                   title="Advanced Assumptions"
-                  icon="🔧"
-                  isOpen={showAdvanced}
+                                    isOpen={showAdvanced}
                   onToggle={() => setShowAdvanced(!showAdvanced)}
                   description="MIRR and sensitivity analysis"
                 >

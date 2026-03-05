@@ -1,7 +1,10 @@
 import { useState, useMemo } from 'react';
 import { usePortfolio } from '../hooks/usePortfolio';
+import { useTier } from '../lib/tier-context';
 import { calculateInvestmentScore } from '../utils/investmentScoring';
 import { Toast } from './ui/Toast';
+import { UpgradeModal } from './ui/UpgradeModal';
+import type { UpgradeReason } from '../types/tier';
 
 interface SaveToPortfolioButtonProps {
   calculatorType: 'xirr' | 'rental-roi' | 'mortgage' | 'cashflow' | 'dev-feasibility' | 'cap-rate' | 'irr' | 'npv' | 'indonesia-tax' | 'rental-projection' | 'financing';
@@ -16,7 +19,8 @@ export function SaveToPortfolioButton({
   defaultProjectName = `${calculatorType} Project`,
   strategy,
 }: SaveToPortfolioButtonProps) {
-  const { addProject } = usePortfolio();
+  const { addProject, canAddProject } = usePortfolio();
+  const { limits, canUseCalculator, incrementUsage } = useTier();
   const [showModal, setShowModal] = useState(false);
   const [projectName, setProjectName] = useState(defaultProjectName);
   const [selectedStrategy, setSelectedStrategy] = useState<'flip' | 'hold' | 'rental' | 'development' | ''>(
@@ -24,6 +28,8 @@ export function SaveToPortfolioButton({
   );
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
   const [isSaving, setIsSaving] = useState(false);
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+  const [upgradeReason, setUpgradeReason] = useState<UpgradeReason>('calculation_limit');
 
   // Extract financial metrics
   const financialMetrics = useMemo(() => {
@@ -54,8 +60,31 @@ export function SaveToPortfolioButton({
       return;
     }
 
+    // Check project limit
+    if (!canAddProject(limits.maxSavedProjects)) {
+      setUpgradeReason('project_limit');
+      setShowUpgradeModal(true);
+      return;
+    }
+
+    // Check calculation usage limit and increment
+    if (!canUseCalculator()) {
+      setUpgradeReason('calculation_limit');
+      setShowUpgradeModal(true);
+      return;
+    }
+
     setIsSaving(true);
     try {
+      // Increment usage before saving
+      const usageIncremented = incrementUsage();
+      if (!usageIncremented) {
+        setUpgradeReason('calculation_limit');
+        setShowUpgradeModal(true);
+        setIsSaving(false);
+        return;
+      }
+
       addProject({
         projectName: projectName,
         calculatorId: calculatorType,
@@ -89,6 +118,12 @@ export function SaveToPortfolioButton({
   return (
     <>
       {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
+
+      <UpgradeModal
+        isOpen={showUpgradeModal}
+        onClose={() => setShowUpgradeModal(false)}
+        reason={upgradeReason}
+      />
 
       <button
         onClick={() => setShowModal(true)}
