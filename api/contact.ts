@@ -78,11 +78,14 @@ export default async function handler(request: Request) {
   const toAddress = process.env.CONTACT_EMAIL || 'reports@investlandgroup.com';
 
   if (!apiToken) {
-    return new Response(JSON.stringify({ error: 'Email service not configured' }), {
+    console.error('POSTMARK_API_TOKEN environment variable is not set');
+    return new Response(JSON.stringify({ error: 'Email service not configured. Please set POSTMARK_API_TOKEN.' }), {
       status: 500,
       headers: securityHeaders,
     });
   }
+
+  console.log('Contact API - Using Postmark with from:', fromAddress, 'to:', toAddress);
 
   try {
     const body = await request.json();
@@ -207,7 +210,12 @@ ${sanitizedMessage}
       });
     } else {
       console.error('Postmark error:', data);
-      return new Response(JSON.stringify({ error: 'Failed to send message' }), {
+      const errorMessage = data.Message || data.ErrorCode || 'Failed to send message';
+      return new Response(JSON.stringify({
+        error: errorMessage,
+        errorCode: data.ErrorCode,
+        details: data.Message
+      }), {
         status: 500,
         headers: securityHeaders,
       });
