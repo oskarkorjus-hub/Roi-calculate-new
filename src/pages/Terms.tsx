@@ -115,7 +115,7 @@ export function Terms() {
               </p>
               <p className="text-zinc-400 mt-4">
                 <span className="text-white font-medium">Investland Group</span><br />
-                Email: <a href="mailto:reports@investlandgroup.com" className="text-emerald-400 hover:text-emerald-300 transition-colors">reports@investlandgroup.com</a><br />
+                Email: <a href="mailto:hello@investlandgroup.com" className="text-emerald-400 hover:text-emerald-300 transition-colors">hello@investlandgroup.com</a><br />
                 Location: Bali, Indonesia
               </p>
             </div>

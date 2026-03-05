@@ -103,7 +103,7 @@ export function Privacy() {
                 <li><strong className="text-zinc-300">Opt-Out:</strong> Opt out of marketing communications anytime</li>
               </ul>
               <p className="text-zinc-400 leading-relaxed mt-4">
-                To exercise these rights, contact us at <a href="mailto:reports@investlandgroup.com" className="text-emerald-400 hover:text-emerald-300 transition-colors">reports@investlandgroup.com</a> with "Privacy Request" in the subject line.
+                To exercise these rights, contact us at <a href="mailto:hello@investlandgroup.com" className="text-emerald-400 hover:text-emerald-300 transition-colors">hello@investlandgroup.com</a> with "Privacy Request" in the subject line.
               </p>
             </div>
 
@@ -157,7 +157,7 @@ export function Privacy() {
               </p>
               <p className="text-zinc-400 mt-4">
                 <span className="text-white font-medium">Investland Group</span><br />
-                Email: <a href="mailto:reports@investlandgroup.com" className="text-emerald-400 hover:text-emerald-300 transition-colors">reports@investlandgroup.com</a><br />
+                Email: <a href="mailto:hello@investlandgroup.com" className="text-emerald-400 hover:text-emerald-300 transition-colors">hello@investlandgroup.com</a><br />
                 Location: Bali, Indonesia
               </p>
               <p className="text-zinc-400 mt-4">

@@ -527,7 +527,7 @@ const FAQSection = () => {
             Still have questions? We're here to help.
           </p>
           <a
-            href="mailto:reports@investlandgroup.com"
+            href="mailto:hello@investlandgroup.com"
             className="inline-flex items-center gap-2 text-emerald-400 hover:text-emerald-300 font-medium transition-colors py-2 min-h-[44px] text-sm sm:text-base"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
