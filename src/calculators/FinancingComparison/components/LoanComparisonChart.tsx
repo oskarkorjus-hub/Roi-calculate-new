@@ -167,7 +167,9 @@ export function LoanComparisonChart({ loanResults, symbol, currency }: Props) {
       {loanResults.some(r => r.isWinner) && (
         <div className="bg-emerald-500/10 border border-emerald-500/30 rounded-xl p-4">
           <div className="flex items-center gap-3">
-            <span className="text-2xl">🏆</span>
+            <svg className="w-7 h-7 text-emerald-400" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M5 3h14v2h-1v1.07A7.997 7.997 0 0 1 20 13v1h1v2h-4v3h2v2H5v-2h2v-3H3v-2h1v-1a7.997 7.997 0 0 1 2-6.93V5H5V3zm4 2v1.07c.322-.045.652-.07.988-.07H14c.336 0 .666.025.988.07V5H9zm3 3a5 5 0 0 0-5 5v1h10v-1a5 5 0 0 0-5-5z"/>
+            </svg>
             <div>
               <p className="text-emerald-400 font-bold">
                 {loanResults.find(r => r.isWinner)?.name} is the Winner!

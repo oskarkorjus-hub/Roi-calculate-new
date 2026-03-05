@@ -237,6 +237,11 @@ export function PortfolioCharts({ projects }: PortfolioChartsProps) {
                   }}
                   labelStyle={{ color: '#a1a1aa' }}
                   itemStyle={{ color: '#fff' }}
+                  formatter={(value: number, name: string) => {
+                    if (name === 'ROI %') return [`${value.toFixed(1)}%`, name];
+                    if (name === 'Score') return [Math.round(value), name];
+                    return [value, name];
+                  }}
                 />
                 <Scatter name="Projects" data={scoreVsROI} fill="#8b5cf6" />
               </ScatterChart>

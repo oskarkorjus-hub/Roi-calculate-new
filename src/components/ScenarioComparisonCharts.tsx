@@ -287,6 +287,22 @@ export function ScenarioComparisonCharts({
     borderRadius: '8px',
   };
 
+  // Custom tooltip formatter to display clean values
+  const formatTooltipValue = (value: number, name: string) => {
+    // Format based on metric type
+    if (name.toLowerCase().includes('%') || name.toLowerCase().includes('roi') || name.toLowerCase().includes('rate') || name.toLowerCase().includes('irr') || name.toLowerCase().includes('cap')) {
+      return `${value.toFixed(1)}%`;
+    }
+    if (name.toLowerCase().includes('score') || name.toLowerCase().includes('index')) {
+      return value.toFixed(0);
+    }
+    // Currency values
+    if (value >= 1_000_000) return '$' + (value / 1_000_000).toFixed(1) + 'M';
+    if (value >= 1_000) return '$' + (value / 1_000).toFixed(0) + 'K';
+    if (Number.isInteger(value)) return value.toString();
+    return value.toFixed(1);
+  };
+
   // Check if any chart has data
   const hasChartData = config.charts.some(chart =>
     chart.metrics.some(metric =>
@@ -368,6 +384,7 @@ export function ScenarioComparisonCharts({
                   contentStyle={tooltipStyle}
                   labelStyle={{ color: '#a1a1aa' }}
                   itemStyle={{ color: '#fff' }}
+                  formatter={(value: number, name: string) => [formatTooltipValue(value, name), name]}
                 />
                 <Legend wrapperStyle={{ color: '#a1a1aa' }} />
                 {chart.metrics.map((metric, idx) => (
@@ -441,11 +458,20 @@ function ScenarioWinnerCard({
     purple: 'bg-purple-500/10 border-purple-500/20 text-purple-400',
   };
 
+  const iconColors = {
+    emerald: 'text-emerald-400',
+    cyan: 'text-cyan-400',
+    amber: 'text-amber-400',
+    purple: 'text-purple-400',
+  };
+
   return (
     <div className={`rounded-xl border p-4 ${colorClasses[color]}`}>
       <h4 className="text-sm font-semibold text-zinc-300 mb-2">{title}</h4>
       <div className="space-y-1">
-        <div className="text-2xl font-bold">🏆</div>
+        <svg className={`w-7 h-7 ${iconColors[color]}`} fill="currentColor" viewBox="0 0 24 24">
+          <path d="M5 3h14v2h-1v1.07A7.997 7.997 0 0 1 20 13v1h1v2h-4v3h2v2H5v-2h2v-3H3v-2h1v-1a7.997 7.997 0 0 1 2-6.93V5H5V3zm4 2v1.07c.322-.045.652-.07.988-.07H14c.336 0 .666.025.988.07V5H9zm3 3a5 5 0 0 0-5 5v1h10v-1a5 5 0 0 0-5-5z"/>
+        </svg>
         <div className="text-sm font-semibold text-white">{winner.name}</div>
         <div className={`text-xs ${colorClasses[color].split(' ').pop()}`}>{metric(winner)}</div>
       </div>
