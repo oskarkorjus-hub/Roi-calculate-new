@@ -144,7 +144,8 @@ export function SaveToPortfolioButton({
         totalInvestment = projectData.loanAmount || projectData.propertyValue || 0;
         roi = 0;
         avgCashFlow = -(projectData.result?.monthlyPayment || 0);
-        breakEvenMonths = (projectData.loanTermYears || 0) * 12;
+        // Support both loanTerm (mortgage) and loanTermYears (financing)
+        breakEvenMonths = (projectData.loanTerm || projectData.loanTermYears || 0) * 12;
         break;
 
       case 'indonesia-tax':

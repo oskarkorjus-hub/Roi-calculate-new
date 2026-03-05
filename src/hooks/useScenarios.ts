@@ -110,7 +110,9 @@ function calculateResultsFromInputs(inputs: Record<string, any>, calculatorType:
       const principal = inputs.loanAmount || inputs.totalInvestment || 0;
       const annualRate = (inputs.interestRate || 0) / 100;
       const monthlyRate = annualRate / 12;
-      const termMonths = (inputs.loanTermYears || 0) * 12;
+      // Support both loanTerm (mortgage) and loanTermYears (financing)
+      const termYears = inputs.loanTerm || inputs.loanTermYears || 0;
+      const termMonths = termYears * 12;
 
       let monthlyPayment = 0;
       let totalInterest = 0;

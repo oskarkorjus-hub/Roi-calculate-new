@@ -134,7 +134,9 @@ function calculateBaselineResults(project: PortfolioProject): Record<string, any
       const principal = data.loanAmount || project.totalInvestment || 0;
       const annualRate = (data.interestRate || 0) / 100;
       const monthlyRate = annualRate / 12;
-      const termMonths = (data.loanTermYears || 0) * 12;
+      // Support both loanTerm (mortgage) and loanTermYears (financing)
+      const termYears = data.loanTerm || data.loanTermYears || 0;
+      const termMonths = termYears * 12;
 
       let monthlyPayment = 0;
       let totalInterest = 0;
@@ -154,6 +156,8 @@ function calculateBaselineResults(project: PortfolioProject): Record<string, any
         totalInterest: Math.round(totalInterest),
         totalCost: Math.round(principal + totalInterest),
         effectiveRate: annualRate * 100,
+        // Also set roi field for the table (uses 'roi' for 'Effective Rate')
+        roi: annualRate * 100,
       };
     }
 
