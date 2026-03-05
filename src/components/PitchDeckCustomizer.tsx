@@ -6,7 +6,7 @@ import { Toast } from './ui/Toast';
 interface PitchDeckCustomizerProps {
   project: PortfolioProject;
   onClose?: () => void;
-  variant?: 'default' | 'minimal';
+  variant?: 'default' | 'minimal' | 'menu-item';
 }
 
 export function PitchDeckCustomizer({ project, onClose, variant = 'default' }: PitchDeckCustomizerProps) {
@@ -74,21 +74,47 @@ export function PitchDeckCustomizer({ project, onClose, variant = 'default' }: P
     }
   };
 
-  const buttonClass = variant === 'minimal'
-    ? 'px-3 py-1.5 text-xs font-medium text-zinc-300 hover:text-white hover:bg-zinc-800 rounded-lg transition'
-    : 'px-3 py-2 bg-amber-500/20 text-amber-400 rounded-lg hover:bg-amber-500/30 transition text-sm font-medium';
+  const handleOpenModal = () => {
+    setShowModal(true);
+    onClose?.();
+  };
 
-  return (
-    <>
-      {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
+  // Render the trigger button based on variant
+  const renderTrigger = () => {
+    if (variant === 'menu-item') {
+      return (
+        <button
+          onClick={handleOpenModal}
+          className="w-full px-3 py-2.5 text-left text-xs text-zinc-300 hover:bg-zinc-700 flex items-center gap-2"
+        >
+          <svg className="w-4 h-4 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+          </svg>
+          Custom Pitch Deck
+        </button>
+      );
+    }
 
+    const buttonClass = variant === 'minimal'
+      ? 'px-3 py-1.5 text-xs font-medium text-zinc-300 hover:text-white hover:bg-zinc-800 rounded-lg transition'
+      : 'px-3 py-2 bg-amber-500/20 text-amber-400 rounded-lg hover:bg-amber-500/30 transition text-sm font-medium';
+
+    return (
       <button
-        onClick={() => setShowModal(true)}
+        onClick={handleOpenModal}
         className={buttonClass}
         title="Download customized investor pitch deck"
       >
         {variant === 'minimal' ? 'Pitch' : '📊 Pitch Deck'}
       </button>
+    );
+  };
+
+  return (
+    <>
+      {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
+
+      {renderTrigger()}
 
       {/* Modal - Dark Theme */}
       {showModal && (

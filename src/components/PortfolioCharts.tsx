@@ -37,7 +37,42 @@ const CustomTooltip = ({ active, payload, label }: any) => {
 };
 
 export function PortfolioCharts({ projects }: PortfolioChartsProps) {
-  // Chart 1: ROI Distribution (Histogram)
+  // Define calculator categories for filtering
+  // Investment calculators have ROI, cash flow, score, break-even
+  const investmentCalculators = [
+    'rental-roi', 'xirr', 'cap-rate', 'irr', 'dev-feasibility',
+    'rental-projection', 'cashflow'
+  ];
+
+  // Calculators with meaningful cash flow
+  const cashFlowCalculators = [
+    'rental-roi', 'xirr', 'cap-rate', 'irr', 'dev-feasibility',
+    'rental-projection', 'cashflow'
+  ];
+
+  // Calculators with investment scores
+  const scoredCalculators = [
+    'rental-roi', 'xirr', 'cap-rate', 'irr', 'dev-feasibility',
+    'rental-projection', 'cashflow'
+  ];
+
+  // Filter projects by calculator type
+  const investmentProjects = useMemo(() =>
+    projects.filter(p => investmentCalculators.includes(p.calculatorId)),
+    [projects]
+  );
+
+  const cashFlowProjects = useMemo(() =>
+    projects.filter(p => cashFlowCalculators.includes(p.calculatorId) && (p.avgCashFlow || 0) > 0),
+    [projects]
+  );
+
+  const scoredProjects = useMemo(() =>
+    projects.filter(p => scoredCalculators.includes(p.calculatorId) && (p.investmentScore || 0) > 0),
+    [projects]
+  );
+
+  // Chart 1: ROI Distribution (Histogram) - Only investment calculators
   const roiDistribution = useMemo(() => {
     const bins = [
       { range: '<10%', min: 0, max: 10, count: 0 },
@@ -47,27 +82,29 @@ export function PortfolioCharts({ projects }: PortfolioChartsProps) {
       { range: '40%+', min: 40, max: Infinity, count: 0 },
     ];
 
-    projects.forEach(p => {
+    investmentProjects.forEach(p => {
       const roi = Number(p.roi) || 0;
-      const bin = bins.find(b => roi >= b.min && roi < b.max);
-      if (bin) bin.count++;
+      if (roi > 0) {
+        const bin = bins.find(b => roi >= b.min && roi < b.max);
+        if (bin) bin.count++;
+      }
     });
 
     return bins.filter(b => b.count > 0);
-  }, [projects]);
+  }, [investmentProjects]);
 
-  // Chart 2: Cash Flow by Project
+  // Chart 2: Cash Flow by Project - Only cash flow calculators with positive cash flow
   const cashFlowData = useMemo(() => {
-    return projects
+    return cashFlowProjects
       .sort((a, b) => (b.avgCashFlow || 0) - (a.avgCashFlow || 0))
       .slice(0, 10)
       .map(p => ({
         name: p.projectName.length > 15 ? p.projectName.slice(0, 12) + '...' : p.projectName,
         cashFlow: Number(p.avgCashFlow) || 0,
       }));
-  }, [projects]);
+  }, [cashFlowProjects]);
 
-  // Chart 3: Investment Breakdown by Strategy
+  // Chart 3: Investment Breakdown by Strategy - Only investment calculators
   const strategyBreakdown = useMemo(() => {
     const breakdown: Record<string, number> = {
       'Flip': 0,
@@ -77,7 +114,7 @@ export function PortfolioCharts({ projects }: PortfolioChartsProps) {
       'Unknown': 0,
     };
 
-    projects.forEach(p => {
+    investmentProjects.forEach(p => {
       const key = p.strategy ? p.strategy.charAt(0).toUpperCase() + p.strategy.slice(1) : 'Unknown';
       breakdown[key] = (breakdown[key] || 0) + (Number(p.totalInvestment) || 0);
     });
@@ -88,18 +125,18 @@ export function PortfolioCharts({ projects }: PortfolioChartsProps) {
         name,
         value: Math.round(value / 1_000_000 * 10) / 10, // Convert to millions
       }));
-  }, [projects]);
+  }, [investmentProjects]);
 
-  // Chart 4: Score vs ROI Scatter
+  // Chart 4: Score vs ROI Scatter - Only scored calculators
   const scoreVsROI = useMemo(() => {
-    return projects
+    return scoredProjects
       .map(p => ({
         name: p.projectName,
         score: p.investmentScore,
         roi: Number(p.roi) || 0,
       }))
-      .filter(p => p.score > 0 && p.roi >= 0);
-  }, [projects]);
+      .filter(p => p.score > 0 && p.roi > 0);
+  }, [scoredProjects]);
 
   const COLORS = ['#10b981', '#3b82f6', '#f59e0b', '#ef4444', '#8b5cf6'];
 
@@ -208,122 +245,141 @@ export function PortfolioCharts({ projects }: PortfolioChartsProps) {
         )}
       </div>
 
-      {/* Additional insights */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        {/* Score distribution */}
-        <div className="bg-zinc-900 rounded-xl border border-zinc-800 p-4">
-          <h4 className="font-semibold text-white mb-3">Score Distribution</h4>
-          <div className="space-y-2 text-sm">
-            {(() => {
-              const excellent = projects.filter(p => p.investmentScore >= 85).length;
-              const veryGood = projects.filter(p => p.investmentScore >= 70 && p.investmentScore < 85).length;
-              const good = projects.filter(p => p.investmentScore >= 60 && p.investmentScore < 70).length;
-              const moderate = projects.filter(p => p.investmentScore >= 50 && p.investmentScore < 60).length;
-              const highRisk = projects.filter(p => p.investmentScore < 50).length;
+      {/* Additional insights - Only show if there are relevant projects */}
+      {scoredProjects.length > 0 && (
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {/* Score distribution - Only scored calculators */}
+          <div className="bg-zinc-900 rounded-xl border border-zinc-800 p-4">
+            <h4 className="font-semibold text-white mb-3">Score Distribution</h4>
+            <div className="space-y-2 text-sm">
+              {(() => {
+                const excellent = scoredProjects.filter(p => p.investmentScore >= 85).length;
+                const veryGood = scoredProjects.filter(p => p.investmentScore >= 70 && p.investmentScore < 85).length;
+                const good = scoredProjects.filter(p => p.investmentScore >= 60 && p.investmentScore < 70).length;
+                const moderate = scoredProjects.filter(p => p.investmentScore >= 50 && p.investmentScore < 60).length;
+                const highRisk = scoredProjects.filter(p => p.investmentScore < 50).length;
 
-              return (
-                <>
-                  {excellent > 0 && (
-                    <div className="flex justify-between">
-                      <span className="text-zinc-400">Excellent (85+)</span>
-                      <span className="font-bold text-emerald-400">{excellent}</span>
+                return (
+                  <>
+                    {excellent > 0 && (
+                      <div className="flex justify-between">
+                        <span className="text-zinc-400">Excellent (85+)</span>
+                        <span className="font-bold text-emerald-400">{excellent}</span>
+                      </div>
+                    )}
+                    {veryGood > 0 && (
+                      <div className="flex justify-between">
+                        <span className="text-zinc-400">Very Good (70-84)</span>
+                        <span className="font-bold text-blue-400">{veryGood}</span>
+                      </div>
+                    )}
+                    {good > 0 && (
+                      <div className="flex justify-between">
+                        <span className="text-zinc-400">Good (60-69)</span>
+                        <span className="font-bold text-yellow-400">{good}</span>
+                      </div>
+                    )}
+                    {moderate > 0 && (
+                      <div className="flex justify-between">
+                        <span className="text-zinc-400">Moderate (50-59)</span>
+                        <span className="font-bold text-orange-400">{moderate}</span>
+                      </div>
+                    )}
+                    {highRisk > 0 && (
+                      <div className="flex justify-between">
+                        <span className="text-zinc-400">High Risk (&lt;50)</span>
+                        <span className="font-bold text-red-400">{highRisk}</span>
+                      </div>
+                    )}
+                  </>
+                );
+              })()}
+            </div>
+          </div>
+
+          {/* ROI Statistics - Only investment calculators */}
+          <div className="bg-zinc-900 rounded-xl border border-zinc-800 p-4">
+            <h4 className="font-semibold text-white mb-3">ROI Statistics</h4>
+            <div className="space-y-2 text-sm">
+              {(() => {
+                const rois = investmentProjects.map(p => Number(p.roi) || 0).filter(r => r > 0);
+                const avgROI = rois.length > 0 ? rois.reduce((a, b) => a + b, 0) / rois.length : 0;
+                const maxROI = rois.length > 0 ? Math.max(...rois) : 0;
+                const minROI = rois.length > 0 ? Math.min(...rois) : 0;
+
+                if (rois.length === 0) {
+                  return (
+                    <div className="text-zinc-500 text-center py-2">
+                      No ROI data available
                     </div>
-                  )}
-                  {veryGood > 0 && (
+                  );
+                }
+
+                return (
+                  <>
                     <div className="flex justify-between">
-                      <span className="text-zinc-400">Very Good (70-84)</span>
-                      <span className="font-bold text-blue-400">{veryGood}</span>
+                      <span className="text-zinc-400">Average ROI</span>
+                      <span className="font-bold text-white">{avgROI.toFixed(1)}%</span>
                     </div>
-                  )}
-                  {good > 0 && (
                     <div className="flex justify-between">
-                      <span className="text-zinc-400">Good (60-69)</span>
-                      <span className="font-bold text-yellow-400">{good}</span>
+                      <span className="text-zinc-400">Max ROI</span>
+                      <span className="font-bold text-emerald-400">{maxROI.toFixed(1)}%</span>
                     </div>
-                  )}
-                  {moderate > 0 && (
                     <div className="flex justify-between">
-                      <span className="text-zinc-400">Moderate (50-59)</span>
-                      <span className="font-bold text-orange-400">{moderate}</span>
+                      <span className="text-zinc-400">Min ROI</span>
+                      <span className="font-bold text-orange-400">{minROI.toFixed(1)}%</span>
                     </div>
-                  )}
-                  {highRisk > 0 && (
+                  </>
+                );
+              })()}
+            </div>
+          </div>
+
+          {/* Break-Even Statistics - Only investment calculators */}
+          <div className="bg-zinc-900 rounded-xl border border-zinc-800 p-4">
+            <h4 className="font-semibold text-white mb-3">Break-Even Timeline</h4>
+            <div className="space-y-2 text-sm">
+              {(() => {
+                const projectsWithBEM = investmentProjects.filter(p => (p.breakEvenMonths || 0) > 0);
+                const bems = projectsWithBEM.map(p => Number(p.breakEvenMonths) || 0);
+                const avgBEM = bems.length > 0 ? bems.reduce((a, b) => a + b, 0) / bems.length : 0;
+                const quickBreakEven = projectsWithBEM.filter(p => (p.breakEvenMonths || 0) > 0 && (p.breakEvenMonths || 0) < 12).length;
+                const mediumBreakEven = projectsWithBEM.filter(p => (p.breakEvenMonths || 0) >= 12 && (p.breakEvenMonths || 0) < 36).length;
+                const slowBreakEven = projectsWithBEM.filter(p => (p.breakEvenMonths || 0) >= 36).length;
+
+                if (bems.length === 0) {
+                  return (
+                    <div className="text-zinc-500 text-center py-2">
+                      No break-even data available
+                    </div>
+                  );
+                }
+
+                return (
+                  <>
                     <div className="flex justify-between">
-                      <span className="text-zinc-400">High Risk (&lt;50)</span>
-                      <span className="font-bold text-red-400">{highRisk}</span>
+                      <span className="text-zinc-400">Average</span>
+                      <span className="font-bold text-white">{Math.round(avgBEM)} months</span>
                     </div>
-                  )}
-                </>
-              );
-            })()}
+                    <div className="flex justify-between">
+                      <span className="text-zinc-400">Quick (&lt;12m)</span>
+                      <span className="font-bold text-emerald-400">{quickBreakEven}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-zinc-400">Medium (12-36m)</span>
+                      <span className="font-bold text-yellow-400">{mediumBreakEven}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-zinc-400">Long (36m+)</span>
+                      <span className="font-bold text-orange-400">{slowBreakEven}</span>
+                    </div>
+                  </>
+                );
+              })()}
+            </div>
           </div>
         </div>
-
-        {/* ROI Statistics */}
-        <div className="bg-zinc-900 rounded-xl border border-zinc-800 p-4">
-          <h4 className="font-semibold text-white mb-3">ROI Statistics</h4>
-          <div className="space-y-2 text-sm">
-            {(() => {
-              const rois = projects.map(p => Number(p.roi) || 0).filter(r => r >= 0);
-              const avgROI = rois.length > 0 ? rois.reduce((a, b) => a + b, 0) / rois.length : 0;
-              const maxROI = rois.length > 0 ? Math.max(...rois) : 0;
-              const minROI = rois.length > 0 ? Math.min(...rois) : 0;
-
-              return (
-                <>
-                  <div className="flex justify-between">
-                    <span className="text-zinc-400">Average ROI</span>
-                    <span className="font-bold text-white">{avgROI.toFixed(1)}%</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-zinc-400">Max ROI</span>
-                    <span className="font-bold text-emerald-400">{maxROI.toFixed(1)}%</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-zinc-400">Min ROI</span>
-                    <span className="font-bold text-orange-400">{minROI.toFixed(1)}%</span>
-                  </div>
-                </>
-              );
-            })()}
-          </div>
-        </div>
-
-        {/* Break-Even Statistics */}
-        <div className="bg-zinc-900 rounded-xl border border-zinc-800 p-4">
-          <h4 className="font-semibold text-white mb-3">Break-Even Timeline</h4>
-          <div className="space-y-2 text-sm">
-            {(() => {
-              const bems = projects.map(p => Number(p.breakEvenMonths) || 0).filter(b => b > 0);
-              const avgBEM = bems.length > 0 ? bems.reduce((a, b) => a + b, 0) / bems.length : 0;
-              const quickBreakEven = projects.filter(p => (p.breakEvenMonths || 0) < 12).length;
-              const mediumBreakEven = projects.filter(p => (p.breakEvenMonths || 0) >= 12 && (p.breakEvenMonths || 0) < 36).length;
-              const slowBreakEven = projects.filter(p => (p.breakEvenMonths || 0) >= 36).length;
-
-              return (
-                <>
-                  <div className="flex justify-between">
-                    <span className="text-zinc-400">Average</span>
-                    <span className="font-bold text-white">{Math.round(avgBEM)} months</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-zinc-400">Quick (&lt;12m)</span>
-                    <span className="font-bold text-emerald-400">{quickBreakEven}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-zinc-400">Medium (12-36m)</span>
-                    <span className="font-bold text-yellow-400">{mediumBreakEven}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-zinc-400">Long (36m+)</span>
-                    <span className="font-bold text-orange-400">{slowBreakEven}</span>
-                  </div>
-                </>
-              );
-            })()}
-          </div>
-        </div>
-      </div>
+      )}
     </div>
   );
 }

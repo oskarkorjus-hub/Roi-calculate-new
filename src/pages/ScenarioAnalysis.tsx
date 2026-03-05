@@ -236,6 +236,7 @@ export function ScenarioAnalysisPage({ projectId, onBack }: ScenarioAnalysisPage
               <ScenarioComparatorTable
                 scenarios={selectedScenarios}
                 baselineScenario={baselineScenario}
+                calculatorId={project.calculatorId}
               />
             </div>
 
