@@ -639,8 +639,30 @@ const getCategoryConfig = (calculatorId: string): CategoryConfig => {
 
 export function ProjectDetailsModal({ project, onClose, onDelete }: ProjectDetailsModalProps) {
   const categoryConfig = getCategoryConfig(project.calculatorId);
-  const scoreColor = categoryConfig.showScore ? getScoreColor(project.investmentScore || 0) : categoryConfig.accentColor;
   const [showExportMenu, setShowExportMenu] = useState(false);
+
+  // Recalculate investment score using calculator-specific algorithm
+  const recalculatedScore = useMemo(() => {
+    if (!categoryConfig.showScore) return null;
+    return recalculateProjectScore({
+      calculatorId: project.calculatorId,
+      roi: project.roi,
+      avgCashFlow: project.avgCashFlow,
+      totalInvestment: project.totalInvestment,
+      breakEvenMonths: project.breakEvenMonths,
+      location: project.location,
+      data: project.data,
+    });
+  }, [project, categoryConfig.showScore]);
+
+  // Use recalculated score if available
+  const displayScore = recalculatedScore?.investmentScore ?? project.investmentScore ?? 0;
+  const displayRoiScore = recalculatedScore?.roi_score ?? project.roi_score ?? 0;
+  const displayCashflowScore = recalculatedScore?.cashflow_score ?? project.cashflow_score ?? 0;
+  const displayStabilityScore = recalculatedScore?.stability_score ?? project.stability_score ?? 0;
+  const displayLocationScore = recalculatedScore?.location_score ?? project.location_score ?? 0;
+
+  const scoreColor = categoryConfig.showScore ? getScoreColor(displayScore) : categoryConfig.accentColor;
 
   const getRiskLabel = (score: number) => {
     if (score >= 85) return 'Excellent';
@@ -698,49 +720,49 @@ export function ProjectDetailsModal({ project, onClose, onDelete }: ProjectDetai
               <div className="grid grid-cols-4 gap-4 text-center">
                 <div>
                   <div className="text-lg font-bold text-white">
-                    {Math.round(((project.roi_score || 0) / 5) * 100)}%
+                    {Math.round((displayRoiScore / 5) * 100)}%
                   </div>
                   <div className="text-xs text-zinc-500">ROI</div>
                   <div className="h-1 bg-zinc-700 rounded-full mt-2 overflow-hidden">
                     <div
                       className="h-full bg-emerald-500 rounded-full"
-                      style={{ width: `${Math.min(((project.roi_score || 0) / 5) * 100, 100)}%` }}
+                      style={{ width: `${Math.min((displayRoiScore / 5) * 100, 100)}%` }}
                     />
                   </div>
                 </div>
                 <div>
                   <div className="text-lg font-bold text-white">
-                    {Math.round(((project.cashflow_score || 0) / 3) * 100)}%
+                    {Math.round((displayCashflowScore / 3) * 100)}%
                   </div>
                   <div className="text-xs text-zinc-500">Cash Flow</div>
                   <div className="h-1 bg-zinc-700 rounded-full mt-2 overflow-hidden">
                     <div
                       className="h-full bg-blue-500 rounded-full"
-                      style={{ width: `${Math.min(((project.cashflow_score || 0) / 3) * 100, 100)}%` }}
+                      style={{ width: `${Math.min((displayCashflowScore / 3) * 100, 100)}%` }}
                     />
                   </div>
                 </div>
                 <div>
                   <div className="text-lg font-bold text-white">
-                    {Math.round(((project.stability_score || 0) / 2) * 100)}%
+                    {Math.round((displayStabilityScore / 2) * 100)}%
                   </div>
                   <div className="text-xs text-zinc-500">Stability</div>
                   <div className="h-1 bg-zinc-700 rounded-full mt-2 overflow-hidden">
                     <div
                       className="h-full bg-yellow-500 rounded-full"
-                      style={{ width: `${Math.min(((project.stability_score || 0) / 2) * 100, 100)}%` }}
+                      style={{ width: `${Math.min((displayStabilityScore / 2) * 100, 100)}%` }}
                     />
                   </div>
                 </div>
                 <div>
                   <div className="text-lg font-bold text-white">
-                    {Math.round((project.location_score || 0) * 100)}%
+                    {Math.round(displayLocationScore * 100)}%
                   </div>
                   <div className="text-xs text-zinc-500">Location</div>
                   <div className="h-1 bg-zinc-700 rounded-full mt-2 overflow-hidden">
                     <div
                       className="h-full bg-purple-500 rounded-full"
-                      style={{ width: `${Math.min((project.location_score || 0) * 100, 100)}%` }}
+                      style={{ width: `${Math.min(displayLocationScore * 100, 100)}%` }}
                     />
                   </div>
                 </div>
@@ -779,13 +801,13 @@ export function ProjectDetailsModal({ project, onClose, onDelete }: ProjectDetai
             >
               <div>
                 <div className="text-sm text-zinc-400">Overall Investment Score</div>
-                <div className="text-sm text-zinc-500 mt-1">{getRiskLabel(project.investmentScore || 0)}</div>
+                <div className="text-sm text-zinc-500 mt-1">{getRiskLabel(displayScore)}</div>
               </div>
               <div
                 className="text-4xl font-bold"
                 style={{ color: scoreColor }}
               >
-                {Math.round(project.investmentScore || 0)}<span className="text-lg text-zinc-500">/100</span>
+                {Math.round(displayScore)}<span className="text-lg text-zinc-500">/100</span>
               </div>
             </div>
           )}
