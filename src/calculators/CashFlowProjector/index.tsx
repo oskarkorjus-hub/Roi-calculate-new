@@ -4,6 +4,7 @@ import { UsageBadge } from '../../components/ui/UsageBadge';
 import { SaveToPortfolioButton } from '../../components/SaveToPortfolioButton';
 import { ReportPreviewModal } from '../../components/ui/ReportPreviewModal';
 import { generateCashFlowReport } from '../../hooks/useReportGenerator';
+import { parseDecimalInput } from '../../utils/numberParsing';
 import { CashFlowInputs } from './components/CashFlowInputs';
 import { ProjectionVisualization } from './components/ProjectionVisualization';
 
@@ -133,7 +134,7 @@ export function CashFlowProjector() {
   }, [inputs]);
 
   const schedule = calculateCashFlow();
-  const symbol = symbols[inputs.currency];
+  const symbol = symbols[inputs.currency] || 'Rp';
 
   // Calculate summary values for report
   const monthlyExpenses = inputs.monthlyMaintenance + inputs.monthlyPropertyTax +
@@ -175,7 +176,7 @@ export function CashFlowProjector() {
   const handleInputChange = (field: keyof CashFlowInputsType, value: string | number | boolean) => {
     setInputs(prev => ({
       ...prev,
-      [field]: typeof value === 'string' ? parseFloat(value) || 0 : value,
+      [field]: field === 'currency' ? value : (typeof value === 'string' ? parseDecimalInput(value) || 0 : value),
     }));
   };
 

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { usePortfolio } from '../hooks/usePortfolio';
+import { usePortfolio } from '../lib/portfolio-context';
 import { generatePortfolioComparisionPDF } from '../utils/pdfExport';
 import type { PortfolioProject } from '../types/portfolio';
 

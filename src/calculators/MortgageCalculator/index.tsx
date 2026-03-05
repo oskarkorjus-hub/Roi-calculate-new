@@ -4,6 +4,7 @@ import { UsageBadge } from '../../components/ui/UsageBadge';
 import { SaveToPortfolioButton } from '../../components/SaveToPortfolioButton';
 import { ReportPreviewModal } from '../../components/ui/ReportPreviewModal';
 import { generateMortgageReport } from '../../hooks/useReportGenerator';
+import { parseDecimalInput } from '../../utils/numberParsing';
 import { MortgageInputs } from './components/MortgageInputs';
 import { MortgageResults } from './components/MortgageResults';
 import { AmortizationTable } from './components/AmortizationTable';
@@ -153,7 +154,7 @@ export function MortgageCalculator() {
   }, [inputs]);
 
   const result = calculateMortgage();
-  const symbol = symbols[inputs.currency];
+  const symbol = symbols[inputs.currency] || 'Rp';
 
   // Generate report data for PDF export
   const reportData = useMemo(() => {
@@ -163,7 +164,7 @@ export function MortgageCalculator() {
   const handleInputChange = (field: keyof MortgageInputsType, value: string | number | boolean) => {
     setInputs(prev => ({
       ...prev,
-      [field]: typeof value === 'string' ? parseFloat(value) || 0 : value,
+      [field]: field === 'currency' ? value : (typeof value === 'string' ? parseDecimalInput(value) || 0 : value),
     }));
   };
 

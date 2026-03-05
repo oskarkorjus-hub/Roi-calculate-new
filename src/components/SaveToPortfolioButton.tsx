@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { usePortfolio } from '../hooks/usePortfolio';
+import { usePortfolio } from '../lib/portfolio-context';
 import { useTier } from '../lib/tier-context';
 import { calculateInvestmentScore } from '../utils/investmentScoring';
 import { Toast } from './ui/Toast';
@@ -31,17 +31,86 @@ export function SaveToPortfolioButton({
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
   const [upgradeReason, setUpgradeReason] = useState<UpgradeReason>('calculation_limit');
 
-  // Extract financial metrics
+  // Calculator types where investment score is meaningful
+  const scorableCalculators = ['cap-rate', 'dev-feasibility', 'cashflow', 'irr', 'rental-projection', 'rental-roi'];
+  const showScore = scorableCalculators.includes(calculatorType);
+
+  // Extract financial metrics based on calculator type
   const financialMetrics = useMemo(() => {
     const location = projectData.property?.location || projectData.location || 'Bali';
-    const totalInvestment =
-      projectData.totalProjectCost || projectData.loanAmount || projectData.monthlyRentalIncome || 0;
-    const roi = projectData.result?.rate || projectData.roiFlip || projectData.roiHold || 0;
-    const avgCashFlow = projectData.netCashFlow || projectData.monthlyPayment || 0;
-    const breakEvenMonths = projectData.breakEvenMonths || 0;
+    let totalInvestment = 0;
+    let roi = 0;
+    let avgCashFlow = 0;
+    let breakEvenMonths = 0;
+
+    switch (calculatorType) {
+      case 'cap-rate':
+        totalInvestment = projectData.propertyValue || 0;
+        roi = projectData.result?.capRate || projectData.result?.adjustedCapRate || 0;
+        avgCashFlow = (projectData.result?.yearlyNOI || projectData.annualNOI || 0) / 12;
+        breakEvenMonths = roi > 0 ? Math.round(100 / roi * 12) : 0;
+        break;
+
+      case 'dev-feasibility':
+        totalInvestment = projectData.result?.totalProjectCost || projectData.totalProjectCost || 0;
+        roi = projectData.result?.roiFlip || projectData.result?.roiHold || projectData.roiFlip || projectData.roiHold || 0;
+        avgCashFlow = (projectData.result?.grossProfit || 0) / 12;
+        breakEvenMonths = roi > 0 ? Math.round(100 / roi * 12) : 24;
+        break;
+
+      case 'cashflow':
+        totalInvestment = projectData.monthlyRentalIncome ? projectData.monthlyRentalIncome * 12 * 10 : 0;
+        const netMonthly = (projectData.monthlyRentalIncome || 0) -
+          (projectData.monthlyMaintenance || 0) -
+          (projectData.monthlyPropertyTax || 0) -
+          (projectData.monthlyInsurance || 0);
+        avgCashFlow = netMonthly;
+        roi = totalInvestment > 0 ? (netMonthly * 12 / totalInvestment) * 100 : 0;
+        breakEvenMonths = netMonthly > 0 ? Math.round(totalInvestment / (netMonthly * 12) * 12) : 0;
+        break;
+
+      case 'irr':
+        totalInvestment = projectData.result?.totalInvested || 0;
+        roi = projectData.result?.irr || 0;
+        avgCashFlow = (projectData.result?.totalCashFlow || 0) / 5;
+        breakEvenMonths = (projectData.result?.paybackPeriod || 0) * 12;
+        break;
+
+      case 'rental-projection':
+        totalInvestment = projectData.purchasePrice || 0;
+        roi = projectData.result?.netYield || projectData.result?.projectedYield || 0;
+        avgCashFlow = projectData.result?.monthlyNetIncome || 0;
+        breakEvenMonths = roi > 0 ? Math.round(100 / roi * 12) : 0;
+        break;
+
+      case 'rental-roi':
+        totalInvestment = projectData.purchasePrice || projectData.propertyValue || 0;
+        roi = projectData.result?.roi || projectData.result?.cashOnCashReturn || 0;
+        avgCashFlow = projectData.result?.monthlyCashFlow || 0;
+        breakEvenMonths = projectData.result?.breakEvenMonths || 0;
+        break;
+
+      case 'npv':
+        totalInvestment = projectData.result?.totalCashOutflows || 0;
+        roi = projectData.result?.profitabilityIndex ? (projectData.result.profitabilityIndex - 1) * 100 : 0;
+        avgCashFlow = (projectData.result?.netCashFlow || 0) / 5;
+        breakEvenMonths = 24;
+        break;
+
+      case 'mortgage':
+      case 'financing':
+      case 'indonesia-tax':
+      default:
+        // These calculators don't have meaningful investment scores
+        totalInvestment = projectData.loanAmount || projectData.propertyValue || 0;
+        roi = 0;
+        avgCashFlow = 0;
+        breakEvenMonths = 0;
+        break;
+    }
 
     return { location, totalInvestment, roi, avgCashFlow, breakEvenMonths };
-  }, [projectData]);
+  }, [projectData, calculatorType]);
 
   // Calculate investment score
   const scoreComponents = useMemo(() => {
@@ -85,7 +154,7 @@ export function SaveToPortfolioButton({
         return;
       }
 
-      addProject({
+      const savedProject = await addProject({
         projectName: projectName,
         calculatorId: calculatorType,
         strategy: (selectedStrategy as 'flip' | 'hold' | 'rental' | 'development') || undefined,
@@ -95,14 +164,19 @@ export function SaveToPortfolioButton({
         roi: financialMetrics.roi,
         avgCashFlow: financialMetrics.avgCashFlow,
         breakEvenMonths: financialMetrics.breakEvenMonths,
-        investmentScore: scoreComponents.investmentScore,
-        roi_score: scoreComponents.roi_score,
-        cashflow_score: scoreComponents.cashflow_score,
-        stability_score: scoreComponents.stability_score,
-        location_score: scoreComponents.location_score,
+        investmentScore: showScore ? scoreComponents.investmentScore : 0,
+        roi_score: showScore ? scoreComponents.roi_score : 0,
+        cashflow_score: showScore ? scoreComponents.cashflow_score : 0,
+        stability_score: showScore ? scoreComponents.stability_score : 0,
+        location_score: showScore ? scoreComponents.location_score : 0,
         currency: projectData.currency || 'IDR',
         status: 'active',
       });
+
+      if (!savedProject) {
+        setToast({ message: 'Failed to save project', type: 'error' });
+        return;
+      }
 
       setToast({ message: `"${projectName}" saved to portfolio!`, type: 'success' });
       setShowModal(false);
@@ -170,8 +244,8 @@ export function SaveToPortfolioButton({
                 </select>
               </div>
 
-              {/* Score Preview */}
-              {scoreComponents.investmentScore > 0 && (
+              {/* Score Preview - only for investment-focused calculators */}
+              {showScore && scoreComponents.investmentScore > 0 && (
                 <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-lg p-3">
                   <div className="text-xs text-zinc-400 font-medium mb-2">Investment Score</div>
                   <div className="flex items-center gap-2">

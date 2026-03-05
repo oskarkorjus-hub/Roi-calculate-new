@@ -6,9 +6,10 @@ import { Toast } from './ui/Toast';
 interface ScenarioCreatorProps {
   project: PortfolioProject;
   onScenarioCreated?: () => void;
+  variant?: 'default' | 'minimal';
 }
 
-export function ScenarioCreator({ project, onScenarioCreated }: ScenarioCreatorProps) {
+export function ScenarioCreator({ project, onScenarioCreated, variant = 'default' }: ScenarioCreatorProps) {
   const { createScenario } = useScenarios();
   const [showModal, setShowModal] = useState(false);
   const [scenarioName, setScenarioName] = useState('');
@@ -47,28 +48,32 @@ export function ScenarioCreator({ project, onScenarioCreated }: ScenarioCreatorP
     }
   };
 
+  const buttonClass = variant === 'minimal'
+    ? 'px-3 py-1.5 text-xs font-medium text-zinc-300 hover:text-white hover:bg-zinc-800 rounded-lg transition'
+    : 'px-3 py-2 bg-purple-500/20 text-purple-400 rounded-lg hover:bg-purple-500/30 transition text-sm font-medium';
+
   return (
     <>
       {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
 
       <button
         onClick={() => setShowModal(true)}
-        className="px-3 py-2 bg-purple-50 text-purple-600 rounded hover:bg-purple-100 transition text-sm font-medium"
+        className={buttonClass}
         title="Create a scenario variant of this project"
       >
-        🔀 Create Scenario
+        {variant === 'minimal' ? 'Scenario' : '🔀 Create Scenario'}
       </button>
 
-      {/* Modal */}
+      {/* Modal - Dark Theme */}
       {showModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg p-6 max-w-2xl w-full max-h-96 overflow-y-auto">
-            <h3 className="text-lg font-bold text-gray-900 mb-4">Create Scenario Variant</h3>
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-zinc-900 rounded-xl border border-zinc-800 p-6 max-w-2xl w-full max-h-[80vh] overflow-y-auto">
+            <h3 className="text-lg font-bold text-white mb-4">Create Scenario Variant</h3>
 
             <div className="space-y-4 mb-6">
               {/* Scenario Name */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-zinc-400 mb-2">
                   Scenario Name *
                 </label>
                 <input
@@ -76,27 +81,27 @@ export function ScenarioCreator({ project, onScenarioCreated }: ScenarioCreatorP
                   value={scenarioName}
                   onChange={e => setScenarioName(e.target.value)}
                   placeholder="e.g., 3 villas instead of 5, 10-year hold"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  className="w-full px-3 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white placeholder:text-zinc-500 focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none"
                   autoFocus
                 />
               </div>
 
               {/* Key Input Fields */}
-              <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
-                <h4 className="font-semibold text-gray-900 text-sm mb-3">Key Parameters</h4>
+              <div className="bg-zinc-800/50 p-4 rounded-lg border border-zinc-700">
+                <h4 className="font-semibold text-white text-sm mb-3">Key Parameters</h4>
                 <div className="space-y-3">
                   {Object.entries(project.data || {})
                     .slice(0, 6) // Show first 6 fields
                     .map(([key, value]) => (
-                      <div key={key} className="flex gap-2">
-                        <label className="flex-1 text-sm font-medium text-gray-700 capitalize">
+                      <div key={key} className="flex items-center gap-3">
+                        <label className="flex-1 text-sm font-medium text-zinc-400 capitalize">
                           {key.replace(/([A-Z])/g, ' $1').trim()}
                         </label>
                         <input
                           type="number"
                           value={inputs[key] || ''}
                           onChange={e => handleInputChange(key, parseFloat(e.target.value) || '')}
-                          className="flex-1 px-2 py-1 border border-gray-300 rounded text-sm"
+                          className="w-32 px-3 py-1.5 bg-zinc-700 border border-zinc-600 rounded-lg text-white text-sm focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none"
                         />
                       </div>
                     ))}
@@ -105,9 +110,9 @@ export function ScenarioCreator({ project, onScenarioCreated }: ScenarioCreatorP
 
               {/* Change Summary */}
               {hasCriticalChanges && (
-                <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
-                  <p className="text-xs text-blue-800">
-                    ℹ️ This scenario differs from the baseline. Changes will be tracked for comparison.
+                <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-3">
+                  <p className="text-xs text-blue-400">
+                    This scenario differs from the baseline. Changes will be tracked for comparison.
                   </p>
                 </div>
               )}
@@ -117,7 +122,7 @@ export function ScenarioCreator({ project, onScenarioCreated }: ScenarioCreatorP
               <button
                 onClick={() => setShowModal(false)}
                 disabled={isSaving}
-                className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition disabled:opacity-50"
+                className="flex-1 px-4 py-2 border border-zinc-700 text-zinc-300 rounded-lg hover:bg-zinc-800 transition disabled:opacity-50"
               >
                 Cancel
               </button>

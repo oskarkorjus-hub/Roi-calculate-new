@@ -1,6 +1,12 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import type { UserTier, UsageData, TierLimits } from '../types/tier';
 import { TIER_LIMITS } from '../types/tier';
+import { useAuth } from '../lib/auth-context';
+import {
+  fetchUserProfile,
+  updateUserTier as updateUserTierDb,
+  incrementUsageCount,
+} from '../lib/profile-service';
 
 const TIER_STORAGE_KEY = 'baliinvest_user_tier';
 const USAGE_STORAGE_KEY = 'baliinvest_usage_tracking';
@@ -15,7 +21,7 @@ function getCurrentMonthStart(): number {
   return new Date(now.getFullYear(), now.getMonth(), 1).getTime();
 }
 
-function loadTier(): UserTier {
+function loadTierFromStorage(): UserTier {
   try {
     const saved = localStorage.getItem(TIER_STORAGE_KEY);
     if (saved && ['free', 'pro', 'enterprise'].includes(saved)) {
@@ -27,7 +33,7 @@ function loadTier(): UserTier {
   return 'free';
 }
 
-function saveTier(tier: UserTier): void {
+function saveTierToStorage(tier: UserTier): void {
   try {
     localStorage.setItem(TIER_STORAGE_KEY, tier);
   } catch {
@@ -35,7 +41,7 @@ function saveTier(tier: UserTier): void {
   }
 }
 
-function loadUsage(): UsageData {
+function loadUsageFromStorage(): UsageData {
   try {
     const saved = localStorage.getItem(USAGE_STORAGE_KEY);
     if (saved) {
@@ -49,7 +55,7 @@ function loadUsage(): UsageData {
           monthStartTimestamp: getCurrentMonthStart(),
           lastResetDate: currentMonthStart,
         };
-        saveUsage(resetData);
+        saveUsageToStorage(resetData);
         return resetData;
       }
       return parsed;
@@ -65,7 +71,7 @@ function loadUsage(): UsageData {
   };
 }
 
-function saveUsage(usage: UsageData): void {
+function saveUsageToStorage(usage: UsageData): void {
   try {
     localStorage.setItem(USAGE_STORAGE_KEY, JSON.stringify(usage));
   } catch {
@@ -74,12 +80,53 @@ function saveUsage(usage: UsageData): void {
 }
 
 export function useUserTier() {
-  const [tier, setTierState] = useState<UserTier>(loadTier);
-  const [usage, setUsageState] = useState<UsageData>(loadUsage);
+  const { user } = useAuth();
+  const [tier, setTierState] = useState<UserTier>(loadTierFromStorage);
+  const [usage, setUsageState] = useState<UsageData>(loadUsageFromStorage);
+  const [loading, setLoading] = useState(true);
+  const initialLoadDone = useRef(false);
 
   const limits: TierLimits = TIER_LIMITS[tier];
 
-  // Check for month reset on mount and periodically
+  // Load profile from Supabase when user changes
+  useEffect(() => {
+    async function loadProfile() {
+      setLoading(true);
+
+      if (user) {
+        // Logged in - fetch from Supabase
+        const { data, error } = await fetchUserProfile(user.id);
+        if (error) {
+          console.error('Error fetching profile:', error);
+          // Fall back to localStorage
+          setTierState(loadTierFromStorage());
+          setUsageState(loadUsageFromStorage());
+        } else if (data) {
+          setTierState(data.tier);
+          setUsageState(data.usage);
+        }
+      } else {
+        // Not logged in - use localStorage
+        setTierState(loadTierFromStorage());
+        setUsageState(loadUsageFromStorage());
+      }
+
+      setLoading(false);
+      initialLoadDone.current = true;
+    }
+
+    loadProfile();
+  }, [user]);
+
+  // Persist to localStorage only for guests
+  useEffect(() => {
+    if (!user && initialLoadDone.current) {
+      saveTierToStorage(tier);
+      saveUsageToStorage(usage);
+    }
+  }, [tier, usage, user]);
+
+  // Check for month reset periodically
   useEffect(() => {
     const checkReset = () => {
       const currentMonthStart = getFirstOfMonth();
@@ -90,7 +137,9 @@ export function useUserTier() {
           lastResetDate: currentMonthStart,
         };
         setUsageState(resetData);
-        saveUsage(resetData);
+        if (!user) {
+          saveUsageToStorage(resetData);
+        }
       }
     };
 
@@ -98,7 +147,7 @@ export function useUserTier() {
     // Check every minute in case user has app open during month transition
     const interval = setInterval(checkReset, 60000);
     return () => clearInterval(interval);
-  }, [usage.lastResetDate]);
+  }, [usage.lastResetDate, user]);
 
   const canUseCalculator = useCallback((): boolean => {
     if (limits.calculationsPerMonth === Infinity) return true;
@@ -118,14 +167,27 @@ export function useUserTier() {
       calculationsUsed: usage.calculationsUsed + 1,
     };
     setUsageState(newUsage);
-    saveUsage(newUsage);
+
+    if (user) {
+      // Update in Supabase (fire and forget)
+      incrementUsageCount(user.id).catch(console.error);
+    } else {
+      saveUsageToStorage(newUsage);
+    }
+
     return true;
-  }, [usage, canUseCalculator]);
+  }, [usage, canUseCalculator, user]);
 
   const setTier = useCallback((newTier: UserTier) => {
     setTierState(newTier);
-    saveTier(newTier);
-  }, []);
+
+    if (user) {
+      // Update in Supabase
+      updateUserTierDb(user.id, newTier).catch(console.error);
+    } else {
+      saveTierToStorage(newTier);
+    }
+  }, [user]);
 
   const upgradeTier = useCallback((newTier: UserTier) => {
     setTier(newTier);
@@ -141,6 +203,7 @@ export function useUserTier() {
     tier,
     limits,
     usage,
+    loading,
     canUseCalculator,
     remainingCalculations,
     incrementUsage,

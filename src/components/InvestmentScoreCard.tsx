@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { getScoreColor, getScoreBgColor } from '../utils/investmentScoring';
+import { getScoreColor } from '../utils/investmentScoring';
 
 interface InvestmentScoreCardProps {
   score: number; // 0-100
@@ -25,33 +25,32 @@ export function InvestmentScoreCard({
   const sizeConfig = useMemo(() => {
     switch (size) {
       case 'sm':
-        return { diameter: 64, fontSize: 'text-xl', radius: 28, strokeWidth: 4 };
+        return { diameter: 48, fontSize: 'text-sm', radius: 20, strokeWidth: 3 };
       case 'lg':
-        return { diameter: 120, fontSize: 'text-5xl', radius: 55, strokeWidth: 3 };
+        return { diameter: 100, fontSize: 'text-3xl', radius: 44, strokeWidth: 4 };
       default:
-        return { diameter: 88, fontSize: 'text-3xl', radius: 40, strokeWidth: 4 };
+        return { diameter: 64, fontSize: 'text-xl', radius: 28, strokeWidth: 4 };
     }
   }, [size]);
 
   const scoreColor = useMemo(() => getScoreColor(score), [score]);
-  const scoreBg = useMemo(() => getScoreBgColor(score), [score]);
 
   const circumference = 2 * Math.PI * sizeConfig.radius;
   const strokeDashoffset = circumference - (score / 100) * circumference;
 
-  // Determine risk level
+  // Determine risk level with dark theme colors
   const getRiskLevel = (s: number) => {
-    if (s >= 85) return { label: 'Excellent', color: 'text-green-700' };
-    if (s >= 70) return { label: 'Very Good', color: 'text-green-600' };
-    if (s >= 60) return { label: 'Good', color: 'text-blue-600' };
-    if (s >= 50) return { label: 'Moderate', color: 'text-yellow-600' };
-    return { label: 'High Risk', color: 'text-red-600' };
+    if (s >= 85) return { label: 'Excellent', color: 'text-emerald-400' };
+    if (s >= 70) return { label: 'Very Good', color: 'text-cyan-400' };
+    if (s >= 60) return { label: 'Good', color: 'text-blue-400' };
+    if (s >= 50) return { label: 'Moderate', color: 'text-yellow-400' };
+    return { label: 'High Risk', color: 'text-red-400' };
   };
 
   const risk = getRiskLevel(score);
 
   return (
-    <div className={`flex flex-col items-center gap-4 ${compact ? 'gap-2' : ''}`}>
+    <div className={`flex flex-col items-center ${compact ? 'gap-1' : 'gap-2'}`}>
       {/* Circular Score Ring */}
       <div className="relative" style={{ width: sizeConfig.diameter, height: sizeConfig.diameter }}>
         <svg
@@ -68,7 +67,7 @@ export function InvestmentScoreCard({
             fill="none"
             stroke="currentColor"
             strokeWidth={sizeConfig.strokeWidth}
-            className="text-gray-200"
+            className="text-zinc-700"
           />
           {/* Progress circle */}
           <circle
@@ -90,34 +89,31 @@ export function InvestmentScoreCard({
           <div className={`font-bold ${sizeConfig.fontSize}`} style={{ color: scoreColor }}>
             {Math.round(score)}
           </div>
-          {size !== 'sm' && <div className="text-xs text-gray-500 font-medium">/100</div>}
         </div>
       </div>
 
-      {/* Risk Level */}
+      {/* Risk Level - only show if not compact */}
       {!compact && (
-        <div className="text-center">
-          <div className={`text-sm font-semibold ${risk.color}`}>{risk.label}</div>
-        </div>
+        <div className={`text-xs font-semibold ${risk.color}`}>{risk.label}</div>
       )}
 
-      {/* Breakdown Components */}
+      {/* Breakdown Components - dark theme */}
       {showBreakdown && !compact && (
-        <div className={`w-full space-y-2 p-3 rounded-lg ${scoreBg} border border-gray-200`}>
-          <div className="text-xs font-semibold text-gray-700 mb-2">Score Breakdown</div>
+        <div className="w-full space-y-1.5 p-3 rounded-lg bg-zinc-800/50 border border-zinc-700">
+          <div className="text-xs font-semibold text-zinc-400 mb-2">Score Breakdown</div>
 
           {/* ROI Component */}
           <div className="flex items-center justify-between text-xs">
             <div className="flex items-center gap-2">
-              <span className="text-gray-600 w-12">ROI</span>
-              <div className="w-20 h-1.5 bg-gray-200 rounded-full overflow-hidden">
+              <span className="text-zinc-500 w-10">ROI</span>
+              <div className="w-16 h-1.5 bg-zinc-700 rounded-full overflow-hidden">
                 <div
-                  className="h-full bg-green-500 transition-all"
+                  className="h-full bg-emerald-500 transition-all"
                   style={{ width: `${Math.min((roi_score / 5) * 100, 100)}%` }}
                 />
               </div>
             </div>
-            <span className="font-semibold text-gray-700 w-8 text-right">
+            <span className="font-semibold text-zinc-300 w-8 text-right">
               {Math.round((roi_score / 5) * 100)}%
             </span>
           </div>
@@ -125,15 +121,15 @@ export function InvestmentScoreCard({
           {/* Cash Flow Component */}
           <div className="flex items-center justify-between text-xs">
             <div className="flex items-center gap-2">
-              <span className="text-gray-600 w-12">Cash</span>
-              <div className="w-20 h-1.5 bg-gray-200 rounded-full overflow-hidden">
+              <span className="text-zinc-500 w-10">Cash</span>
+              <div className="w-16 h-1.5 bg-zinc-700 rounded-full overflow-hidden">
                 <div
                   className="h-full bg-blue-500 transition-all"
                   style={{ width: `${Math.min((cashflow_score / 3) * 100, 100)}%` }}
                 />
               </div>
             </div>
-            <span className="font-semibold text-gray-700 w-8 text-right">
+            <span className="font-semibold text-zinc-300 w-8 text-right">
               {Math.round((cashflow_score / 3) * 100)}%
             </span>
           </div>
@@ -141,15 +137,15 @@ export function InvestmentScoreCard({
           {/* Stability Component */}
           <div className="flex items-center justify-between text-xs">
             <div className="flex items-center gap-2">
-              <span className="text-gray-600 w-12">Stab</span>
-              <div className="w-20 h-1.5 bg-gray-200 rounded-full overflow-hidden">
+              <span className="text-zinc-500 w-10">Stab</span>
+              <div className="w-16 h-1.5 bg-zinc-700 rounded-full overflow-hidden">
                 <div
                   className="h-full bg-yellow-500 transition-all"
                   style={{ width: `${Math.min((stability_score / 2) * 100, 100)}%` }}
                 />
               </div>
             </div>
-            <span className="font-semibold text-gray-700 w-8 text-right">
+            <span className="font-semibold text-zinc-300 w-8 text-right">
               {Math.round((stability_score / 2) * 100)}%
             </span>
           </div>
@@ -157,15 +153,15 @@ export function InvestmentScoreCard({
           {/* Location Component */}
           <div className="flex items-center justify-between text-xs">
             <div className="flex items-center gap-2">
-              <span className="text-gray-600 w-12">Loc</span>
-              <div className="w-20 h-1.5 bg-gray-200 rounded-full overflow-hidden">
+              <span className="text-zinc-500 w-10">Loc</span>
+              <div className="w-16 h-1.5 bg-zinc-700 rounded-full overflow-hidden">
                 <div
                   className="h-full bg-purple-500 transition-all"
                   style={{ width: `${Math.min(location_score * 100, 100)}%` }}
                 />
               </div>
             </div>
-            <span className="font-semibold text-gray-700 w-8 text-right">
+            <span className="font-semibold text-zinc-300 w-8 text-right">
               {Math.round(location_score * 100)}%
             </span>
           </div>

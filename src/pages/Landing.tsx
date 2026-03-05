@@ -694,16 +694,26 @@ export function Landing() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.6 }}
-                className="mb-6"
+                className="mb-6 flex flex-col sm:flex-row gap-3"
               >
-                <a
-                  href="#pricing"
-                  className="inline-flex items-center justify-center gap-3 px-8 py-4 min-h-[48px] bg-gradient-to-r from-emerald-500 to-cyan-500 text-white font-semibold rounded-xl hover:from-emerald-600 hover:to-cyan-600 transition-all duration-300 shadow-lg shadow-emerald-500/25"
+                <Link
+                  to="/signup"
+                  className="inline-flex items-center justify-center gap-3 px-8 py-4 min-h-[52px] bg-gradient-to-r from-emerald-500 to-cyan-500 text-white font-bold text-lg rounded-xl hover:from-emerald-600 hover:to-cyan-600 transition-all duration-300 shadow-lg shadow-emerald-500/30"
                 >
-                  Calculate My ROI Now
+                  Start Free Now
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
                   </svg>
+                </Link>
+                <a
+                  href="#how-it-works"
+                  className="inline-flex items-center justify-center gap-2 px-6 py-4 min-h-[52px] border border-zinc-700 text-zinc-300 font-medium rounded-xl hover:bg-zinc-800 transition-all"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  See How It Works
                 </a>
               </motion.div>
 
@@ -747,7 +757,7 @@ export function Landing() {
               </motion.div>
 
               <motion.div
-                className="absolute -bottom-4 -left-4 px-4 py-2 bg-zinc-800 border border-zinc-700 rounded-xl text-sm"
+                className="absolute -bottom-4 -left-4 px-4 py-2 bg-zinc-800 border border-zinc-700 rounded-xl text-sm z-10"
                 animate={{ y: [0, 8, 0] }}
                 transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut', delay: 0.5 }}
               >
@@ -762,7 +772,7 @@ export function Landing() {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 1.2 }}
-            className="mt-20 pt-12 border-t border-zinc-800 relative overflow-hidden"
+            className="mt-20 pt-12 border-t border-zinc-800 relative overflow-hidden z-20"
           >
             <p className="text-center text-xs text-zinc-500 uppercase tracking-wider mb-8">
               Trusted by innovative companies
@@ -804,7 +814,8 @@ export function Landing() {
                         <img
                           src={company.logo}
                           alt={company.name}
-                          className="h-full w-auto max-w-[140px] object-contain brightness-0 invert"
+                          className="h-full w-auto max-w-[140px] object-contain"
+                          style={{ filter: 'brightness(0) invert(1)', mixBlendMode: 'lighten' }}
                         />
                       </div>
                     ))}
@@ -1264,11 +1275,14 @@ export function Landing() {
                   ))}
                 </ul>
                 <Link
-                  to="/calculators"
-                  className="block w-full py-3 min-h-[44px] text-center border-2 border-zinc-700 text-white font-bold rounded-xl hover:bg-zinc-800 transition-colors text-sm sm:text-base"
+                  to="/signup"
+                  className="block w-full py-3.5 min-h-[44px] text-center border-2 border-zinc-700 text-white font-bold rounded-xl hover:bg-zinc-800 transition-colors text-sm sm:text-base"
                 >
-                  Start Free
+                  Get Started Free
                 </Link>
+                <p className="text-center text-[10px] sm:text-xs text-zinc-500 mt-2">
+                  No credit card required
+                </p>
               </GlassCard>
             </motion.div>
 
@@ -1279,10 +1293,10 @@ export function Landing() {
               viewport={{ once: true }}
               className="relative z-10 md:scale-105"
             >
-              <div className="absolute -top-3 sm:-top-4 left-1/2 -translate-x-1/2 px-3 sm:px-4 py-1 bg-gradient-to-r from-emerald-500 to-cyan-500 text-white text-xs sm:text-sm font-bold rounded-full z-20 whitespace-nowrap">
-                MOST POPULAR
+              <div className="absolute -top-3 sm:-top-4 left-1/2 -translate-x-1/2 px-3 sm:px-4 py-1 bg-gradient-to-r from-emerald-500 to-cyan-500 text-white text-xs sm:text-sm font-bold rounded-full z-20 whitespace-nowrap animate-pulse">
+                MOST POPULAR - 73% Choose This
               </div>
-              <div className="bg-gradient-to-b from-emerald-500 to-cyan-600 rounded-2xl p-6 sm:p-8 text-white shadow-xl shadow-emerald-500/20">
+              <div className="bg-gradient-to-b from-emerald-500 to-cyan-600 rounded-2xl p-6 sm:p-8 text-white shadow-xl shadow-emerald-500/30">
                 <h3 className="text-lg sm:text-xl font-bold mb-2">Pro</h3>
                 <p className="text-sm sm:text-base text-emerald-100 mb-4 sm:mb-6">For serious investors</p>
                 <div className="mb-4 sm:mb-6">
@@ -1308,13 +1322,13 @@ export function Landing() {
                   ))}
                 </ul>
                 <Link
-                  to="/calculators"
-                  className="block w-full py-3 min-h-[44px] text-center bg-white text-emerald-600 font-bold rounded-xl hover:bg-emerald-50 transition-colors text-sm sm:text-base"
+                  to="/signup"
+                  className="block w-full py-3.5 min-h-[44px] text-center bg-white text-emerald-600 font-bold rounded-xl hover:bg-emerald-50 transition-colors text-sm sm:text-base shadow-lg"
                 >
-                  Start 7-Day Free Trial
+                  Start Free - Upgrade Later
                 </Link>
                 <p className="text-center text-[10px] sm:text-xs text-emerald-100 mt-2 sm:mt-3">
-                  No credit card required
+                  Free 7-day trial, no credit card
                 </p>
               </div>
             </motion.div>
@@ -1344,11 +1358,14 @@ export function Landing() {
                   ))}
                 </ul>
                 <Link
-                  to="/calculators"
-                  className="block w-full py-3 min-h-[44px] text-center border-2 border-zinc-700 text-white font-bold rounded-xl hover:bg-zinc-800 transition-colors text-sm sm:text-base"
+                  to="/signup"
+                  className="block w-full py-3.5 min-h-[44px] text-center border-2 border-zinc-700 text-white font-bold rounded-xl hover:bg-zinc-800 transition-colors text-sm sm:text-base"
                 >
-                  Start Free Trial
+                  Start Enterprise Trial
                 </Link>
+                <p className="text-center text-[10px] sm:text-xs text-zinc-500 mt-2">
+                  14-day free trial included
+                </p>
               </GlassCard>
             </motion.div>
           </div>
@@ -1437,16 +1454,33 @@ export function Landing() {
             </p>
 
             <GlassCard className="p-5 sm:p-6 lg:p-8 max-w-xl mx-auto glow-emerald">
-              <p className="text-white font-bold mb-4 sm:mb-6 text-sm sm:text-base">Start your free analysis in 60 seconds:</p>
-              <a
-                href="#pricing"
-                className="block w-full py-3 sm:py-4 min-h-[48px] bg-gradient-to-r from-emerald-500 to-cyan-500 text-white text-base sm:text-lg lg:text-xl font-bold rounded-xl hover:from-emerald-600 hover:to-cyan-600 transition-all shadow-lg shadow-emerald-500/30 text-center"
+              <div className="flex items-center justify-center gap-2 mb-4">
+                <div className="flex -space-x-2">
+                  {['JK', 'MR', 'DL', 'AS'].map((initials, i) => (
+                    <div key={i} className="w-8 h-8 rounded-full bg-gradient-to-br from-emerald-500 to-cyan-500 flex items-center justify-center text-[10px] font-bold text-white border-2 border-zinc-900">
+                      {initials}
+                    </div>
+                  ))}
+                </div>
+                <span className="text-sm text-zinc-400">+47 joined today</span>
+              </div>
+              <p className="text-white font-bold mb-4 sm:mb-6 text-sm sm:text-base text-center">Start your free analysis in 60 seconds:</p>
+              <Link
+                to="/signup"
+                className="block w-full py-4 min-h-[52px] bg-gradient-to-r from-emerald-500 to-cyan-500 text-white text-lg sm:text-xl font-bold rounded-xl hover:from-emerald-600 hover:to-cyan-600 transition-all shadow-lg shadow-emerald-500/30 text-center"
               >
-                Get My Exact ROI Now →
-              </a>
-              <p className="text-zinc-500 text-xs sm:text-sm mt-3 sm:mt-4">
-                Free forever • No credit card • 60s results
-              </p>
+                Create Free Account Now
+              </Link>
+              <div className="flex flex-wrap justify-center gap-4 mt-4 text-xs text-zinc-500">
+                {['Free forever', 'No credit card', '60s results'].map((text, i) => (
+                  <span key={i} className="flex items-center gap-1">
+                    <svg className="w-3.5 h-3.5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                    {text}
+                  </span>
+                ))}
+              </div>
             </GlassCard>
 
             {/* Final Trust Stack */}

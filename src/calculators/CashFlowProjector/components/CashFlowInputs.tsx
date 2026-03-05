@@ -1,5 +1,7 @@
+import { useState, useEffect } from 'react';
 import { AdvancedSection } from '../../../components/AdvancedSection';
 import { Tooltip } from '../../../components/ui/Tooltip';
+import { parseDecimalInput } from '../../../utils/numberParsing';
 
 interface CashFlowInputs {
   monthlyRentalIncome: number;
@@ -185,6 +187,32 @@ function InputField({ label, value, onChange, prefix, suffix, tooltip }: {
   suffix?: string;
   tooltip?: string;
 }) {
+  const [localValue, setLocalValue] = useState(value === 0 ? '' : String(value));
+
+  // Sync from parent only when value changes externally
+  useEffect(() => {
+    const currentParsed = parseDecimalInput(localValue);
+    if (value !== currentParsed && !isNaN(value)) {
+      setLocalValue(value === 0 ? '' : String(value));
+    }
+  }, [value]);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value;
+    // Allow empty, numbers, decimal points, commas, and minus
+    if (val === '' || /^-?[0-9]*[.,]?[0-9]*$/.test(val)) {
+      setLocalValue(val);
+      if (val === '' || val === '-') {
+        onChange(0);
+      } else {
+        const parsed = parseDecimalInput(val);
+        if (!isNaN(parsed)) {
+          onChange(parsed);
+        }
+      }
+    }
+  };
+
   return (
     <div className="space-y-3">
       <label className="flex items-center gap-1.5 text-sm font-medium text-zinc-400">
@@ -198,18 +226,8 @@ function InputField({ label, value, onChange, prefix, suffix, tooltip }: {
         <input
           type="text"
           inputMode="decimal"
-          value={value === 0 ? '' : value}
-          onChange={e => {
-            const val = e.target.value;
-            if (val === '' || val === '-') {
-              onChange(0);
-            } else {
-              const parsed = parseFloat(val);
-              if (!isNaN(parsed)) {
-                onChange(parsed);
-              }
-            }
-          }}
+          value={localValue}
+          onChange={handleChange}
           placeholder="0"
           className={`w-full bg-zinc-800 border border-zinc-700 rounded-2xl py-4 text-[16px] font-bold text-white placeholder:text-zinc-500 outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all tabular-nums ${prefix ? 'pl-12 pr-6' : suffix ? 'pl-6 pr-12' : 'px-6'}`}
         />

@@ -9,9 +9,15 @@ import { CalculatorHeader } from './components/layout/CalculatorHeader';
 import { Footer } from './components/layout/Footer';
 import { Landing } from './pages/Landing';
 import { Pricing } from './pages/Pricing';
+import { CalculatorsGuide } from './pages/CalculatorsGuide';
 import { Terms } from './pages/Terms';
 import { Privacy } from './pages/Privacy';
 import { Contact } from './pages/Contact';
+import { Login } from './pages/Login';
+import { Signup } from './pages/Signup';
+import { ResetPassword } from './pages/ResetPassword';
+import { useAuth } from './lib/auth-context';
+import { ProtectedRoute } from './components/ProtectedRoute';
 
 const ACTIVE_CALCULATOR_KEY = 'baliinvest_active_calculator';
 const ACTIVE_VIEW_KEY = 'baliinvest_active_view';
@@ -133,24 +139,49 @@ function CalculatorApp() {
   );
 }
 
-function App() {
-  return (
-    <Router>
+function AppRoutes() {
+  const { isPasswordRecovery } = useAuth();
+
+  // Redirect to reset password page when password recovery link is clicked
+  if (isPasswordRecovery) {
+    return (
       <div className="flex flex-col min-h-screen">
         <Navigation />
         <main className="flex-1">
-          <Routes>
-            <Route path="/" element={<Landing />} />
-            <Route path="/calculators" element={<CalculatorApp />} />
-            <Route path="/pricing" element={<Pricing />} />
-            <Route path="/terms" element={<Terms />} />
-            <Route path="/privacy" element={<Privacy />} />
-            <Route path="/contact" element={<Contact />} />
-            <Route path="*" element={<Landing />} />
-          </Routes>
+          <ResetPassword />
         </main>
         <Footer />
       </div>
+    );
+  }
+
+  return (
+    <div className="flex flex-col min-h-screen">
+      <Navigation />
+      <main className="flex-1">
+        <Routes>
+          <Route path="/" element={<Landing />} />
+          <Route path="/calculators" element={<ProtectedRoute><CalculatorApp /></ProtectedRoute>} />
+          <Route path="/features" element={<CalculatorsGuide />} />
+          <Route path="/pricing" element={<Pricing />} />
+          <Route path="/terms" element={<Terms />} />
+          <Route path="/privacy" element={<Privacy />} />
+          <Route path="/contact" element={<Contact />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
+          <Route path="*" element={<Landing />} />
+        </Routes>
+      </main>
+      <Footer />
+    </div>
+  );
+}
+
+function App() {
+  return (
+    <Router>
+      <AppRoutes />
     </Router>
   );
 }

@@ -2,15 +2,69 @@ export const config = {
   runtime: 'edge',
 };
 
+// Simple in-memory rate limiter for edge runtime
+const rateLimitStore = new Map<string, { count: number; resetTime: number }>();
+
+function checkRateLimit(ip: string): { allowed: boolean; remaining: number } {
+  const now = Date.now();
+  const windowMs = 60 * 1000; // 1 minute
+  const maxRequests = 10; // 10 requests per minute
+
+  const entry = rateLimitStore.get(ip);
+
+  if (!entry || entry.resetTime < now) {
+    rateLimitStore.set(ip, { count: 1, resetTime: now + windowMs });
+    return { allowed: true, remaining: maxRequests - 1 };
+  }
+
+  if (entry.count >= maxRequests) {
+    return { allowed: false, remaining: 0 };
+  }
+
+  entry.count++;
+  return { allowed: true, remaining: maxRequests - entry.count };
+}
+
+// Security headers for all responses
+const securityHeaders = {
+  'Content-Type': 'application/json',
+  'X-Content-Type-Options': 'nosniff',
+  'X-Frame-Options': 'DENY',
+};
+
 export default async function handler(request: Request) {
   if (request.method !== 'POST') {
     return new Response(JSON.stringify({ error: 'Method not allowed' }), {
       status: 405,
-      headers: { 'Content-Type': 'application/json' },
+      headers: securityHeaders,
     });
   }
 
-  const apiToken = process.env.POSTMARK_API_TOKEN || 'afe358ea-c1ad-48fa-96f0-fdd0e7c3ec26';
+  // Rate limiting
+  const clientIp = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ||
+                   request.headers.get('x-real-ip') ||
+                   'unknown';
+
+  const rateCheck = checkRateLimit(clientIp);
+  if (!rateCheck.allowed) {
+    return new Response(JSON.stringify({ error: 'Too many requests. Please try again later.' }), {
+      status: 429,
+      headers: {
+        ...securityHeaders,
+        'Retry-After': '60',
+        'X-RateLimit-Remaining': '0',
+      },
+    });
+  }
+
+  const apiToken = process.env.POSTMARK_API_TOKEN;
+
+  if (!apiToken) {
+    return new Response(JSON.stringify({ error: 'Email service not configured' }), {
+      status: 500,
+      headers: securityHeaders,
+    });
+  }
 
   try {
     const { email, pdfBase64, fileName, reportType } = await request.json();
@@ -18,7 +72,24 @@ export default async function handler(request: Request) {
     if (!email || !pdfBase64 || !fileName) {
       return new Response(JSON.stringify({ error: 'Missing required fields' }), {
         status: 400,
-        headers: { 'Content-Type': 'application/json' },
+        headers: securityHeaders,
+      });
+    }
+
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email) || email.length > 254) {
+      return new Response(JSON.stringify({ error: 'Invalid email address' }), {
+        status: 400,
+        headers: securityHeaders,
+      });
+    }
+
+    // Validate filename (prevent path traversal)
+    if (fileName.includes('..') || fileName.includes('/') || fileName.includes('\\')) {
+      return new Response(JSON.stringify({ error: 'Invalid filename' }), {
+        status: 400,
+        headers: securityHeaders,
       });
     }
 
@@ -66,18 +137,21 @@ export default async function handler(request: Request) {
     if (response.ok) {
       return new Response(JSON.stringify({ success: true, id: data.MessageID }), {
         status: 200,
-        headers: { 'Content-Type': 'application/json' },
+        headers: securityHeaders,
       });
     } else {
-      return new Response(JSON.stringify({ error: 'Failed to send email', details: data }), {
+      // Don't expose internal error details
+      console.error('Postmark error:', data);
+      return new Response(JSON.stringify({ error: 'Failed to send email' }), {
         status: 500,
-        headers: { 'Content-Type': 'application/json' },
+        headers: securityHeaders,
       });
     }
   } catch (err) {
+    console.error('Email API error:', err);
     return new Response(JSON.stringify({ error: 'Internal server error' }), {
       status: 500,
-      headers: { 'Content-Type': 'application/json' },
+      headers: securityHeaders,
     });
   }
 }

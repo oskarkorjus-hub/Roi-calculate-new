@@ -4,7 +4,7 @@ import { UsageBadge } from '../../components/ui/UsageBadge';
 import { SaveToPortfolioButton } from '../../components/SaveToPortfolioButton';
 import { ReportPreviewModal } from '../../components/ui/ReportPreviewModal';
 import { generateNPVReport } from '../../hooks/useReportGenerator';
-import { formatCurrency } from '../../utils/numberParsing';
+import { formatCurrency, parseDecimalInput } from '../../utils/numberParsing';
 
 interface CashFlow {
   year: number;
@@ -58,7 +58,7 @@ export function NPVCalculator() {
     profitabilityIndex,
   };
 
-  const symbol = symbols[currency];
+  const symbol = symbols[currency] || 'Rp';
 
   // Generate report data
   const reportData = useMemo(() => {
@@ -83,7 +83,7 @@ export function NPVCalculator() {
   }, [cashFlows, discountRate, result, symbol, totalInflows, totalOutflows]);
 
   const handleCashFlowChange = (index: number, amount: string) => {
-    const numAmount = parseFloat(amount) || 0;
+    const numAmount = parseDecimalInput(amount) || 0;
     const year = cashFlows[index].year;
     const discountedValue = calculateDiscountedValue(numAmount, year, discountRate);
 
@@ -239,10 +239,11 @@ export function NPVCalculator() {
                   Discount Rate (%) - Required Rate of Return
                 </label>
                 <input
-                  type="number"
-                  step={0.1}
-                  value={discountRate}
-                  onChange={(e) => handleDiscountRateChange(parseFloat(e.target.value) || 0)}
+                  type="text"
+                  inputMode="decimal"
+                  value={discountRate === 0 ? '' : discountRate}
+                  onChange={(e) => handleDiscountRateChange(parseDecimalInput(e.target.value) || 0)}
+                  placeholder="0"
                   className="w-full bg-zinc-800 border border-zinc-700 rounded-2xl px-6 py-4 text-[16px] font-bold text-white placeholder:text-zinc-500 outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all tabular-nums"
                 />
                 <p className="text-xs text-zinc-500">
@@ -288,9 +289,11 @@ export function NPVCalculator() {
                           </td>
                           <td className="px-4 py-3">
                             <input
-                              type="number"
-                              value={cf.amount}
+                              type="text"
+                              inputMode="decimal"
+                              value={cf.amount === 0 ? '' : cf.amount}
                               onChange={(e) => handleCashFlowChange(idx, e.target.value)}
+                              placeholder="0"
                               className="w-full bg-zinc-800 border border-zinc-700 rounded-2xl px-4 py-3 text-[15px] font-bold text-white placeholder:text-zinc-500 outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all tabular-nums"
                             />
                           </td>

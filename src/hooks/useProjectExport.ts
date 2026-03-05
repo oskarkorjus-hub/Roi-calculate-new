@@ -1,5 +1,5 @@
 import { useCallback, useState } from 'react';
-import { usePortfolio } from './usePortfolio';
+import { usePortfolio } from '../lib/portfolio-context';
 import { createProjectSummary } from '../utils/projectMetrics';
 import { sendPDFByEmail } from '../utils/sendEmail';
 

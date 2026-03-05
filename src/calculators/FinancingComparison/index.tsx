@@ -1,10 +1,10 @@
-import { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback, useMemo, useEffect } from 'react';
 import { Toast } from '../../components/ui/Toast';
 import { UsageBadge } from '../../components/ui/UsageBadge';
 import { SaveToPortfolioButton } from '../../components/SaveToPortfolioButton';
 import { ReportPreviewModal } from '../../components/ui/ReportPreviewModal';
 import { generateFinancingReport } from '../../hooks/useReportGenerator';
-import { formatCurrency } from '../../utils/numberParsing';
+import { formatCurrency, parseDecimalInput } from '../../utils/numberParsing';
 import { Tooltip } from '../../components/ui/Tooltip';
 import { LoanComparisonChart } from './components/LoanComparisonChart';
 import { AmortizationTable } from './components/AmortizationTable';
@@ -251,7 +251,7 @@ export function FinancingComparison() {
   }, [inputs]);
 
   const loanResults = calculateLoans();
-  const symbol = symbols[inputs.currency];
+  const symbol = symbols[inputs.currency] || 'Rp';
 
   // Find winner
   const winner = loanResults.find(l => l.isWinner);
@@ -287,7 +287,7 @@ export function FinancingComparison() {
     setInputs(prev => ({
       ...prev,
       [field]: typeof value === 'string' && field !== 'currency'
-        ? parseFloat(value) || 0
+        ? parseDecimalInput(value) || 0
         : value,
     }));
   };
@@ -300,7 +300,7 @@ export function FinancingComparison() {
           ? {
               ...loan,
               [field]: typeof value === 'string' && !['name', 'lenderType', 'paymentSchedule'].includes(field)
-                ? parseFloat(value) || 0
+                ? parseDecimalInput(value) || 0
                 : value,
             }
           : loan
@@ -579,6 +579,30 @@ function InputField({ label, value, onChange, prefix, suffix, tooltip }: {
   suffix?: string;
   tooltip?: string;
 }) {
+  const [localValue, setLocalValue] = useState(value === 0 ? '' : String(value));
+
+  useEffect(() => {
+    const currentParsed = parseDecimalInput(localValue);
+    if (value !== currentParsed && !isNaN(value)) {
+      setLocalValue(value === 0 ? '' : String(value));
+    }
+  }, [value]);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value;
+    if (val === '' || /^-?[0-9]*[.,]?[0-9]*$/.test(val)) {
+      setLocalValue(val);
+      if (val === '' || val === '-') {
+        onChange(0);
+      } else {
+        const parsed = parseDecimalInput(val);
+        if (!isNaN(parsed)) {
+          onChange(parsed);
+        }
+      }
+    }
+  };
+
   return (
     <div className="space-y-3">
       <label className="flex items-center gap-1.5 text-sm font-medium text-zinc-400">
@@ -592,18 +616,8 @@ function InputField({ label, value, onChange, prefix, suffix, tooltip }: {
         <input
           type="text"
           inputMode="decimal"
-          value={value === 0 ? '' : value}
-          onChange={e => {
-            const val = e.target.value;
-            if (val === '' || val === '-') {
-              onChange(0);
-            } else {
-              const parsed = parseFloat(val);
-              if (!isNaN(parsed)) {
-                onChange(parsed);
-              }
-            }
-          }}
+          value={localValue}
+          onChange={handleChange}
           placeholder="0"
           className={`w-full bg-zinc-800 border border-zinc-700 rounded-2xl py-4 text-[16px] font-bold text-white placeholder:text-zinc-500 outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-all tabular-nums ${prefix ? 'pl-12 pr-6' : suffix ? 'pl-6 pr-16' : 'px-6'}`}
         />

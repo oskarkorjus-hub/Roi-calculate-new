@@ -6,6 +6,7 @@ interface TierContextType {
   tier: UserTier;
   limits: TierLimits;
   usage: UsageData;
+  loading: boolean;
   canUseCalculator: () => boolean;
   remainingCalculations: () => number;
   incrementUsage: () => boolean;

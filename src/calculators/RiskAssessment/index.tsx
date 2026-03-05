@@ -1,10 +1,10 @@
-import { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback, useMemo, useEffect } from 'react';
 import { Toast } from '../../components/ui/Toast';
 import { UsageBadge } from '../../components/ui/UsageBadge';
 import { SaveToPortfolioButton } from '../../components/SaveToPortfolioButton';
 import { ReportPreviewModal } from '../../components/ui/ReportPreviewModal';
 import { generateRiskAssessmentReport } from '../../hooks/useReportGenerator';
-import { formatCurrency } from '../../utils/numberParsing';
+import { formatCurrency, parseDecimalInput } from '../../utils/numberParsing';
 import { Tooltip } from '../../components/ui/Tooltip';
 import { RiskScorePanel } from './components/RiskScorePanel';
 import { RiskBreakdown } from './components/RiskBreakdown';
@@ -508,7 +508,7 @@ export function RiskAssessment() {
     ];
   }, [inputs, riskScore]);
 
-  const symbol = symbols[inputs.currency];
+  const symbol = symbols[inputs.currency] || 'Rp';
   const benchmark = MARKET_BENCHMARKS[inputs.propertyType];
   const riskDiff = riskScore.overall - benchmark;
 
@@ -1054,6 +1054,30 @@ function InputField({ label, value, onChange, prefix, suffix, tooltip }: {
   suffix?: string;
   tooltip?: string;
 }) {
+  const [localValue, setLocalValue] = useState(value === 0 ? '' : String(value));
+
+  useEffect(() => {
+    const currentParsed = parseDecimalInput(localValue);
+    if (value !== currentParsed && !isNaN(value)) {
+      setLocalValue(value === 0 ? '' : String(value));
+    }
+  }, [value]);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value;
+    if (val === '' || /^-?[0-9]*[.,]?[0-9]*$/.test(val)) {
+      setLocalValue(val);
+      if (val === '' || val === '-') {
+        onChange(0);
+      } else {
+        const parsed = parseDecimalInput(val);
+        if (!isNaN(parsed)) {
+          onChange(parsed);
+        }
+      }
+    }
+  };
+
   return (
     <div>
       <label className="flex items-center gap-1 text-xs text-zinc-400 mb-1">
@@ -1067,18 +1091,8 @@ function InputField({ label, value, onChange, prefix, suffix, tooltip }: {
         <input
           type="text"
           inputMode="decimal"
-          value={value === 0 ? '' : value}
-          onChange={e => {
-            const val = e.target.value;
-            if (val === '' || val === '-') {
-              onChange(0);
-            } else {
-              const parsed = parseFloat(val);
-              if (!isNaN(parsed)) {
-                onChange(parsed);
-              }
-            }
-          }}
+          value={localValue}
+          onChange={handleChange}
           placeholder="0"
           className={`w-full bg-zinc-800 border border-zinc-700 rounded-lg py-2 text-sm text-white ${
             prefix ? 'pl-10 pr-3' : suffix ? 'pl-3 pr-12' : 'px-3'

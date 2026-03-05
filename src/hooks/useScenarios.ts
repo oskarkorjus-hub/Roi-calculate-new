@@ -1,7 +1,7 @@
 import { useState, useCallback } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import type { ProjectScenario, PortfolioProject } from '../types/portfolio';
-import { usePortfolio } from './usePortfolio';
+import { usePortfolio } from '../lib/portfolio-context';
 import { calculateInvestmentScore } from '../utils/investmentScoring';
 
 export function useScenarios() {

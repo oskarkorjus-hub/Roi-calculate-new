@@ -4,7 +4,7 @@ import { UsageBadge } from '../../components/ui/UsageBadge';
 import { SaveToPortfolioButton } from '../../components/SaveToPortfolioButton';
 import { ReportPreviewModal } from '../../components/ui/ReportPreviewModal';
 import { generateDevBudgetReport } from '../../hooks/useReportGenerator';
-import { formatCurrency } from '../../utils/numberParsing';
+import { formatCurrency, parseDecimalInput } from '../../utils/numberParsing';
 import { Tooltip } from '../../components/ui/Tooltip';
 import { BudgetChart } from './components/BudgetChart';
 import { TimelineGantt } from './components/TimelineGantt';
@@ -173,7 +173,7 @@ export function DevBudgetTracker() {
     };
   }, [inputs]);
 
-  const symbol = symbols[inputs.currency];
+  const symbol = symbols[inputs.currency] || 'Rp';
 
   // Report data
   const reportData = useMemo(() => {
@@ -207,7 +207,7 @@ export function DevBudgetTracker() {
     setInputs(prev => ({
       ...prev,
       [field]: typeof value === 'string' && !['projectName', 'projectStartDate', 'currency'].includes(field)
-        ? parseFloat(value) || 0
+        ? parseDecimalInput(value) || 0
         : value,
     }));
   };
@@ -409,20 +409,22 @@ export function DevBudgetTracker() {
             <div>
               <label className="text-xs text-zinc-400 mb-1 block">Total Duration (months)</label>
               <input
-                type="number"
-                value={inputs.totalProjectDuration}
+                type="text"
+                inputMode="decimal"
+                value={inputs.totalProjectDuration === 0 ? '' : inputs.totalProjectDuration}
                 onChange={(e) => handleInputChange('totalProjectDuration', e.target.value)}
+                placeholder="0"
                 className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2 text-sm text-white"
               />
             </div>
             <div>
               <label className="text-xs text-zinc-400 mb-1 block">Current Month</label>
               <input
-                type="number"
-                value={inputs.currentMonth}
+                type="text"
+                inputMode="decimal"
+                value={inputs.currentMonth === 0 ? '' : inputs.currentMonth}
                 onChange={(e) => handleInputChange('currentMonth', e.target.value)}
-                min={1}
-                max={inputs.totalProjectDuration}
+                placeholder="0"
                 className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2 text-sm text-white"
               />
             </div>
@@ -611,11 +613,11 @@ export function DevBudgetTracker() {
                     </div>
                     <div className="w-full sm:w-24">
                       <input
-                        type="number"
-                        value={phase.completionPercent}
-                        onChange={(e) => handlePhaseChange(phase.id, 'completionPercent', parseInt(e.target.value) || 0)}
-                        min={0}
-                        max={100}
+                        type="text"
+                        inputMode="decimal"
+                        value={phase.completionPercent === 0 ? '' : phase.completionPercent}
+                        onChange={(e) => handlePhaseChange(phase.id, 'completionPercent', parseDecimalInput(e.target.value) || 0)}
+                        placeholder="0"
                         className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-2 py-1 text-xs text-white text-center"
                       />
                       <p className="text-[10px] text-zinc-500 text-center mt-0.5">% complete</p>
@@ -682,7 +684,7 @@ function BudgetRow({
             if (val === '' || val === '-') {
               onBudgetChange(0);
             } else {
-              const parsed = parseFloat(val);
+              const parsed = parseDecimalInput(val);
               if (!isNaN(parsed)) {
                 onBudgetChange(parsed);
               }
@@ -702,7 +704,7 @@ function BudgetRow({
             if (val === '' || val === '-') {
               onActualChange(0);
             } else {
-              const parsed = parseFloat(val);
+              const parsed = parseDecimalInput(val);
               if (!isNaN(parsed)) {
                 onActualChange(parsed);
               }

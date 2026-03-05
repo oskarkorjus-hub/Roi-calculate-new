@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
 import type { PortfolioProject, ProjectScenario } from '../types/portfolio';
-import { usePortfolio } from '../hooks/usePortfolio';
+import { usePortfolio } from '../lib/portfolio-context';
 import { useScenarios } from '../hooks/useScenarios';
 import { ScenarioComparatorTable } from '../components/ScenarioComparatorTable';
 import { ScenarioComparisonCharts } from '../components/ScenarioComparisonCharts';

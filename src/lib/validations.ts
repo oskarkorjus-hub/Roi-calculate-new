@@ -8,12 +8,25 @@ export const emailSchema = z
   .string()
   .min(1, 'Email is required')
   .email('Invalid email address')
-  .max(255, 'Email is too long');
+  .max(254, 'Email is too long')
+  .refine((email) => {
+    // Additional email validation
+    const [localPart, domain] = email.split('@');
+    if (!localPart || !domain) return false;
+    if (localPart.length > 64) return false;
+    if (/\.\./.test(email)) return false;
+    if (localPart.startsWith('.') || localPart.endsWith('.')) return false;
+    return true;
+  }, 'Invalid email format');
 
 export const passwordSchema = z
   .string()
   .min(8, 'Password must be at least 8 characters')
-  .max(128, 'Password is too long');
+  .max(128, 'Password is too long')
+  .refine((password) => /[A-Z]/.test(password), 'Password must contain at least one uppercase letter')
+  .refine((password) => /[a-z]/.test(password), 'Password must contain at least one lowercase letter')
+  .refine((password) => /[0-9]/.test(password), 'Password must contain at least one number')
+  .refine((password) => !/^(password|123456|qwerty)/i.test(password), 'Password is too common');
 
 export const nameSchema = z
   .string()

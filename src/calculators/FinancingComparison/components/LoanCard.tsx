@@ -81,8 +81,9 @@ export function LoanCard({ loan, result, symbol, currency, onLoanChange, lenderL
             <div className="relative">
               <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-zinc-500">{symbol}</span>
               <input
-                type="number"
-                value={loan.amount}
+                type="text"
+                inputMode="decimal"
+                value={loan.amount === 0 ? '' : loan.amount}
                 onChange={(e) => onLoanChange(loan.id, 'amount', e.target.value)}
                 placeholder="Auto"
                 className="w-full bg-zinc-800 border border-zinc-700 rounded-lg pl-10 pr-3 py-2 text-sm text-white"
@@ -93,10 +94,11 @@ export function LoanCard({ loan, result, symbol, currency, onLoanChange, lenderL
             <label className="text-xs text-zinc-400 mb-1 block">Interest Rate</label>
             <div className="relative">
               <input
-                type="number"
-                value={loan.interestRate}
+                type="text"
+                inputMode="decimal"
+                value={loan.interestRate === 0 ? '' : loan.interestRate}
                 onChange={(e) => onLoanChange(loan.id, 'interestRate', e.target.value)}
-                step="0.1"
+                placeholder="0"
                 className="w-full bg-zinc-800 border border-zinc-700 rounded-lg pl-3 pr-8 py-2 text-sm text-white"
               />
               <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-zinc-500">%</span>
@@ -106,9 +108,11 @@ export function LoanCard({ loan, result, symbol, currency, onLoanChange, lenderL
             <label className="text-xs text-zinc-400 mb-1 block">Term</label>
             <div className="relative">
               <input
-                type="number"
-                value={loan.term}
+                type="text"
+                inputMode="decimal"
+                value={loan.term === 0 ? '' : loan.term}
                 onChange={(e) => onLoanChange(loan.id, 'term', e.target.value)}
+                placeholder="0"
                 className="w-full bg-zinc-800 border border-zinc-700 rounded-lg pl-3 pr-12 py-2 text-sm text-white"
               />
               <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-zinc-500">years</span>
@@ -121,10 +125,11 @@ export function LoanCard({ loan, result, symbol, currency, onLoanChange, lenderL
             </label>
             <div className="relative">
               <input
-                type="number"
-                value={loan.originationFeePercent}
+                type="text"
+                inputMode="decimal"
+                value={loan.originationFeePercent === 0 ? '' : loan.originationFeePercent}
                 onChange={(e) => onLoanChange(loan.id, 'originationFeePercent', e.target.value)}
-                step="0.1"
+                placeholder="0"
                 className="w-full bg-zinc-800 border border-zinc-700 rounded-lg pl-3 pr-8 py-2 text-sm text-white"
               />
               <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-zinc-500">%</span>
@@ -143,9 +148,11 @@ export function LoanCard({ loan, result, symbol, currency, onLoanChange, lenderL
               </label>
               <div className="relative">
                 <input
-                  type="number"
-                  value={loan.interestOnlyPeriod}
+                  type="text"
+                  inputMode="decimal"
+                  value={loan.interestOnlyPeriod === 0 ? '' : loan.interestOnlyPeriod}
                   onChange={(e) => onLoanChange(loan.id, 'interestOnlyPeriod', e.target.value)}
+                  placeholder="0"
                   className="w-full bg-zinc-800 border border-zinc-700 rounded-lg pl-3 pr-14 py-2 text-sm text-white"
                 />
                 <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-zinc-500">months</span>
@@ -158,10 +165,11 @@ export function LoanCard({ loan, result, symbol, currency, onLoanChange, lenderL
               </label>
               <div className="relative">
                 <input
-                  type="number"
-                  value={loan.prepaymentPenaltyPercent}
+                  type="text"
+                  inputMode="decimal"
+                  value={loan.prepaymentPenaltyPercent === 0 ? '' : loan.prepaymentPenaltyPercent}
                   onChange={(e) => onLoanChange(loan.id, 'prepaymentPenaltyPercent', e.target.value)}
-                  step="0.1"
+                  placeholder="0"
                   className="w-full bg-zinc-800 border border-zinc-700 rounded-lg pl-3 pr-8 py-2 text-sm text-white"
                 />
                 <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-zinc-500">%</span>

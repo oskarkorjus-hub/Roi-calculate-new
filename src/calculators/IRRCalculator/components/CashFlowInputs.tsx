@@ -62,8 +62,9 @@ export function CashFlowInputs({
                   </td>
                   <td className="px-4 py-3">
                     <input
-                      type="number"
-                      value={cf.amount}
+                      type="text"
+                      inputMode="decimal"
+                      value={cf.amount === 0 ? '' : cf.amount}
                       onChange={(e) => onCashFlowChange(idx, 'amount', e.target.value)}
                       className="w-full bg-zinc-800 border border-zinc-700 rounded-2xl px-4 py-3 text-[15px] font-bold text-white placeholder:text-zinc-500 outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all tabular-nums"
                       placeholder="0"

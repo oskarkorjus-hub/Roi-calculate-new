@@ -1,10 +1,10 @@
-import { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback, useMemo, useEffect } from 'react';
 import { Toast } from '../../components/ui/Toast';
 import { UsageBadge } from '../../components/ui/UsageBadge';
 import { SaveToPortfolioButton } from '../../components/SaveToPortfolioButton';
 import { ReportPreviewModal } from '../../components/ui/ReportPreviewModal';
 import { generateIndonesiaTaxReport } from '../../hooks/useReportGenerator';
-import { formatCurrency } from '../../utils/numberParsing';
+import { formatCurrency, parseDecimalInput } from '../../utils/numberParsing';
 import { AdvancedSection } from '../../components/AdvancedSection';
 import { Tooltip } from '../../components/ui/Tooltip';
 import { TaxResults } from './components/TaxResults';
@@ -340,7 +340,7 @@ export function IndonesiaTaxOptimizer() {
   }, [inputs]);
 
   const result = calculateTax();
-  const symbol = symbols[inputs.currency];
+  const symbol = symbols[inputs.currency] || 'Rp';
 
   // Generate report data for PDF export
   const reportData = useMemo(() => {
@@ -351,7 +351,7 @@ export function IndonesiaTaxOptimizer() {
     setInputs(prev => ({
       ...prev,
       [field]: typeof value === 'string' && field !== 'ownershipStructure' && field !== 'currency'
-        ? parseFloat(value) || 0
+        ? parseDecimalInput(value) || 0
         : value,
     }));
   };
@@ -832,6 +832,30 @@ function InputField({ label, value, onChange, prefix, suffix, tooltip }: {
   suffix?: string;
   tooltip?: string;
 }) {
+  const [localValue, setLocalValue] = useState(value === 0 ? '' : String(value));
+
+  useEffect(() => {
+    const currentParsed = parseDecimalInput(localValue);
+    if (value !== currentParsed && !isNaN(value)) {
+      setLocalValue(value === 0 ? '' : String(value));
+    }
+  }, [value]);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value;
+    if (val === '' || /^-?[0-9]*[.,]?[0-9]*$/.test(val)) {
+      setLocalValue(val);
+      if (val === '' || val === '-') {
+        onChange(0);
+      } else {
+        const parsed = parseDecimalInput(val);
+        if (!isNaN(parsed)) {
+          onChange(parsed);
+        }
+      }
+    }
+  };
+
   return (
     <div className="space-y-3">
       <label className="flex items-center gap-1.5 text-sm font-medium text-zinc-400">
@@ -845,18 +869,8 @@ function InputField({ label, value, onChange, prefix, suffix, tooltip }: {
         <input
           type="text"
           inputMode="decimal"
-          value={value === 0 ? '' : value}
-          onChange={e => {
-            const val = e.target.value;
-            if (val === '' || val === '-') {
-              onChange(0);
-            } else {
-              const parsed = parseFloat(val);
-              if (!isNaN(parsed)) {
-                onChange(parsed);
-              }
-            }
-          }}
+          value={localValue}
+          onChange={handleChange}
           placeholder="0"
           className={`w-full bg-zinc-800 border border-zinc-700 rounded-2xl py-4 text-[16px] font-bold text-white placeholder:text-zinc-500 outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500 transition-all tabular-nums ${prefix ? 'pl-12 pr-6' : suffix ? 'pl-6 pr-16' : 'px-6'}`}
         />

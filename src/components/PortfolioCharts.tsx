@@ -19,6 +19,23 @@ interface PortfolioChartsProps {
   projects: PortfolioProject[];
 }
 
+// Custom tooltip for dark theme
+const CustomTooltip = ({ active, payload, label }: any) => {
+  if (active && payload && payload.length) {
+    return (
+      <div className="bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2 shadow-lg">
+        <p className="text-zinc-300 text-sm font-medium">{label}</p>
+        {payload.map((entry: any, index: number) => (
+          <p key={index} className="text-emerald-400 text-sm">
+            {entry.name}: {entry.value}
+          </p>
+        ))}
+      </div>
+    );
+  }
+  return null;
+};
+
 export function PortfolioCharts({ projects }: PortfolioChartsProps) {
   // Chart 1: ROI Distribution (Histogram)
   const roiDistribution = useMemo(() => {
@@ -92,21 +109,21 @@ export function PortfolioCharts({ projects }: PortfolioChartsProps) {
 
   return (
     <div className="space-y-6">
-      <h2 className="text-xl font-bold text-gray-900">Portfolio Analytics</h2>
+      <h2 className="text-xl font-bold text-white">Portfolio Analytics</h2>
 
       {/* Charts Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* ROI Distribution */}
         {roiDistribution.length > 0 && (
-          <div className="bg-white rounded-lg border border-gray-200 p-4">
-            <h3 className="font-semibold text-gray-900 mb-4">ROI Distribution</h3>
+          <div className="bg-zinc-900 rounded-xl border border-zinc-800 p-4">
+            <h3 className="font-semibold text-white mb-4">ROI Distribution</h3>
             <ResponsiveContainer width="100%" height={250}>
               <BarChart data={roiDistribution}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="range" />
-                <YAxis />
-                <Tooltip />
-                <Bar dataKey="count" fill="#3b82f6" />
+                <CartesianGrid strokeDasharray="3 3" stroke="#3f3f46" />
+                <XAxis dataKey="range" stroke="#a1a1aa" fontSize={12} />
+                <YAxis stroke="#a1a1aa" fontSize={12} />
+                <Tooltip content={<CustomTooltip />} />
+                <Bar dataKey="count" fill="#3b82f6" radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </div>
@@ -114,15 +131,15 @@ export function PortfolioCharts({ projects }: PortfolioChartsProps) {
 
         {/* Cash Flow by Project */}
         {cashFlowData.length > 0 && (
-          <div className="bg-white rounded-lg border border-gray-200 p-4">
-            <h3 className="font-semibold text-gray-900 mb-4">Top Cash Flow Projects</h3>
+          <div className="bg-zinc-900 rounded-xl border border-zinc-800 p-4">
+            <h3 className="font-semibold text-white mb-4">Top Cash Flow Projects</h3>
             <ResponsiveContainer width="100%" height={250}>
               <BarChart data={cashFlowData} layout="vertical">
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis type="number" />
-                <YAxis dataKey="name" type="category" width={100} fontSize={12} />
-                <Tooltip />
-                <Bar dataKey="cashFlow" fill="#10b981" />
+                <CartesianGrid strokeDasharray="3 3" stroke="#3f3f46" />
+                <XAxis type="number" stroke="#a1a1aa" fontSize={12} />
+                <YAxis dataKey="name" type="category" width={100} fontSize={12} stroke="#a1a1aa" />
+                <Tooltip content={<CustomTooltip />} />
+                <Bar dataKey="cashFlow" fill="#10b981" radius={[0, 4, 4, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </div>
@@ -130,8 +147,8 @@ export function PortfolioCharts({ projects }: PortfolioChartsProps) {
 
         {/* Investment Breakdown by Strategy */}
         {strategyBreakdown.length > 0 && (
-          <div className="bg-white rounded-lg border border-gray-200 p-4">
-            <h3 className="font-semibold text-gray-900 mb-4">Investment by Strategy</h3>
+          <div className="bg-zinc-900 rounded-xl border border-zinc-800 p-4">
+            <h3 className="font-semibold text-white mb-4">Investment by Strategy</h3>
             <ResponsiveContainer width="100%" height={250}>
               <PieChart>
                 <Pie
@@ -143,12 +160,23 @@ export function PortfolioCharts({ projects }: PortfolioChartsProps) {
                   outerRadius={80}
                   fill="#8884d8"
                   dataKey="value"
+                  stroke="#18181b"
+                  strokeWidth={2}
                 >
                   {strategyBreakdown.map((_, index) => (
                     <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                   ))}
                 </Pie>
-                <Tooltip formatter={(value) => `$${value}M`} />
+                <Tooltip
+                  formatter={(value) => `$${value}M`}
+                  contentStyle={{
+                    backgroundColor: '#27272a',
+                    border: '1px solid #3f3f46',
+                    borderRadius: '8px',
+                    color: '#fff'
+                  }}
+                  labelStyle={{ color: '#a1a1aa' }}
+                />
               </PieChart>
             </ResponsiveContainer>
           </div>
@@ -156,14 +184,23 @@ export function PortfolioCharts({ projects }: PortfolioChartsProps) {
 
         {/* Score vs ROI Scatter */}
         {scoreVsROI.length > 0 && (
-          <div className="bg-white rounded-lg border border-gray-200 p-4">
-            <h3 className="font-semibold text-gray-900 mb-4">Score vs ROI Analysis</h3>
+          <div className="bg-zinc-900 rounded-xl border border-zinc-800 p-4">
+            <h3 className="font-semibold text-white mb-4">Score vs ROI Analysis</h3>
             <ResponsiveContainer width="100%" height={250}>
               <ScatterChart margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="score" name="Score" type="number" />
-                <YAxis dataKey="roi" name="ROI %" type="number" />
-                <Tooltip cursor={{ strokeDasharray: '3 3' }} />
+                <CartesianGrid strokeDasharray="3 3" stroke="#3f3f46" />
+                <XAxis dataKey="score" name="Score" type="number" stroke="#a1a1aa" fontSize={12} />
+                <YAxis dataKey="roi" name="ROI %" type="number" stroke="#a1a1aa" fontSize={12} />
+                <Tooltip
+                  cursor={{ strokeDasharray: '3 3', stroke: '#71717a' }}
+                  contentStyle={{
+                    backgroundColor: '#27272a',
+                    border: '1px solid #3f3f46',
+                    borderRadius: '8px',
+                    color: '#fff'
+                  }}
+                  labelStyle={{ color: '#a1a1aa' }}
+                />
                 <Scatter name="Projects" data={scoreVsROI} fill="#8b5cf6" />
               </ScatterChart>
             </ResponsiveContainer>
@@ -174,8 +211,8 @@ export function PortfolioCharts({ projects }: PortfolioChartsProps) {
       {/* Additional insights */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {/* Score distribution */}
-        <div className="bg-white rounded-lg border border-gray-200 p-4">
-          <h4 className="font-semibold text-gray-900 mb-3">Score Distribution</h4>
+        <div className="bg-zinc-900 rounded-xl border border-zinc-800 p-4">
+          <h4 className="font-semibold text-white mb-3">Score Distribution</h4>
           <div className="space-y-2 text-sm">
             {(() => {
               const excellent = projects.filter(p => p.investmentScore >= 85).length;
@@ -188,32 +225,32 @@ export function PortfolioCharts({ projects }: PortfolioChartsProps) {
                 <>
                   {excellent > 0 && (
                     <div className="flex justify-between">
-                      <span className="text-gray-600">Excellent (85+)</span>
-                      <span className="font-bold text-green-600">{excellent}</span>
+                      <span className="text-zinc-400">Excellent (85+)</span>
+                      <span className="font-bold text-emerald-400">{excellent}</span>
                     </div>
                   )}
                   {veryGood > 0 && (
                     <div className="flex justify-between">
-                      <span className="text-gray-600">Very Good (70-84)</span>
-                      <span className="font-bold text-blue-600">{veryGood}</span>
+                      <span className="text-zinc-400">Very Good (70-84)</span>
+                      <span className="font-bold text-blue-400">{veryGood}</span>
                     </div>
                   )}
                   {good > 0 && (
                     <div className="flex justify-between">
-                      <span className="text-gray-600">Good (60-69)</span>
-                      <span className="font-bold text-yellow-600">{good}</span>
+                      <span className="text-zinc-400">Good (60-69)</span>
+                      <span className="font-bold text-yellow-400">{good}</span>
                     </div>
                   )}
                   {moderate > 0 && (
                     <div className="flex justify-between">
-                      <span className="text-gray-600">Moderate (50-59)</span>
-                      <span className="font-bold text-orange-600">{moderate}</span>
+                      <span className="text-zinc-400">Moderate (50-59)</span>
+                      <span className="font-bold text-orange-400">{moderate}</span>
                     </div>
                   )}
                   {highRisk > 0 && (
                     <div className="flex justify-between">
-                      <span className="text-gray-600">High Risk (&lt;50)</span>
-                      <span className="font-bold text-red-600">{highRisk}</span>
+                      <span className="text-zinc-400">High Risk (&lt;50)</span>
+                      <span className="font-bold text-red-400">{highRisk}</span>
                     </div>
                   )}
                 </>
@@ -223,8 +260,8 @@ export function PortfolioCharts({ projects }: PortfolioChartsProps) {
         </div>
 
         {/* ROI Statistics */}
-        <div className="bg-white rounded-lg border border-gray-200 p-4">
-          <h4 className="font-semibold text-gray-900 mb-3">ROI Statistics</h4>
+        <div className="bg-zinc-900 rounded-xl border border-zinc-800 p-4">
+          <h4 className="font-semibold text-white mb-3">ROI Statistics</h4>
           <div className="space-y-2 text-sm">
             {(() => {
               const rois = projects.map(p => Number(p.roi) || 0).filter(r => r >= 0);
@@ -235,16 +272,16 @@ export function PortfolioCharts({ projects }: PortfolioChartsProps) {
               return (
                 <>
                   <div className="flex justify-between">
-                    <span className="text-gray-600">Average ROI</span>
-                    <span className="font-bold text-gray-900">{avgROI.toFixed(1)}%</span>
+                    <span className="text-zinc-400">Average ROI</span>
+                    <span className="font-bold text-white">{avgROI.toFixed(1)}%</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-600">Max ROI</span>
-                    <span className="font-bold text-green-600">{maxROI.toFixed(1)}%</span>
+                    <span className="text-zinc-400">Max ROI</span>
+                    <span className="font-bold text-emerald-400">{maxROI.toFixed(1)}%</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-600">Min ROI</span>
-                    <span className="font-bold text-orange-600">{minROI.toFixed(1)}%</span>
+                    <span className="text-zinc-400">Min ROI</span>
+                    <span className="font-bold text-orange-400">{minROI.toFixed(1)}%</span>
                   </div>
                 </>
               );
@@ -253,8 +290,8 @@ export function PortfolioCharts({ projects }: PortfolioChartsProps) {
         </div>
 
         {/* Break-Even Statistics */}
-        <div className="bg-white rounded-lg border border-gray-200 p-4">
-          <h4 className="font-semibold text-gray-900 mb-3">Break-Even Timeline</h4>
+        <div className="bg-zinc-900 rounded-xl border border-zinc-800 p-4">
+          <h4 className="font-semibold text-white mb-3">Break-Even Timeline</h4>
           <div className="space-y-2 text-sm">
             {(() => {
               const bems = projects.map(p => Number(p.breakEvenMonths) || 0).filter(b => b > 0);
@@ -266,20 +303,20 @@ export function PortfolioCharts({ projects }: PortfolioChartsProps) {
               return (
                 <>
                   <div className="flex justify-between">
-                    <span className="text-gray-600">Average</span>
-                    <span className="font-bold text-gray-900">{Math.round(avgBEM)} months</span>
+                    <span className="text-zinc-400">Average</span>
+                    <span className="font-bold text-white">{Math.round(avgBEM)} months</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-600">Quick (&lt;12m)</span>
-                    <span className="font-bold text-green-600">{quickBreakEven}</span>
+                    <span className="text-zinc-400">Quick (&lt;12m)</span>
+                    <span className="font-bold text-emerald-400">{quickBreakEven}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-600">Medium (12-36m)</span>
-                    <span className="font-bold text-yellow-600">{mediumBreakEven}</span>
+                    <span className="text-zinc-400">Medium (12-36m)</span>
+                    <span className="font-bold text-yellow-400">{mediumBreakEven}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-600">Long (36m+)</span>
-                    <span className="font-bold text-orange-600">{slowBreakEven}</span>
+                    <span className="text-zinc-400">Long (36m+)</span>
+                    <span className="font-bold text-orange-400">{slowBreakEven}</span>
                   </div>
                 </>
               );

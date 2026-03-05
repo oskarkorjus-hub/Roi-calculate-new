@@ -1,5 +1,5 @@
 import { useState, useCallback, useMemo } from 'react';
-import { usePortfolio } from '../hooks/usePortfolio';
+import { usePortfolio } from '../lib/portfolio-context';
 import { PortfolioStats } from '../components/PortfolioStats';
 import { PortfolioFilters } from '../components/PortfolioFilters';
 import { PortfolioCharts } from '../components/PortfolioCharts';

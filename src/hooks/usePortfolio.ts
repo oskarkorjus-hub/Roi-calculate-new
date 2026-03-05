@@ -1,60 +1,142 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import type { PortfolioProject, EmailLog } from '../types/portfolio';
+import { useAuth } from '../lib/auth-context';
+import {
+  fetchUserDrafts,
+  createDraft,
+  updateDraft as updateDraftDb,
+  deleteDraft as deleteDraftDb,
+} from '../lib/drafts-service';
 
 const PORTFOLIO_STORAGE_KEY = 'baliinvest_portfolio';
 const EMAIL_LOG_STORAGE_KEY = 'baliinvest_email_log';
 
 export function usePortfolio() {
-  const [projects, setProjects] = useState<PortfolioProject[]>(() => {
-    const saved = localStorage.getItem(PORTFOLIO_STORAGE_KEY);
-    return saved ? JSON.parse(saved) : [];
-  });
+  const { user } = useAuth();
+  const [projects, setProjects] = useState<PortfolioProject[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const initialLoadDone = useRef(false);
 
   const [emailLog, setEmailLog] = useState<EmailLog[]>(() => {
     const saved = localStorage.getItem(EMAIL_LOG_STORAGE_KEY);
     return saved ? JSON.parse(saved) : [];
   });
 
-  // Persist to localStorage
+  // Load projects based on auth state
   useEffect(() => {
-    localStorage.setItem(PORTFOLIO_STORAGE_KEY, JSON.stringify(projects));
-  }, [projects]);
+    async function loadProjects() {
+      setLoading(true);
+      setError(null);
+
+      if (user) {
+        // Logged in - fetch from Supabase
+        const { data, error } = await fetchUserDrafts(user.id);
+        if (error) {
+          console.error('Error fetching drafts:', error);
+          setError(error.message);
+          // Fall back to localStorage
+          const saved = localStorage.getItem(PORTFOLIO_STORAGE_KEY);
+          setProjects(saved ? JSON.parse(saved) : []);
+        } else {
+          setProjects(data || []);
+        }
+      } else {
+        // Not logged in - use localStorage
+        const saved = localStorage.getItem(PORTFOLIO_STORAGE_KEY);
+        setProjects(saved ? JSON.parse(saved) : []);
+      }
+
+      setLoading(false);
+      initialLoadDone.current = true;
+    }
+
+    loadProjects();
+  }, [user]);
+
+  // Persist to localStorage only for guests (not logged in)
+  useEffect(() => {
+    if (!user && initialLoadDone.current) {
+      localStorage.setItem(PORTFOLIO_STORAGE_KEY, JSON.stringify(projects));
+    }
+  }, [projects, user]);
 
   useEffect(() => {
     localStorage.setItem(EMAIL_LOG_STORAGE_KEY, JSON.stringify(emailLog));
   }, [emailLog]);
 
-  const addProject = useCallback((project: Omit<PortfolioProject, 'id' | 'createdAt' | 'updatedAt'>) => {
-    const newProject: PortfolioProject = {
-      ...project,
-      id: uuidv4(),
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    };
-    setProjects(prev => [newProject, ...prev]);
-    return newProject;
-  }, []);
+  const addProject = useCallback(async (project: Omit<PortfolioProject, 'id' | 'createdAt' | 'updatedAt'>) => {
+    if (user) {
+      // Save to Supabase
+      const { data, error } = await createDraft(project, user.id);
+      if (error) {
+        console.error('Error creating draft:', error);
+        setError(error.message);
+        return null;
+      }
+      if (data) {
+        setProjects(prev => [data, ...prev]);
+        return data;
+      }
+      return null;
+    } else {
+      // Save to localStorage
+      const newProject: PortfolioProject = {
+        ...project,
+        id: uuidv4(),
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      };
+      setProjects(prev => [newProject, ...prev]);
+      return newProject;
+    }
+  }, [user]);
 
-  const updateProject = useCallback((id: string, updates: Partial<PortfolioProject>) => {
-    setProjects(prev =>
-      prev.map(p =>
-        p.id === id
-          ? { 
-              ...p, 
-              ...updates, 
-              updatedAt: new Date().toISOString(),
-              // Preserve scenarios if not explicitly updated
-              scenarios: updates.scenarios !== undefined ? updates.scenarios : p.scenarios
-            }
-          : p
-      )
-    );
-  }, []);
+  const updateProject = useCallback(async (id: string, updates: Partial<PortfolioProject>) => {
+    if (user) {
+      // Update in Supabase
+      const { data, error } = await updateDraftDb(id, updates, user.id);
+      if (error) {
+        console.error('Error updating draft:', error);
+        setError(error.message);
+        return;
+      }
+      if (data) {
+        setProjects(prev =>
+          prev.map(p => p.id === id ? data : p)
+        );
+      }
+    } else {
+      // Update in localStorage
+      setProjects(prev =>
+        prev.map(p =>
+          p.id === id
+            ? {
+                ...p,
+                ...updates,
+                updatedAt: new Date().toISOString(),
+                scenarios: updates.scenarios !== undefined ? updates.scenarios : p.scenarios
+              }
+            : p
+        )
+      );
+    }
+  }, [user]);
 
-  const deleteProject = useCallback((id: string) => {
+  const deleteProject = useCallback(async (id: string) => {
+    if (user) {
+      // Delete from Supabase
+      const { error } = await deleteDraftDb(id, user.id);
+      if (error) {
+        console.error('Error deleting draft:', error);
+        setError(error.message);
+        return;
+      }
+    }
+    // Remove from local state (works for both logged in and guest)
     setProjects(prev => prev.filter(p => p.id !== id));
-  }, []);
+  }, [user]);
 
   const getProjectById = useCallback((id: string) => {
     return projects.find(p => p.id === id);
@@ -118,6 +200,9 @@ export function usePortfolio() {
   return {
     projects,
     emailLog,
+    loading,
+    error,
+    isAuthenticated: !!user,
     addProject,
     updateProject,
     deleteProject,

@@ -22,24 +22,36 @@ export function Contact() {
     }));
   };
 
+  const [error, setError] = useState<string | null>(null);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
+    setError(null);
 
     try {
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      console.log('Form submitted:', formData);
-      setSubmitted(true);
-      setFormData({
-        name: '',
-        email: '',
-        company: '',
-        subject: '',
-        message: '',
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
       });
-      setTimeout(() => setSubmitted(false), 5000);
-    } catch (error) {
-      console.error('Error submitting form:', error);
+
+      if (response.ok) {
+        setSubmitted(true);
+        setFormData({
+          name: '',
+          email: '',
+          company: '',
+          subject: '',
+          message: '',
+        });
+        setTimeout(() => setSubmitted(false), 5000);
+      } else {
+        setError('Failed to send message. Please try again or email us directly.');
+      }
+    } catch (err) {
+      console.error('Error submitting form:', err);
+      setError('Failed to send message. Please try again or email us directly.');
     } finally {
       setIsSubmitting(false);
     }
@@ -105,27 +117,6 @@ export function Contact() {
                   <p className="text-zinc-400">Monday - Friday</p>
                   <p className="text-zinc-400">9:00 AM - 6:00 PM WIB</p>
                 </div>
-
-                <div>
-                  <h3 className="font-semibold text-zinc-300 mb-4">Follow Us</h3>
-                  <div className="flex gap-3">
-                    {[
-                      { icon: '𝕏', href: 'https://twitter.com' },
-                      { icon: 'in', href: 'https://linkedin.com' },
-                      { icon: '📷', href: 'https://instagram.com' },
-                    ].map((social, i) => (
-                      <a
-                        key={i}
-                        href={social.href}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="w-11 h-11 min-w-[44px] min-h-[44px] bg-zinc-800 border border-zinc-700 rounded-lg flex items-center justify-center text-zinc-400 hover:bg-emerald-500/20 hover:border-emerald-500/50 hover:text-emerald-400 transition-all"
-                      >
-                        {social.icon}
-                      </a>
-                    ))}
-                  </div>
-                </div>
               </div>
             </motion.div>
 
@@ -148,6 +139,16 @@ export function Contact() {
                     <p className="text-emerald-400 font-semibold">
                       ✓ Thank you! We've received your message and will get back to you soon.
                     </p>
+                  </motion.div>
+                )}
+
+                {error && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="mb-6 p-4 bg-red-500/10 border border-red-500/30 rounded-xl"
+                  >
+                    <p className="text-red-400 font-semibold">{error}</p>
                   </motion.div>
                 )}
 

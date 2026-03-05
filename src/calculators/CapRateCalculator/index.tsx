@@ -4,7 +4,7 @@ import { UsageBadge } from '../../components/ui/UsageBadge';
 import { SaveToPortfolioButton } from '../../components/SaveToPortfolioButton';
 import { ReportPreviewModal } from '../../components/ui/ReportPreviewModal';
 import { generateCapRateReport } from '../../hooks/useReportGenerator';
-import { formatCurrency } from '../../utils/numberParsing';
+import { formatCurrency, parseDecimalInput } from '../../utils/numberParsing';
 import { PropertyInputs } from './components/PropertyInputs';
 import { CapRateResults } from './components/CapRateResults';
 
@@ -99,7 +99,7 @@ export function CapRateCalculator() {
   }, [inputs]);
 
   const result = calculateResults();
-  const symbol = symbols[inputs.currency];
+  const symbol = symbols[inputs.currency] || 'Rp';
 
   // Generate report data
   const reportData = useMemo(() => {
@@ -127,7 +127,7 @@ export function CapRateCalculator() {
   const handleInputChange = (field: keyof CapRateInputs, value: string | number | boolean) => {
     setInputs(prev => ({
       ...prev,
-      [field]: typeof value === 'string' ? parseFloat(value) || 0 : value,
+      [field]: field === 'currency' ? value : (typeof value === 'string' ? parseDecimalInput(value) || 0 : value),
     }));
   };
 

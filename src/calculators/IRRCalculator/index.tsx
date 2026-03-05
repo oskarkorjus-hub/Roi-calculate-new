@@ -5,6 +5,7 @@ import { Toast } from '../../components/ui/Toast';
 import { UsageBadge } from '../../components/ui/UsageBadge';
 import { ReportPreviewModal } from '../../components/ui/ReportPreviewModal';
 import { generateIRRReport } from '../../hooks/useReportGenerator';
+import { parseDecimalInput } from '../../utils/numberParsing';
 import { CashFlowInputs } from './components/CashFlowInputs';
 import { IRRResults } from './components/IRRResults';
 
@@ -143,7 +144,7 @@ export function IRRCalculator() {
     profitabilityIndex,
   };
 
-  const symbol = symbols[currency];
+  const symbol = symbols[currency] || 'Rp';
 
   // Generate report data
   const reportData = useMemo(() => {
@@ -168,7 +169,7 @@ export function IRRCalculator() {
     const newFlows = [...cashFlows];
     newFlows[index] = {
       ...newFlows[index],
-      [field]: field === 'year' ? parseInt(value) : parseFloat(value) || 0,
+      [field]: field === 'year' ? parseInt(value) : parseDecimalInput(value) || 0,
     };
     setCashFlows(newFlows);
   };
@@ -309,9 +310,11 @@ export function IRRCalculator() {
                     Discount Rate for NPV Calculation (%)
                   </label>
                   <input
-                    type="number"
-                    value={discountRate}
-                    onChange={(e) => setDiscountRate(parseFloat(e.target.value) || 0)}
+                    type="text"
+                    inputMode="decimal"
+                    value={discountRate === 0 ? '' : discountRate}
+                    onChange={(e) => setDiscountRate(parseDecimalInput(e.target.value) || 0)}
+                    placeholder="0"
                     className="w-full bg-zinc-800 border border-zinc-700 rounded-2xl px-6 py-4 text-[16px] font-bold text-white placeholder:text-zinc-500 outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all tabular-nums"
                   />
                   <p className="text-xs text-zinc-500">Typically 8-12%. Higher = more conservative.</p>
@@ -329,10 +332,11 @@ export function IRRCalculator() {
                         Reinvestment Rate for MIRR (%)
                       </label>
                       <input
-                        type="number"
-                        step={0.1}
-                        value={reinvestmentRate}
-                        onChange={(e) => setReinvestmentRate(parseFloat(e.target.value) || 0)}
+                        type="text"
+                        inputMode="decimal"
+                        value={reinvestmentRate === 0 ? '' : reinvestmentRate}
+                        onChange={(e) => setReinvestmentRate(parseDecimalInput(e.target.value) || 0)}
+                        placeholder="0"
                         className="w-full bg-zinc-800 border border-zinc-700 rounded-2xl px-6 py-4 text-[16px] font-bold text-white placeholder:text-zinc-500 outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all tabular-nums"
                       />
                       <p className="text-xs text-zinc-500">Rate at which positive cash flows are reinvested</p>
@@ -343,10 +347,11 @@ export function IRRCalculator() {
                         Alternative Discount Rate (%)
                       </label>
                       <input
-                        type="number"
-                        step={0.1}
-                        value={alternativeDiscountRate}
-                        onChange={(e) => setAlternativeDiscountRate(parseFloat(e.target.value) || 0)}
+                        type="text"
+                        inputMode="decimal"
+                        value={alternativeDiscountRate === 0 ? '' : alternativeDiscountRate}
+                        onChange={(e) => setAlternativeDiscountRate(parseDecimalInput(e.target.value) || 0)}
+                        placeholder="0"
                         className="w-full bg-zinc-800 border border-zinc-700 rounded-2xl px-6 py-4 text-[16px] font-bold text-white placeholder:text-zinc-500 outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all tabular-nums"
                       />
                       <p className="text-xs text-zinc-500">Scenario analysis with different discount rate</p>

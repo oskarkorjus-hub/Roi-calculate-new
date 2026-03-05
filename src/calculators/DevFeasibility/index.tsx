@@ -1,10 +1,10 @@
-import { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback, useMemo, useEffect } from 'react';
 import { Toast } from '../../components/ui/Toast';
 import { UsageBadge } from '../../components/ui/UsageBadge';
 import { SaveToPortfolioButton } from '../../components/SaveToPortfolioButton';
 import { ReportPreviewModal } from '../../components/ui/ReportPreviewModal';
 import { generateDevFeasibilityReport } from '../../hooks/useReportGenerator';
-import { formatCurrency } from '../../utils/numberParsing';
+import { formatCurrency, parseDecimalInput } from '../../utils/numberParsing';
 import { AdvancedSection } from '../../components/AdvancedSection';
 import { Tooltip } from '../../components/ui/Tooltip';
 
@@ -185,13 +185,36 @@ export function DevFeasibilityCalculator() {
   }, [inputs]);
 
   const scenarios = calculateScenarios();
-  const bestFlipScenario = scenarios.reduce((best, current) => (current.roiFlip > best.roiFlip ? current : best));
-  const bestHoldScenario = scenarios.reduce((best, current) => (current.roiHold > best.roiHold ? current : best));
+
+  const defaultScenario: VillaScenario = {
+    numVillas: 0,
+    totalConstructionArea: 0,
+    usableArea: 0,
+    constructionCost: 0,
+    softCosts: 0,
+    permitsCosts: 0,
+    financeCharges: 0,
+    totalProjectCost: 0,
+    revenueFromSale: 0,
+    exitCosts: 0,
+    grossProfit: 0,
+    roiFlip: 0,
+    rentalIncome10Year: 0,
+    rentalPlusResidual: 0,
+    roiHold: 0,
+  };
+
+  const bestFlipScenario = scenarios.length > 0
+    ? scenarios.reduce((best, current) => (current.roiFlip > best.roiFlip ? current : best))
+    : defaultScenario;
+  const bestHoldScenario = scenarios.length > 0
+    ? scenarios.reduce((best, current) => (current.roiHold > best.roiHold ? current : best))
+    : defaultScenario;
 
   const handleInputChange = (field: keyof DevInputs, value: string | number | boolean) => {
     setInputs(prev => ({
       ...prev,
-      [field]: typeof value === 'string' ? parseFloat(value) || 0 : value,
+      [field]: field === 'currency' ? value : (typeof value === 'string' ? parseDecimalInput(value) || 0 : value),
     }));
   };
 
@@ -210,7 +233,7 @@ export function DevFeasibilityCalculator() {
     setToast({ message: 'Draft saved successfully!', type: 'success' });
   }, []);
 
-  const symbol = symbols[inputs.currency];
+  const symbol = symbols[inputs.currency] || 'Rp';
 
   // Generate report data for PDF export
   const reportData = useMemo(() => {
@@ -722,6 +745,30 @@ function InputField({ label, value, onChange, prefix, suffix, tooltip }: {
   suffix?: string;
   tooltip?: string;
 }) {
+  const [localValue, setLocalValue] = useState(value === 0 ? '' : String(value));
+
+  useEffect(() => {
+    const currentParsed = parseDecimalInput(localValue);
+    if (value !== currentParsed && !isNaN(value)) {
+      setLocalValue(value === 0 ? '' : String(value));
+    }
+  }, [value]);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value;
+    if (val === '' || /^-?[0-9]*[.,]?[0-9]*$/.test(val)) {
+      setLocalValue(val);
+      if (val === '' || val === '-') {
+        onChange(0);
+      } else {
+        const parsed = parseDecimalInput(val);
+        if (!isNaN(parsed)) {
+          onChange(parsed);
+        }
+      }
+    }
+  };
+
   return (
     <div className="space-y-3">
       <label className="flex items-center gap-1.5 text-sm font-medium text-zinc-400">
@@ -735,18 +782,8 @@ function InputField({ label, value, onChange, prefix, suffix, tooltip }: {
         <input
           type="text"
           inputMode="decimal"
-          value={value === 0 ? '' : value}
-          onChange={e => {
-            const val = e.target.value;
-            if (val === '' || val === '-') {
-              onChange(0);
-            } else {
-              const parsed = parseFloat(val);
-              if (!isNaN(parsed)) {
-                onChange(parsed);
-              }
-            }
-          }}
+          value={localValue}
+          onChange={handleChange}
           placeholder="0"
           className={`w-full bg-zinc-800 border border-zinc-700 rounded-2xl py-4 text-[16px] font-bold text-white placeholder:text-zinc-500 outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all tabular-nums ${prefix ? 'pl-12 pr-6' : suffix ? 'pl-6 pr-16' : 'px-6'}`}
         />
