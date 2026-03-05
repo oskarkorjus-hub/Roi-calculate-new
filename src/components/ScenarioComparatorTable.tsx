@@ -117,9 +117,16 @@ export function ScenarioComparatorTable({
   const allScenarios = [baselineScenario, ...scenarios];
 
   // Get calculator-specific metrics or fall back to defaults
-  const metrics = calculatorId && CALCULATOR_METRICS[calculatorId]
+  const rawMetrics = calculatorId && CALCULATOR_METRICS[calculatorId]
     ? CALCULATOR_METRICS[calculatorId]
     : DEFAULT_METRICS;
+
+  // Filter out metrics where all scenarios have no meaningful data (all 0, undefined, or null)
+  const metrics = rawMetrics.filter(metric => {
+    const values = allScenarios.map(s => s.results[metric.key]);
+    // Check if at least one scenario has a non-zero, defined value
+    return values.some(v => v !== undefined && v !== null && v !== 0 && !isNaN(Number(v)));
+  });
 
   const getBestValue = (values: any[], higherIsBetter: boolean) => {
     const numericValues = values.filter(v => typeof v === 'number' && !isNaN(v));
@@ -141,6 +148,16 @@ export function ScenarioComparatorTable({
     }
     return `${sign}${formatCurrency(delta)}`;
   };
+
+  // If no metrics have data, show a message
+  if (metrics.length === 0) {
+    return (
+      <div className="bg-zinc-800/50 border border-zinc-700 rounded-xl p-6 text-center">
+        <p className="text-zinc-400">No comparison metrics available for this scenario.</p>
+        <p className="text-zinc-500 text-sm mt-1">Create scenarios with different input values to see comparisons.</p>
+      </div>
+    );
+  }
 
   return (
     <div className="overflow-x-auto border border-zinc-700 rounded-xl">
