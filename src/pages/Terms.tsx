@@ -7,7 +7,7 @@ export function Terms() {
       <section className="py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto text-center">
           <h1 className="text-4xl font-bold text-white mb-4">Terms of Service</h1>
-          <p className="text-zinc-500">Last updated: March 2024</p>
+          <p className="text-zinc-500">Last updated: March 2026</p>
         </div>
       </section>
 

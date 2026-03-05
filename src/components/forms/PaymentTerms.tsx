@@ -1,6 +1,7 @@
 import type { ReactElement } from 'react';
 import type { PaymentTerms as PaymentTermsType, PaymentScheduleEntry } from '../../types/investment';
 import { Tooltip } from '../ui/Tooltip';
+import { MonthYearPicker } from '../ui/MonthYearPicker';
 import { parseDecimalInput, sanitizeDecimalInput } from '../../utils/numberParsing';
 
 interface Props {
@@ -203,11 +204,10 @@ export function PaymentTerms({
           </div>
           <div className="flex flex-col gap-2">
             <label className="text-xs text-text-muted">Date</label>
-            <input
-              type="date"
+            <MonthYearPicker
               value={data.bookingFeeDate || ''}
-              onChange={(e) => onUpdate('bookingFeeDate', e.target.value)}
-              className="w-full rounded-lg bg-surface-alt border border-border px-4 py-3 text-text-primary focus:border-primary focus:outline-none"
+              onChange={(value) => onUpdate('bookingFeeDate', value)}
+              placeholder="Select date"
             />
           </div>
         </div>
@@ -399,11 +399,10 @@ export function PaymentTerms({
                               <span className="text-xs font-medium text-zinc-300 bg-zinc-700 px-2 py-0.5 rounded">Installment {i + 1}</span>
                             </div>
                             <div className="col-span-4">
-                              <input
-                                type="date"
+                              <MonthYearPicker
                                 value={entry.date}
-                                onChange={(e) => onUpdateScheduleEntry(entry.id, { date: e.target.value })}
-                                className="w-full bg-background/50 border border-transparent text-text-primary text-sm rounded-md px-2 py-1.5 cursor-pointer hover:border-primary/50 hover:bg-background focus:outline-none focus:bg-background focus:border-primary focus:ring-1 focus:ring-primary/30 transition-all"
+                                onChange={(value) => onUpdateScheduleEntry(entry.id, { date: value })}
+                                placeholder="Select"
                               />
                             </div>
                             <div className="col-span-4 flex items-center justify-end gap-1">

@@ -2,6 +2,7 @@ import { useState, useCallback, useMemo } from 'react';
 import { Toast } from '../../components/ui/Toast';
 import { CalculatorToolbar } from '../../components/ui/CalculatorToolbar';
 import { ReportPreviewModal } from '../../components/ui/ReportPreviewModal';
+import { MonthYearPicker } from '../../components/ui/MonthYearPicker';
 import { generateDevBudgetReport } from '../../hooks/useReportGenerator';
 import { formatCurrency, parseDecimalInput } from '../../utils/numberParsing';
 import { Tooltip } from '../../components/ui/Tooltip';
@@ -359,11 +360,10 @@ export function DevBudgetTracker() {
             </div>
             <div>
               <label className="text-xs text-zinc-400 mb-1 block">Start Date</label>
-              <input
-                type="date"
+              <MonthYearPicker
                 value={inputs.projectStartDate}
-                onChange={(e) => handleInputChange('projectStartDate', e.target.value)}
-                className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2 text-sm text-white"
+                onChange={(value) => handleInputChange('projectStartDate', value)}
+                placeholder="Select date"
               />
             </div>
             <div>

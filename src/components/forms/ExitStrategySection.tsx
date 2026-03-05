@@ -1,5 +1,6 @@
 import type { ExitStrategy as ExitStrategyData } from '../../types/investment';
 import { parseDecimalInput, sanitizeDecimalInput } from '../../utils/numberParsing';
+import { MonthYearPicker } from '../ui/MonthYearPicker';
 
 interface Props {
   data: ExitStrategyData;
@@ -105,20 +106,19 @@ export function ExitStrategySection({
         </label>
 
         {/* Sale Date */}
-        <label className="flex flex-col gap-2">
+        <div className="flex flex-col gap-2">
           <span className="text-sm font-medium text-text-secondary">
             Sale Date
           </span>
           <span className="text-xs text-text-muted">
             {handoverDate ? `Handover: ${formattedHandoverDate}` : 'Set handover date above'}
           </span>
-          <input
-            type="date"
+          <MonthYearPicker
             value={data.saleDate || ''}
-            onChange={(e) => onUpdate('saleDate', e.target.value)}
-            className="w-full rounded-lg bg-surface-alt border border-border px-4 py-3 text-text-primary focus:border-primary focus:outline-none"
+            onChange={(value) => onUpdate('saleDate', value)}
+            placeholder="Select date"
           />
-        </label>
+        </div>
 
         {/* Closing Costs */}
         <label className="flex flex-col gap-2">

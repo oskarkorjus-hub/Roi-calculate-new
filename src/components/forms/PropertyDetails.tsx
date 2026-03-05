@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import type { PropertyDetails as PropertyDetailsType } from '../../types/investment';
+import { MonthYearPicker } from '../ui/MonthYearPicker';
 
 interface Props {
   data: PropertyDetailsType;
@@ -146,30 +147,28 @@ export function PropertyDetails({ data, symbol, displayPrice, onUpdate, onPriceC
         </label>
 
         {/* Purchase Date */}
-        <label className="flex flex-col gap-2">
+        <div className="flex flex-col gap-2">
           <span className="text-sm font-medium text-text-secondary">
             Purchase Date
           </span>
-          <input
-            type="date"
+          <MonthYearPicker
             value={data.purchaseDate}
-            onChange={(e) => onUpdate('purchaseDate', e.target.value)}
-            className="w-full rounded-lg bg-surface-alt border border-border px-4 py-3 text-text-primary focus:border-primary focus:outline-none h-[54px]"
+            onChange={(value) => onUpdate('purchaseDate', value)}
+            placeholder="Select date"
           />
-        </label>
+        </div>
 
         {/* Handover Date */}
-        <label className="flex flex-col gap-2">
+        <div className="flex flex-col gap-2">
           <span className="text-sm font-medium text-text-secondary">
             Expected Handover Date
           </span>
-          <input
-            type="date"
+          <MonthYearPicker
             value={data.handoverDate}
-            onChange={(e) => onUpdate('handoverDate', e.target.value)}
-            className="w-full rounded-lg bg-surface-alt border border-border px-4 py-3 text-text-primary focus:border-primary focus:outline-none h-[54px]"
+            onChange={(value) => onUpdate('handoverDate', value)}
+            placeholder="Select date"
           />
-        </label>
+        </div>
       </div>
     </section>
   );

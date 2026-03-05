@@ -1491,7 +1491,7 @@ export function Landing() {
       {/* Footer */}
       <footer className="py-12 px-6 border-t border-zinc-800">
         <div className="max-w-6xl mx-auto text-center text-zinc-600 text-sm">
-          <p>© 2024 ROI Calculate. Built for serious property investors.</p>
+          <p>© 2026 ROI Calculate. Built for serious property investors.</p>
         </div>
       </footer>
     </div>

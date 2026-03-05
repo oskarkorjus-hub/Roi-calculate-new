@@ -1,5 +1,6 @@
 import type { CashFlowEntry } from '../../types/investment';
 import { useState } from 'react';
+import { MonthYearPicker } from '../ui/MonthYearPicker';
 
 interface Props {
   entries: CashFlowEntry[];
@@ -142,11 +143,10 @@ export function CashFlows({ entries, symbol, formatDisplay, onAdd, onRemove, onU
           <div className="grid grid-cols-12 gap-3 items-end">
             <div className="col-span-12 md:col-span-3">
               <label className="block text-xs text-text-secondary mb-1">Date</label>
-              <input
-                type="date"
+              <MonthYearPicker
                 value={newEntry.date}
-                onChange={(e) => setNewEntry({ ...newEntry, date: e.target.value })}
-                className="w-full rounded-lg bg-surface-dark border border-border-dark px-3 py-2 text-white text-sm focus:border-primary focus:outline-none"
+                onChange={(value) => setNewEntry({ ...newEntry, date: value })}
+                placeholder="Select date"
               />
             </div>
             <div className="col-span-12 md:col-span-4">

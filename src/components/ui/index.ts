@@ -4,6 +4,7 @@ export { SelectField, type SelectFieldProps, type SelectOption } from './SelectF
 export { ToggleField, type ToggleFieldProps } from './ToggleField';
 export { SectionHeader, type SectionHeaderProps } from './SectionHeader';
 export { Tooltip } from './Tooltip';
+export { MonthYearPicker } from './MonthYearPicker';
 
 // Re-export other UI components
 export { Toast } from './Toast';
