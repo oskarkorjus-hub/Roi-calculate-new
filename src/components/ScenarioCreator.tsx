@@ -8,6 +8,8 @@ interface ScenarioCreatorProps {
   onScenarioCreated?: () => void;
   variant?: 'default' | 'minimal' | 'menu-item';
   onClose?: () => void;
+  isOpen?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }
 
 // Calculator-specific field configurations with friendly labels and descriptions
@@ -140,13 +142,23 @@ const setNestedValue = (obj: any, path: string, value: any): any => {
   return result;
 };
 
-export function ScenarioCreator({ project, onScenarioCreated, variant = 'default', onClose }: ScenarioCreatorProps) {
+export function ScenarioCreator({ project, onScenarioCreated, variant = 'default', onClose, isOpen, onOpenChange }: ScenarioCreatorProps) {
   const { createScenario } = useScenarios();
-  const [showModal, setShowModal] = useState(false);
+  const [internalShowModal, setInternalShowModal] = useState(false);
   const [scenarioName, setScenarioName] = useState('');
   const [inputs, setInputs] = useState<Record<string, any>>(project.data || {});
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
   const [isSaving, setIsSaving] = useState(false);
+
+  // Support controlled mode (external state) or uncontrolled mode (internal state)
+  const showModal = isOpen !== undefined ? isOpen : internalShowModal;
+  const setShowModal = (open: boolean) => {
+    if (onOpenChange) {
+      onOpenChange(open);
+    } else {
+      setInternalShowModal(open);
+    }
+  };
 
   // Get calculator-specific fields
   const fields = useMemo(() => {
@@ -253,7 +265,8 @@ export function ScenarioCreator({ project, onScenarioCreated, variant = 'default
     <>
       {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
 
-      {renderTrigger()}
+      {/* Only render trigger when not in controlled mode */}
+      {isOpen === undefined && renderTrigger()}
 
       {/* Modal */}
       {showModal && (

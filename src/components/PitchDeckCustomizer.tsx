@@ -7,12 +7,24 @@ interface PitchDeckCustomizerProps {
   project: PortfolioProject;
   onClose?: () => void;
   variant?: 'default' | 'minimal' | 'menu-item';
+  isOpen?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }
 
-export function PitchDeckCustomizer({ project, onClose, variant = 'default' }: PitchDeckCustomizerProps) {
-  const [showModal, setShowModal] = useState(false);
+export function PitchDeckCustomizer({ project, onClose, variant = 'default', isOpen, onOpenChange }: PitchDeckCustomizerProps) {
+  const [internalShowModal, setInternalShowModal] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
+
+  // Support controlled mode (external state) or uncontrolled mode (internal state)
+  const showModal = isOpen !== undefined ? isOpen : internalShowModal;
+  const setShowModal = (open: boolean) => {
+    if (onOpenChange) {
+      onOpenChange(open);
+    } else {
+      setInternalShowModal(open);
+    }
+  };
 
   const [customization, setCustomization] = useState({
     companyName: 'ROI Calculate',
@@ -120,7 +132,8 @@ export function PitchDeckCustomizer({ project, onClose, variant = 'default' }: P
     <>
       {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
 
-      {renderTrigger()}
+      {/* Only render trigger when not in controlled mode */}
+      {isOpen === undefined && renderTrigger()}
 
       {/* Modal - Dark Theme */}
       {showModal && (

@@ -280,6 +280,8 @@ export function ProjectCard({
 }: ProjectCardProps) {
   const [showActions, setShowActions] = useState(false);
   const [showExportMenu, setShowExportMenu] = useState(false);
+  const [showScenarioModal, setShowScenarioModal] = useState(false);
+  const [showPitchDeckModal, setShowPitchDeckModal] = useState(false);
 
   const categoryConfig = getCategoryConfig(project.calculatorId);
 
@@ -625,8 +627,32 @@ export function ProjectCard({
                 <div className="px-3 py-2 border-t border-b border-zinc-700">
                   <span className="text-[10px] font-semibold text-zinc-500 uppercase tracking-wider">Tools</span>
                 </div>
-                <ScenarioCreator project={project} variant="menu-item" onClose={() => setShowExportMenu(false)} />
-                <PitchDeckCustomizer project={project} variant="menu-item" onClose={() => setShowExportMenu(false)} />
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setShowScenarioModal(true);
+                    setShowExportMenu(false);
+                  }}
+                  className="w-full px-3 py-2.5 text-left text-xs text-zinc-300 hover:bg-zinc-700 flex items-center gap-2"
+                >
+                  <svg className="w-4 h-4 text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+                  </svg>
+                  What-if Scenario
+                </button>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setShowPitchDeckModal(true);
+                    setShowExportMenu(false);
+                  }}
+                  className="w-full px-3 py-2.5 text-left text-xs text-zinc-300 hover:bg-zinc-700 flex items-center gap-2"
+                >
+                  <svg className="w-4 h-4 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  </svg>
+                  Custom Pitch Deck
+                </button>
 
                 {/* Delete */}
                 {onDelete && (
@@ -652,6 +678,26 @@ export function ProjectCard({
           </div>
         </div>
       </div>
+
+      {/* Modals - rendered outside menu to persist state */}
+      {showScenarioModal && (
+        <ScenarioCreator
+          project={project}
+          variant="default"
+          onClose={() => setShowScenarioModal(false)}
+          isOpen={showScenarioModal}
+          onOpenChange={setShowScenarioModal}
+        />
+      )}
+      {showPitchDeckModal && (
+        <PitchDeckCustomizer
+          project={project}
+          variant="default"
+          onClose={() => setShowPitchDeckModal(false)}
+          isOpen={showPitchDeckModal}
+          onOpenChange={setShowPitchDeckModal}
+        />
+      )}
     </div>
   );
 }

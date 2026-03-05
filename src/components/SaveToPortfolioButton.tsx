@@ -182,16 +182,18 @@ export function SaveToPortfolioButton({
     return { location, totalInvestment, roi, avgCashFlow, breakEvenMonths };
   }, [projectData, calculatorType]);
 
-  // Calculate investment score
+  // Calculate investment score with calculator-specific algorithm
   const scoreComponents = useMemo(() => {
     return calculateInvestmentScore(
       financialMetrics.roi,
       financialMetrics.avgCashFlow,
       financialMetrics.totalInvestment,
       financialMetrics.breakEvenMonths,
-      financialMetrics.location
+      financialMetrics.location,
+      calculatorType,
+      projectData
     );
-  }, [financialMetrics]);
+  }, [financialMetrics, calculatorType, projectData]);
 
   const handleSave = async () => {
     if (!projectName.trim()) {
