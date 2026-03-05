@@ -639,6 +639,7 @@ export function ScenarioAnalysisPage({ projectId, onBack }: ScenarioAnalysisPage
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
   const [renamingId, setRenamingId] = useState<string | null>(null);
   const [newName, setNewName] = useState('');
+  const [deletingScenario, setDeletingScenario] = useState<{ id: string; name: string } | null>(null);
 
   if (!project) {
     return (
@@ -811,9 +812,7 @@ export function ScenarioAnalysisPage({ projectId, onBack }: ScenarioAnalysisPage
                     <button
                       onClick={e => {
                         e.preventDefault();
-                        if (confirm(`Delete "${scenario.name}"?`)) {
-                          handleDeleteScenario(scenario.id);
-                        }
+                        setDeletingScenario({ id: scenario.id, name: scenario.name });
                       }}
                       className="p-2 min-w-[36px] min-h-[36px] bg-zinc-700/80 text-zinc-300 rounded-lg hover:bg-red-500/30 hover:text-red-400 flex items-center justify-center transition"
                       title="Delete scenario"
@@ -853,6 +852,49 @@ export function ScenarioAnalysisPage({ projectId, onBack }: ScenarioAnalysisPage
                   className="flex-1 px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700"
                 >
                   Save
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Delete Confirmation Modal */}
+        {deletingScenario && (
+          <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+            <div className="bg-zinc-900 rounded-2xl border border-zinc-800 p-6 max-w-md w-full shadow-2xl">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-12 h-12 rounded-full bg-red-500/20 flex items-center justify-center">
+                  <svg className="w-6 h-6 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                  </svg>
+                </div>
+                <div>
+                  <h3 className="text-lg font-bold text-white">Delete Scenario</h3>
+                  <p className="text-sm text-zinc-400">This action cannot be undone</p>
+                </div>
+              </div>
+              <p className="text-zinc-300 mb-6">
+                Are you sure you want to delete <span className="font-semibold text-white">"{deletingScenario.name}"</span>?
+                All data associated with this scenario will be permanently removed.
+              </p>
+              <div className="flex gap-3">
+                <button
+                  onClick={() => setDeletingScenario(null)}
+                  className="flex-1 px-4 py-3 text-zinc-300 border border-zinc-700 rounded-xl hover:bg-zinc-800 transition font-medium"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={() => {
+                    handleDeleteScenario(deletingScenario.id);
+                    setDeletingScenario(null);
+                  }}
+                  className="flex-1 px-4 py-3 bg-red-600 text-white rounded-xl hover:bg-red-700 transition font-medium flex items-center justify-center gap-2"
+                >
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                  </svg>
+                  Delete
                 </button>
               </div>
             </div>
