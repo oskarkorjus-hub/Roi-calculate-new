@@ -98,16 +98,24 @@ export function extractUniversalMetrics(project: PortfolioProject): UniversalMet
       };
 
     case 'npv':
+      // NPV: Try to get initial investment from cashFlows[0] if result.totalCashOutflows not available
+      const npvInitialInvestment = result.totalCashOutflows ||
+        project.totalInvestment ||
+        (data.cashFlows?.[0]?.amount ? Math.abs(data.cashFlows[0].amount) : 0);
+      const npvValue = result.npv ?? (project.roi && project.totalInvestment ? project.totalInvestment * (project.roi / 100) : null);
+      const npvCashFlow = result.netCashFlow || result.totalCashInflows || null;
+      const npvLength = data.projectLength || (data.cashFlows?.length ? data.cashFlows.length - 1 : null);
+
       return {
-        capitalRequired: result.totalCashOutflows || project.totalInvestment,
-        capitalLabel: 'Total Outflows',
-        primaryReturn: result.npv ?? null,
+        capitalRequired: npvInitialInvestment,
+        capitalLabel: 'Initial Investment',
+        primaryReturn: npvValue,
         primaryReturnLabel: 'NPV',
         primaryReturnFormat: 'currency',
-        cashFlowIndicator: result.netCashFlow || null,
+        cashFlowIndicator: npvCashFlow,
         cashFlowLabel: 'Net Cash Flow',
         cashFlowPeriod: 'total',
-        timeMetric: data.projectLength ? data.projectLength * 12 : null,
+        timeMetric: npvLength ? npvLength * 12 : null,
         timeMetricLabel: 'Project Length',
         timeMetricUnit: 'months',
         category: 'return-analysis',
@@ -134,18 +142,23 @@ export function extractUniversalMetrics(project: PortfolioProject): UniversalMet
       };
 
     case 'rental-projection':
+      // Rental projection: estimate property value from annual revenue if not set
+      const rentalAnnualRevenue = result.annualRevenue || (data.nightlyRate ? data.nightlyRate * 365 * (data.baseOccupancyRate || 0.7) : 0);
+      const rentalCapital = project.totalInvestment || rentalAnnualRevenue * 10; // 10x gross multiplier
+      const rentalNetIncome = result.annualNetIncome || (project.avgCashFlow ? project.avgCashFlow * 12 : 0);
+
       return {
-        capitalRequired: project.totalInvestment,
+        capitalRequired: rentalCapital,
         capitalLabel: 'Est. Property Value',
-        primaryReturn: result.annualNetIncome && project.totalInvestment
-          ? (result.annualNetIncome / project.totalInvestment) * 100
-          : project.roi,
+        primaryReturn: rentalCapital > 0 && rentalNetIncome > 0
+          ? (rentalNetIncome / rentalCapital) * 100
+          : project.roi || 0,
         primaryReturnLabel: 'Net Yield',
         primaryReturnFormat: 'percent',
-        cashFlowIndicator: result.annualNetIncome || project.avgCashFlow * 12,
+        cashFlowIndicator: rentalNetIncome || null,
         cashFlowLabel: 'Annual Net Income',
         cashFlowPeriod: 'annual',
-        timeMetric: result.breakEvenMonths || project.breakEvenMonths,
+        timeMetric: result.breakEvenMonths || project.breakEvenMonths || null,
         timeMetricLabel: 'Break-even',
         timeMetricUnit: 'months',
         category: 'income-analysis',
@@ -225,6 +238,29 @@ export function extractUniversalMetrics(project: PortfolioProject): UniversalMet
         category: 'financing-tool',
         categoryLabel: 'Financing',
         calculatorPurpose: 'Calculates loan payments and total interest costs',
+      };
+
+    case 'dev-budget':
+      // Dev Budget: budget tracking tool - no returns, just capital tracking
+      const budgetTotal = data.calculations?.totalBudgeted || data.totalBudget || project.totalInvestment || 0;
+      const budgetSpent = data.calculations?.totalSpent || data.totalSpent || 0;
+      const budgetRemaining = budgetTotal - budgetSpent;
+
+      return {
+        capitalRequired: budgetTotal,
+        capitalLabel: 'Total Budget',
+        primaryReturn: budgetTotal > 0 ? (budgetSpent / budgetTotal) * 100 : null,
+        primaryReturnLabel: '% Spent',
+        primaryReturnFormat: 'percent',
+        cashFlowIndicator: budgetRemaining,
+        cashFlowLabel: 'Remaining',
+        cashFlowPeriod: 'total',
+        timeMetric: null,
+        timeMetricLabel: '',
+        timeMetricUnit: null,
+        category: 'financing-tool',
+        categoryLabel: 'Budget Tracker',
+        calculatorPurpose: 'Tracks development budget vs actual spending',
       };
 
     case 'risk-assessment':
