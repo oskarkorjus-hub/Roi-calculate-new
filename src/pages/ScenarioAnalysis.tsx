@@ -296,20 +296,112 @@ function calculateScenarioResults(inputs: Record<string, any>, calculatorId: str
 
     case 'indonesia-tax': {
       const purchasePrice = data.purchasePrice || project.totalInvestment || 0;
-      const salePrice = data.salePrice || 0;
-      const rentalIncome = data.annualRentalIncome || 0;
-      const holdingYears = data.holdingPeriodYears || 1;
-      const capitalGains = salePrice - purchasePrice;
-      const totalIncome = rentalIncome * holdingYears + capitalGains;
-      const estimatedTax = totalIncome * 0.1;
+      const salePrice = data.projectedSalePrice || data.salePrice || 0;
+      const holdingYears = data.holdingPeriod || data.holdingPeriodYears || 1;
+      const buildingValue = data.buildingValue || 0;
+      const depreciationRate = (data.buildingDepreciationRate || 0) / 100;
+      const corporateTaxRate = (data.corporateTaxRate || 22) / 100;
+      const capGainRate = (data.individualCapGainRate || 20) / 100;
+      const acquisitionCosts = data.acquisitionCosts || 0;
+      const sellingCosts = data.sellingCosts || 0;
+
+      const totalDepreciation = buildingValue * depreciationRate * holdingYears;
+      const adjustedBasis = purchasePrice + acquisitionCosts - totalDepreciation;
+      const netProceeds = salePrice - sellingCosts;
+      const capitalGain = Math.max(0, netProceeds - adjustedBasis);
+      const capitalGainsTax = capitalGain * capGainRate;
+      const depreciationTaxSavings = totalDepreciation * corporateTaxRate;
+      const netTax = capitalGainsTax - depreciationTaxSavings;
+      const netProfit = netProceeds - purchasePrice - acquisitionCosts - Math.max(0, netTax);
 
       return {
         ...baseResults,
         totalInvestment: purchasePrice,
-        effectiveTaxRate: totalIncome > 0 ? (estimatedTax / totalIncome) * 100 : 0,
-        totalTax: Math.round(estimatedTax),
-        netIncome: Math.round(totalIncome - estimatedTax),
-        roi: purchasePrice > 0 ? ((totalIncome - estimatedTax) / purchasePrice) * 100 : 0,
+        effectiveTaxRate: capitalGain > 0 ? (capitalGainsTax / capitalGain) * 100 : 0,
+        totalTax: Math.round(Math.max(0, netTax)),
+        capitalGainsTax: Math.round(capitalGainsTax),
+        taxSavings: Math.round(depreciationTaxSavings),
+        netIncome: Math.round(netProfit),
+        netProfit: Math.round(netProfit),
+        totalDepreciation: Math.round(totalDepreciation),
+        roi: purchasePrice > 0 ? (netProfit / purchasePrice) * 100 : 0,
+      };
+    }
+
+    case 'dev-budget': {
+      const landCost = data.landCost || 0;
+      const constructionHard = data.constructionHard || 0;
+      const softCosts = data.softCosts || 0;
+      const contingency = data.contingency || 0;
+      const financing = data.financing || 0;
+      const marketing = data.marketing || 0;
+      const contingencyPercent = data.contingencyPercent || 0;
+
+      const totalBudget = landCost + constructionHard + softCosts + contingency + financing + marketing;
+      const actualSpent = data.actualSpent || data.landCostActual || 0;
+      const variance = totalBudget > 0 ? ((actualSpent - totalBudget) / totalBudget) * 100 : 0;
+      const completionPct = data.completionPct || 0;
+      const contingencyUsed = data.contingencyUsed || 0;
+      const contingencyRemaining = contingency - contingencyUsed;
+
+      return {
+        ...baseResults,
+        totalBudget: Math.round(totalBudget),
+        totalInvestment: Math.round(totalBudget),
+        actualSpent: Math.round(actualSpent),
+        variance: variance,
+        completionPct: completionPct,
+        contingencyPercent: contingencyPercent,
+        contingencyRemaining: Math.round(contingencyRemaining),
+        landCost: Math.round(landCost),
+        constructionCost: Math.round(constructionHard),
+        softCosts: Math.round(softCosts),
+      };
+    }
+
+    case 'risk-assessment': {
+      const investmentAmount = data.investmentAmount || project.totalInvestment || 0;
+      const projectROI = data.projectROI || data.roi || 0;
+      const annualCashFlow = data.annualCashFlow || 0;
+      const breakEvenMonths = data.breakEvenMonths || 0;
+      const averageOccupancy = data.averageOccupancy || 0;
+      const dscr = data.debtServiceCoverageRatio || 0;
+      const leverageRatio = data.leverageRatio || 0;
+      const equityAmount = data.equityAmount || 0;
+      const debtAmount = data.debtAmount || 0;
+
+      // Calculate risk score (lower is better)
+      let riskScore = 50; // baseline
+      if (dscr >= 1.5) riskScore -= 15;
+      else if (dscr >= 1.25) riskScore -= 10;
+      else if (dscr < 1.0) riskScore += 20;
+      if (leverageRatio > 0.8) riskScore += 15;
+      else if (leverageRatio < 0.5) riskScore -= 10;
+      if (averageOccupancy >= 80) riskScore -= 10;
+      else if (averageOccupancy < 60) riskScore += 15;
+      if (projectROI > 15) riskScore -= 10;
+      else if (projectROI < 5) riskScore += 10;
+
+      // Calculate Sharpe ratio approximation (assuming 3% risk-free rate, 15% volatility)
+      const riskFreeRate = 3;
+      const volatility = 15 + (leverageRatio * 10); // Higher leverage = higher volatility
+      const sharpeRatio = volatility > 0 ? (projectROI - riskFreeRate) / volatility : 0;
+
+      return {
+        ...baseResults,
+        totalInvestment: investmentAmount,
+        riskScore: Math.max(0, Math.min(100, riskScore)),
+        roi: projectROI,
+        avgCashFlow: annualCashFlow,
+        annualCashFlow: annualCashFlow,
+        breakEvenMonths: breakEvenMonths,
+        occupancyRate: averageOccupancy,
+        dscr: dscr,
+        leverageRatio: leverageRatio,
+        volatility: volatility,
+        sharpeRatio: sharpeRatio,
+        equityAmount: equityAmount,
+        debtAmount: debtAmount,
       };
     }
 
@@ -421,6 +513,94 @@ function calculateBaselineResults(project: PortfolioProject): Record<string, any
         avgCashFlow: Math.round(monthlyCashFlow),
         annualCashFlow: Math.round(monthlyCashFlow * 12),
         expenseRatio: monthlyIncome > 0 ? (totalExpenses / monthlyIncome) * 100 : 0,
+      };
+    }
+
+    case 'indonesia-tax': {
+      const purchasePrice = data.purchasePrice || project.totalInvestment || 0;
+      const salePrice = data.projectedSalePrice || 0;
+      const holdingYears = data.holdingPeriod || 1;
+      const buildingValue = data.buildingValue || 0;
+      const depreciationRate = (data.buildingDepreciationRate || 0) / 100;
+      const corporateTaxRate = (data.corporateTaxRate || 22) / 100;
+      const capGainRate = (data.individualCapGainRate || 20) / 100;
+
+      const totalDepreciation = buildingValue * depreciationRate * holdingYears;
+      const capitalGain = Math.max(0, salePrice - purchasePrice - totalDepreciation);
+      const capitalGainsTax = capitalGain * capGainRate;
+      const depreciationTaxSavings = totalDepreciation * corporateTaxRate;
+      const netProfit = salePrice - purchasePrice - capitalGainsTax + depreciationTaxSavings;
+
+      return {
+        ...baseResults,
+        totalInvestment: purchasePrice,
+        effectiveTaxRate: capitalGain > 0 ? (capitalGainsTax / capitalGain) * 100 : 0,
+        totalTax: Math.round(capitalGainsTax),
+        capitalGainsTax: Math.round(capitalGainsTax),
+        taxSavings: Math.round(depreciationTaxSavings),
+        netIncome: Math.round(netProfit),
+        netProfit: Math.round(netProfit),
+        roi: purchasePrice > 0 ? (netProfit / purchasePrice) * 100 : 0,
+      };
+    }
+
+    case 'dev-budget': {
+      const landCost = data.landCost || 0;
+      const constructionHard = data.constructionHard || 0;
+      const softCosts = data.softCosts || 0;
+      const contingency = data.contingency || 0;
+      const financing = data.financing || 0;
+      const marketing = data.marketing || 0;
+
+      const totalBudget = landCost + constructionHard + softCosts + contingency + financing + marketing;
+      const actualSpent = data.actualSpent || 0;
+      const variance = totalBudget > 0 ? ((actualSpent - totalBudget) / totalBudget) * 100 : 0;
+      const completionPct = data.completionPct || 0;
+
+      return {
+        ...baseResults,
+        totalBudget: Math.round(totalBudget),
+        totalInvestment: Math.round(totalBudget),
+        actualSpent: Math.round(actualSpent),
+        variance: variance,
+        completionPct: completionPct,
+        landCost: Math.round(landCost),
+        constructionCost: Math.round(constructionHard),
+        softCosts: Math.round(softCosts),
+      };
+    }
+
+    case 'risk-assessment': {
+      const investmentAmount = data.investmentAmount || project.totalInvestment || 0;
+      const projectROI = data.projectROI || 0;
+      const annualCashFlow = data.annualCashFlow || 0;
+      const dscr = data.debtServiceCoverageRatio || 0;
+      const leverageRatio = data.leverageRatio || 0;
+      const averageOccupancy = data.averageOccupancy || 0;
+
+      let riskScore = 50;
+      if (dscr >= 1.5) riskScore -= 15;
+      else if (dscr >= 1.25) riskScore -= 10;
+      else if (dscr < 1.0) riskScore += 20;
+      if (leverageRatio > 0.8) riskScore += 15;
+      else if (leverageRatio < 0.5) riskScore -= 10;
+      if (averageOccupancy >= 80) riskScore -= 10;
+      else if (averageOccupancy < 60) riskScore += 15;
+
+      const riskFreeRate = 3;
+      const volatility = 15 + (leverageRatio * 10);
+      const sharpeRatio = volatility > 0 ? (projectROI - riskFreeRate) / volatility : 0;
+
+      return {
+        ...baseResults,
+        totalInvestment: investmentAmount,
+        riskScore: Math.max(0, Math.min(100, riskScore)),
+        roi: projectROI,
+        avgCashFlow: annualCashFlow,
+        dscr: dscr,
+        leverageRatio: leverageRatio,
+        volatility: volatility,
+        sharpeRatio: sharpeRatio,
       };
     }
 
