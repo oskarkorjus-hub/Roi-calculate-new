@@ -170,11 +170,19 @@ export function SaveToPortfolioButton({
         break;
 
       case 'npv':
-        // NPV explicitly passes structured data
-        totalInvestment = projectData.totalInvestment || projectData.result?.totalCashOutflows || 0;
-        roi = projectData.roi || (projectData.result?.profitabilityIndex ? (projectData.result.profitabilityIndex - 1) * 100 : 0);
-        avgCashFlow = (projectData.result?.netCashFlow || 0) / 5;
-        breakEvenMonths = 24;
+        // NPV passes: { discountRate, cashFlows, projectLength, result: { npv, totalCashOutflows, profitabilityIndex, netCashFlow } }
+        totalInvestment = projectData.result?.totalCashOutflows || projectData.totalInvestment || 0;
+        // ROI based on NPV relative to investment
+        roi = totalInvestment > 0 && projectData.result?.npv !== undefined
+          ? (projectData.result.npv / totalInvestment) * 100
+          : (projectData.result?.profitabilityIndex ? (projectData.result.profitabilityIndex - 1) * 100 : 0);
+        // Average cash flow over project length
+        const npvProjectLength = projectData.projectLength || projectData.cashFlows?.length - 1 || 5;
+        avgCashFlow = (projectData.result?.netCashFlow || 0) / Math.max(npvProjectLength, 1);
+        // Break-even estimated from PI
+        breakEvenMonths = projectData.result?.profitabilityIndex && projectData.result.profitabilityIndex > 0
+          ? Math.round(12 / projectData.result.profitabilityIndex)
+          : 24;
         break;
 
       case 'financing':

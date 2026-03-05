@@ -199,21 +199,41 @@ const getCategoryConfig = (calculatorId: string): CategoryConfig => {
         metrics: [
           {
             label: 'Initial Investment',
-            getValue: (p) => formatCurrency(p.data?.result?.totalCashOutflows || p.totalInvestment),
+            getValue: (p) => formatCurrency(p.data?.result?.totalCashOutflows || p.data?.totalInvestment || p.totalInvestment),
           },
           {
             label: 'NPV',
-            getValue: (p) => formatCurrency(p.data?.result?.npv || 0),
-            getColor: (p) => (p.data?.result?.npv || 0) >= 0 ? 'text-emerald-400' : 'text-red-400',
+            getValue: (p) => {
+              // Calculate NPV from stored data if result not available
+              const npv = p.data?.result?.npv;
+              if (npv !== undefined) return formatCurrency(npv);
+              // Fallback: estimate from ROI and investment
+              const investment = p.data?.result?.totalCashOutflows || p.totalInvestment || 0;
+              const roi = p.roi || 0;
+              return formatCurrency(investment * (roi / 100));
+            },
+            getColor: (p) => {
+              const npv = p.data?.result?.npv ?? (p.totalInvestment * ((p.roi || 0) / 100));
+              return npv >= 0 ? 'text-emerald-400' : 'text-red-400';
+            },
           },
           {
             label: 'Discount Rate',
-            getValue: (p) => `${(p.data?.discountRate || 0).toFixed(1)}%`,
+            getValue: (p) => `${(p.data?.discountRate || 10).toFixed(1)}%`,
           },
           {
             label: 'Profitability',
-            getValue: (p) => `${(p.data?.result?.profitabilityIndex || 0).toFixed(2)}x`,
-            getColor: (p) => (p.data?.result?.profitabilityIndex || 0) >= 1 ? 'text-emerald-400' : 'text-red-400',
+            getValue: (p) => {
+              const pi = p.data?.result?.profitabilityIndex;
+              if (pi !== undefined) return `${pi.toFixed(2)}x`;
+              // Estimate from ROI if not available
+              const roi = p.roi || 0;
+              return `${(1 + roi / 100).toFixed(2)}x`;
+            },
+            getColor: (p) => {
+              const pi = p.data?.result?.profitabilityIndex ?? (1 + (p.roi || 0) / 100);
+              return pi >= 1 ? 'text-emerald-400' : 'text-red-400';
+            },
           },
         ],
       };
