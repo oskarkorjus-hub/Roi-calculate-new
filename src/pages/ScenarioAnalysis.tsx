@@ -774,7 +774,7 @@ export function ScenarioAnalysisPage({ projectId, onBack }: ScenarioAnalysisPage
                     disabled={
                       !selectedScenarioIds.includes(scenario.id) && selectedScenarioIds.length >= 4
                     }
-                    className="absolute top-3 right-3 w-4 h-4 cursor-pointer accent-emerald-500"
+                    className="absolute top-3 right-3 w-5 h-5 rounded border-2 border-zinc-600 bg-zinc-800 cursor-pointer accent-emerald-500 checked:bg-emerald-500 checked:border-emerald-500"
                   />
 
                   <div className="pr-8">
