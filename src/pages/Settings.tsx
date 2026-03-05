@@ -93,6 +93,15 @@ export function Settings() {
           animate={{ opacity: 1, y: 0 }}
           className="mb-8"
         >
+          <button
+            onClick={() => navigate(-1)}
+            className="flex items-center gap-2 text-zinc-400 hover:text-white transition-colors mb-4"
+          >
+            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            </svg>
+            <span>Back</span>
+          </button>
           <h1 className="text-3xl font-bold text-white mb-2">Account Settings</h1>
           <p className="text-zinc-400">
             Manage your profile, subscription, and billing information.
