@@ -84,7 +84,10 @@ export function PitchDeckCustomizer({ project, onClose, variant = 'default' }: P
     if (variant === 'menu-item') {
       return (
         <button
-          onClick={handleOpenModal}
+          onClick={(e) => {
+            e.stopPropagation();
+            handleOpenModal();
+          }}
           className="w-full px-3 py-2.5 text-left text-xs text-zinc-300 hover:bg-zinc-700 flex items-center gap-2"
         >
           <svg className="w-4 h-4 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -101,7 +104,10 @@ export function PitchDeckCustomizer({ project, onClose, variant = 'default' }: P
 
     return (
       <button
-        onClick={handleOpenModal}
+        onClick={(e) => {
+          e.stopPropagation();
+          handleOpenModal();
+        }}
         className={buttonClass}
         title="Download customized investor pitch deck"
       >

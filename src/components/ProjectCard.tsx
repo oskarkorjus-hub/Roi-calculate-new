@@ -537,7 +537,10 @@ export function ProjectCard({
           {/* Primary Action */}
           {onView && (
             <button
-              onClick={() => onView(project)}
+              onClick={(e) => {
+                e.stopPropagation();
+                onView(project);
+              }}
               className="px-3 py-1.5 text-xs font-medium text-white bg-zinc-800 hover:bg-zinc-700 rounded-lg transition"
             >
               Details
@@ -547,7 +550,10 @@ export function ProjectCard({
           {/* Scenarios Badge (if any) */}
           {(project.scenarios?.length ?? 0) > 0 && onViewScenarios && (
             <button
-              onClick={() => onViewScenarios(project.id)}
+              onClick={(e) => {
+                e.stopPropagation();
+                onViewScenarios(project.id);
+              }}
               className="px-2 py-1.5 text-xs font-medium text-amber-400 bg-amber-500/10 hover:bg-amber-500/20 rounded-lg transition"
               title={`Compare ${project.scenarios?.length || 0} scenarios`}
             >
@@ -556,9 +562,12 @@ export function ProjectCard({
           )}
 
           {/* Actions Menu */}
-          <div className="relative">
+          <div className="relative" onClick={(e) => e.stopPropagation()}>
             <button
-              onClick={() => setShowExportMenu(!showExportMenu)}
+              onClick={(e) => {
+                e.stopPropagation();
+                setShowExportMenu(!showExportMenu);
+              }}
               className="p-1.5 text-zinc-400 hover:text-white hover:bg-zinc-800 rounded-lg transition"
               title="More actions"
             >
@@ -573,7 +582,8 @@ export function ProjectCard({
                   <span className="text-[10px] font-semibold text-zinc-500 uppercase tracking-wider">Export</span>
                 </div>
                 <button
-                  onClick={() => {
+                  onClick={(e) => {
+                    e.stopPropagation();
                     generateProjectPDF(project);
                     setShowExportMenu(false);
                   }}
@@ -585,7 +595,8 @@ export function ProjectCard({
                   Summary PDF
                 </button>
                 <button
-                  onClick={() => {
+                  onClick={(e) => {
+                    e.stopPropagation();
                     generateEnterpriseReport(project);
                     setShowExportMenu(false);
                   }}
@@ -597,7 +608,8 @@ export function ProjectCard({
                   Enterprise Report
                 </button>
                 <button
-                  onClick={() => {
+                  onClick={(e) => {
+                    e.stopPropagation();
                     generatePitchDeck(project);
                     setShowExportMenu(false);
                   }}
@@ -621,7 +633,8 @@ export function ProjectCard({
                   <>
                     <div className="border-t border-zinc-700" />
                     <button
-                      onClick={() => {
+                      onClick={(e) => {
+                        e.stopPropagation();
                         onDelete(project.id);
                         setShowExportMenu(false);
                       }}
