@@ -4,7 +4,6 @@ import { PortfolioStats } from '../components/PortfolioStats';
 import { PortfolioFilters } from '../components/PortfolioFilters';
 import { PortfolioCharts } from '../components/PortfolioCharts';
 import { ProjectCard } from '../components/ProjectCard';
-import { ComparisonView } from '../components/ui/ComparisonView';
 import { ScenarioAnalysisPage } from './ScenarioAnalysis';
 import type { PortfolioProject } from '../types/portfolio';
 import { generateProjectPDF, generatePortfolioComparisionPDF } from '../utils/pdfExport';
@@ -404,12 +403,6 @@ export function Portfolio() {
         </div>
       )}
 
-      {/* Comparison Modal */}
-      <ComparisonView
-        isOpen={showComparisonView}
-        onClose={() => setShowComparisonView(false)}
-        calculatorType="rental-roi"
-      />
       </div>
     </div>
   );
