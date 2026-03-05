@@ -2,7 +2,7 @@ import { useState } from 'react';
 import type { YearlyData, CurrencyConfig, Assumptions } from '../types';
 import { formatCurrency } from '../constants';
 import { useComparison } from '../../../lib/comparison-context';
-import { MAX_COMPARISONS } from '../../../lib/comparison-types';
+import { MAX_COMPARISONS, type RentalROIComparisonData } from '../../../lib/comparison-types';
 
 interface Props {
   data: YearlyData[];
@@ -35,7 +35,7 @@ function MiniTooltip({ text }: { text: string }) {
 }
 
 const DashboardHeader: React.FC<Props> = ({ data, currency, assumptions, onComparisonSaved, onViewComparisons }) => {
-  const { addRentalROIComparison, getCount } = useComparison();
+  const { addComparison, getCount } = useComparison();
   const [saveLabel, setSaveLabel] = useState('');
   const [showLabelInput, setShowLabelInput] = useState(false);
 
@@ -63,13 +63,13 @@ const DashboardHeader: React.FC<Props> = ({ data, currency, assumptions, onCompa
     }
 
     const label = saveLabel.trim() || `Calculation ${getCount('rental-roi') + 1}`;
-    const success = addRentalROIComparison({
+    const comparisonData: Omit<RentalROIComparisonData, 'timestamp'> = {
       calculatorType: 'rental-roi',
       label,
+      currency: currency.code,
       initialInvestment: assumptions.initialInvestment,
       y1ADR: assumptions.y1ADR,
       y1Occupancy: assumptions.y1Occupancy,
-      currency: currency.code,
       keys: assumptions.keys,
       adrGrowth: assumptions.adrGrowth,
       incentiveFeePct: assumptions.incentiveFeePct,
@@ -84,7 +84,8 @@ const DashboardHeader: React.FC<Props> = ({ data, currency, assumptions, onCompa
       avgAnnualCashFlow: avgProfit,
       totalManagementFees,
       investmentRating: getInvestmentRating(),
-    });
+    };
+    const success = addComparison('rental-roi', comparisonData);
 
     if (success) {
       onComparisonSaved?.();

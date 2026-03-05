@@ -3,6 +3,7 @@ import { Toast } from '../../components/ui/Toast';
 import { CalculatorToolbar } from '../../components/ui/CalculatorToolbar';
 import { ReportPreviewModal } from '../../components/ui/ReportPreviewModal';
 import { DraftSelector } from '../../components/ui/DraftSelector';
+import { ComparisonButtons } from '../../components/ui/ComparisonButtons';
 import { generateIndonesiaTaxReport } from '../../hooks/useReportGenerator';
 import { formatCurrency, parseDecimalInput } from '../../utils/numberParsing';
 import { AdvancedSection } from '../../components/AdvancedSection';
@@ -12,6 +13,7 @@ import { TaxProjectionTable } from './components/TaxProjectionTable';
 import { OwnershipComparison } from './components/OwnershipComparison';
 import { useArchivedDrafts, type ArchivedDraft } from '../../hooks/useArchivedDrafts';
 import { useAuth } from '../../lib/auth-context';
+import type { IndonesiaTaxComparisonData } from '../../lib/comparison-types';
 
 type CurrencyType = 'IDR' | 'USD' | 'AUD' | 'EUR' | 'GBP';
 type OwnershipType = 'pt' | 'freehold' | 'leasehold';
@@ -795,11 +797,41 @@ export function IndonesiaTaxOptimizer() {
 
           {/* Results Section */}
           <div className="lg:col-span-3">
-            <div className="sticky top-24">
+            <div className="sticky top-24 space-y-4">
               <TaxResults
                 result={result}
                 inputs={inputs}
                 symbol={symbol}
+              />
+
+              {/* Comparison Buttons */}
+              <ComparisonButtons
+                calculatorType="indonesia-tax"
+                getComparisonData={() => {
+                  const rating = result.effectiveTaxRate <= 15
+                    ? { grade: 'A+', label: 'Tax Optimized' }
+                    : result.effectiveTaxRate <= 20
+                    ? { grade: 'A', label: 'Well Planned' }
+                    : result.effectiveTaxRate <= 25
+                    ? { grade: 'B+', label: 'Average' }
+                    : result.effectiveTaxRate <= 30
+                    ? { grade: 'B', label: 'High Tax' }
+                    : { grade: 'C', label: 'Very High' };
+
+                  return {
+                    calculatorType: 'indonesia-tax' as const,
+                    label: 'Tax Analysis',
+                    currency: inputs.currency,
+                    purchasePrice: inputs.purchasePrice,
+                    projectedSalePrice: inputs.projectedSalePrice,
+                    ownershipStructure: inputs.ownershipStructure,
+                    totalTaxLiability: result.totalTaxLiability,
+                    effectiveTaxRate: result.effectiveTaxRate,
+                    netProfit: result.netProfit,
+                    optimalStructure: result.optimalStructure,
+                    investmentRating: rating,
+                  } as Omit<IndonesiaTaxComparisonData, 'timestamp'>;
+                }}
               />
             </div>
           </div>

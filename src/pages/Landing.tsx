@@ -620,8 +620,11 @@ export function Landing() {
             <motion.span
               animate={{ scale: [1, 1.2, 1] }}
               transition={{ duration: 1.5, repeat: Infinity }}
+              className="inline-flex"
             >
-              🔥
+              <svg className="w-5 h-5 text-orange-400" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 23c-3.866 0-7-3.134-7-7 0-2.828 1.635-5.095 3.5-7 .5-.512 1.5-1.5 2-2.5.5 1 1.5 2 2.5 2.5 1.865 1.905 3.5 4.172 3.5 7 0 3.866-3.134 7-7 7zm0-2c2.761 0 5-2.239 5-5 0-1.887-1.135-3.665-2.5-5-.425.434-.925.934-1.5 1.5l-.5.5-.5-.5c-.575-.566-1.075-1.066-1.5-1.5C9.135 12.335 8 14.113 8 16c0 2.761 2.239 5 5 5z"/>
+              </svg>
             </motion.span>
             <span className="hidden sm:inline">LIMITED: Free Pro Access for the next {timeLeft.hours}h {timeLeft.minutes}m —</span>
             <span className="sm:hidden">Free Pro: {timeLeft.hours}h {timeLeft.minutes}m left —</span>

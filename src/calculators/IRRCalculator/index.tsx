@@ -4,12 +4,14 @@ import { Toast } from '../../components/ui/Toast';
 import { DraftSelector } from '../../components/ui/DraftSelector';
 import { CalculatorToolbar } from '../../components/ui/CalculatorToolbar';
 import { ReportPreviewModal } from '../../components/ui/ReportPreviewModal';
+import { ComparisonButtons } from '../../components/ui/ComparisonButtons';
 import { generateIRRReport } from '../../hooks/useReportGenerator';
 import { useArchivedDrafts, type ArchivedDraft } from '../../hooks/useArchivedDrafts';
 import { useAuth } from '../../lib/auth-context';
 import { parseDecimalInput } from '../../utils/numberParsing';
 import { CashFlowInputs } from './components/CashFlowInputs';
 import { IRRResults } from './components/IRRResults';
+import type { IRRComparisonData } from '../../lib/comparison-types';
 
 interface CashFlow {
   year: number;
@@ -403,6 +405,33 @@ export function IRRCalculator() {
                   npvAlt={npvAlt}
                   showAdvanced={showAdvanced}
                   reinvestmentRate={reinvestmentRate}
+                />
+
+                {/* Comparison Buttons */}
+                <ComparisonButtons
+                  calculatorType="irr"
+                  getComparisonData={() => {
+                    const rating = result.irr >= 20
+                      ? { grade: 'A+', label: 'Excellent' }
+                      : result.irr >= 15
+                      ? { grade: 'A', label: 'Great' }
+                      : result.irr >= 10
+                      ? { grade: 'B+', label: 'Good' }
+                      : result.irr >= 5
+                      ? { grade: 'B', label: 'Fair' }
+                      : { grade: 'C', label: 'Low' };
+
+                    return {
+                      calculatorType: 'irr' as const,
+                      label: 'IRR Analysis',
+                      currency,
+                      totalInvested: result.totalInvested,
+                      irr: result.irr,
+                      npv: result.npv,
+                      paybackPeriod: result.paybackPeriod,
+                      investmentRating: rating,
+                    } as Omit<IRRComparisonData, 'timestamp'>;
+                  }}
                 />
               </div>
             </div>

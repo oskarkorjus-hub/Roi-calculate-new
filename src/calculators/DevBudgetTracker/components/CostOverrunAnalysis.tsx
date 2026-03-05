@@ -325,7 +325,9 @@ export function CostOverrunAnalysis({ inputs, calculations, symbol, currency }: 
           {calculations.variancePercent > 5 && (
             <div className="p-4 bg-zinc-800/50 rounded-lg">
               <div className="flex items-center gap-2 mb-2">
-                <span className="text-amber-400">💡</span>
+                <svg className="w-4 h-4 text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                </svg>
                 <h4 className="font-medium text-white">Review Major Costs</h4>
               </div>
               <p className="text-xs text-zinc-400">
@@ -337,7 +339,9 @@ export function CostOverrunAnalysis({ inputs, calculations, symbol, currency }: 
           {calculations.contingencyUsedPercent > 50 && (
             <div className="p-4 bg-zinc-800/50 rounded-lg">
               <div className="flex items-center gap-2 mb-2">
-                <span className="text-amber-400">💡</span>
+                <svg className="w-4 h-4 text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                </svg>
                 <h4 className="font-medium text-white">Replenish Contingency</h4>
               </div>
               <p className="text-xs text-zinc-400">
@@ -349,7 +353,9 @@ export function CostOverrunAnalysis({ inputs, calculations, symbol, currency }: 
           {delayedPhases.length > 0 && (
             <div className="p-4 bg-zinc-800/50 rounded-lg">
               <div className="flex items-center gap-2 mb-2">
-                <span className="text-amber-400">💡</span>
+                <svg className="w-4 h-4 text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                </svg>
                 <h4 className="font-medium text-white">Address Delays</h4>
               </div>
               <p className="text-xs text-zinc-400">
@@ -360,7 +366,9 @@ export function CostOverrunAnalysis({ inputs, calculations, symbol, currency }: 
 
           <div className="p-4 bg-zinc-800/50 rounded-lg">
             <div className="flex items-center gap-2 mb-2">
-              <span className="text-emerald-400">✅</span>
+              <svg className="w-4 h-4 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
               <h4 className="font-medium text-white">Regular Updates</h4>
             </div>
             <p className="text-xs text-zinc-400">

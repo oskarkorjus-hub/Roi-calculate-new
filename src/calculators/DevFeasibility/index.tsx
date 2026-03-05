@@ -3,12 +3,14 @@ import { Toast } from '../../components/ui/Toast';
 import { CalculatorToolbar } from '../../components/ui/CalculatorToolbar';
 import { ReportPreviewModal } from '../../components/ui/ReportPreviewModal';
 import { DraftSelector } from '../../components/ui/DraftSelector';
+import { ComparisonButtons } from '../../components/ui/ComparisonButtons';
 import { generateDevFeasibilityReport } from '../../hooks/useReportGenerator';
 import { formatCurrency, parseDecimalInput } from '../../utils/numberParsing';
 import { AdvancedSection } from '../../components/AdvancedSection';
 import { Tooltip } from '../../components/ui/Tooltip';
 import { useArchivedDrafts, type ArchivedDraft } from '../../hooks/useArchivedDrafts';
 import { useAuth } from '../../lib/auth-context';
+import type { DevFeasibilityComparisonData } from '../../lib/comparison-types';
 
 interface DevInputs {
   landSizeM2: number;
@@ -587,6 +589,36 @@ export function DevFeasibilityCalculator() {
                     color="cyan"
                   />
                 </div>
+
+                {/* Comparison Buttons */}
+                <ComparisonButtons
+                  calculatorType="dev-feasibility"
+                  getComparisonData={() => {
+                    const rating = bestFlipScenario.roiFlip >= 50
+                      ? { grade: 'A+', label: 'Excellent' }
+                      : bestFlipScenario.roiFlip >= 35
+                      ? { grade: 'A', label: 'Great' }
+                      : bestFlipScenario.roiFlip >= 20
+                      ? { grade: 'B+', label: 'Good' }
+                      : bestFlipScenario.roiFlip >= 10
+                      ? { grade: 'B', label: 'Fair' }
+                      : { grade: 'C', label: 'Low' };
+
+                    return {
+                      calculatorType: 'dev-feasibility' as const,
+                      label: 'Dev Feasibility',
+                      currency: inputs.currency,
+                      landCost: inputs.landCost,
+                      numVillas: bestFlipScenario.numVillas,
+                      totalProjectCost: bestFlipScenario.totalProjectCost,
+                      revenueFromSale: bestFlipScenario.revenueFromSale,
+                      flipProfit: bestFlipScenario.grossProfit,
+                      flipROI: bestFlipScenario.roiFlip,
+                      holdROI: bestHoldScenario.roiHold,
+                      investmentRating: rating,
+                    } as Omit<DevFeasibilityComparisonData, 'timestamp'>;
+                  }}
+                />
               </div>
             </div>
           </div>

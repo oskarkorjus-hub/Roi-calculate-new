@@ -56,208 +56,271 @@ export function ReportPreviewModal({ isOpen, onClose, reportData }: Props) {
     const doc = new jsPDF('p', 'mm', 'a4');
     const pageWidth = doc.internal.pageSize.getWidth();
     const pageHeight = doc.internal.pageSize.getHeight();
-    const margin = 20;
+    const margin = 12; // Reduced margin for more content
     const contentWidth = pageWidth - 2 * margin;
     let y = 0;
 
-    // Enterprise Color Palette
+    // Professional Color Palette
     const COLORS = {
-      primary: { r: 16, g: 185, b: 129 },      // emerald-500
-      primaryDark: { r: 5, g: 150, b: 105 },   // emerald-600
-      dark: { r: 24, g: 24, b: 27 },           // zinc-900
-      gray: { r: 113, g: 113, b: 122 },        // zinc-500
-      lightGray: { r: 244, g: 244, b: 245 },   // zinc-100
-      mediumGray: { r: 228, g: 228, b: 231 },  // zinc-200
+      primary: { r: 16, g: 185, b: 129 },
+      primaryDark: { r: 5, g: 150, b: 105 },
+      dark: { r: 24, g: 24, b: 27 },
+      gray: { r: 113, g: 113, b: 122 },
+      lightGray: { r: 250, g: 250, b: 250 },
+      mediumGray: { r: 228, g: 228, b: 231 },
       white: { r: 255, g: 255, b: 255 },
-      success: { r: 22, g: 163, b: 74 },       // green-600
-      warning: { r: 217, g: 119, b: 6 },       // amber-600
-      danger: { r: 220, g: 38, b: 38 },        // red-600
+      success: { r: 22, g: 163, b: 74 },
+      warning: { r: 217, g: 119, b: 6 },
+      danger: { r: 220, g: 38, b: 38 },
+      accent: { r: 59, g: 130, b: 246 },
     };
 
-    // Helper: Draw gradient header
+    // Grade color mapping
+    const getGradeColor = (grade: string) => {
+      if (grade.startsWith('A')) return COLORS.success;
+      if (grade.startsWith('B')) return COLORS.primary;
+      if (grade.startsWith('C')) return COLORS.warning;
+      return COLORS.danger;
+    };
+
+    // Helper: Draw compact header bar
     const drawHeader = () => {
-      const headerHeight = 35;
-      // Draw gradient effect with multiple rectangles
-      for (let i = 0; i < headerHeight; i++) {
-        const ratio = i / headerHeight;
-        const r = Math.round(COLORS.primaryDark.r + (COLORS.primary.r - COLORS.primaryDark.r) * ratio * 0.3);
-        const g = Math.round(COLORS.primaryDark.g + (COLORS.primary.g - COLORS.primaryDark.g) * ratio * 0.3);
-        const b = Math.round(COLORS.primaryDark.b + (COLORS.primary.b - COLORS.primaryDark.b) * ratio * 0.3);
-        doc.setFillColor(r, g, b);
-        doc.rect(0, i, pageWidth, 1, 'F');
-      }
+      const headerHeight = 18;
+      doc.setFillColor(COLORS.primaryDark.r, COLORS.primaryDark.g, COLORS.primaryDark.b);
+      doc.rect(0, 0, pageWidth, headerHeight, 'F');
 
-      // Logo text
       doc.setTextColor(COLORS.white.r, COLORS.white.g, COLORS.white.b);
-      doc.setFontSize(14);
+      doc.setFontSize(10);
       doc.setFont('helvetica', 'bold');
-      doc.text('ROI CALCULATE', margin, 22);
+      doc.text('ROI CALCULATE', margin, 11);
 
-      // Report type badge on right
-      const badgeText = reportData.calculatorType.replace(/-/g, ' ').toUpperCase();
-      const badgeWidth = doc.getTextWidth(badgeText) + 12;
-      doc.setFillColor(255, 255, 255, 0.2);
-      doc.roundedRect(pageWidth - margin - badgeWidth, 14, badgeWidth, 10, 2, 2, 'F');
+      // Report type and date on right
       doc.setFontSize(8);
-      doc.setFont('helvetica', 'bold');
-      doc.text(badgeText, pageWidth - margin - badgeWidth + 6, 21);
+      doc.setFont('helvetica', 'normal');
+      const badgeText = reportData.calculatorType.replace(/-/g, ' ').toUpperCase();
+      doc.text(`${badgeText} | ${reportData.generatedDate}`, pageWidth - margin, 11, { align: 'right' });
 
-      return headerHeight + 10;
+      return headerHeight + 6;
     };
 
-    // Helper: Draw title section
-    const drawTitleSection = (startY: number) => {
+    // Helper: Draw executive summary hero section
+    const drawHeroSection = (startY: number) => {
       let currentY = startY;
 
-      // Main title
+      // Title row with rating badge
       doc.setTextColor(COLORS.dark.r, COLORS.dark.g, COLORS.dark.b);
-      doc.setFontSize(28);
+      doc.setFontSize(20);
       doc.setFont('helvetica', 'bold');
-      const titleLines = doc.splitTextToSize(reportData.title, contentWidth);
-      doc.text(titleLines, margin, currentY);
-      currentY += titleLines.length * 10 + 3;
+
+      const titleLines = doc.splitTextToSize(reportData.title, contentWidth - 50);
+      doc.text(titleLines, margin, currentY + 6);
+
+      // Investment grade badge (inline with title)
+      if (reportData.rating) {
+        const gradeColor = getGradeColor(reportData.rating.grade);
+        const badgeX = pageWidth - margin - 35;
+        const badgeY = currentY - 2;
+
+        // Badge background
+        doc.setFillColor(gradeColor.r, gradeColor.g, gradeColor.b);
+        doc.roundedRect(badgeX, badgeY, 35, 20, 3, 3, 'F');
+
+        // Grade letter
+        doc.setTextColor(255, 255, 255);
+        doc.setFontSize(16);
+        doc.setFont('helvetica', 'bold');
+        doc.text(reportData.rating.grade, badgeX + 17.5, badgeY + 13, { align: 'center' });
+      }
+
+      currentY += titleLines.length * 7 + 4;
 
       // Subtitle
       if (reportData.subtitle) {
         doc.setTextColor(COLORS.gray.r, COLORS.gray.g, COLORS.gray.b);
-        doc.setFontSize(14);
+        doc.setFontSize(10);
         doc.setFont('helvetica', 'normal');
         doc.text(reportData.subtitle, margin, currentY);
-        currentY += 8;
+        currentY += 6;
       }
 
-      // Generated date
-      doc.setTextColor(COLORS.gray.r, COLORS.gray.g, COLORS.gray.b);
-      doc.setFontSize(10);
-      doc.setFont('helvetica', 'normal');
-      doc.text(`Generated: ${reportData.generatedDate}`, margin, currentY);
-      currentY += 12;
-
-      return currentY;
+      return currentY + 4;
     };
 
-    // Helper: Draw investment grade card
-    const drawRatingCard = (startY: number) => {
+    // Helper: Draw key metrics summary box
+    const drawKeyMetricsSummary = (startY: number) => {
+      const firstMetrics = reportData.sections.find(s => s.type === 'metrics');
+      if (!firstMetrics || !Array.isArray(firstMetrics.data)) return startY;
+
+      const metrics = firstMetrics.data as ReportMetric[];
+      const highlighted = metrics.filter(m => m.highlight || m.positive);
+      const keyMetrics = highlighted.length > 0 ? highlighted.slice(0, 4) : metrics.slice(0, 4);
+
+      if (keyMetrics.length === 0) return startY;
+
+      const boxHeight = 24;
+      const cols = Math.min(keyMetrics.length, 4);
+      const colWidth = contentWidth / cols;
+
+      // Box background
+      doc.setFillColor(COLORS.lightGray.r, COLORS.lightGray.g, COLORS.lightGray.b);
+      doc.roundedRect(margin, startY, contentWidth, boxHeight, 2, 2, 'F');
+
+      // Border
+      doc.setDrawColor(COLORS.mediumGray.r, COLORS.mediumGray.g, COLORS.mediumGray.b);
+      doc.setLineWidth(0.3);
+      doc.roundedRect(margin, startY, contentWidth, boxHeight, 2, 2, 'S');
+
+      // Draw each key metric
+      keyMetrics.forEach((metric, i) => {
+        const x = margin + i * colWidth;
+
+        // Vertical divider (except first)
+        if (i > 0) {
+          doc.setDrawColor(COLORS.mediumGray.r, COLORS.mediumGray.g, COLORS.mediumGray.b);
+          doc.line(x, startY + 4, x, startY + boxHeight - 4);
+        }
+
+        // Label
+        doc.setFontSize(7);
+        doc.setTextColor(COLORS.gray.r, COLORS.gray.g, COLORS.gray.b);
+        doc.setFont('helvetica', 'normal');
+        const label = metric.label.length > 18 ? metric.label.substring(0, 16) + '..' : metric.label;
+        doc.text(label.toUpperCase(), x + colWidth / 2, startY + 8, { align: 'center' });
+
+        // Value
+        doc.setFontSize(12);
+        doc.setFont('helvetica', 'bold');
+        if (metric.positive) {
+          doc.setTextColor(COLORS.success.r, COLORS.success.g, COLORS.success.b);
+        } else if (metric.negative) {
+          doc.setTextColor(COLORS.danger.r, COLORS.danger.g, COLORS.danger.b);
+        } else {
+          doc.setTextColor(COLORS.dark.r, COLORS.dark.g, COLORS.dark.b);
+        }
+
+        let value = metric.value;
+        if (value.length > 12) value = value.substring(0, 11) + '..';
+        doc.text(value, x + colWidth / 2, startY + 18, { align: 'center' });
+      });
+
+      return startY + boxHeight + 6;
+    };
+
+    // Helper: Draw verdict/recommendation section
+    const drawVerdict = (startY: number) => {
       if (!reportData.rating) return startY;
 
-      const cardHeight = 40;
-
-      // Card background
-      doc.setFillColor(COLORS.lightGray.r, COLORS.lightGray.g, COLORS.lightGray.b);
-      doc.roundedRect(margin, startY, contentWidth, cardHeight, 4, 4, 'F');
+      const gradeColor = getGradeColor(reportData.rating.grade);
+      const boxHeight = 18;
 
       // Left accent bar
-      doc.setFillColor(COLORS.primary.r, COLORS.primary.g, COLORS.primary.b);
-      doc.roundedRect(margin, startY, 4, cardHeight, 2, 2, 'F');
+      doc.setFillColor(gradeColor.r, gradeColor.g, gradeColor.b);
+      doc.roundedRect(margin, startY, 3, boxHeight, 1, 1, 'F');
 
-      // Grade letter (large)
-      doc.setTextColor(COLORS.primary.r, COLORS.primary.g, COLORS.primary.b);
-      doc.setFontSize(36);
-      doc.setFont('helvetica', 'bold');
-      doc.text(reportData.rating.grade, margin + 16, startY + 28);
+      // Background
+      doc.setFillColor(gradeColor.r, gradeColor.g, gradeColor.b, 0.1);
+      doc.roundedRect(margin + 3, startY, contentWidth - 3, boxHeight, 2, 2, 'F');
 
-      // Grade label and description
-      const labelX = margin + 55;
+      // Verdict text
       doc.setTextColor(COLORS.dark.r, COLORS.dark.g, COLORS.dark.b);
-      doc.setFontSize(14);
+      doc.setFontSize(9);
       doc.setFont('helvetica', 'bold');
-      doc.text(reportData.rating.label, labelX, startY + 18);
+      doc.text(`INVESTMENT VERDICT: ${reportData.rating.label.toUpperCase()}`, margin + 8, startY + 7);
 
-      doc.setTextColor(COLORS.gray.r, COLORS.gray.g, COLORS.gray.b);
-      doc.setFontSize(10);
       doc.setFont('helvetica', 'normal');
-      doc.text(reportData.rating.description, labelX, startY + 28);
+      doc.setTextColor(COLORS.gray.r, COLORS.gray.g, COLORS.gray.b);
+      doc.setFontSize(8);
 
-      // Key value on right
-      doc.setTextColor(COLORS.primary.r, COLORS.primary.g, COLORS.primary.b);
-      doc.setFontSize(20);
-      doc.setFont('helvetica', 'bold');
-      doc.text(reportData.rating.value, pageWidth - margin - 12, startY + 24, { align: 'right' });
+      const descText = `${reportData.rating.description} | Key Value: ${reportData.rating.value}`;
+      const truncatedDesc = descText.length > 80 ? descText.substring(0, 77) + '...' : descText;
+      doc.text(truncatedDesc, margin + 8, startY + 14);
 
-      return startY + cardHeight + 15;
+      return startY + boxHeight + 6;
     };
 
-    // Helper: Draw section title
+    // Helper: Draw section title (compact)
     const drawSectionTitle = (title: string, color: number[], currentY: number) => {
-      // Colored left bar
       doc.setFillColor(color[0], color[1], color[2]);
-      doc.rect(margin, currentY, 3, 10, 'F');
+      doc.rect(margin, currentY, 2, 6, 'F');
 
-      // Title text
       doc.setTextColor(COLORS.dark.r, COLORS.dark.g, COLORS.dark.b);
-      doc.setFontSize(12);
+      doc.setFontSize(9);
       doc.setFont('helvetica', 'bold');
-      doc.text(title.toUpperCase(), margin + 8, currentY + 7);
+      doc.text(title.toUpperCase(), margin + 5, currentY + 4.5);
 
-      return currentY + 16;
+      return currentY + 10;
     };
 
-    // Helper: Draw metric card
-    const drawMetricCard = (metric: ReportMetric, x: number, y: number, width: number, height: number) => {
+    // Helper: Draw compact metric in 3-column grid
+    const drawCompactMetric = (metric: ReportMetric, x: number, y: number, width: number) => {
+      const height = 18;
+
       // Background
       doc.setFillColor(COLORS.lightGray.r, COLORS.lightGray.g, COLORS.lightGray.b);
-      doc.roundedRect(x, y, width, height, 3, 3, 'F');
+      doc.roundedRect(x, y, width, height, 2, 2, 'F');
 
       // Label
-      doc.setFontSize(8);
+      doc.setFontSize(6);
       doc.setTextColor(COLORS.gray.r, COLORS.gray.g, COLORS.gray.b);
       doc.setFont('helvetica', 'normal');
-      const labelText = metric.label.toUpperCase();
-      const labelLines = doc.splitTextToSize(labelText, width - 10);
-      doc.text(labelLines, x + 5, y + 8);
+      const label = metric.label.length > 22 ? metric.label.substring(0, 20) + '..' : metric.label;
+      doc.text(label.toUpperCase(), x + 3, y + 6);
 
-      // Value
-      doc.setFontSize(14);
+      // Value with indicator
+      doc.setFontSize(10);
       doc.setFont('helvetica', 'bold');
+
+      let indicator = '';
       if (metric.positive) {
         doc.setTextColor(COLORS.success.r, COLORS.success.g, COLORS.success.b);
+        indicator = '↑ ';
       } else if (metric.negative) {
         doc.setTextColor(COLORS.danger.r, COLORS.danger.g, COLORS.danger.b);
+        indicator = '↓ ';
       } else {
         doc.setTextColor(COLORS.dark.r, COLORS.dark.g, COLORS.dark.b);
       }
 
-      // Truncate value if too long
-      let valueText = metric.value;
-      const maxValueWidth = width - 10;
-      while (doc.getTextWidth(valueText) > maxValueWidth && valueText.length > 5) {
-        valueText = valueText.slice(0, -1);
+      let value = metric.value;
+      const maxWidth = width - 6;
+      while (doc.getTextWidth(indicator + value) > maxWidth && value.length > 4) {
+        value = value.slice(0, -1);
       }
-      doc.text(valueText, x + 5, y + height - 6);
+      doc.text(indicator + value, x + 3, y + 14);
+
+      return height;
     };
 
-    // Helper: Check page break and add new page if needed
+    // Helper: Check page break
     const checkPageBreak = (neededHeight: number) => {
-      if (y + neededHeight > pageHeight - 25) {
+      if (y + neededHeight > pageHeight - 18) {
         doc.addPage();
-        y = 20;
+        y = 12;
         return true;
       }
       return false;
     };
 
-    // Helper: Add footers to all pages
+    // Helper: Add footers
     const addFooters = () => {
       const totalPages = doc.getNumberOfPages();
       for (let i = 1; i <= totalPages; i++) {
         doc.setPage(i);
-        const footerY = pageHeight - 12;
+        const footerY = pageHeight - 8;
 
-        // Separator line
         doc.setDrawColor(COLORS.mediumGray.r, COLORS.mediumGray.g, COLORS.mediumGray.b);
-        doc.setLineWidth(0.3);
-        doc.line(margin, footerY - 5, pageWidth - margin, footerY - 5);
+        doc.setLineWidth(0.2);
+        doc.line(margin, footerY - 3, pageWidth - margin, footerY - 3);
 
-        // Footer text
         doc.setTextColor(COLORS.gray.r, COLORS.gray.g, COLORS.gray.b);
-        doc.setFontSize(8);
+        doc.setFontSize(7);
         doc.setFont('helvetica', 'normal');
         doc.text('ROI Calculate | roicalculate.com', margin, footerY);
-        doc.text(`Page ${i} of ${totalPages}`, pageWidth - margin, footerY, { align: 'right' });
+        doc.text(`${i}/${totalPages}`, pageWidth - margin, footerY, { align: 'right' });
       }
     };
 
-    // Color map for sections
+    // Color map
     const colorMap: Record<string, number[]> = {
       emerald: [COLORS.primary.r, COLORS.primary.g, COLORS.primary.b],
       cyan: [6, 182, 212],
@@ -267,195 +330,163 @@ export function ReportPreviewModal({ isOpen, onClose, reportData }: Props) {
       blue: [59, 130, 246],
     };
 
-    // ============ PAGE 1: Cover & Summary ============
+    // ============ SINGLE PAGE PITCH DECK LAYOUT ============
     y = drawHeader();
-    y = drawTitleSection(y);
-    y = drawRatingCard(y);
+    y = drawHeroSection(y);
+    y = drawKeyMetricsSummary(y);
+    y = drawVerdict(y);
 
-    // Find first metrics section for cover page
-    const firstMetricsSection = reportData.sections.find(s => s.type === 'metrics');
-    if (firstMetricsSection && Array.isArray(firstMetricsSection.data)) {
-      const color = colorMap[firstMetricsSection.color || 'emerald'];
-      y = drawSectionTitle(firstMetricsSection.title, color, y);
+    // All metrics sections in compact 3-column grid
+    const metricsSections = reportData.sections.filter(s => s.type === 'metrics');
 
-      const metrics = firstMetricsSection.data as ReportMetric[];
-      const cols = 2;
-      const cardWidth = (contentWidth - 8) / cols;
-      const cardHeight = 28;
-      const gap = 8;
+    for (const section of metricsSections) {
+      if (!Array.isArray(section.data)) continue;
+
+      const color = colorMap[section.color || 'emerald'];
+      checkPageBreak(30);
+      y = drawSectionTitle(section.title, color, y);
+
+      const metrics = section.data as ReportMetric[];
+      const cols = 3;
+      const gap = 4;
+      const cardWidth = (contentWidth - gap * (cols - 1)) / cols;
+      const cardHeight = 18;
 
       let col = 0;
       let rowY = y;
 
       for (const metric of metrics) {
-        if (checkPageBreak(cardHeight + 5)) {
+        if (checkPageBreak(cardHeight + 3)) {
           rowY = y;
           col = 0;
         }
 
         const x = margin + col * (cardWidth + gap);
-        drawMetricCard(metric, x, rowY, cardWidth, cardHeight);
+        drawCompactMetric(metric, x, rowY, cardWidth);
 
         col++;
         if (col >= cols) {
           col = 0;
-          rowY += cardHeight + 6;
+          rowY += cardHeight + 3;
         }
       }
-      y = rowY + (col > 0 ? cardHeight + 6 : 0) + 10;
+      y = rowY + (col > 0 ? cardHeight + 3 : 0) + 6;
     }
 
-    // ============ PAGE 2+: Detailed Sections ============
-    for (const section of reportData.sections) {
-      // Skip first metrics section (already on cover)
-      if (section === firstMetricsSection) continue;
+    // Tables (compact)
+    const tableSections = reportData.sections.filter(s => s.type === 'table');
+
+    for (const section of tableSections) {
+      if (!Array.isArray(section.data)) continue;
+
+      const rows = section.data as ReportTableRow[];
+      if (rows.length === 0) continue;
 
       const color = colorMap[section.color || 'emerald'];
-
-      checkPageBreak(50);
+      checkPageBreak(40);
       y = drawSectionTitle(section.title, color, y);
 
-      // Metrics section
-      if (section.type === 'metrics' && Array.isArray(section.data)) {
-        const metrics = section.data as ReportMetric[];
-        const cols = 2;
-        const cardWidth = (contentWidth - 8) / cols;
-        const cardHeight = 28;
-        const gap = 8;
+      const numCols = rows[0].cells.length;
+      const colWidth = contentWidth / numCols;
+      const rowHeight = 6;
 
-        let col = 0;
-        let rowY = y;
+      // Header
+      doc.setFillColor(COLORS.lightGray.r, COLORS.lightGray.g, COLORS.lightGray.b);
+      doc.rect(margin, y, contentWidth, rowHeight, 'F');
+      doc.setDrawColor(COLORS.mediumGray.r, COLORS.mediumGray.g, COLORS.mediumGray.b);
+      doc.setLineWidth(0.2);
+      doc.rect(margin, y, contentWidth, rowHeight, 'S');
 
-        for (const metric of metrics) {
-          if (checkPageBreak(cardHeight + 5)) {
-            rowY = y;
-            col = 0;
-          }
+      doc.setFontSize(7);
+      doc.setTextColor(COLORS.dark.r, COLORS.dark.g, COLORS.dark.b);
+      doc.setFont('helvetica', 'bold');
+      rows[0].cells.forEach((cell, i) => {
+        const truncated = cell.length > 15 ? cell.substring(0, 13) + '..' : cell;
+        doc.text(truncated.toUpperCase(), margin + i * colWidth + 2, y + 4);
+      });
+      y += rowHeight;
 
-          const x = margin + col * (cardWidth + gap);
-          drawMetricCard(metric, x, rowY, cardWidth, cardHeight);
-
-          col++;
-          if (col >= cols) {
-            col = 0;
-            rowY += cardHeight + 6;
-          }
-        }
-        y = rowY + (col > 0 ? cardHeight + 6 : 0) + 10;
-      }
-
-      // Table section
-      if (section.type === 'table' && Array.isArray(section.data)) {
-        const rows = section.data as ReportTableRow[];
-        if (rows.length > 0) {
-          const numCols = rows[0].cells.length;
-          const colWidth = contentWidth / numCols;
-          const rowHeight = 8;
-
-          // Table border
-          doc.setDrawColor(COLORS.mediumGray.r, COLORS.mediumGray.g, COLORS.mediumGray.b);
-          doc.setLineWidth(0.3);
-
-          // Header row
+      // Data rows (limit to 15 for compactness)
+      doc.setFont('helvetica', 'normal');
+      const maxRows = 15;
+      for (let i = 1; i < Math.min(rows.length, maxRows); i++) {
+        if (checkPageBreak(rowHeight + 2)) {
+          // Redraw header on new page
           doc.setFillColor(COLORS.lightGray.r, COLORS.lightGray.g, COLORS.lightGray.b);
           doc.rect(margin, y, contentWidth, rowHeight, 'F');
           doc.rect(margin, y, contentWidth, rowHeight, 'S');
-
-          doc.setFontSize(9);
-          doc.setTextColor(COLORS.dark.r, COLORS.dark.g, COLORS.dark.b);
           doc.setFont('helvetica', 'bold');
-
-          rows[0].cells.forEach((cell, i) => {
-            doc.text(cell.toUpperCase(), margin + i * colWidth + 4, y + 5.5);
+          rows[0].cells.forEach((cell, j) => {
+            const truncated = cell.length > 15 ? cell.substring(0, 13) + '..' : cell;
+            doc.text(truncated.toUpperCase(), margin + j * colWidth + 2, y + 4);
           });
           y += rowHeight;
-
-          // Data rows
           doc.setFont('helvetica', 'normal');
-          doc.setTextColor(COLORS.dark.r, COLORS.dark.g, COLORS.dark.b);
-
-          const maxRows = 25;
-          for (let i = 1; i < Math.min(rows.length, maxRows); i++) {
-            if (checkPageBreak(rowHeight + 2)) {
-              // Redraw header on new page
-              doc.setFillColor(COLORS.lightGray.r, COLORS.lightGray.g, COLORS.lightGray.b);
-              doc.rect(margin, y, contentWidth, rowHeight, 'F');
-              doc.rect(margin, y, contentWidth, rowHeight, 'S');
-              doc.setFont('helvetica', 'bold');
-              rows[0].cells.forEach((cell, j) => {
-                doc.text(cell.toUpperCase(), margin + j * colWidth + 4, y + 5.5);
-              });
-              y += rowHeight;
-              doc.setFont('helvetica', 'normal');
-            }
-
-            // Alternating row background
-            if (i % 2 === 0) {
-              doc.setFillColor(250, 250, 252);
-              doc.rect(margin, y, contentWidth, rowHeight, 'F');
-            }
-
-            // Row border
-            doc.setDrawColor(COLORS.mediumGray.r, COLORS.mediumGray.g, COLORS.mediumGray.b);
-            doc.rect(margin, y, contentWidth, rowHeight, 'S');
-
-            doc.setFontSize(9);
-            rows[i].cells.forEach((cell, j) => {
-              // Truncate if too long
-              let cellText = cell;
-              const maxCellWidth = colWidth - 8;
-              while (doc.getTextWidth(cellText) > maxCellWidth && cellText.length > 3) {
-                cellText = cellText.slice(0, -1);
-              }
-              doc.text(cellText, margin + j * colWidth + 4, y + 5.5);
-            });
-            y += rowHeight;
-          }
-
-          if (rows.length > maxRows) {
-            doc.setTextColor(COLORS.gray.r, COLORS.gray.g, COLORS.gray.b);
-            doc.setFontSize(8);
-            doc.setFont('helvetica', 'italic');
-            doc.text(`+ ${rows.length - maxRows} additional rows`, margin + 4, y + 6);
-            y += 10;
-          }
-          y += 8;
         }
-      }
 
-      // Highlight section
-      if (section.type === 'highlight' && typeof section.data === 'string') {
-        checkPageBreak(24);
+        if (i % 2 === 0) {
+          doc.setFillColor(252, 252, 253);
+          doc.rect(margin, y, contentWidth, rowHeight, 'F');
+        }
+        doc.setDrawColor(COLORS.mediumGray.r, COLORS.mediumGray.g, COLORS.mediumGray.b);
+        doc.rect(margin, y, contentWidth, rowHeight, 'S');
 
-        // Background with accent border
-        doc.setFillColor(240, 253, 244);
-        doc.roundedRect(margin, y, contentWidth, 20, 3, 3, 'F');
-        doc.setFillColor(color[0], color[1], color[2]);
-        doc.roundedRect(margin, y, 4, 20, 2, 2, 'F');
-
+        doc.setFontSize(7);
         doc.setTextColor(COLORS.dark.r, COLORS.dark.g, COLORS.dark.b);
-        doc.setFontSize(11);
-        doc.setFont('helvetica', 'bold');
-        const highlightLines = doc.splitTextToSize(section.data, contentWidth - 20);
-        doc.text(highlightLines, margin + 12, y + 12);
-        y += 28;
+        rows[i].cells.forEach((cell, j) => {
+          const truncated = cell.length > 15 ? cell.substring(0, 13) + '..' : cell;
+          doc.text(truncated, margin + j * colWidth + 2, y + 4);
+        });
+        y += rowHeight;
       }
 
-      // Text section
-      if (section.type === 'text' && typeof section.data === 'string') {
-        checkPageBreak(20);
-        doc.setTextColor(COLORS.dark.r, COLORS.dark.g, COLORS.dark.b);
-        doc.setFontSize(10);
-        doc.setFont('helvetica', 'normal');
-        const lines = doc.splitTextToSize(section.data, contentWidth);
-        doc.text(lines, margin, y + 5);
-        y += lines.length * 5 + 12;
+      if (rows.length > maxRows) {
+        doc.setTextColor(COLORS.gray.r, COLORS.gray.g, COLORS.gray.b);
+        doc.setFontSize(6);
+        doc.text(`+ ${rows.length - maxRows} more rows`, margin, y + 4);
+        y += 6;
       }
+      y += 4;
     }
 
-    // Add footers to all pages
-    addFooters();
+    // Highlights (compact)
+    const highlightSections = reportData.sections.filter(s => s.type === 'highlight');
+    for (const section of highlightSections) {
+      if (typeof section.data !== 'string') continue;
 
+      const color = colorMap[section.color || 'emerald'];
+      checkPageBreak(16);
+
+      doc.setFillColor(color[0], color[1], color[2]);
+      doc.roundedRect(margin, y, 2, 12, 1, 1, 'F');
+
+      doc.setFillColor(color[0], color[1], color[2], 0.05);
+      doc.roundedRect(margin + 2, y, contentWidth - 2, 12, 2, 2, 'F');
+
+      doc.setTextColor(COLORS.dark.r, COLORS.dark.g, COLORS.dark.b);
+      doc.setFontSize(8);
+      doc.setFont('helvetica', 'bold');
+      const text = section.data.length > 100 ? section.data.substring(0, 97) + '...' : section.data;
+      doc.text(text, margin + 6, y + 7);
+      y += 16;
+    }
+
+    // Text sections (compact)
+    const textSections = reportData.sections.filter(s => s.type === 'text');
+    for (const section of textSections) {
+      if (typeof section.data !== 'string') continue;
+
+      checkPageBreak(12);
+      doc.setTextColor(COLORS.gray.r, COLORS.gray.g, COLORS.gray.b);
+      doc.setFontSize(7);
+      doc.setFont('helvetica', 'normal');
+      const lines = doc.splitTextToSize(section.data, contentWidth);
+      const limitedLines = lines.slice(0, 4);
+      doc.text(limitedLines, margin, y + 4);
+      y += limitedLines.length * 3 + 4;
+    }
+
+    addFooters();
     return doc;
   }, [reportData]);
 

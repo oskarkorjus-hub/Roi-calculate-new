@@ -3,12 +3,14 @@ import { Toast } from '../../components/ui/Toast';
 import { DraftSelector } from '../../components/ui/DraftSelector';
 import { CalculatorToolbar } from '../../components/ui/CalculatorToolbar';
 import { ReportPreviewModal } from '../../components/ui/ReportPreviewModal';
+import { ComparisonButtons } from '../../components/ui/ComparisonButtons';
 import { generateCapRateReport } from '../../hooks/useReportGenerator';
 import { useArchivedDrafts, type ArchivedDraft } from '../../hooks/useArchivedDrafts';
 import { useAuth } from '../../lib/auth-context';
 import { formatCurrency, parseDecimalInput } from '../../utils/numberParsing';
 import { PropertyInputs } from './components/PropertyInputs';
 import { CapRateResults } from './components/CapRateResults';
+import type { CapRateComparisonData } from '../../lib/comparison-types';
 
 type CurrencyType = 'IDR' | 'USD' | 'AUD' | 'EUR' | 'GBP' | 'INR' | 'CNY' | 'AED' | 'RUB';
 
@@ -280,6 +282,33 @@ export function CapRateCalculator() {
                   </li>
                 </ul>
               </div>
+
+              {/* Comparison Buttons */}
+              <ComparisonButtons
+                calculatorType="cap-rate"
+                getComparisonData={() => {
+                  const rating = result.capRate >= 10
+                    ? { grade: 'A+', label: 'Excellent' }
+                    : result.capRate >= 8
+                    ? { grade: 'A', label: 'Great' }
+                    : result.capRate >= 6
+                    ? { grade: 'B+', label: 'Good' }
+                    : result.capRate >= 4
+                    ? { grade: 'B', label: 'Fair' }
+                    : { grade: 'C', label: 'Low' };
+
+                  return {
+                    calculatorType: 'cap-rate' as const,
+                    label: 'Cap Rate Analysis',
+                    currency: inputs.currency,
+                    propertyValue: inputs.propertyValue,
+                    annualNOI: inputs.annualNOI,
+                    capRate: result.capRate,
+                    monthlyNOI: result.monthlyNOI,
+                    investmentRating: rating,
+                  } as Omit<CapRateComparisonData, 'timestamp'>;
+                }}
+              />
             </div>
           </div>
         </div>

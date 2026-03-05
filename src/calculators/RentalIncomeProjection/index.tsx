@@ -3,6 +3,7 @@ import { Toast } from '../../components/ui/Toast';
 import { CalculatorToolbar } from '../../components/ui/CalculatorToolbar';
 import { ReportPreviewModal } from '../../components/ui/ReportPreviewModal';
 import { DraftSelector } from '../../components/ui/DraftSelector';
+import { ComparisonButtons } from '../../components/ui/ComparisonButtons';
 import { generateRentalProjectionReport } from '../../hooks/useReportGenerator';
 import { formatCurrency, parseDecimalInput } from '../../utils/numberParsing';
 import { AdvancedSection } from '../../components/AdvancedSection';
@@ -13,6 +14,7 @@ import { CashFlowChart } from './components/CashFlowChart';
 import { ProjectionResults } from './components/ProjectionResults';
 import { useArchivedDrafts, type ArchivedDraft } from '../../hooks/useArchivedDrafts';
 import { useAuth } from '../../lib/auth-context';
+import type { RentalProjectionComparisonData } from '../../lib/comparison-types';
 
 type CurrencyType = 'IDR' | 'USD' | 'AUD' | 'EUR' | 'GBP';
 type LocationType = 'ubud' | 'seminyak' | 'canggu' | 'other-bali' | 'international';
@@ -826,11 +828,43 @@ export function RentalIncomeProjection() {
 
           {/* Results Section */}
           <div className="lg:col-span-3">
-            <div className="sticky top-24">
+            <div className="sticky top-24 space-y-4">
               <ProjectionResults
                 result={result}
                 inputs={inputs}
                 symbol={symbol}
+              />
+
+              {/* Comparison Buttons */}
+              <ComparisonButtons
+                calculatorType="rental-projection"
+                getComparisonData={() => {
+                  const profitMargin = result.annualRevenue > 0
+                    ? (result.annualNetIncome / result.annualRevenue) * 100
+                    : 0;
+
+                  const rating = profitMargin >= 50
+                    ? { grade: 'A+', label: 'Excellent' }
+                    : profitMargin >= 40
+                    ? { grade: 'A', label: 'Great' }
+                    : profitMargin >= 30
+                    ? { grade: 'B+', label: 'Good' }
+                    : profitMargin >= 20
+                    ? { grade: 'B', label: 'Fair' }
+                    : { grade: 'C', label: 'Low' };
+
+                  return {
+                    calculatorType: 'rental-projection' as const,
+                    label: 'Rental Projection',
+                    currency: inputs.currency,
+                    nightlyRate: inputs.nightlyRate,
+                    occupancyRate: result.averageOccupancy,
+                    annualRevenue: result.annualRevenue,
+                    annualNetIncome: result.annualNetIncome,
+                    totalProjectedCashFlow: result.totalProjectedCashFlow,
+                    investmentRating: rating,
+                  } as Omit<RentalProjectionComparisonData, 'timestamp'>;
+                }}
               />
             </div>
           </div>

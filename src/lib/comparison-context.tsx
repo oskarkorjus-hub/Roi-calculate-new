@@ -1,22 +1,37 @@
 import { createContext, useContext, useState, useEffect, useCallback, type ReactNode } from 'react';
 import type {
   ComparisonState,
-  RentalROIComparisonData,
-  XIRRComparisonData,
+  ComparisonData,
   CalculatorType,
 } from './comparison-types';
-import { MAX_COMPARISONS } from './comparison-types';
+import { MAX_COMPARISONS, calculatorTypeToStateKey } from './comparison-types';
 
 const STORAGE_KEY = 'roi-calculate-comparisons';
 
+const INITIAL_STATE: ComparisonState = {
+  rentalROI: [],
+  xirr: [],
+  mortgage: [],
+  cashflow: [],
+  devFeasibility: [],
+  capRate: [],
+  irr: [],
+  npv: [],
+  financing: [],
+  rentalProjection: [],
+  indonesiaTax: [],
+  devBudget: [],
+  riskAssessment: [],
+};
+
 interface ComparisonContextType {
   comparisons: ComparisonState;
-  addRentalROIComparison: (data: Omit<RentalROIComparisonData, 'timestamp'>) => boolean;
-  addXIRRComparison: (data: Omit<XIRRComparisonData, 'timestamp'>) => boolean;
+  addComparison: (type: CalculatorType, data: Omit<ComparisonData, 'timestamp'>) => boolean;
   removeComparison: (type: CalculatorType, timestamp: number) => void;
   updateLabel: (type: CalculatorType, timestamp: number, newLabel: string) => void;
   clearAll: (type: CalculatorType) => void;
   getCount: (type: CalculatorType) => number;
+  getComparisons: (type: CalculatorType) => ComparisonData[];
 }
 
 const ComparisonContext = createContext<ComparisonContextType | null>(null);
@@ -25,12 +40,13 @@ const loadFromStorage = (): ComparisonState => {
   try {
     const stored = localStorage.getItem(STORAGE_KEY);
     if (stored) {
-      return JSON.parse(stored);
+      const parsed = JSON.parse(stored);
+      return { ...INITIAL_STATE, ...parsed };
     }
   } catch (e) {
     console.error('Failed to load comparisons from localStorage:', e);
   }
-  return { rentalROI: [], xirr: [] };
+  return INITIAL_STATE;
 };
 
 const saveToStorage = (state: ComparisonState) => {
@@ -48,76 +64,72 @@ export function ComparisonProvider({ children }: { children: ReactNode }) {
     saveToStorage(comparisons);
   }, [comparisons]);
 
-  const addRentalROIComparison = useCallback((data: Omit<RentalROIComparisonData, 'timestamp'>): boolean => {
-    if (comparisons.rentalROI.length >= MAX_COMPARISONS) {
-      return false;
-    }
-    const newEntry: RentalROIComparisonData = {
-      ...data,
-      timestamp: Date.now(),
-    };
-    setComparisons(prev => ({
-      ...prev,
-      rentalROI: [...prev.rentalROI, newEntry],
-    }));
-    return true;
-  }, [comparisons.rentalROI.length]);
+  const addComparison = useCallback((type: CalculatorType, data: Omit<ComparisonData, 'timestamp'>): boolean => {
+    const stateKey = calculatorTypeToStateKey[type];
+    const currentList = comparisons[stateKey] as ComparisonData[];
 
-  const addXIRRComparison = useCallback((data: Omit<XIRRComparisonData, 'timestamp'>): boolean => {
-    if (comparisons.xirr.length >= MAX_COMPARISONS) {
+    if (currentList.length >= MAX_COMPARISONS) {
       return false;
     }
-    const newEntry: XIRRComparisonData = {
+
+    const newEntry = {
       ...data,
       timestamp: Date.now(),
-    };
+    } as ComparisonData;
+
     setComparisons(prev => ({
       ...prev,
-      xirr: [...prev.xirr, newEntry],
+      [stateKey]: [...(prev[stateKey] as ComparisonData[]), newEntry],
     }));
+
     return true;
-  }, [comparisons.xirr.length]);
+  }, [comparisons]);
 
   const removeComparison = useCallback((type: CalculatorType, timestamp: number) => {
+    const stateKey = calculatorTypeToStateKey[type];
     setComparisons(prev => ({
       ...prev,
-      [type === 'rental-roi' ? 'rentalROI' : 'xirr']:
-        type === 'rental-roi'
-          ? prev.rentalROI.filter(c => c.timestamp !== timestamp)
-          : prev.xirr.filter(c => c.timestamp !== timestamp),
+      [stateKey]: (prev[stateKey] as ComparisonData[]).filter(c => c.timestamp !== timestamp),
     }));
   }, []);
 
   const updateLabel = useCallback((type: CalculatorType, timestamp: number, newLabel: string) => {
+    const stateKey = calculatorTypeToStateKey[type];
     setComparisons(prev => ({
       ...prev,
-      [type === 'rental-roi' ? 'rentalROI' : 'xirr']:
-        type === 'rental-roi'
-          ? prev.rentalROI.map(c => c.timestamp === timestamp ? { ...c, label: newLabel } : c)
-          : prev.xirr.map(c => c.timestamp === timestamp ? { ...c, label: newLabel } : c),
+      [stateKey]: (prev[stateKey] as ComparisonData[]).map(c =>
+        c.timestamp === timestamp ? { ...c, label: newLabel } : c
+      ),
     }));
   }, []);
 
   const clearAll = useCallback((type: CalculatorType) => {
+    const stateKey = calculatorTypeToStateKey[type];
     setComparisons(prev => ({
       ...prev,
-      [type === 'rental-roi' ? 'rentalROI' : 'xirr']: [],
+      [stateKey]: [],
     }));
   }, []);
 
   const getCount = useCallback((type: CalculatorType): number => {
-    return type === 'rental-roi' ? comparisons.rentalROI.length : comparisons.xirr.length;
+    const stateKey = calculatorTypeToStateKey[type];
+    return (comparisons[stateKey] as ComparisonData[]).length;
+  }, [comparisons]);
+
+  const getComparisons = useCallback((type: CalculatorType): ComparisonData[] => {
+    const stateKey = calculatorTypeToStateKey[type];
+    return comparisons[stateKey] as ComparisonData[];
   }, [comparisons]);
 
   return (
     <ComparisonContext.Provider value={{
       comparisons,
-      addRentalROIComparison,
-      addXIRRComparison,
+      addComparison,
       removeComparison,
       updateLabel,
       clearAll,
       getCount,
+      getComparisons,
     }}>
       {children}
     </ComparisonContext.Provider>

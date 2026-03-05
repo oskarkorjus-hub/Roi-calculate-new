@@ -3,10 +3,12 @@ import { Toast } from '../../components/ui/Toast';
 import { DraftSelector } from '../../components/ui/DraftSelector';
 import { CalculatorToolbar } from '../../components/ui/CalculatorToolbar';
 import { ReportPreviewModal } from '../../components/ui/ReportPreviewModal';
+import { ComparisonButtons } from '../../components/ui/ComparisonButtons';
 import { generateNPVReport } from '../../hooks/useReportGenerator';
 import { useArchivedDrafts, type ArchivedDraft } from '../../hooks/useArchivedDrafts';
 import { useAuth } from '../../lib/auth-context';
 import { formatCurrency, parseDecimalInput } from '../../utils/numberParsing';
+import type { NPVComparisonData } from '../../lib/comparison-types';
 
 interface CashFlow {
   year: number;
@@ -417,6 +419,34 @@ export function NPVCalculator() {
                       </ul>
                     )}
                   </div>
+
+                  {/* Comparison Buttons */}
+                  <ComparisonButtons
+                    calculatorType="npv"
+                    getComparisonData={() => {
+                      const rating = result.npv > 0 && result.profitabilityIndex >= 1.5
+                        ? { grade: 'A+', label: 'Excellent' }
+                        : result.npv > 0 && result.profitabilityIndex >= 1.2
+                        ? { grade: 'A', label: 'Great' }
+                        : result.npv > 0
+                        ? { grade: 'B+', label: 'Good' }
+                        : result.npv === 0
+                        ? { grade: 'B', label: 'Break-even' }
+                        : { grade: 'C', label: 'Negative' };
+
+                      return {
+                        calculatorType: 'npv' as const,
+                        label: 'NPV Analysis',
+                        currency,
+                        discountRate,
+                        npv: result.npv,
+                        profitabilityIndex: result.profitabilityIndex,
+                        totalInflows: result.totalCashInflows,
+                        totalOutflows: result.totalCashOutflows,
+                        investmentRating: rating,
+                      } as Omit<NPVComparisonData, 'timestamp'>;
+                    }}
+                  />
                 </div>
               </div>
             </div>

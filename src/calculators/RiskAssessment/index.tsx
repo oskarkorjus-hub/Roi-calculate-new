@@ -3,6 +3,7 @@ import { Toast } from '../../components/ui/Toast';
 import { CalculatorToolbar } from '../../components/ui/CalculatorToolbar';
 import { ReportPreviewModal } from '../../components/ui/ReportPreviewModal';
 import { DraftSelector } from '../../components/ui/DraftSelector';
+import { ComparisonButtons } from '../../components/ui/ComparisonButtons';
 import { generateRiskAssessmentReport } from '../../hooks/useReportGenerator';
 import { formatCurrency, parseDecimalInput } from '../../utils/numberParsing';
 import { Tooltip } from '../../components/ui/Tooltip';
@@ -13,6 +14,7 @@ import { SensitivityChart } from './components/SensitivityChart';
 import { RiskMitigation } from './components/RiskMitigation';
 import { useArchivedDrafts, type ArchivedDraft } from '../../hooks/useArchivedDrafts';
 import { useAuth } from '../../lib/auth-context';
+import type { RiskAssessmentComparisonData } from '../../lib/comparison-types';
 
 type CurrencyType = 'IDR' | 'USD' | 'AUD' | 'EUR' | 'GBP';
 type PropertyType = 'villa' | 'apartment' | 'land' | 'commercial' | 'hotel';
@@ -1034,6 +1036,39 @@ export function RiskAssessment() {
                 }
               </p>
             </div>
+          </div>
+
+          {/* Comparison Buttons */}
+          <div className="mt-6 pt-6 border-t border-zinc-800">
+            <ComparisonButtons
+              calculatorType="risk-assessment"
+              getComparisonData={() => {
+                const rating = riskScore.overall <= 30
+                  ? { grade: 'A+', label: 'Low Risk' }
+                  : riskScore.overall <= 45
+                  ? { grade: 'A', label: 'Moderate-Low' }
+                  : riskScore.overall <= 60
+                  ? { grade: 'B+', label: 'Moderate' }
+                  : riskScore.overall <= 75
+                  ? { grade: 'B', label: 'High' }
+                  : { grade: 'C', label: 'Very High' };
+
+                return {
+                  calculatorType: 'risk-assessment' as const,
+                  label: 'Risk Assessment',
+                  currency: inputs.currency,
+                  investmentAmount: inputs.investmentAmount,
+                  projectROI: inputs.projectROI,
+                  propertyType: inputs.propertyType,
+                  overallRiskScore: riskScore.overall,
+                  financialRiskScore: riskScore.financial,
+                  marketRiskScore: riskScore.market,
+                  regulatoryRiskScore: riskScore.regulatory,
+                  propertyRiskScore: riskScore.propertySpecific,
+                  investmentRating: rating,
+                } as Omit<RiskAssessmentComparisonData, 'timestamp'>;
+              }}
+            />
           </div>
         </div>
       </div>

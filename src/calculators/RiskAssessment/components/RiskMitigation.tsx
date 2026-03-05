@@ -261,7 +261,10 @@ export function RiskMitigation({ factors, riskScore }: Props) {
       {/* Risk Mitigation Checklist */}
       <div className="rounded-xl border border-zinc-800 bg-zinc-900 p-6">
         <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
-          <span>✅</span> Risk Mitigation Checklist
+          <svg className="w-5 h-5 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          Risk Mitigation Checklist
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <ChecklistSection

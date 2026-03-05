@@ -4,6 +4,7 @@ import { CalculatorToolbar } from '../../components/ui/CalculatorToolbar';
 import { ReportPreviewModal } from '../../components/ui/ReportPreviewModal';
 import { DraftSelector } from '../../components/ui/DraftSelector';
 import { MonthYearPicker } from '../../components/ui/MonthYearPicker';
+import { ComparisonButtons } from '../../components/ui/ComparisonButtons';
 import { generateDevBudgetReport } from '../../hooks/useReportGenerator';
 import { formatCurrency, parseDecimalInput } from '../../utils/numberParsing';
 import { Tooltip } from '../../components/ui/Tooltip';
@@ -12,6 +13,7 @@ import { TimelineGantt } from './components/TimelineGantt';
 import { CostOverrunAnalysis } from './components/CostOverrunAnalysis';
 import { useArchivedDrafts, type ArchivedDraft } from '../../hooks/useArchivedDrafts';
 import { useAuth } from '../../lib/auth-context';
+import type { DevBudgetComparisonData } from '../../lib/comparison-types';
 
 type CurrencyType = 'IDR' | 'USD' | 'AUD' | 'EUR' | 'GBP';
 
@@ -378,6 +380,33 @@ export function DevBudgetTracker() {
             <p className="text-xs text-zinc-500 mt-1">
               {symbol} {formatCurrency(calculations.contingencyRemaining, inputs.currency)} remaining
             </p>
+          </div>
+
+          {/* Comparison Buttons */}
+          <div className="bg-zinc-900 rounded-xl border border-zinc-800 p-4">
+            <ComparisonButtons
+              calculatorType="dev-budget"
+              getComparisonData={() => {
+                const rating = calculations.healthScore >= 80
+                  ? { grade: 'A+', label: 'Healthy' }
+                  : calculations.healthScore >= 60
+                  ? { grade: 'B+', label: 'At Risk' }
+                  : { grade: 'C', label: 'Critical' };
+
+                return {
+                  calculatorType: 'dev-budget' as const,
+                  label: inputs.projectName || 'Dev Budget',
+                  currency: inputs.currency,
+                  totalBudget: calculations.totalBudgeted,
+                  totalActual: calculations.totalActual,
+                  variance: calculations.variance,
+                  variancePercent: calculations.variancePercent,
+                  healthScore: calculations.healthScore,
+                  contingencyUsedPercent: calculations.contingencyUsedPercent,
+                  investmentRating: rating,
+                } as Omit<DevBudgetComparisonData, 'timestamp'>;
+              }}
+            />
           </div>
         </div>
 

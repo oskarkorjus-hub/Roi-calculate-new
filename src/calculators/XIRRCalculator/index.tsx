@@ -9,11 +9,11 @@ import {
 } from '../../components';
 import { Toast } from '../../components/ui/Toast';
 import { DraftSelector } from '../../components/ui/DraftSelector';
-import { ComparisonView } from '../../components/ui/ComparisonView';
+import { ComparisonButtons } from '../../components/ui/ComparisonButtons';
 import { CalculatorToolbar } from '../../components/ui/CalculatorToolbar';
 import { ReportPreviewModal } from '../../components/ui/ReportPreviewModal';
 import { useAuth } from '../../lib/auth-context';
-import { useComparison } from '../../lib/comparison-context';
+import type { XIRRComparisonData } from '../../lib/comparison-types';
 import { generateXIRRReport } from '../../hooks/useReportGenerator';
 import { generatePaymentSchedule } from '../../utils/xirr';
 import type { InvestmentData } from '../../types/investment';
@@ -48,9 +48,7 @@ export function XIRRCalculator() {
   const [currentDraftName, setCurrentDraftName] = useState<string | undefined>();
   const [showResetConfirm, setShowResetConfirm] = useState(false);
   const { user } = useAuth();
-  const { getCount } = useComparison();
   const [showReportModal, setShowReportModal] = useState(false);
-  const [showComparison, setShowComparison] = useState(false);
 
   // Pass user ID to isolate drafts per user
   const { drafts, saveDraft: saveArchivedDraft, deleteDraft } = useArchivedDrafts<InvestmentData>('xirr', user?.id);
@@ -303,28 +301,35 @@ export function XIRRCalculator() {
               formatDisplay={formatDisplay}
             />
 
-            {/* View Comparisons Button */}
-            {getCount('xirr') > 0 && (
-              <button
-                onClick={() => setShowComparison(true)}
-                className="w-full mt-4 flex items-center justify-center gap-2 px-4 py-3 bg-zinc-800 rounded-xl text-sm font-bold text-zinc-300 hover:bg-zinc-700 border border-zinc-700 transition-all"
-              >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                </svg>
-                <span>View Comparisons ({getCount('xirr')})</span>
-              </button>
-            )}
+            {/* Comparison Buttons */}
+            <ComparisonButtons
+              calculatorType="xirr"
+              getComparisonData={() => {
+                const xirrValue = result.rate >= -1 && result.rate <= 100 ? result.rate : 0;
+                const rating = xirrValue >= 0.15 ? { grade: 'A+', label: 'Excellent' }
+                  : xirrValue >= 0.12 ? { grade: 'A', label: 'Great' }
+                  : xirrValue >= 0.08 ? { grade: 'B+', label: 'Good' }
+                  : xirrValue >= 0.05 ? { grade: 'B', label: 'Fair' }
+                  : { grade: 'C', label: 'Low' };
+
+                return {
+                  calculatorType: 'xirr' as const,
+                  label: data.property.projectName || 'XIRR Calc',
+                  currency,
+                  totalPrice: data.property.totalPrice / rate,
+                  projectedSalesPrice: data.exit.projectedSalesPrice / rate,
+                  location: data.property.location,
+                  xirr: xirrValue,
+                  totalInvested: result.totalInvested / rate,
+                  netProfit: result.netProfit / rate,
+                  holdPeriodMonths: result.holdPeriodMonths,
+                  investmentRating: rating,
+                } as Omit<XIRRComparisonData, 'timestamp'>;
+              }}
+            />
           </div>
         </div>
       </div>
-
-      {/* Comparison Modal */}
-      <ComparisonView
-        isOpen={showComparison}
-        onClose={() => setShowComparison(false)}
-        calculatorType="xirr"
-      />
 
       {/* Report Preview Modal */}
       <ReportPreviewModal

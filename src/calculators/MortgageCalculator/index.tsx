@@ -3,6 +3,7 @@ import { Toast } from '../../components/ui/Toast';
 import { DraftSelector } from '../../components/ui/DraftSelector';
 import { CalculatorToolbar } from '../../components/ui/CalculatorToolbar';
 import { ReportPreviewModal } from '../../components/ui/ReportPreviewModal';
+import { ComparisonButtons } from '../../components/ui/ComparisonButtons';
 import { generateMortgageReport } from '../../hooks/useReportGenerator';
 import { useArchivedDrafts, type ArchivedDraft } from '../../hooks/useArchivedDrafts';
 import { useAuth } from '../../lib/auth-context';
@@ -10,6 +11,7 @@ import { parseDecimalInput } from '../../utils/numberParsing';
 import { MortgageInputs } from './components/MortgageInputs';
 import { MortgageResults } from './components/MortgageResults';
 import { AmortizationTable } from './components/AmortizationTable';
+import type { MortgageComparisonData } from '../../lib/comparison-types';
 
 type CurrencyType = 'IDR' | 'USD' | 'AUD' | 'EUR' | 'GBP' | 'INR' | 'CNY' | 'AED' | 'RUB';
 
@@ -289,6 +291,36 @@ export function MortgageCalculator() {
                   showAdvanced={inputs.showAdvanced}
                   pmiRequired={inputs.pmiRequired}
                   hoaFeesMonthly={inputs.hoaFeesMonthly}
+                />
+
+                {/* Comparison Buttons */}
+                <ComparisonButtons
+                  calculatorType="mortgage"
+                  getComparisonData={() => {
+                    const rating = result.totalInterest <= result.principal * 0.3
+                      ? { grade: 'A+', label: 'Excellent' }
+                      : result.totalInterest <= result.principal * 0.5
+                      ? { grade: 'A', label: 'Great' }
+                      : result.totalInterest <= result.principal * 0.7
+                      ? { grade: 'B+', label: 'Good' }
+                      : result.totalInterest <= result.principal
+                      ? { grade: 'B', label: 'Fair' }
+                      : { grade: 'C', label: 'High Cost' };
+
+                    return {
+                      calculatorType: 'mortgage' as const,
+                      label: 'Mortgage Calc',
+                      currency: inputs.currency,
+                      loanAmount: inputs.loanAmount,
+                      interestRate: inputs.interestRate,
+                      loanTerm: inputs.loanTerm,
+                      monthlyPayment: result.monthlyPayment,
+                      totalPayment: result.totalPayment,
+                      totalInterest: result.totalInterest,
+                      totalMonthlyPayment: result.totalMonthlyPayment,
+                      investmentRating: rating,
+                    } as Omit<MortgageComparisonData, 'timestamp'>;
+                  }}
                 />
               </div>
             </div>

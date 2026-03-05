@@ -3,6 +3,7 @@ import { Toast } from '../../components/ui/Toast';
 import { CalculatorToolbar } from '../../components/ui/CalculatorToolbar';
 import { ReportPreviewModal } from '../../components/ui/ReportPreviewModal';
 import { DraftSelector } from '../../components/ui/DraftSelector';
+import { ComparisonButtons } from '../../components/ui/ComparisonButtons';
 import { generateFinancingReport } from '../../hooks/useReportGenerator';
 import { formatCurrency, parseDecimalInput } from '../../utils/numberParsing';
 import { Tooltip } from '../../components/ui/Tooltip';
@@ -11,6 +12,7 @@ import { AmortizationTable } from './components/AmortizationTable';
 import { LoanCard } from './components/LoanCard';
 import { useArchivedDrafts, type ArchivedDraft } from '../../hooks/useArchivedDrafts';
 import { useAuth } from '../../lib/auth-context';
+import type { FinancingComparisonData } from '../../lib/comparison-types';
 
 type CurrencyType = 'IDR' | 'USD' | 'AUD' | 'EUR' | 'GBP';
 type LenderType = 'bank' | 'developer' | 'private' | 'hard-money';
@@ -546,7 +548,9 @@ export function FinancingComparison() {
               {loanResults.some(l => l.lenderType === 'hard-money') && (
                 <div className="bg-orange-500/10 border border-orange-500/20 rounded-xl p-4">
                   <div className="flex items-center gap-2 mb-2">
-                    <span className="text-orange-400">💡</span>
+                    <svg className="w-4 h-4 text-orange-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                    </svg>
                     <h4 className="font-bold text-sm text-orange-400">Hard Money Tip</h4>
                   </div>
                   <p className="text-xs text-zinc-300">
@@ -554,6 +558,38 @@ export function FinancingComparison() {
                   </p>
                 </div>
               )}
+            </div>
+
+            {/* Comparison Buttons */}
+            <div className="mt-8">
+              <ComparisonButtons
+                calculatorType="financing"
+                getComparisonData={() => {
+                  const rating = winner
+                    ? winner.effectiveRate <= 6
+                      ? { grade: 'A+', label: 'Excellent' }
+                      : winner.effectiveRate <= 8
+                      ? { grade: 'A', label: 'Great' }
+                      : winner.effectiveRate <= 10
+                      ? { grade: 'B+', label: 'Good' }
+                      : winner.effectiveRate <= 12
+                      ? { grade: 'B', label: 'Fair' }
+                      : { grade: 'C', label: 'High Cost' }
+                    : { grade: 'N/A', label: 'No Data' };
+
+                  return {
+                    calculatorType: 'financing' as const,
+                    label: 'Financing Comparison',
+                    currency: inputs.currency,
+                    propertyValue: inputs.propertyValue,
+                    numberOfLoans: loanResults.length,
+                    bestLoanName: winner?.name || '',
+                    bestLoanRate: winner?.interestRate || 0,
+                    totalSavings: savingsFromWinner,
+                    investmentRating: rating,
+                  } as Omit<FinancingComparisonData, 'timestamp'>;
+                }}
+              />
             </div>
           </>
         )}

@@ -1,9 +1,7 @@
 import { useState, useMemo } from 'react';
 import type { PortfolioProject } from '../types/portfolio';
 import { generateProjectPDF } from '../utils/pdfExport';
-import { generateEnterpriseReport, generatePitchDeck } from '../utils/enterprisePdfGenerator';
 import { ScenarioCreator } from './ScenarioCreator';
-import { PitchDeckCustomizer } from './PitchDeckCustomizer';
 import { getScoreColor, recalculateProjectScore } from '../utils/investmentScoring';
 
 interface ProjectCardProps {
@@ -281,7 +279,6 @@ export function ProjectCard({
   const [showActions, setShowActions] = useState(false);
   const [showExportMenu, setShowExportMenu] = useState(false);
   const [showScenarioModal, setShowScenarioModal] = useState(false);
-  const [showPitchDeckModal, setShowPitchDeckModal] = useState(false);
 
   const categoryConfig = getCategoryConfig(project.calculatorId);
 
@@ -625,33 +622,7 @@ export function ProjectCard({
                   <svg className="w-4 h-4 text-zinc-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                   </svg>
-                  Summary PDF
-                </button>
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    generateEnterpriseReport(project);
-                    setShowExportMenu(false);
-                  }}
-                  className="w-full px-3 py-2.5 text-left text-xs text-zinc-300 hover:bg-zinc-700 flex items-center gap-2"
-                >
-                  <svg className="w-4 h-4 text-violet-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                  </svg>
-                  Enterprise Report
-                </button>
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    generatePitchDeck(project);
-                    setShowExportMenu(false);
-                  }}
-                  className="w-full px-3 py-2.5 text-left text-xs text-zinc-300 hover:bg-zinc-700 flex items-center gap-2"
-                >
-                  <svg className="w-4 h-4 text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z" />
-                  </svg>
-                  Pitch Deck
+                  Download PDF
                 </button>
 
                 {/* Tools Section */}
@@ -670,19 +641,6 @@ export function ProjectCard({
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
                   </svg>
                   What-if Scenario
-                </button>
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setShowPitchDeckModal(true);
-                    setShowExportMenu(false);
-                  }}
-                  className="w-full px-3 py-2.5 text-left text-xs text-zinc-300 hover:bg-zinc-700 flex items-center gap-2"
-                >
-                  <svg className="w-4 h-4 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                  </svg>
-                  Custom Pitch Deck
                 </button>
 
                 {/* Delete */}
@@ -718,15 +676,6 @@ export function ProjectCard({
           onClose={() => setShowScenarioModal(false)}
           isOpen={showScenarioModal}
           onOpenChange={setShowScenarioModal}
-        />
-      )}
-      {showPitchDeckModal && (
-        <PitchDeckCustomizer
-          project={project}
-          variant="default"
-          onClose={() => setShowPitchDeckModal(false)}
-          isOpen={showPitchDeckModal}
-          onOpenChange={setShowPitchDeckModal}
         />
       )}
     </div>

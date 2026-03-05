@@ -96,7 +96,7 @@ export function ScenarioComparison() {
                   type="checkbox"
                   checked={selectedProjects.includes(project.id)}
                   onChange={() => handleSelectProject(project.id)}
-                  className="w-4 h-4 accent-emerald-500 rounded"
+                  className="w-4 h-4 rounded border-zinc-600 bg-zinc-800 text-emerald-500 focus:ring-emerald-500 focus:ring-offset-zinc-900"
                 />
                 <div className="ml-3">
                   <div className="font-medium text-white">{project.projectName}</div>
@@ -166,7 +166,10 @@ export function ScenarioComparison() {
               onClick={() => setShowSavePrompt(true)}
               className="px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition font-medium flex items-center gap-2"
             >
-              💾 Save Comparison
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
+              </svg>
+              Save Comparison
             </button>
             <button
               onClick={() => generatePortfolioComparisionPDF(selectedProjectsList)}
@@ -184,7 +187,10 @@ export function ScenarioComparison() {
               }}
               className="px-4 py-2 bg-zinc-700 text-zinc-200 rounded-lg hover:bg-zinc-600 transition font-medium flex items-center gap-2"
             >
-              📥 CSV Export
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+              CSV Export
             </button>
           </div>
         </div>
