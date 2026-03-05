@@ -67,37 +67,33 @@ export function DraftSelector<T>({
 
   return (
     <div className="relative" ref={dropdownRef}>
-      {/* Trigger Button - Dark Theme */}
+      {/* Trigger Button - Compact */}
       <button
         onClick={() => setIsOpen(!isOpen)}
         className={`
-          group relative flex items-center gap-3 px-4 py-2.5
+          group relative flex items-center gap-2 px-3 py-2
           bg-zinc-800/80 backdrop-blur-sm
           border border-zinc-700/60
-          rounded-xl
-          shadow-[0_1px_2px_rgba(0,0,0,0.2)]
+          rounded-lg
           hover:bg-zinc-700/80
           hover:border-zinc-600/60
-          hover:shadow-[0_2px_8px_rgba(0,0,0,0.3)]
-          active:scale-[0.99]
-          transition-all duration-200 ease-out
-          ${isOpen ? 'ring-2 ring-emerald-500/30 border-emerald-500/50' : ''}
+          transition-all duration-200
+          ${isOpen ? 'ring-1 ring-emerald-500/30 border-emerald-500/50' : ''}
         `}
+        title={currentName || 'Saved Drafts'}
       >
         {/* Folder Icon */}
-        <div className="relative flex items-center justify-center w-7 h-7 rounded-lg bg-emerald-500/20 border border-emerald-500/30">
-          <svg className="w-4 h-4 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.75}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
-          </svg>
-        </div>
+        <svg className="w-4 h-4 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
+        </svg>
 
-        <span className="text-sm font-semibold text-zinc-200 tracking-tight">
-          {currentName || 'Saved Drafts'}
+        <span className="text-sm font-medium text-zinc-200 max-w-[100px] truncate">
+          {currentName || 'Drafts'}
         </span>
 
-        {/* Chevron with rotation animation */}
+        {/* Chevron */}
         <svg
-          className={`w-4 h-4 text-zinc-400 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}
+          className={`w-3.5 h-3.5 text-zinc-400 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
@@ -108,7 +104,7 @@ export function DraftSelector<T>({
 
         {/* Count Badge */}
         {drafts.length > 0 && (
-          <span className="absolute -top-1.5 -right-1.5 flex items-center justify-center min-w-[20px] h-5 px-1.5 text-[10px] font-bold text-white bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-full shadow-sm ring-2 ring-zinc-900">
+          <span className="absolute -top-1 -right-1 flex items-center justify-center min-w-[16px] h-4 px-1 text-[9px] font-bold text-white bg-emerald-500 rounded-full">
             {drafts.length}
           </span>
         )}
