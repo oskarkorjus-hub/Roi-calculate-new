@@ -300,12 +300,7 @@ export function XIRRCalculator() {
             <ProjectForecast
               result={result}
               symbol={symbol}
-              currency={currency}
-              data={data}
               formatDisplay={formatDisplay}
-              onExportPDF={handleExportPDF}
-              onComparisonSaved={() => setToast({ message: 'Saved to comparison!', type: 'success' })}
-              isPaymentValid={isPaymentValid}
             />
 
             {/* View Comparisons Button */}
