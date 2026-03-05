@@ -1,9 +1,80 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence, useInView } from 'framer-motion';
+
+// FAQ Accordion Item
+const AccordionItem = ({
+  question,
+  answer,
+  isOpen,
+  onClick,
+  index
+}: {
+  question: string;
+  answer: string;
+  isOpen: boolean;
+  onClick: () => void;
+  index: number;
+}) => {
+  const ref = useRef<HTMLDivElement>(null);
+  const isInView = useInView(ref, { once: true, margin: '-50px' });
+
+  return (
+    <motion.div
+      ref={ref}
+      initial={{ opacity: 0, y: 20 }}
+      animate={isInView ? { opacity: 1, y: 0 } : {}}
+      transition={{ duration: 0.4, delay: index * 0.05 }}
+    >
+      <div
+        className={`rounded-xl overflow-hidden transition-all duration-300 ${
+          isOpen
+            ? 'border-2 border-emerald-500 bg-zinc-900/80'
+            : 'border border-zinc-800 bg-zinc-900/50 hover:border-zinc-700'
+        }`}
+      >
+        <button
+          onClick={onClick}
+          className="w-full flex items-center justify-between p-4 sm:p-6 text-left min-h-[56px] sm:min-h-[64px]"
+        >
+          <span className={`font-bold text-base sm:text-lg transition-colors pr-3 ${isOpen ? 'text-white' : 'text-zinc-200'}`}>
+            {question}
+          </span>
+          <motion.svg
+            className={`w-5 h-5 flex-shrink-0 ${isOpen ? 'text-emerald-400' : 'text-zinc-500'}`}
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            animate={{ rotate: isOpen ? 180 : 0 }}
+            transition={{ duration: 0.3 }}
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+          </motion.svg>
+        </button>
+
+        <AnimatePresence initial={false}>
+          {isOpen && (
+            <motion.div
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: 'auto', opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
+              className="overflow-hidden"
+            >
+              <div className="px-4 sm:px-6 pb-4 sm:pb-6 text-sm sm:text-base text-zinc-400 leading-relaxed border-t border-zinc-800/50 pt-3 sm:pt-4">
+                {answer}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+    </motion.div>
+  );
+};
 
 export function Pricing() {
   const [billingPeriod, setBillingPeriod] = useState<'monthly' | 'annual'>('annual');
+  const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(0);
 
   const features = [
     { name: 'Calculator Uses', free: '3/month', pro: 'Unlimited', enterprise: 'Unlimited' },
@@ -299,37 +370,34 @@ export function Pricing() {
           <div className="space-y-4">
             {[
               {
-                q: 'Can I upgrade from Free to Pro anytime?',
-                a: 'Yes! Upgrade instantly with one click. Pro features activate immediately and you only pay for the remaining billing period.',
+                question: 'Can I upgrade from Free to Pro anytime?',
+                answer: 'Yes! Upgrade instantly with one click. Pro features activate immediately and you only pay for the remaining billing period.',
               },
               {
-                q: 'What happens to my data if I downgrade?',
-                a: "Your projects stay saved in your account. You'll just have limited access until you upgrade again. We never delete your data.",
+                question: 'What happens to my data if I downgrade?',
+                answer: "Your projects stay saved in your account. You'll just have limited access until you upgrade again. We never delete your data.",
               },
               {
-                q: 'Is there a long-term contract required?',
-                a: 'No contracts. Cancel anytime with one click, no questions asked. You have full control over your subscription.',
+                question: 'Is there a long-term contract required?',
+                answer: 'No contracts. Cancel anytime with one click, no questions asked. You have full control over your subscription.',
               },
               {
-                q: 'Do you offer refunds?',
-                a: "Yes, we offer a 30-day money-back guarantee. If you're not satisfied for any reason, we'll refund your payment in full.",
+                question: 'Do you offer refunds?',
+                answer: "Yes, we offer a 30-day money-back guarantee. If you're not satisfied for any reason, we'll refund your payment in full.",
               },
               {
-                q: 'How do you count "calculator uses"?',
-                a: 'Each time you run a calculation and view results counts as one use. The monthly limit resets on the first of each month. Pro members have unlimited uses.',
+                question: 'How do you count "calculator uses"?',
+                answer: 'Each time you run a calculation and view results counts as one use. The monthly limit resets on the first of each month. Pro members have unlimited uses.',
               },
             ].map((faq, idx) => (
-              <motion.div
+              <AccordionItem
                 key={idx}
-                initial={{ opacity: 0, y: 10 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: idx * 0.05 }}
-                className="p-6 bg-zinc-900/50 border border-zinc-800 rounded-xl"
-              >
-                <h3 className="font-semibold text-white mb-2">{faq.q}</h3>
-                <p className="text-zinc-400 text-sm leading-relaxed">{faq.a}</p>
-              </motion.div>
+                question={faq.question}
+                answer={faq.answer}
+                isOpen={openFaqIndex === idx}
+                onClick={() => setOpenFaqIndex(openFaqIndex === idx ? null : idx)}
+                index={idx}
+              />
             ))}
           </div>
         </div>
