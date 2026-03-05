@@ -10,22 +10,45 @@ interface Props {
   currentStructure: OwnershipType;
 }
 
+function OwnershipIcon({ type, className }: { type: OwnershipType; className?: string }) {
+  const iconClass = className || 'w-5 h-5';
+  switch (type) {
+    case 'pt':
+      return (
+        <svg className={iconClass} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+        </svg>
+      );
+    case 'freehold':
+      return (
+        <svg className={iconClass} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+        </svg>
+      );
+    case 'leasehold':
+      return (
+        <svg className={iconClass} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+        </svg>
+      );
+    default:
+      return null;
+  }
+}
+
 const ownershipInfo = {
   pt: {
     label: 'PT (Company)',
-    icon: '🏢',
     pros: ['Deductible expenses', 'Depreciation benefits', 'Business income treatment'],
     cons: ['Corporate tax on gains', 'Administrative overhead', 'PT setup costs'],
   },
   freehold: {
     label: 'Freehold (Individual)',
-    icon: '🏠',
     pros: ['Simple ownership', 'No corporate overhead', 'Personal asset protection'],
     cons: ['Higher capital gains rate', 'No expense deductions', 'No depreciation benefit'],
   },
   leasehold: {
     label: 'Leasehold',
-    icon: '📋',
     pros: ['Lowest transfer tax (10%)', 'Simple structure', 'Lower entry barriers'],
     cons: ['Limited rights', 'Time-limited ownership', 'Lease renewal risk'],
   },
@@ -57,7 +80,7 @@ export function OwnershipComparison({ result, symbol, currency, currentStructure
               <div key={type} className="space-y-2">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <span className="text-lg">{info.icon}</span>
+                    <OwnershipIcon type={type} className="w-5 h-5 text-zinc-400" />
                     <span className="text-sm font-medium text-white">{info.label}</span>
                     {isOptimal && (
                       <span className="px-2 py-0.5 text-[10px] font-bold bg-emerald-500/20 text-emerald-400 rounded-full">

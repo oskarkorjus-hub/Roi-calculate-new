@@ -121,7 +121,10 @@ export function SensitivityChart({ baseScore, factors }: Props) {
       <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-lg p-4">
           <h4 className="font-medium text-emerald-400 mb-2 flex items-center gap-2">
-            <span>📈</span> Highest Impact Improvements
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+            </svg>
+            Highest Impact Improvements
           </h4>
           <ul className="space-y-1">
             {sensitivityData.slice(0, 3).map((item, index) => (
@@ -135,7 +138,10 @@ export function SensitivityChart({ baseScore, factors }: Props) {
 
         <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-4">
           <h4 className="font-medium text-red-400 mb-2 flex items-center gap-2">
-            <span>⚠️</span> Biggest Risk Exposures
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
+            Biggest Risk Exposures
           </h4>
           <ul className="space-y-1">
             {sensitivityData

@@ -97,66 +97,253 @@ export function generateProjectPDF(
   const categoryColor = getCategoryColor(category);
   const pageWidth = doc.internal.pageSize.getWidth();
   const pageHeight = doc.internal.pageSize.getHeight();
-  let yPosition = 20;
+  const margin = 20;
+  const contentWidth = pageWidth - margin * 2;
 
-  // Header
+  // Enterprise color palette
+  const COLORS = {
+    primary: { r: 16, g: 185, b: 129 },      // emerald-500
+    primaryDark: { r: 5, g: 150, b: 105 },   // emerald-600
+    dark: { r: 24, g: 24, b: 27 },           // zinc-900
+    gray: { r: 113, g: 113, b: 122 },        // zinc-500
+    lightGray: { r: 244, g: 244, b: 245 },   // zinc-100
+    white: { r: 255, g: 255, b: 255 },
+  };
+
+  let y = 0;
+
+  // Helper: Draw gradient header
+  const drawHeader = () => {
+    const headerHeight = 35;
+    for (let i = 0; i < headerHeight; i++) {
+      const ratio = i / headerHeight;
+      const r = Math.round(COLORS.primary.r + (COLORS.primaryDark.r - COLORS.primary.r) * ratio);
+      const g = Math.round(COLORS.primary.g + (COLORS.primaryDark.g - COLORS.primary.g) * ratio);
+      const b = Math.round(COLORS.primary.b + (COLORS.primaryDark.b - COLORS.primary.b) * ratio);
+      doc.setFillColor(r, g, b);
+      doc.rect(0, i, pageWidth, 1, 'F');
+    }
+
+    // Logo text
+    doc.setFontSize(18);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(COLORS.white.r, COLORS.white.g, COLORS.white.b);
+    doc.text('ROI CALCULATE', margin, 22);
+
+    // Report type badge
+    doc.setFontSize(9);
+    doc.setFont('helvetica', 'normal');
+    doc.setFillColor(255, 255, 255);
+    doc.roundedRect(pageWidth - margin - 40, 12, 40, 12, 2, 2, 'F');
+    doc.setTextColor(COLORS.primaryDark.r, COLORS.primaryDark.g, COLORS.primaryDark.b);
+    doc.text('Project Report', pageWidth - margin - 36, 20);
+
+    return headerHeight + 10;
+  };
+
+  // Helper: Add footer to all pages
+  const addFooters = () => {
+    const totalPages = doc.getNumberOfPages();
+    for (let i = 1; i <= totalPages; i++) {
+      doc.setPage(i);
+      doc.setDrawColor(COLORS.lightGray.r, COLORS.lightGray.g, COLORS.lightGray.b);
+      doc.line(margin, pageHeight - 15, pageWidth - margin, pageHeight - 15);
+      doc.setFontSize(8);
+      doc.setTextColor(COLORS.gray.r, COLORS.gray.g, COLORS.gray.b);
+      doc.text('ROI Calculate | roicalculate.com', margin, pageHeight - 10);
+      doc.text(`Page ${i} of ${totalPages}`, pageWidth - margin, pageHeight - 10, { align: 'right' });
+    }
+  };
+
+  // Get project rating
+  const getProjectRating = (project: PortfolioProject, category: CalculatorCategory) => {
+    if (category === 'financing') {
+      const rate = project.data?.interestRate || 0;
+      if (rate <= 4) return { grade: 'A+', label: 'Excellent Rate', color: colors.success };
+      if (rate <= 5) return { grade: 'A', label: 'Great Rate', color: colors.success };
+      if (rate <= 6) return { grade: 'B+', label: 'Good Rate', color: colors.blue };
+      if (rate <= 7) return { grade: 'B', label: 'Fair Rate', color: colors.warning };
+      return { grade: 'C', label: 'High Rate', color: colors.danger };
+    }
+    if (category === 'budget') {
+      const health = project.data?.calculations?.healthScore || 0;
+      if (health >= 90) return { grade: 'A+', label: 'On Track', color: colors.success };
+      if (health >= 75) return { grade: 'A', label: 'Good Health', color: colors.success };
+      if (health >= 60) return { grade: 'B', label: 'Moderate', color: colors.warning };
+      return { grade: 'C', label: 'At Risk', color: colors.danger };
+    }
+    const score = project.investmentScore || 0;
+    if (score >= 85) return { grade: 'A+', label: 'Excellent', color: colors.success };
+    if (score >= 75) return { grade: 'A', label: 'Very Good', color: colors.success };
+    if (score >= 65) return { grade: 'B+', label: 'Good', color: colors.blue };
+    if (score >= 55) return { grade: 'B', label: 'Above Avg', color: colors.warning };
+    if (score >= 45) return { grade: 'C', label: 'Average', color: colors.warning };
+    return { grade: 'D', label: 'Review', color: colors.danger };
+  };
+
+  const rating = getProjectRating(project, category);
+
+  // === PAGE 1 ===
   if (includeBranding) {
-    doc.setFontSize(24);
-    doc.setTextColor(categoryColor.r, categoryColor.g, categoryColor.b);
-    doc.text('ROI Calculate', 20, yPosition);
-    yPosition += 12;
+    y = drawHeader();
+  } else {
+    y = 20;
   }
 
-  // Project Title
-  doc.setFontSize(18);
-  doc.setTextColor(0, 0, 0);
-  doc.text(project.projectName, 20, yPosition);
-  yPosition += 8;
+  // Title section
+  doc.setFontSize(22);
+  doc.setFont('helvetica', 'bold');
+  doc.setTextColor(COLORS.dark.r, COLORS.dark.g, COLORS.dark.b);
+  doc.text(project.projectName, margin, y + 8);
 
-  // Project Details
-  doc.setFontSize(11);
-  doc.setTextColor(107, 114, 128); // Gray-500
-  doc.text(`Location: ${project.location}`, 20, yPosition);
-  yPosition += 6;
-  doc.text(`Date: ${new Date(project.createdAt).toLocaleDateString()}`, 20, yPosition);
-  yPosition += 6;
-  doc.setTextColor(categoryColor.r, categoryColor.g, categoryColor.b);
-  doc.text(`Calculator: ${getCalculatorDisplayName(project.calculatorId)}`, 20, yPosition);
-  doc.setTextColor(107, 114, 128);
-  yPosition += 12;
+  doc.setFontSize(10);
+  doc.setFont('helvetica', 'normal');
+  doc.setTextColor(COLORS.gray.r, COLORS.gray.g, COLORS.gray.b);
+  doc.text(`${project.location} | ${new Date(project.createdAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}`, margin, y + 16);
 
-  // Key Metrics Section - Calculator Specific
-  addMetricsSection(doc, project, 20, yPosition, category, categoryColor);
-  yPosition += 80;
+  // Calculator type badge
+  doc.setFillColor(categoryColor.r, categoryColor.g, categoryColor.b);
+  const calcName = getCalculatorDisplayName(project.calculatorId);
+  const calcNameWidth = doc.getTextWidth(calcName) + 8;
+  doc.roundedRect(margin, y + 20, calcNameWidth, 7, 1, 1, 'F');
+  doc.setFontSize(8);
+  doc.setTextColor(255, 255, 255);
+  doc.text(calcName, margin + 4, y + 25);
 
-  // Add new page if needed
-  if (yPosition > pageHeight - 40) {
-    doc.addPage();
-    yPosition = 20;
-  }
+  y += 38;
 
-  // Analysis Section - Calculator Specific
+  // Rating Card
+  const ratingCardX = margin;
+  const ratingCardY = y;
+  const ratingCardWidth = 50;
+  const ratingCardHeight = 40;
+
+  doc.setFillColor(rating.color.r, rating.color.g, rating.color.b);
+  doc.roundedRect(ratingCardX, ratingCardY, ratingCardWidth, ratingCardHeight, 3, 3, 'F');
+
+  doc.setFontSize(28);
+  doc.setFont('helvetica', 'bold');
+  doc.setTextColor(COLORS.white.r, COLORS.white.g, COLORS.white.b);
+  doc.text(rating.grade, ratingCardX + ratingCardWidth / 2, ratingCardY + 20, { align: 'center' });
+
+  doc.setFontSize(8);
+  doc.setFont('helvetica', 'normal');
+  doc.text(rating.label.toUpperCase(), ratingCardX + ratingCardWidth / 2, ratingCardY + 30, { align: 'center' });
+
+  // Key Metrics Grid (beside rating card)
+  const metrics = getMetricsForCategory(project, category, categoryColor);
+  const metricsX = ratingCardX + ratingCardWidth + 10;
+  const metricWidth = (contentWidth - ratingCardWidth - 10) / 3 - 3;
+  const metricHeight = 18;
+
+  metrics.slice(0, 6).forEach((metric, idx) => {
+    const col = idx % 3;
+    const row = Math.floor(idx / 3);
+    const mx = metricsX + col * (metricWidth + 3);
+    const my = ratingCardY + row * (metricHeight + 4);
+
+    doc.setFillColor(COLORS.lightGray.r, COLORS.lightGray.g, COLORS.lightGray.b);
+    doc.roundedRect(mx, my, metricWidth, metricHeight, 2, 2, 'F');
+
+    // Colored left accent
+    doc.setFillColor(metric.color.r, metric.color.g, metric.color.b);
+    doc.rect(mx, my, 2, metricHeight, 'F');
+
+    doc.setFontSize(7);
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(COLORS.gray.r, COLORS.gray.g, COLORS.gray.b);
+    doc.text(String(metric.label).toUpperCase(), mx + 5, my + 6);
+
+    doc.setFontSize(11);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(COLORS.dark.r, COLORS.dark.g, COLORS.dark.b);
+    doc.text(String(metric.value), mx + 5, my + 14);
+  });
+
+  y = ratingCardY + ratingCardHeight + 15;
+
+  // Analysis Section
   if (includeAnalysis) {
-    addAnalysisSection(doc, project, 20, yPosition, category);
-    yPosition += 60;
+    // Section header with colored bar
+    doc.setFillColor(categoryColor.r, categoryColor.g, categoryColor.b);
+    doc.rect(margin, y, 3, 10, 'F');
+
+    const analysisTitles: Record<CalculatorCategory, string> = {
+      investment: 'Investment Analysis',
+      financing: 'Loan Analysis',
+      budget: 'Budget Analysis',
+      tax: 'Tax Analysis',
+      risk: 'Risk Analysis',
+      npv: 'NPV Analysis',
+    };
+
+    doc.setFontSize(12);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(COLORS.dark.r, COLORS.dark.g, COLORS.dark.b);
+    doc.text(analysisTitles[category], margin + 8, y + 7);
+
+    y += 18;
+
+    // Analysis points
+    const analysisText = getAnalysisForCategory(project, category);
+    doc.setFontSize(9);
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(COLORS.dark.r, COLORS.dark.g, COLORS.dark.b);
+
+    analysisText.forEach((text, idx) => {
+      doc.setFillColor(categoryColor.r, categoryColor.g, categoryColor.b);
+      doc.circle(margin + 3, y + 2, 1.5, 'F');
+      doc.text(text, margin + 10, y + 4);
+      y += 8;
+    });
+
+    y += 10;
   }
 
-  // Summary Section - Calculator Specific
-  addSummarySection(doc, project, 20, yPosition, category);
+  // Summary Section
+  // Section header with colored bar
+  doc.setFillColor(categoryColor.r, categoryColor.g, categoryColor.b);
+  doc.rect(margin, y, 3, 10, 'F');
 
-  // Footer
+  const summaryTitles: Record<CalculatorCategory, string> = {
+    investment: 'Investment Summary',
+    financing: 'Loan Summary',
+    budget: 'Budget Summary',
+    tax: 'Tax Summary',
+    risk: 'Risk Summary',
+    npv: 'NPV Summary',
+  };
+
+  doc.setFontSize(12);
+  doc.setFont('helvetica', 'bold');
+  doc.setTextColor(COLORS.dark.r, COLORS.dark.g, COLORS.dark.b);
+  doc.text(summaryTitles[category], margin + 8, y + 7);
+
+  y += 15;
+
+  // Summary text
+  const summaryText = getSummaryForCategory(project, category);
   doc.setFontSize(9);
-  doc.setTextColor(107, 114, 128);
-  const pageCount = (doc as any).internal.pages.length - 1;
-  for (let i = 1; i <= pageCount; i++) {
-    (doc as any).setPage(i);
-    doc.text(
-      `Page ${i} of ${pageCount} | Generated ${new Date().toLocaleString()}`,
-      pageWidth / 2,
-      pageHeight - 10,
-      { align: 'center' }
-    );
+  doc.setFont('helvetica', 'normal');
+  doc.setTextColor(COLORS.dark.r, COLORS.dark.g, COLORS.dark.b);
+
+  const summaryLines = doc.splitTextToSize(summaryText, contentWidth);
+  doc.text(summaryLines, margin, y + 4);
+
+  y += summaryLines.length * 5 + 15;
+
+  // Disclaimer
+  if (y + 25 < pageHeight - 25) {
+    doc.setFillColor(250, 250, 250);
+    doc.roundedRect(margin, y, contentWidth, 18, 2, 2, 'F');
+    doc.setFontSize(7);
+    doc.setTextColor(COLORS.gray.r, COLORS.gray.g, COLORS.gray.b);
+    doc.text('Disclaimer: This report is for informational purposes only and does not constitute financial advice.', margin + 5, y + 7);
+    doc.text('Past performance does not guarantee future results. Consult a financial advisor before making investment decisions.', margin + 5, y + 13);
   }
+
+  // Add footers
+  addFooters();
 
   // Save
   doc.save(`${project.projectName.replace(/\s+/g, '-')}-report.pdf`);

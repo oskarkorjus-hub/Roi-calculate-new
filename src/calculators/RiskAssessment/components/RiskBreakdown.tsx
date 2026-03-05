@@ -4,12 +4,48 @@ interface Props {
   factors: RiskFactor[];
 }
 
-const categoryColors: Record<string, { bg: string; border: string; text: string; icon: string }> = {
-  'Financial': { bg: 'bg-cyan-500/10', border: 'border-cyan-500/30', text: 'text-cyan-400', icon: '💰' },
-  'Market': { bg: 'bg-purple-500/10', border: 'border-purple-500/30', text: 'text-purple-400', icon: '📊' },
-  'Regulatory': { bg: 'bg-amber-500/10', border: 'border-amber-500/30', text: 'text-amber-400', icon: '⚖️' },
-  'Property': { bg: 'bg-pink-500/10', border: 'border-pink-500/30', text: 'text-pink-400', icon: '🏠' },
+const categoryColors: Record<string, { bg: string; border: string; text: string }> = {
+  'Financial': { bg: 'bg-cyan-500/10', border: 'border-cyan-500/30', text: 'text-cyan-400' },
+  'Market': { bg: 'bg-purple-500/10', border: 'border-purple-500/30', text: 'text-purple-400' },
+  'Regulatory': { bg: 'bg-amber-500/10', border: 'border-amber-500/30', text: 'text-amber-400' },
+  'Property': { bg: 'bg-pink-500/10', border: 'border-pink-500/30', text: 'text-pink-400' },
 };
+
+function CategoryIcon({ category, className }: { category: string; className?: string }) {
+  const iconClass = className || 'w-5 h-5';
+  switch (category) {
+    case 'Financial':
+      return (
+        <svg className={iconClass} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+      );
+    case 'Market':
+      return (
+        <svg className={iconClass} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+        </svg>
+      );
+    case 'Regulatory':
+      return (
+        <svg className={iconClass} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3" />
+        </svg>
+      );
+    case 'Property':
+      return (
+        <svg className={iconClass} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+        </svg>
+      );
+    default:
+      return (
+        <svg className={iconClass} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+        </svg>
+      );
+  }
+}
 
 export function RiskBreakdown({ factors }: Props) {
   // Group factors by category
@@ -49,7 +85,10 @@ export function RiskBreakdown({ factors }: Props) {
       {/* Top Risk Factors */}
       <div className="rounded-xl border border-red-500/30 bg-red-500/5 p-6">
         <h3 className="text-lg font-bold text-red-400 mb-4 flex items-center gap-2">
-          <span>⚠️</span> Top Risk Factors
+          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+          </svg>
+          Top Risk Factors
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-3">
           {topRisks.map((factor, index) => (
@@ -87,7 +126,7 @@ export function RiskBreakdown({ factors }: Props) {
             >
               <div className="flex items-center justify-between mb-4">
                 <h3 className={`text-lg font-bold ${colors.text} flex items-center gap-2`}>
-                  <span>{colors.icon}</span> {category} Risk
+                  <CategoryIcon category={category} /> {category} Risk
                 </h3>
                 <div className="text-right">
                   <p className={`text-2xl font-bold ${
