@@ -97,10 +97,10 @@ export function Contact() {
                 <div>
                   <h3 className="font-semibold text-zinc-300 mb-2">Email</h3>
                   <a
-                    href="mailto:hello@roicalculate.com"
+                    href="mailto:hello@investlandgroup.com"
                     className="text-emerald-400 hover:text-emerald-300 transition-colors"
                   >
-                    hello@roicalculate.com
+                    hello@investlandgroup.com
                   </a>
                   <p className="text-sm text-zinc-500 mt-1">
                     We respond within 24 hours
