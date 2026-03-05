@@ -1,10 +1,10 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import type { PortfolioProject } from '../types/portfolio';
 import { generateProjectPDF } from '../utils/pdfExport';
 import { generateEnterpriseReport, generatePitchDeck } from '../utils/enterprisePdfGenerator';
 import { ScenarioCreator } from './ScenarioCreator';
 import { PitchDeckCustomizer } from './PitchDeckCustomizer';
-import { getScoreColor } from '../utils/investmentScoring';
+import { getScoreColor, recalculateProjectScore } from '../utils/investmentScoring';
 
 interface ProjectCardProps {
   project: PortfolioProject;
@@ -285,6 +285,27 @@ export function ProjectCard({
 
   const categoryConfig = getCategoryConfig(project.calculatorId);
 
+  // Recalculate investment score using calculator-specific algorithm
+  const recalculatedScore = useMemo(() => {
+    if (!categoryConfig.showScore) return null;
+    return recalculateProjectScore({
+      calculatorId: project.calculatorId,
+      roi: project.roi,
+      avgCashFlow: project.avgCashFlow,
+      totalInvestment: project.totalInvestment,
+      breakEvenMonths: project.breakEvenMonths,
+      location: project.location,
+      data: project.data,
+    });
+  }, [project, categoryConfig.showScore]);
+
+  // Use recalculated score if available, otherwise fall back to stored score
+  const displayScore = recalculatedScore?.investmentScore ?? project.investmentScore ?? 0;
+  const displayRoiScore = recalculatedScore?.roi_score ?? project.roi_score ?? 0;
+  const displayCashflowScore = recalculatedScore?.cashflow_score ?? project.cashflow_score ?? 0;
+  const displayStabilityScore = recalculatedScore?.stability_score ?? project.stability_score ?? 0;
+  const displayLocationScore = recalculatedScore?.location_score ?? project.location_score ?? 0;
+
   const getStrategyConfig = (strategy?: string) => {
     switch (strategy) {
       case 'flip':
@@ -322,8 +343,8 @@ export function ProjectCard({
 
   const strategyConfig = getStrategyConfig(project.strategy);
   const statusConfig = getStatusConfig(project.status);
-  const riskInfo = getRiskLabel(project.investmentScore || 0);
-  const scoreColor = categoryConfig.showScore ? getScoreColor(project.investmentScore || 0) : categoryConfig.accentColor;
+  const riskInfo = getRiskLabel(displayScore);
+  const scoreColor = categoryConfig.showScore ? getScoreColor(displayScore) : categoryConfig.accentColor;
 
   // Compact view for dashboards
   if (compact) {
@@ -339,7 +360,7 @@ export function ProjectCard({
               className="flex-shrink-0 w-10 h-10 rounded-lg flex items-center justify-center font-bold text-sm"
               style={{ backgroundColor: `${scoreColor}15`, color: scoreColor }}
             >
-              {Math.round(project.investmentScore || 0)}
+              {Math.round(displayScore)}
             </div>
           )}
         </div>
@@ -409,7 +430,7 @@ export function ProjectCard({
                 style={{ backgroundColor: `${scoreColor}12` }}
               >
                 <span className="text-lg font-bold" style={{ color: scoreColor }}>
-                  {Math.round(project.investmentScore || 0)}
+                  {Math.round(displayScore)}
                 </span>
                 <span className="text-xs text-zinc-500">/100</span>
               </div>
@@ -471,7 +492,7 @@ export function ProjectCard({
               <div className="flex-1 h-1 bg-zinc-700 rounded-full overflow-hidden">
                 <div
                   className="h-full bg-emerald-500 rounded-full transition-all"
-                  style={{ width: `${Math.min(((project.roi_score || 0) / 5) * 100, 100)}%` }}
+                  style={{ width: `${Math.min((displayRoiScore / 5) * 100, 100)}%` }}
                 />
               </div>
             </div>
@@ -480,7 +501,7 @@ export function ProjectCard({
               <div className="flex-1 h-1 bg-zinc-700 rounded-full overflow-hidden">
                 <div
                   className="h-full bg-blue-500 rounded-full transition-all"
-                  style={{ width: `${Math.min(((project.cashflow_score || 0) / 3) * 100, 100)}%` }}
+                  style={{ width: `${Math.min((displayCashflowScore / 3) * 100, 100)}%` }}
                 />
               </div>
             </div>
@@ -489,7 +510,7 @@ export function ProjectCard({
               <div className="flex-1 h-1 bg-zinc-700 rounded-full overflow-hidden">
                 <div
                   className="h-full bg-yellow-500 rounded-full transition-all"
-                  style={{ width: `${Math.min(((project.stability_score || 0) / 2) * 100, 100)}%` }}
+                  style={{ width: `${Math.min((displayStabilityScore / 2) * 100, 100)}%` }}
                 />
               </div>
             </div>
@@ -498,7 +519,7 @@ export function ProjectCard({
               <div className="flex-1 h-1 bg-zinc-700 rounded-full overflow-hidden">
                 <div
                   className="h-full bg-purple-500 rounded-full transition-all"
-                  style={{ width: `${Math.min((project.location_score || 0) * 100, 100)}%` }}
+                  style={{ width: `${Math.min(displayLocationScore * 100, 100)}%` }}
                 />
               </div>
             </div>

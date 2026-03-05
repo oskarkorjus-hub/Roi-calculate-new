@@ -500,3 +500,55 @@ export function getScoreBgColor(score: number): string {
   if (score >= 50) return 'bg-orange-50';
   return 'bg-red-50';
 }
+
+/**
+ * Recalculate investment score for a portfolio project
+ * Uses calculator-specific algorithm based on the project's calculatorId
+ */
+export function recalculateProjectScore(project: {
+  calculatorId: string;
+  roi?: number;
+  avgCashFlow?: number;
+  totalInvestment?: number;
+  breakEvenMonths?: number;
+  location?: string;
+  data?: Record<string, any>;
+}): InvestmentScoreComponents {
+  return calculateInvestmentScore(
+    project.roi || 0,
+    project.avgCashFlow || 0,
+    project.totalInvestment || 0,
+    project.breakEvenMonths || 0,
+    project.location || '',
+    project.calculatorId,
+    project.data
+  );
+}
+
+/**
+ * Get scoring explanation for a calculator type
+ */
+export function getScoringExplanation(calculatorType: string): string {
+  const config = CALCULATOR_SCORING_CONFIGS[calculatorType];
+  if (!config) {
+    return 'Generic scoring: 40% ROI, 30% Cash Flow, 20% Stability, 10% Location';
+  }
+
+  const explanations: Record<string, string> = {
+    'rental-roi': 'Weighted for rental income: 35% ROI (max at 15%), 35% Cash Flow Yield (max at 8%), 20% Break-even, 10% Location',
+    'rental-projection': 'Weighted for rental projections: 30% ROI, 40% Cash Flow (max at 10% yield), 20% Stability, 10% Location',
+    'cashflow': 'Optimized for cash flow analysis: 20% ROI, 50% Cash Flow Performance, 20% Stability, 10% Location',
+    'cap-rate': 'Cap rate focused: 50% Cap Rate (excellent at 8%+), 25% Cash Flow, 15% Stability, 10% Location',
+    'xirr': 'Development/XIRR optimized: 45% XIRR (excellent at 12%+), 25% Cash Flow, 20% Timeline (up to 48mo), 10% Location',
+    'irr': 'IRR focused: 50% IRR (excellent at 15%+), 20% Cash Flow, 20% Stability, 10% Location',
+    'npv': 'NPV analysis: 30% ROI, 30% Cash Flow, 30% Time Value + 20% Profitability Index bonus',
+    'dev-feasibility': 'Development scoring: 35% ROI (max 25%), 15% Cash, 25% Timeline + 20% Profit Margin bonus',
+    'mortgage': 'Debt service scoring: 10% Rate, 40% Payment Affordability, 40% Term Stability, 10% Location',
+    'financing': 'Financing analysis: 10% Rate, 40% Payment Affordability, 40% Term Stability, 10% Location',
+    'indonesia-tax': 'Tax optimized: 40% After-tax ROI, 30% Cash Flow + 20% Tax Efficiency bonus',
+    'dev-budget': 'Budget tracking: 20% ROI, 20% Cash, 30% Timeline + 30% Budget Variance bonus',
+    'risk-assessment': 'Risk adjusted: 30% ROI, 20% Cash, 20% Stability + 30% Risk Score bonus',
+  };
+
+  return explanations[calculatorType] || 'Calculator-specific scoring applied';
+}

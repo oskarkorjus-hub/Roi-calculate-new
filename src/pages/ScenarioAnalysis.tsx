@@ -312,8 +312,10 @@ export function ScenarioAnalysisPage({ projectId, onBack }: ScenarioAnalysisPage
         {/* Header */}
         <header className="mb-6 sm:mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4 sm:gap-6">
           <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-xl bg-zinc-800 flex items-center justify-center text-2xl">
-              📊
+            <div className="w-12 h-12 rounded-xl bg-zinc-800 flex items-center justify-center">
+              <svg className="w-6 h-6 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+              </svg>
             </div>
             <div>
               <h1 className="text-2xl font-bold text-white">{project.projectName}</h1>
@@ -335,7 +337,9 @@ export function ScenarioAnalysisPage({ projectId, onBack }: ScenarioAnalysisPage
           <div className="bg-zinc-900 rounded-xl border border-zinc-800 p-6">
             <div className="mb-6 flex items-center border-b border-zinc-800 pb-4">
               <div className="flex items-center gap-2">
-                <span className="material-symbols-outlined text-emerald-400">compare_arrows</span>
+                <svg className="w-5 h-5 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+                </svg>
                 <h2 className="text-xl font-bold text-white">Select Scenarios to Compare</h2>
               </div>
             </div>
@@ -388,9 +392,12 @@ export function ScenarioAnalysisPage({ projectId, onBack }: ScenarioAnalysisPage
                         setRenamingId(scenario.id);
                         setNewName(scenario.name);
                       }}
-                      className="text-xs px-3 py-2 min-w-[44px] min-h-[44px] bg-cyan-500/20 text-cyan-400 rounded hover:bg-cyan-500/30 flex items-center justify-center"
+                      className="p-2 min-w-[36px] min-h-[36px] bg-zinc-700/80 text-zinc-300 rounded-lg hover:bg-zinc-600 flex items-center justify-center transition"
+                      title="Rename scenario"
                     >
-                      ✏️
+                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                      </svg>
                     </button>
                     <button
                       onClick={e => {
@@ -399,9 +406,12 @@ export function ScenarioAnalysisPage({ projectId, onBack }: ScenarioAnalysisPage
                           handleDeleteScenario(scenario.id);
                         }
                       }}
-                      className="text-xs px-3 py-2 min-w-[44px] min-h-[44px] bg-red-500/20 text-red-400 rounded hover:bg-red-500/30 flex items-center justify-center"
+                      className="p-2 min-w-[36px] min-h-[36px] bg-zinc-700/80 text-zinc-300 rounded-lg hover:bg-red-500/30 hover:text-red-400 flex items-center justify-center transition"
+                      title="Delete scenario"
                     >
-                      🗑️
+                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                      </svg>
                     </button>
                   </div>
                 </label>
@@ -446,7 +456,12 @@ export function ScenarioAnalysisPage({ projectId, onBack }: ScenarioAnalysisPage
             {/* Winner Badge */}
             {winner && (
               <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-xl p-6">
-                <h3 className="text-lg font-bold text-emerald-400 mb-2">🏆 Best Overall Scenario</h3>
+                <div className="flex items-center gap-2 mb-2">
+                  <svg className="w-5 h-5 text-amber-400" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+                  </svg>
+                  <h3 className="text-lg font-bold text-emerald-400">Best Overall Scenario</h3>
+                </div>
                 <p className="text-zinc-300">
                   <span className="font-semibold text-white">{winner.name}</span> is the most profitable scenario with a
                   composite score of {winner.score?.toFixed(0)}.
@@ -458,7 +473,9 @@ export function ScenarioAnalysisPage({ projectId, onBack }: ScenarioAnalysisPage
             <div className="bg-zinc-900 rounded-xl border border-zinc-800 p-6">
               <div className="mb-6 flex items-center border-b border-zinc-800 pb-4">
                 <div className="flex items-center gap-2">
-                  <span className="material-symbols-outlined text-emerald-400">table_chart</span>
+                  <svg className="w-5 h-5 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                  </svg>
                   <h3 className="text-xl font-bold text-white">Detailed Comparison</h3>
                 </div>
               </div>
@@ -483,7 +500,9 @@ export function ScenarioAnalysisPage({ projectId, onBack }: ScenarioAnalysisPage
             <div className="bg-zinc-900 rounded-xl border border-zinc-800 p-6">
               <div className="mb-6 flex items-center border-b border-zinc-800 pb-4">
                 <div className="flex items-center gap-2">
-                  <span className="material-symbols-outlined text-emerald-400">summarize</span>
+                  <svg className="w-5 h-5 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  </svg>
                   <h3 className="text-xl font-bold text-white">Analysis Summary</h3>
                 </div>
               </div>
