@@ -4,9 +4,10 @@ import { PortfolioStats } from '../components/PortfolioStats';
 import { PortfolioFilters } from '../components/PortfolioFilters';
 import { PortfolioCharts } from '../components/PortfolioCharts';
 import { ProjectCard } from '../components/ProjectCard';
+import { ProjectDetailsModal } from '../components/ProjectDetailsModal';
 import { ScenarioAnalysisPage } from './ScenarioAnalysis';
 import type { PortfolioProject } from '../types/portfolio';
-import { generateProjectPDF, generatePortfolioComparisionPDF } from '../utils/pdfExport';
+import { generatePortfolioComparisionPDF } from '../utils/pdfExport';
 
 export function Portfolio() {
   const { projects, deleteProject } = usePortfolio();
@@ -254,127 +255,11 @@ export function Portfolio() {
 
       {/* Project Details Modal */}
       {selectedProject && (
-        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-zinc-900 rounded-2xl border border-zinc-800 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-            <div className="sticky top-0 bg-zinc-900 border-b border-zinc-800 p-6 flex justify-between items-start">
-              <div>
-                <h3 className="text-2xl font-bold text-white">{selectedProject.projectName}</h3>
-                <p className="text-zinc-400">{selectedProject.location}</p>
-              </div>
-              <button
-                onClick={() => setSelectedProject(null)}
-                className="text-zinc-500 hover:text-white text-2xl font-bold transition"
-              >
-                ✕
-              </button>
-            </div>
-
-            <div className="p-6 space-y-6">
-              {/* Key Metrics Grid */}
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                <div className="bg-zinc-800 p-4 rounded-xl border border-zinc-700">
-                  <div className="text-xs text-zinc-500 font-medium">Investment</div>
-                  <div className="text-2xl font-bold text-white mt-1">
-                    ${(selectedProject.totalInvestment / 1_000_000).toFixed(1)}M
-                  </div>
-                </div>
-                <div className="bg-zinc-800 p-4 rounded-xl border border-zinc-700">
-                  <div className="text-xs text-zinc-500 font-medium">ROI</div>
-                  <div className={`text-2xl font-bold mt-1 ${(selectedProject.roi || 0) >= 20 ? 'text-emerald-400' : 'text-orange-400'}`}>
-                    {(selectedProject.roi || 0).toFixed(1)}%
-                  </div>
-                </div>
-                <div className="bg-zinc-800 p-4 rounded-xl border border-zinc-700">
-                  <div className="text-xs text-zinc-500 font-medium">Score</div>
-                  <div className="text-2xl font-bold text-white mt-1">
-                    {Math.round(selectedProject.investmentScore)}/100
-                  </div>
-                </div>
-                <div className="bg-zinc-800 p-4 rounded-xl border border-zinc-700">
-                  <div className="text-xs text-zinc-500 font-medium">Annual Cash Flow</div>
-                  <div className="text-2xl font-bold text-white mt-1">
-                    ${(selectedProject.avgCashFlow / 1_000).toFixed(0)}K
-                  </div>
-                </div>
-                <div className="bg-zinc-800 p-4 rounded-xl border border-zinc-700">
-                  <div className="text-xs text-zinc-500 font-medium">Break-Even</div>
-                  <div className="text-2xl font-bold text-white mt-1">
-                    {selectedProject.breakEvenMonths} months
-                  </div>
-                </div>
-                <div className="bg-zinc-800 p-4 rounded-xl border border-zinc-700">
-                  <div className="text-xs text-zinc-500 font-medium">Status</div>
-                  <div className="text-lg font-bold text-white mt-1 capitalize">
-                    {selectedProject.status || 'Active'}
-                  </div>
-                </div>
-              </div>
-
-              {/* Additional Info */}
-              <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-xl p-4">
-                <div className="text-xs text-zinc-400 font-medium mb-2">Score Breakdown</div>
-                <div className="grid grid-cols-4 gap-2 text-center">
-                  <div>
-                    <div className="text-sm font-bold text-white">
-                      {Math.round((selectedProject.roi_score || 0 / 5) * 100)}%
-                    </div>
-                    <div className="text-xs text-zinc-500">ROI</div>
-                  </div>
-                  <div>
-                    <div className="text-sm font-bold text-white">
-                      {Math.round((selectedProject.cashflow_score || 0 / 3) * 100)}%
-                    </div>
-                    <div className="text-xs text-zinc-500">Cash Flow</div>
-                  </div>
-                  <div>
-                    <div className="text-sm font-bold text-white">
-                      {Math.round((selectedProject.stability_score || 0 / 2) * 100)}%
-                    </div>
-                    <div className="text-xs text-zinc-500">Stability</div>
-                  </div>
-                  <div>
-                    <div className="text-sm font-bold text-white">
-                      {Math.round((selectedProject.location_score || 0) * 100)}%
-                    </div>
-                    <div className="text-xs text-zinc-500">Location</div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="text-xs text-zinc-500 border-t border-zinc-800 pt-4">
-                Created: {new Date(selectedProject.createdAt).toLocaleDateString()}
-              </div>
-
-              {/* Action Buttons */}
-              <div className="flex gap-3 border-t border-zinc-800 pt-4">
-                <button
-                  onClick={() => setSelectedProject(null)}
-                  className="flex-1 px-3 sm:px-4 py-3 min-h-[44px] text-zinc-300 border border-zinc-700 rounded-lg hover:bg-zinc-800 transition font-medium text-xs sm:text-sm"
-                >
-                  Close
-                </button>
-                <button
-                  onClick={() => {
-                    generateProjectPDF(selectedProject);
-                    setSelectedProject(null);
-                  }}
-                  className="flex-1 px-3 sm:px-4 py-3 min-h-[44px] bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition font-medium text-xs sm:text-sm"
-                >
-                  Download PDF
-                </button>
-                <button
-                  onClick={() => {
-                    setShowDeleteConfirm(selectedProject.id);
-                    setSelectedProject(null);
-                  }}
-                  className="flex-1 px-3 sm:px-4 py-3 min-h-[44px] bg-red-600 text-white rounded-lg hover:bg-red-700 transition font-medium text-xs sm:text-sm"
-                >
-                  Delete
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
+        <ProjectDetailsModal
+          project={selectedProject}
+          onClose={() => setSelectedProject(null)}
+          onDelete={(id) => setShowDeleteConfirm(id)}
+        />
       )}
 
       {/* Delete Confirmation Modal */}
