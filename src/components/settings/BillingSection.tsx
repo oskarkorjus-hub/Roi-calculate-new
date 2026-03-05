@@ -8,7 +8,7 @@ import {
   setDefaultPaymentMethod,
   addPaymentMethod,
 } from '../../lib/billing-service';
-import type { BillingData, CardBrand } from '../../types/billing';
+import type { BillingData, CardBrand, PaymentMethod } from '../../types/billing';
 
 interface BillingSectionProps {
   billingData: BillingData;
@@ -23,6 +23,7 @@ export function BillingSection({
 }: BillingSectionProps) {
   const { tier } = useTier();
   const [showAddPaymentModal, setShowAddPaymentModal] = useState(false);
+  const [paymentToRemove, setPaymentToRemove] = useState<PaymentMethod | null>(null);
 
   const handleSetDefault = (paymentMethodId: string) => {
     const success = setDefaultPaymentMethod(paymentMethodId);
@@ -37,17 +38,22 @@ export function BillingSection({
     }
   };
 
-  const handleRemove = (paymentMethodId: string) => {
+  const handleRemoveClick = (paymentMethod: PaymentMethod) => {
     if (billingData.paymentMethods.length <= 1 && tier !== 'free') {
       onToast('You must have at least one payment method', 'error');
       return;
     }
+    setPaymentToRemove(paymentMethod);
+  };
 
-    const success = removePaymentMethod(paymentMethodId);
+  const handleConfirmRemove = () => {
+    if (!paymentToRemove) return;
+
+    const success = removePaymentMethod(paymentToRemove.id);
     if (success) {
       const updated = { ...billingData };
       updated.paymentMethods = updated.paymentMethods.filter(
-        (pm) => pm.id !== paymentMethodId
+        (pm) => pm.id !== paymentToRemove.id
       );
       // If we removed the default, make the first one default
       if (updated.paymentMethods.length > 0 && !updated.paymentMethods.some((pm) => pm.isDefault)) {
@@ -56,6 +62,7 @@ export function BillingSection({
       onBillingUpdate(updated);
       onToast('Payment method removed', 'success');
     }
+    setPaymentToRemove(null);
   };
 
   const handleAddPaymentMethod = (
@@ -159,7 +166,7 @@ export function BillingSection({
                 key={pm.id}
                 paymentMethod={pm}
                 onSetDefault={() => handleSetDefault(pm.id)}
-                onRemove={() => handleRemove(pm.id)}
+                onRemove={() => handleRemoveClick(pm)}
               />
             ))}
           </div>
@@ -177,6 +184,13 @@ export function BillingSection({
         isOpen={showAddPaymentModal}
         onClose={() => setShowAddPaymentModal(false)}
         onAdd={handleAddPaymentMethod}
+      />
+
+      {/* Remove Payment Method Confirmation Modal */}
+      <RemovePaymentMethodModal
+        paymentMethod={paymentToRemove}
+        onClose={() => setPaymentToRemove(null)}
+        onConfirm={handleConfirmRemove}
       />
     </div>
   );
@@ -344,6 +358,96 @@ function AddPaymentMethodModal({
                 </button>
               </div>
             </form>
+          </motion.div>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
+}
+
+// Remove Payment Method Confirmation Modal
+function RemovePaymentMethodModal({
+  paymentMethod,
+  onClose,
+  onConfirm,
+}: {
+  paymentMethod: PaymentMethod | null;
+  onClose: () => void;
+  onConfirm: () => void;
+}) {
+  return (
+    <AnimatePresence>
+      {paymentMethod && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+          onClick={onClose}
+        >
+          <motion.div
+            initial={{ scale: 0.95, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 0.95, opacity: 0 }}
+            className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 max-w-md w-full"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center gap-4 mb-4">
+              <div className="w-12 h-12 bg-red-500/10 rounded-full flex items-center justify-center">
+                <svg
+                  className="w-6 h-6 text-red-400"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                  />
+                </svg>
+              </div>
+              <div>
+                <h3 className="text-xl font-bold text-white">Remove Payment Method</h3>
+                <p className="text-zinc-400 text-sm">This action cannot be undone</p>
+              </div>
+            </div>
+
+            <div className="bg-zinc-800/50 border border-zinc-700 rounded-xl p-4 mb-6">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-6 bg-zinc-700 rounded flex items-center justify-center text-xs font-bold text-zinc-300">
+                  {paymentMethod.brand.toUpperCase().slice(0, 4)}
+                </div>
+                <div>
+                  <p className="text-white font-medium">
+                    •••• •••• •••• {paymentMethod.last4}
+                  </p>
+                  <p className="text-sm text-zinc-500">
+                    Expires {String(paymentMethod.expiryMonth).padStart(2, '0')}/{paymentMethod.expiryYear}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <p className="text-zinc-400 text-sm mb-6">
+              Are you sure you want to remove this payment method? If this is your only payment method and you have an active subscription, you'll need to add a new one.
+            </p>
+
+            <div className="flex gap-3">
+              <button
+                onClick={onClose}
+                className="flex-1 py-3 border border-zinc-700 text-zinc-300 rounded-xl font-medium hover:bg-zinc-800 transition-all"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={onConfirm}
+                className="flex-1 py-3 bg-red-500/20 border border-red-500/50 text-red-400 rounded-xl font-semibold hover:bg-red-500/30 transition-all"
+              >
+                Remove Card
+              </button>
+            </div>
           </motion.div>
         </motion.div>
       )}
