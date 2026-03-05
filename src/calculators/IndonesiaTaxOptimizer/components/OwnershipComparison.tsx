@@ -142,7 +142,7 @@ export function OwnershipComparison({ result, symbol, currency, currentStructure
               }`}
             >
               <div className="flex items-center gap-2 mb-3">
-                <span className="text-2xl">{info.icon}</span>
+                <OwnershipIcon type={type} className="w-6 h-6 text-zinc-400" />
                 <div>
                   <h5 className="font-bold text-white text-sm">{info.label}</h5>
                   <p className={`text-lg font-bold ${isOptimal ? 'text-emerald-400' : 'text-zinc-300'}`}>
