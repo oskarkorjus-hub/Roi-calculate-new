@@ -45,12 +45,6 @@ export function SaveToPortfolioButton({
 
     switch (calculatorType) {
       case 'xirr':
-        // Debug: log XIRR data to verify structure
-        console.log('XIRR Save - projectData:', {
-          result: projectData.result,
-          propertyTotalPrice: projectData.property?.totalPrice,
-          exitPrice: projectData.exit?.projectedSalesPrice
-        });
         totalInvestment = projectData.result?.totalInvested || projectData.property?.totalPrice || 0;
         // XIRR rate is stored as decimal (e.g., 0.15 for 15%), convert to percentage
         roi = (projectData.result?.rate || 0) * 100;
@@ -60,7 +54,6 @@ export function SaveToPortfolioButton({
           : 0;
         // Break-even approximation from hold period
         breakEvenMonths = projectData.result?.holdPeriodMonths || 0;
-        console.log('XIRR Save - calculated:', { totalInvestment, roi, avgCashFlow, breakEvenMonths });
         break;
 
       case 'cap-rate':

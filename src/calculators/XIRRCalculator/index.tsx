@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef, useEffect } from 'react';
+import { useState, useCallback, useRef, useEffect, useMemo } from 'react';
 import { useInvestment } from '../../hooks/useInvestment';
 import { useArchivedDrafts, type ArchivedDraft } from '../../hooks/useArchivedDrafts';
 import {
@@ -11,9 +11,11 @@ import { Toast } from '../../components/ui/Toast';
 import { DraftSelector } from '../../components/ui/DraftSelector';
 import { ComparisonView } from '../../components/ui/ComparisonView';
 import { CalculatorToolbar } from '../../components/ui/CalculatorToolbar';
+import { ReportPreviewModal } from '../../components/ui/ReportPreviewModal';
 import { useAuth } from '../../lib/auth-context';
 import { useComparison } from '../../lib/comparison-context';
-import { ReportView } from './components/ReportView';
+import { generateXIRRReport } from '../../hooks/useReportGenerator';
+import { generatePaymentSchedule } from '../../utils/xirr';
 import type { InvestmentData } from '../../types/investment';
 
 export function XIRRCalculator() {
@@ -47,7 +49,7 @@ export function XIRRCalculator() {
   const [showResetConfirm, setShowResetConfirm] = useState(false);
   const { user } = useAuth();
   const { getCount } = useComparison();
-  const [showReportView, setShowReportView] = useState(false);
+  const [showReportModal, setShowReportModal] = useState(false);
   const [showComparison, setShowComparison] = useState(false);
 
   // Pass user ID to isolate drafts per user
@@ -102,12 +104,77 @@ export function XIRRCalculator() {
 
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
 
-  const handleExportPDF = useCallback(() => {
-    setShowReportView(true);
-  }, []);
+  // Generate cash flow rows for report
+  const cashFlowRows = useMemo(() => {
+    const schedule = generatePaymentSchedule(data);
+    const outflows = schedule.filter(cf => cf.amount < 0);
+    const inflows = schedule.filter(cf => cf.amount > 0);
+    const bookingFeeIDR = data.payment.bookingFee;
+    const bookingFeeDate = data.payment.bookingFeeDate ? new Date(data.payment.bookingFeeDate) : null;
+    const closingCosts = data.exit.projectedSalesPrice * (data.exit.closingCostPercent / 100);
+    let downPaymentFound = false;
+    let installmentNum = 0;
 
-  const handleLoginFromReport = useCallback(() => {
-    // Auth context auto-updates on login
+    const rows: { date: Date; label: string; amount: number }[] = [];
+
+    outflows.forEach((cf) => {
+      const cfAmount = Math.abs(cf.amount);
+      const isBookingFee = bookingFeeIDR > 0 &&
+        Math.abs(cfAmount - bookingFeeIDR) < 1 &&
+        (!bookingFeeDate || cf.date.toDateString() === bookingFeeDate.toDateString());
+
+      let label: string;
+      if (isBookingFee && !downPaymentFound) {
+        label = 'Booking Fee';
+      } else if (!downPaymentFound) {
+        label = 'Down Payment';
+        downPaymentFound = true;
+      } else {
+        installmentNum++;
+        label = `Installment ${installmentNum}`;
+      }
+      rows.push({ date: cf.date, label, amount: cf.amount });
+    });
+
+    inflows.forEach((cf) => {
+      rows.push({ date: cf.date, label: 'Sale Proceeds', amount: data.exit.projectedSalesPrice - closingCosts });
+    });
+
+    return rows;
+  }, [data]);
+
+  // Generate report data for modal
+  const reportData = useMemo(() => {
+    return generateXIRRReport(
+      {
+        projectName: data.property.projectName,
+        location: data.property.location,
+        totalPrice: data.property.totalPrice / rate,
+        propertySize: data.property.propertySize,
+        purchaseDate: data.property.purchaseDate,
+        handoverDate: data.property.handoverDate,
+        downPaymentPercent: data.payment.downPaymentPercent,
+        installmentMonths: data.payment.installmentMonths,
+        projectedSalesPrice: data.exit.projectedSalesPrice / rate,
+        closingCostPercent: data.exit.closingCostPercent,
+        saleDate: data.exit.saleDate,
+      },
+      {
+        rate: result.rate,
+        totalInvested: result.totalInvested / rate,
+        netProfit: result.netProfit / rate,
+        holdPeriodMonths: result.holdPeriodMonths,
+      },
+      cashFlowRows.map(row => ({
+        ...row,
+        amount: row.amount / rate,
+      })),
+      symbol
+    );
+  }, [data, result, cashFlowRows, rate, symbol]);
+
+  const handleExportPDF = useCallback(() => {
+    setShowReportModal(true);
   }, []);
 
   const displayPrice = idrToDisplay(data.property.totalPrice);
@@ -119,23 +186,6 @@ export function XIRRCalculator() {
   const totalPaymentsIDR = downPaymentIDR + scheduleTotalIDR;
   const isPaymentValid = data.property.totalPrice === 0 || Math.abs(totalPaymentsIDR - data.property.totalPrice) < 1;
 
-  // Show Report View
-  if (showReportView) {
-    return (
-      <ReportView
-        data={data}
-        result={result}
-        currency={currency}
-        symbol={symbol}
-        rate={rate}
-        formatDisplay={formatDisplay}
-        formatAbbrev={formatAbbrev}
-        user={user}
-        onLogin={handleLoginFromReport}
-        onBack={() => setShowReportView(false)}
-      />
-    );
-  }
 
   return (
     <div className="min-h-screen bg-[#0a0a0a] text-white -mx-4 md:-mx-10 lg:-mx-20 -my-8 px-6 py-8">
@@ -200,7 +250,7 @@ export function XIRRCalculator() {
               currency={currency}
               onCurrencyChange={(c) => updateProperty('currency', c as 'IDR' | 'USD' | 'AUD' | 'EUR' | 'GBP' | 'INR' | 'CNY' | 'AED' | 'RUB')}
               onReset={handleReset}
-              onOpenReport={() => setShowReportView(true)}
+              onOpenReport={() => setShowReportModal(true)}
               calculatorType="xirr"
               projectData={{ ...data, result }}
               projectName={data.property.projectName || 'XIRR Project'}
@@ -279,6 +329,13 @@ export function XIRRCalculator() {
         isOpen={showComparison}
         onClose={() => setShowComparison(false)}
         calculatorType="xirr"
+      />
+
+      {/* Report Preview Modal */}
+      <ReportPreviewModal
+        isOpen={showReportModal}
+        onClose={() => setShowReportModal(false)}
+        reportData={reportData}
       />
     </div>
   );

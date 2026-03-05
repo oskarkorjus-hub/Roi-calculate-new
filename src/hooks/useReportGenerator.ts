@@ -1222,4 +1222,151 @@ export function generateRiskAssessmentReport(
   };
 }
 
+// XIRR Calculator Report
+export function generateXIRRReport(
+  data: {
+    projectName: string;
+    location: string;
+    totalPrice: number;
+    propertySize: number;
+    purchaseDate: string;
+    handoverDate: string;
+    downPaymentPercent: number;
+    installmentMonths: number;
+    projectedSalesPrice: number;
+    closingCostPercent: number;
+    saleDate: string;
+  },
+  result: {
+    rate: number;
+    totalInvested: number;
+    netProfit: number;
+    holdPeriodMonths: number;
+  },
+  cashFlowRows: Array<{ date: Date; label: string; amount: number }>,
+  symbol: string
+): ReportData {
+  const sections: ReportSection[] = [];
+
+  // Calculate additional metrics
+  const totalROI = result.totalInvested > 0 ? (result.netProfit / result.totalInvested) * 100 : 0;
+  const appreciation = data.totalPrice > 0
+    ? ((data.projectedSalesPrice - data.totalPrice) / data.totalPrice) * 100
+    : 0;
+  const closingCosts = data.projectedSalesPrice * (data.closingCostPercent / 100);
+  const netProceeds = data.projectedSalesPrice - closingCosts;
+  const downPayment = data.totalPrice * (data.downPaymentPercent / 100);
+  const pricePerSqm = data.propertySize > 0 ? Math.round(data.totalPrice / data.propertySize) : 0;
+
+  // Investment Rating
+  const getGrade = (xirr: number): { grade: string; label: string } => {
+    if (xirr >= 25) return { grade: 'A+', label: 'Excellent' };
+    if (xirr >= 18) return { grade: 'A', label: 'Very Good' };
+    if (xirr >= 12) return { grade: 'B+', label: 'Good' };
+    if (xirr >= 8) return { grade: 'B', label: 'Fair' };
+    if (xirr >= 0) return { grade: 'C', label: 'Marginal' };
+    return { grade: 'D', label: 'Loss' };
+  };
+
+  const xirrPercent = result.rate * 100;
+  const gradeInfo = getGrade(xirrPercent);
+
+  // Key Metrics Section
+  const keyMetrics: ReportMetric[] = [
+    { label: 'Total Investment', value: formatCurrency(result.totalInvested, symbol) },
+    { label: 'Net Profit', value: `${result.netProfit >= 0 ? '+' : ''}${formatCurrency(Math.abs(result.netProfit), symbol)}`, positive: result.netProfit >= 0, negative: result.netProfit < 0 },
+    { label: 'Total ROI', value: `${totalROI >= 0 ? '+' : ''}${totalROI.toFixed(1)}%`, positive: totalROI >= 0, negative: totalROI < 0 },
+    { label: 'Hold Period', value: `${result.holdPeriodMonths} months` },
+  ];
+
+  sections.push({
+    title: 'Key Metrics',
+    color: 'emerald',
+    type: 'metrics',
+    data: keyMetrics,
+  });
+
+  // Property Details Section
+  const propertyMetrics: ReportMetric[] = [
+    { label: 'Purchase Price', value: formatCurrency(data.totalPrice, symbol) },
+    { label: 'Property Size', value: `${data.propertySize} m²` },
+    { label: 'Price / m²', value: formatCurrency(pricePerSqm, symbol) },
+    { label: 'Down Payment', value: `${formatCurrency(downPayment, symbol)} (${data.downPaymentPercent}%)` },
+    { label: 'Installments', value: `${data.installmentMonths} months` },
+    { label: 'Handover Date', value: data.handoverDate || 'N/A' },
+  ];
+
+  sections.push({
+    title: 'Property Details',
+    color: 'blue',
+    type: 'metrics',
+    data: propertyMetrics,
+  });
+
+  // Exit Strategy Section
+  const exitMetrics: ReportMetric[] = [
+    { label: 'Projected Sale', value: formatCurrency(data.projectedSalesPrice, symbol) },
+    { label: 'Appreciation', value: `${appreciation >= 0 ? '+' : ''}${appreciation.toFixed(1)}%`, positive: appreciation >= 0, negative: appreciation < 0 },
+    { label: 'Closing Costs', value: `-${formatCurrency(closingCosts, symbol)} (${data.closingCostPercent}%)`, negative: true },
+    { label: 'Net Proceeds', value: formatCurrency(netProceeds, symbol), positive: true },
+  ];
+
+  sections.push({
+    title: 'Exit Strategy',
+    color: 'orange',
+    type: 'metrics',
+    data: exitMetrics,
+  });
+
+  // Cash Flow Timeline Section
+  if (cashFlowRows.length > 0) {
+    const tableRows: ReportTableRow[] = [
+      { cells: ['Date', 'Description', 'Amount', 'Type'] },
+      ...cashFlowRows.slice(0, 10).map(row => ({
+        cells: [
+          row.date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+          row.label,
+          `${row.amount < 0 ? '-' : '+'}${formatCurrency(Math.abs(row.amount), symbol)}`,
+          row.amount < 0 ? 'Outflow' : 'Inflow',
+        ],
+      })),
+    ];
+
+    sections.push({
+      title: 'Cash Flow Timeline',
+      color: 'cyan',
+      type: 'table',
+      data: tableRows,
+    });
+  }
+
+  // Summary Highlight
+  const summaryText = result.netProfit >= 0
+    ? `This investment projects a ${xirrPercent.toFixed(1)}% annualized return with ${formatCurrency(result.netProfit, symbol)} net profit over ${result.holdPeriodMonths} months.`
+    : `This investment projects a ${xirrPercent.toFixed(1)}% return with a ${formatCurrency(Math.abs(result.netProfit), symbol)} loss over ${result.holdPeriodMonths} months.`;
+
+  sections.push({
+    title: 'Investment Summary',
+    color: result.netProfit >= 0 ? 'emerald' : 'red',
+    type: 'highlight',
+    data: summaryText,
+  });
+
+  return {
+    calculatorType: 'xirr',
+    title: data.projectName || 'XIRR Investment Report',
+    subtitle: data.location || 'Property Investment',
+    currency: symbol,
+    symbol,
+    generatedDate: getDate(),
+    rating: {
+      grade: gradeInfo.grade,
+      label: gradeInfo.label,
+      value: `${xirrPercent.toFixed(1)}%`,
+      description: 'Annualized Return (XIRR)',
+    },
+    sections,
+  };
+}
+
 export { formatCurrency, formatPercent, getDate };
