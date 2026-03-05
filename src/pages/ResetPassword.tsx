@@ -77,8 +77,13 @@ export function ResetPassword() {
         className="max-w-md w-full"
       >
         <div className="text-center mb-8">
-          <Link to="/" className="inline-block mb-6">
-            <img src="/logo.png" alt="ROI Calculate" className="h-12 mx-auto" />
+          <Link to="/" className="inline-flex items-center justify-center gap-3 mb-6">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-cyan-500 flex items-center justify-center">
+              <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+              </svg>
+            </div>
+            <span className="font-bold text-xl text-white">ROI Calculate</span>
           </Link>
           <h1 className="text-3xl font-bold text-white mb-2">Set New Password</h1>
           <p className="text-zinc-400">Enter your new password below</p>
