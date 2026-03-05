@@ -37,6 +37,53 @@ export function SaveToPortfolioButton({
   const scorableCalculators = ['cap-rate', 'dev-feasibility', 'cashflow', 'irr', 'rental-projection', 'rental-roi', 'xirr'];
   const showScore = scorableCalculators.includes(calculatorType);
 
+  // Calculator-specific strategy options
+  const getStrategyOptions = (calcType: string): { value: string; label: string }[] => {
+    switch (calcType) {
+      case 'xirr':
+        return [
+          { value: 'flip', label: 'Flip (Buy & Sell)' },
+          { value: 'hold', label: 'Hold (Capital Appreciation)' },
+        ];
+      case 'rental-roi':
+      case 'rental-projection':
+      case 'cashflow':
+        return [
+          { value: 'rental', label: 'Rental (Cash Flow)' },
+          { value: 'hold', label: 'Hold (Long-term)' },
+        ];
+      case 'cap-rate':
+        return [
+          { value: 'rental', label: 'Rental Income' },
+          { value: 'hold', label: 'Value Appreciation' },
+        ];
+      case 'dev-feasibility':
+        return [
+          { value: 'development', label: 'Build & Sell' },
+          { value: 'flip', label: 'Renovate & Flip' },
+          { value: 'hold', label: 'Build & Hold' },
+        ];
+      case 'irr':
+      case 'npv':
+        return [
+          { value: 'flip', label: 'Short-term Exit' },
+          { value: 'hold', label: 'Long-term Hold' },
+          { value: 'rental', label: 'Income Generating' },
+        ];
+      // No strategy for these tools
+      case 'mortgage':
+      case 'financing':
+      case 'indonesia-tax':
+      case 'dev-budget':
+      case 'risk-assessment':
+      default:
+        return [];
+    }
+  };
+
+  const strategyOptions = getStrategyOptions(calculatorType);
+  const showStrategy = strategyOptions.length > 0;
+
   // Extract financial metrics based on calculator type
   const financialMetrics = useMemo(() => {
     const location = projectData.property?.location || projectData.location || projectData.projectLocation || 'Bali';
@@ -336,27 +383,30 @@ export function SaveToPortfolioButton({
                 />
               </div>
 
-              <div>
-                <label className="block text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-2">
-                  Investment Strategy (Optional)
-                </label>
-                <div className="relative">
-                  <select
-                    value={selectedStrategy}
-                    onChange={e => setSelectedStrategy(e.target.value as any)}
-                    className="w-full appearance-none px-4 py-3 pr-10 bg-zinc-800/80 border border-zinc-700/60 rounded-xl text-white focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500/50 focus:bg-zinc-800 outline-none transition-all duration-200 cursor-pointer"
-                  >
-                    <option value="" className="bg-zinc-900">Select strategy...</option>
-                    <option value="flip" className="bg-zinc-900">Flip (Short-term buy & sell)</option>
-                    <option value="hold" className="bg-zinc-900">Hold (Long-term appreciation)</option>
-                    <option value="rental" className="bg-zinc-900">Rental (Cash flow focus)</option>
-                    <option value="development" className="bg-zinc-900">Development (Renovation/Build)</option>
-                  </select>
-                  <svg className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-                  </svg>
+              {showStrategy && (
+                <div>
+                  <label className="block text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-2">
+                    Investment Strategy (Optional)
+                  </label>
+                  <div className="relative">
+                    <select
+                      value={selectedStrategy}
+                      onChange={e => setSelectedStrategy(e.target.value as any)}
+                      className="w-full appearance-none px-4 py-3 pr-10 bg-zinc-800/80 border border-zinc-700/60 rounded-xl text-white focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500/50 focus:bg-zinc-800 outline-none transition-all duration-200 cursor-pointer"
+                    >
+                      <option value="" className="bg-zinc-900">Select strategy...</option>
+                      {strategyOptions.map(opt => (
+                        <option key={opt.value} value={opt.value} className="bg-zinc-900">
+                          {opt.label}
+                        </option>
+                      ))}
+                    </select>
+                    <svg className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </div>
                 </div>
-              </div>
+              )}
 
               {/* Score Preview - Enterprise Design */}
               {showScore && scoreComponents.investmentScore > 0 && (
