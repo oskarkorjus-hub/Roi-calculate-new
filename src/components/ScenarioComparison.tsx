@@ -183,7 +183,7 @@ export function ScenarioComparison() {
                     type="checkbox"
                     checked={selectedProjects.includes(project.id)}
                     onChange={() => handleSelectProject(project.id)}
-                    className="w-5 h-5 rounded border-2 border-zinc-600 bg-zinc-800 text-emerald-500 focus:ring-emerald-500 focus:ring-offset-zinc-900 accent-emerald-500 checked:bg-emerald-500 checked:border-emerald-500 cursor-pointer"
+                    className="appearance-none w-5 h-5 rounded border-2 border-zinc-600 bg-zinc-800 checked:bg-emerald-500 checked:border-emerald-500 cursor-pointer relative after:content-['✓'] after:absolute after:inset-0 after:flex after:items-center after:justify-center after:text-white after:text-xs after:font-bold after:opacity-0 checked:after:opacity-100 transition-all"
                   />
                   <div className="ml-3 flex-1">
                     <div className="font-medium text-white">{project.projectName}</div>

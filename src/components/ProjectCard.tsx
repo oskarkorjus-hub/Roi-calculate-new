@@ -255,33 +255,41 @@ const getCategoryConfig = (calculatorId: string): CategoryConfig => {
         metrics: [
           {
             label: 'Investment',
-            getValue: (p) => formatCurrency(p.data?.initialInvestment || p.data?.result?.totalCashOutflows || p.totalInvestment),
+            getValue: (p) => {
+              // Try multiple paths for investment amount
+              const investment = p.data?.result?.totalCashOutflows
+                || p.data?.initialInvestment
+                || p.totalInvestment
+                || 0;
+              return formatCurrency(investment);
+            },
           },
           {
             label: 'NPV',
             getValue: (p) => {
-              const npv = p.data?.result?.npv;
-              if (npv !== undefined) return formatCurrency(npv);
-              return formatCurrency(0);
+              const npv = p.data?.result?.npv ?? p.data?.npv ?? 0;
+              return formatCurrency(npv);
             },
             getColor: (p) => {
-              const npv = p.data?.result?.npv ?? 0;
+              const npv = p.data?.result?.npv ?? p.data?.npv ?? 0;
               return npv >= 0 ? 'text-emerald-400' : 'text-red-400';
             },
           },
           {
             label: 'Discount',
-            getValue: (p) => `${(p.data?.discountRate || 0).toFixed(1)}%`,
+            getValue: (p) => {
+              const rate = p.data?.discountRate ?? 0;
+              return `${rate.toFixed(1)}%`;
+            },
           },
           {
             label: 'PI',
             getValue: (p) => {
-              const pi = p.data?.result?.profitabilityIndex;
-              if (pi !== undefined) return `${pi.toFixed(2)}x`;
-              return '0.00x';
+              const pi = p.data?.result?.profitabilityIndex ?? p.data?.profitabilityIndex ?? 0;
+              return `${pi.toFixed(2)}x`;
             },
             getColor: (p) => {
-              const pi = p.data?.result?.profitabilityIndex ?? 0;
+              const pi = p.data?.result?.profitabilityIndex ?? p.data?.profitabilityIndex ?? 0;
               return pi >= 1 ? 'text-emerald-400' : 'text-red-400';
             },
           },
