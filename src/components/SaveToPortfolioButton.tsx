@@ -32,18 +32,30 @@ export function SaveToPortfolioButton({
   const [upgradeReason, setUpgradeReason] = useState<UpgradeReason>('calculation_limit');
 
   // Calculator types where investment score is meaningful
-  const scorableCalculators = ['cap-rate', 'dev-feasibility', 'cashflow', 'irr', 'rental-projection', 'rental-roi'];
+  const scorableCalculators = ['cap-rate', 'dev-feasibility', 'cashflow', 'irr', 'rental-projection', 'rental-roi', 'xirr'];
   const showScore = scorableCalculators.includes(calculatorType);
 
   // Extract financial metrics based on calculator type
   const financialMetrics = useMemo(() => {
-    const location = projectData.property?.location || projectData.location || 'Bali';
+    const location = projectData.property?.location || projectData.location || projectData.projectLocation || 'Bali';
     let totalInvestment = 0;
     let roi = 0;
     let avgCashFlow = 0;
     let breakEvenMonths = 0;
 
     switch (calculatorType) {
+      case 'xirr':
+        totalInvestment = projectData.result?.totalInvested || projectData.property?.totalPrice || 0;
+        // XIRR rate is stored as decimal (e.g., 0.15 for 15%), convert to percentage
+        roi = (projectData.result?.rate || 0) * 100;
+        // Net profit divided by hold period for average monthly cash flow equivalent
+        avgCashFlow = projectData.result?.holdPeriodMonths > 0
+          ? (projectData.result?.netProfit || 0) / projectData.result.holdPeriodMonths
+          : 0;
+        // Break-even approximation from hold period
+        breakEvenMonths = projectData.result?.holdPeriodMonths || 0;
+        break;
+
       case 'cap-rate':
         totalInvestment = projectData.propertyValue || 0;
         roi = projectData.result?.capRate || projectData.result?.adjustedCapRate || 0;
