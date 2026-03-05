@@ -385,7 +385,7 @@ export function ScenarioAnalysisPage({ projectId, onBack }: ScenarioAnalysisPage
                   </div>
 
                   {/* Action Menu */}
-                  <div className="absolute top-3 left-3 flex gap-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition">
+                  <div className="absolute bottom-3 right-3 flex gap-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition">
                     <button
                       onClick={e => {
                         e.preventDefault();
