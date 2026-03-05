@@ -223,16 +223,24 @@ export function PortfolioCharts({ projects }: PortfolioChartsProps) {
       }));
   }, [filteredProjects]);
 
-  // Cash Flow Data (fixed decimals)
+  // Calculators that produce meaningful monthly cash flow
+  const CASH_FLOW_CALCULATORS = ['rental-roi', 'rental-projection', 'cap-rate', 'cashflow', 'xirr', 'irr'];
+
+  // Cash Flow Data - only show projects with actual monthly cash flow
   const cashFlowData = useMemo(() => {
     return [...filteredProjects]
-      .filter(p => p.avgCashFlow !== undefined && p.avgCashFlow !== null)
+      .filter(p =>
+        CASH_FLOW_CALCULATORS.includes(p.calculatorId) &&
+        p.avgCashFlow !== undefined &&
+        p.avgCashFlow !== null &&
+        Math.abs(Number(p.avgCashFlow) || 0) > 0 // Must have non-zero cash flow
+      )
       .sort((a, b) => (Number(b.avgCashFlow) || 0) - (Number(a.avgCashFlow) || 0))
       .slice(0, 8)
       .map(p => ({
         name: p.projectName.length > 15 ? p.projectName.slice(0, 12) + '...' : p.projectName,
         fullName: p.projectName,
-        cashFlow: Math.round(Number(p.avgCashFlow) || 0), // Round to remove decimals
+        cashFlow: Math.round(Number(p.avgCashFlow) || 0),
         isPositive: (Number(p.avgCashFlow) || 0) >= 0,
         fill: (Number(p.avgCashFlow) || 0) >= 0 ? '#10b981' : '#ef4444',
       }));
