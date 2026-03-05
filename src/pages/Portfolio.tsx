@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback, useMemo, useRef, useEffect } from 'react';
 import { usePortfolio } from '../lib/portfolio-context';
 import { PortfolioStats } from '../components/PortfolioStats';
 import { PortfolioFilters } from '../components/PortfolioFilters';
@@ -245,6 +245,16 @@ export function Portfolio() {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState<string | null>(null);
   const [selectedForComparison, setSelectedForComparison] = useState<Set<string>>(new Set());
   const [showComparisonView, setShowComparisonView] = useState(false);
+  const comparisonRef = useRef<HTMLDivElement>(null);
+
+  // Auto-scroll to comparison when shown
+  useEffect(() => {
+    if (showComparisonView && comparisonRef.current) {
+      setTimeout(() => {
+        comparisonRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 100);
+    }
+  }, [showComparisonView]);
 
   const handleDeleteProject = useCallback((projectId: string) => {
     deleteProject(projectId);
@@ -392,9 +402,22 @@ export function Portfolio() {
           {selectedForComparison.size > 0 && (
             <button
               onClick={() => setShowComparisonView(!showComparisonView)}
-              className="px-3 py-2 min-h-[44px] bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 rounded-lg text-xs sm:text-sm font-medium hover:bg-cyan-500/30 transition"
+              className={`px-3 py-2 min-h-[44px] border rounded-lg text-xs sm:text-sm font-medium transition flex items-center gap-2 ${
+                showComparisonView
+                  ? 'bg-cyan-500 text-white border-cyan-400'
+                  : 'bg-cyan-500/20 text-cyan-400 border-cyan-500/30 hover:bg-cyan-500/30'
+              }`}
             >
-              Comparing {selectedForComparison.size} projects
+              {showComparisonView ? (
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
+                </svg>
+              ) : (
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              )}
+              {showComparisonView ? 'Hide Comparison' : `Compare ${selectedForComparison.size} projects`}
             </button>
           )}
         </div>
@@ -433,7 +456,9 @@ export function Portfolio() {
 
             {/* Comparison View - Cross-Calculator Smart Comparison */}
             {showComparisonView && projectsForComparison.length > 1 && (
-              <CrossCalculatorComparison projects={projectsForComparison} />
+              <div ref={comparisonRef}>
+                <CrossCalculatorComparison projects={projectsForComparison} />
+              </div>
             )}
           </>
         )}
