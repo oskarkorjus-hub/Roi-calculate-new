@@ -8,6 +8,234 @@ import { ProjectDetailsModal } from '../components/ProjectDetailsModal';
 import { ScenarioAnalysisPage } from './ScenarioAnalysis';
 import type { PortfolioProject } from '../types/portfolio';
 import { generatePortfolioComparisionPDF } from '../utils/pdfExport';
+import {
+  extractUniversalMetrics,
+  formatMetricValue,
+  formatCashFlow,
+  formatTimeMetric,
+  generateComparisonInsights,
+  getCalculatorLabel,
+} from '../utils/crossCalculatorComparison';
+
+// Cross-Calculator Comparison Component
+function CrossCalculatorComparison({ projects }: { projects: PortfolioProject[] }) {
+  const comparisonData = useMemo(() => {
+    return projects.map(project => ({
+      project,
+      metrics: extractUniversalMetrics(project),
+    }));
+  }, [projects]);
+
+  const insights = useMemo(() => {
+    return generateComparisonInsights(projects);
+  }, [projects]);
+
+  const getCategoryStyles = (category: string) => {
+    switch (category) {
+      case 'return-analysis':
+        return 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30';
+      case 'income-analysis':
+        return 'bg-cyan-500/15 text-cyan-400 border-cyan-500/30';
+      case 'financing-tool':
+        return 'bg-amber-500/15 text-amber-400 border-amber-500/30';
+      case 'risk-tool':
+        return 'bg-purple-500/15 text-purple-400 border-purple-500/30';
+      default:
+        return 'bg-zinc-500/15 text-zinc-400 border-zinc-500/30';
+    }
+  };
+
+  return (
+    <div className="bg-zinc-900 rounded-xl border border-zinc-800 p-4 sm:p-6 mt-6 space-y-4">
+      <div className="flex items-center justify-between">
+        <h3 className="text-lg font-bold text-white">Cross-Calculator Comparison</h3>
+        <span className="text-xs text-zinc-500">Smart metric mapping across different analysis types</span>
+      </div>
+
+      {/* Comparison Insights */}
+      {insights.length > 0 && (
+        <div className="space-y-2">
+          {insights.map((insight, idx) => (
+            <div
+              key={idx}
+              className={`flex items-start gap-2 px-3 py-2 rounded-lg text-xs sm:text-sm ${
+                insight.type === 'warning'
+                  ? 'bg-amber-500/10 text-amber-300 border border-amber-500/20'
+                  : insight.type === 'comparison'
+                    ? 'bg-emerald-500/10 text-emerald-300 border border-emerald-500/20'
+                    : 'bg-zinc-800 text-zinc-400 border border-zinc-700'
+              }`}
+            >
+              <span className="mt-0.5">
+                {insight.type === 'warning' ? '⚠️' : insight.type === 'comparison' ? '📊' : 'ℹ️'}
+              </span>
+              <span>{insight.message}</span>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Main Comparison Table */}
+      <div className="overflow-x-auto -mx-4 px-4 sm:mx-0 sm:px-0">
+        <table className="w-full text-xs sm:text-sm min-w-[800px]">
+          <thead className="bg-zinc-800 border-b border-zinc-700">
+            <tr>
+              <th className="px-3 py-3 text-left font-semibold text-zinc-300">Project</th>
+              <th className="px-3 py-3 text-center font-semibold text-zinc-300">Type</th>
+              <th className="px-3 py-3 text-right font-semibold text-zinc-300">Capital</th>
+              <th className="px-3 py-3 text-right font-semibold text-zinc-300">
+                <span className="block">Primary Return</span>
+                <span className="block text-[10px] text-zinc-500 font-normal">Calculator-specific</span>
+              </th>
+              <th className="px-3 py-3 text-right font-semibold text-zinc-300">
+                <span className="block">Cash Flow</span>
+                <span className="block text-[10px] text-zinc-500 font-normal">Net amount</span>
+              </th>
+              <th className="px-3 py-3 text-right font-semibold text-zinc-300">Timeline</th>
+              <th className="px-3 py-3 text-right font-semibold text-zinc-300">Score</th>
+            </tr>
+          </thead>
+          <tbody>
+            {comparisonData.map(({ project, metrics }, idx) => (
+              <tr
+                key={project.id}
+                className={`border-b border-zinc-800 ${idx % 2 === 0 ? 'bg-zinc-900' : 'bg-zinc-800/50'}`}
+              >
+                {/* Project Name & Strategy */}
+                <td className="px-3 py-3">
+                  <div className="font-semibold text-white">{project.projectName}</div>
+                  {project.strategy && (
+                    <div className="text-[10px] text-zinc-500 capitalize mt-0.5">
+                      {project.strategy}
+                    </div>
+                  )}
+                </td>
+
+                {/* Calculator Type Badge */}
+                <td className="px-3 py-3 text-center">
+                  <span
+                    className={`inline-block px-2 py-1 rounded-md text-[10px] font-medium border ${getCategoryStyles(metrics.category)}`}
+                    title={metrics.calculatorPurpose}
+                  >
+                    {metrics.categoryLabel}
+                  </span>
+                </td>
+
+                {/* Capital Required */}
+                <td className="px-3 py-3 text-right">
+                  <div className="text-zinc-300 font-medium">
+                    {formatMetricValue(metrics.capitalRequired, 'currency')}
+                  </div>
+                  <div className="text-[10px] text-zinc-500">{metrics.capitalLabel}</div>
+                </td>
+
+                {/* Primary Return Metric */}
+                <td className="px-3 py-3 text-right">
+                  {metrics.primaryReturn !== null ? (
+                    <>
+                      <div
+                        className={`font-bold ${
+                          metrics.primaryReturnFormat === 'percent' && metrics.primaryReturn >= 15
+                            ? 'text-emerald-400'
+                            : metrics.primaryReturnFormat === 'currency' && metrics.primaryReturn > 0
+                              ? 'text-emerald-400'
+                              : metrics.primaryReturnFormat === 'percent' && metrics.primaryReturn >= 8
+                                ? 'text-cyan-400'
+                                : metrics.primaryReturn < 0
+                                  ? 'text-red-400'
+                                  : 'text-orange-400'
+                        }`}
+                      >
+                        {formatMetricValue(metrics.primaryReturn, metrics.primaryReturnFormat)}
+                      </div>
+                      <div className="text-[10px] text-zinc-500">{metrics.primaryReturnLabel}</div>
+                    </>
+                  ) : (
+                    <span className="text-zinc-600">N/A</span>
+                  )}
+                </td>
+
+                {/* Cash Flow */}
+                <td className="px-3 py-3 text-right">
+                  {metrics.cashFlowIndicator !== null ? (
+                    <>
+                      <div
+                        className={`font-medium ${
+                          metrics.cashFlowIndicator > 0 ? 'text-emerald-400' : metrics.cashFlowIndicator < 0 ? 'text-red-400' : 'text-zinc-400'
+                        }`}
+                      >
+                        {formatCashFlow(metrics.cashFlowIndicator, metrics.cashFlowPeriod)}
+                      </div>
+                      <div className="text-[10px] text-zinc-500">{metrics.cashFlowLabel}</div>
+                    </>
+                  ) : (
+                    <span className="text-zinc-600">N/A</span>
+                  )}
+                </td>
+
+                {/* Time Metric */}
+                <td className="px-3 py-3 text-right">
+                  {metrics.timeMetric !== null && metrics.timeMetricUnit !== null ? (
+                    <>
+                      <div className="text-zinc-300">
+                        {formatTimeMetric(metrics.timeMetric, metrics.timeMetricUnit)}
+                      </div>
+                      <div className="text-[10px] text-zinc-500">{metrics.timeMetricLabel}</div>
+                    </>
+                  ) : (
+                    <span className="text-zinc-600">N/A</span>
+                  )}
+                </td>
+
+                {/* Investment Score */}
+                <td className="px-3 py-3 text-right">
+                  {project.investmentScore > 0 ? (
+                    <span
+                      className={`inline-block px-2 py-1 rounded text-xs font-bold ${
+                        project.investmentScore >= 85
+                          ? 'bg-emerald-500/20 text-emerald-400'
+                          : project.investmentScore >= 70
+                            ? 'bg-cyan-500/20 text-cyan-400'
+                            : project.investmentScore >= 50
+                              ? 'bg-orange-500/20 text-orange-400'
+                              : 'bg-red-500/20 text-red-400'
+                      }`}
+                    >
+                      {Math.round(project.investmentScore)}
+                    </span>
+                  ) : (
+                    <span className="text-zinc-600 text-xs">N/A</span>
+                  )}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      {/* Legend */}
+      <div className="flex flex-wrap gap-3 pt-2 border-t border-zinc-800">
+        <span className="text-[10px] text-zinc-500">Analysis Types:</span>
+        <span className="inline-flex items-center gap-1 text-[10px]">
+          <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
+          <span className="text-zinc-400">Exit Return</span>
+        </span>
+        <span className="inline-flex items-center gap-1 text-[10px]">
+          <span className="w-2 h-2 rounded-full bg-cyan-500"></span>
+          <span className="text-zinc-400">Income Analysis</span>
+        </span>
+        <span className="inline-flex items-center gap-1 text-[10px]">
+          <span className="w-2 h-2 rounded-full bg-amber-500"></span>
+          <span className="text-zinc-400">Financing</span>
+        </span>
+        <span className="inline-flex items-center gap-1 text-[10px]">
+          <span className="w-2 h-2 rounded-full bg-purple-500"></span>
+          <span className="text-zinc-400">Risk Analysis</span>
+        </span>
+      </div>
+    </div>
+  );
+}
 
 export function Portfolio() {
   const { projects, deleteProject } = usePortfolio();
@@ -203,51 +431,9 @@ export function Portfolio() {
               ))}
             </div>
 
-            {/* Comparison View */}
+            {/* Comparison View - Cross-Calculator Smart Comparison */}
             {showComparisonView && projectsForComparison.length > 1 && (
-              <div className="bg-zinc-900 rounded-xl border border-zinc-800 p-4 sm:p-6 mt-6">
-                <h3 className="text-lg font-bold text-white mb-4">Project Comparison</h3>
-                <div className="overflow-x-auto -mx-4 px-4 sm:mx-0 sm:px-0">
-                  <table className="w-full text-xs sm:text-sm min-w-[640px]">
-                    <thead className="bg-zinc-800 border-b border-zinc-700">
-                      <tr>
-                        <th className="px-4 py-3 text-left font-semibold text-zinc-300">Project</th>
-                        <th className="px-4 py-3 text-right font-semibold text-zinc-300">Investment</th>
-                        <th className="px-4 py-3 text-right font-semibold text-zinc-300">ROI %</th>
-                        <th className="px-4 py-3 text-right font-semibold text-zinc-300">Cash Flow</th>
-                        <th className="px-4 py-3 text-right font-semibold text-zinc-300">Break-even</th>
-                        <th className="px-4 py-3 text-right font-semibold text-zinc-300">Score</th>
-                        <th className="px-4 py-3 text-right font-semibold text-zinc-300">Strategy</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {projectsForComparison.map((project, idx) => (
-                        <tr key={project.id} className={`border-b border-zinc-800 ${idx % 2 === 0 ? 'bg-zinc-900' : 'bg-zinc-800/50'}`}>
-                          <td className="px-4 py-3 font-semibold text-white">{project.projectName}</td>
-                          <td className="px-4 py-3 text-right text-zinc-400">
-                            {(project.totalInvestment / 1_000_000).toFixed(1)}M
-                          </td>
-                          <td className={`px-4 py-3 text-right font-semibold ${(project.roi || 0) >= 20 ? 'text-emerald-400' : 'text-orange-400'}`}>
-                            {(project.roi || 0).toFixed(1)}%
-                          </td>
-                          <td className="px-4 py-3 text-right text-zinc-400">
-                            {(project.avgCashFlow / 1_000).toFixed(0)}K
-                          </td>
-                          <td className="px-4 py-3 text-right text-zinc-400">{project.breakEvenMonths}m</td>
-                          <td className="px-4 py-3 text-right font-bold">
-                            <span className={`px-2 py-1 rounded ${project.investmentScore >= 85 ? 'bg-emerald-500/20 text-emerald-400' : project.investmentScore >= 70 ? 'bg-cyan-500/20 text-cyan-400' : 'bg-orange-500/20 text-orange-400'}`}>
-                              {project.investmentScore}/100
-                            </span>
-                          </td>
-                          <td className="px-4 py-3 text-right text-zinc-400 capitalize">
-                            {project.strategy || 'N/A'}
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
+              <CrossCalculatorComparison projects={projectsForComparison} />
             )}
           </>
         )}
