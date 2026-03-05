@@ -29,15 +29,15 @@ export function Pricing() {
       highlight: false,
       features: [
         '3 calculations per month',
-        'All 8 calculators',
+        'All 13 calculators',
         'Save 1 project',
         'Community support',
       ],
     },
     {
       name: 'Pro',
-      monthlyPrice: 9,
-      annualPrice: 99,
+      monthlyPrice: 19,
+      annualPrice: 149,
       description: 'For serious property investors',
       cta: 'Start 7-Day Free Trial',
       highlight: true,
@@ -47,22 +47,22 @@ export function Pricing() {
         'PDF export',
         'Multi-currency support',
         'Advanced analysis modes',
-        'Scenario comparison',
+        'Historical comparisons',
         'Email support',
       ],
     },
     {
       name: 'Enterprise',
-      monthlyPrice: null,
-      annualPrice: null,
+      monthlyPrice: 79,
+      annualPrice: 599,
       description: 'For teams and portfolio managers',
-      cta: 'Contact Sales',
+      cta: 'Start Free Trial',
       highlight: false,
       features: [
         'Everything in Pro',
-        'Unlimited team members',
+        'Unlimited projects',
+        'Up to 5 team seats',
         'API access',
-        'Custom integrations',
         'White-label option',
         '24/7 priority support',
         'Dedicated account manager',
@@ -118,7 +118,7 @@ export function Pricing() {
             >
               Annual
               <span className="text-xs bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded-full font-semibold">
-                Save 8%
+                Save 35%
               </span>
             </button>
           </motion.div>

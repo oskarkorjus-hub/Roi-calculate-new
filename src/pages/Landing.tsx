@@ -467,7 +467,7 @@ const FAQSection = () => {
   const faqs = [
     {
       question: "Can't I just use Excel?",
-      answer: "Sure, if you want to spend 4-5 hours building formulas, debugging #REF errors, and still wonder if your XIRR calculation is correct. Most investors who switch from Excel tell us they save 20+ hours per month. At $9/month, that's less than 50 cents per hour saved. Plus, Excel doesn't give you instant scenario comparison, PDF exports for lenders, or mobile access when you're on-site at a property."
+      answer: "Sure, if you want to spend 4-5 hours building formulas, debugging #REF errors, and still wonder if your XIRR calculation is correct. Most investors who switch from Excel tell us they save 20+ hours per month. At $19/month, that's less than $1 per hour saved. Plus, Excel doesn't give you instant scenario comparison, PDF exports for lenders, or mobile access when you're on-site at a property."
     },
     {
       question: "Is this accurate for international investments?",
@@ -966,7 +966,7 @@ export function Landing() {
                     { text: '100% confidence' },
                     { text: 'XIRR, IRR, NPV, Cap Rate' },
                     { text: 'Beat competitors' },
-                    { text: '$9/month vs. $500/hr' },
+                    { text: '$19/month vs. $500/hr' },
                   ].map((item, i) => (
                     <li key={i} className="flex items-start gap-2 sm:gap-3 text-sm sm:text-base text-zinc-300">
                       <span className="text-emerald-400 text-lg sm:text-xl flex-shrink-0">✓</span>
@@ -1254,7 +1254,7 @@ export function Landing() {
                   <span className="text-zinc-500">/forever</span>
                 </div>
                 <ul className="space-y-2 sm:space-y-3 mb-6 sm:mb-8">
-                  {['3 calculations per month', 'All 8 calculators', 'Save 1 project'].map((feature, i) => (
+                  {['3 calculations per month', 'All 13 calculators', 'Save 1 project'].map((feature, i) => (
                     <li key={i} className="flex items-center gap-2 text-sm sm:text-base text-zinc-400">
                       <svg className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
@@ -1286,17 +1286,18 @@ export function Landing() {
                 <h3 className="text-lg sm:text-xl font-bold mb-2">Pro</h3>
                 <p className="text-sm sm:text-base text-emerald-100 mb-4 sm:mb-6">For serious investors</p>
                 <div className="mb-4 sm:mb-6">
-                  <span className="text-4xl sm:text-5xl font-black">$9</span>
+                  <span className="text-4xl sm:text-5xl font-black">$19</span>
                   <span className="text-emerald-100">/month</span>
+                  <p className="text-xs text-emerald-100/80 mt-1">or $149/year (save 35%)</p>
                 </div>
                 <ul className="space-y-2 sm:space-y-3 mb-6 sm:mb-8">
                   {[
                     'Unlimited calculations',
-                    'All 8 calculators',
+                    'All 13 calculators',
                     '25 saved projects',
                     'PDF export',
-                    'Scenario comparison',
-                    'Priority support',
+                    'Multi-currency support',
+                    'Email support',
                   ].map((feature, i) => (
                     <li key={i} className="flex items-center gap-2 text-sm sm:text-base">
                       <svg className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1328,10 +1329,12 @@ export function Landing() {
                 <h3 className="text-lg sm:text-xl font-bold text-white mb-2">Enterprise</h3>
                 <p className="text-sm sm:text-base text-zinc-500 mb-4 sm:mb-6">For teams & funds</p>
                 <div className="mb-4 sm:mb-6">
-                  <span className="text-4xl sm:text-5xl font-black text-white">Custom</span>
+                  <span className="text-4xl sm:text-5xl font-black text-white">$79</span>
+                  <span className="text-zinc-500">/month</span>
+                  <p className="text-xs text-zinc-500 mt-1">or $599/year (save 37%)</p>
                 </div>
                 <ul className="space-y-2 sm:space-y-3 mb-6 sm:mb-8">
-                  {['Everything in Pro', 'Unlimited team members', 'API access', 'White-label option', 'Dedicated support'].map((feature, i) => (
+                  {['Everything in Pro', 'Unlimited projects', 'Up to 5 team seats', 'API access', 'White-label option', '24/7 priority support'].map((feature, i) => (
                     <li key={i} className="flex items-center gap-2 text-sm sm:text-base text-zinc-400">
                       <svg className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
@@ -1340,12 +1343,12 @@ export function Landing() {
                     </li>
                   ))}
                 </ul>
-                <a
-                  href="mailto:hello@roicalculate.com"
+                <Link
+                  to="/calculators"
                   className="block w-full py-3 min-h-[44px] text-center border-2 border-zinc-700 text-white font-bold rounded-xl hover:bg-zinc-800 transition-colors text-sm sm:text-base"
                 >
-                  Contact Sales
-                </a>
+                  Start Free Trial
+                </Link>
               </GlassCard>
             </motion.div>
           </div>

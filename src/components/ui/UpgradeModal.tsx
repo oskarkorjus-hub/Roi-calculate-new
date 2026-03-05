@@ -75,9 +75,10 @@ export function UpgradeModal({ isOpen, onClose, reason }: UpgradeModalProps) {
               POPULAR
             </div>
             <div className="text-sm font-semibold text-emerald-400 mb-2">Pro</div>
-            <div className="text-2xl font-bold text-white mb-3">
-              $9<span className="text-sm font-normal text-zinc-400">/month</span>
+            <div className="text-2xl font-bold text-white mb-1">
+              $19<span className="text-sm font-normal text-zinc-400">/month</span>
             </div>
+            <div className="text-xs text-zinc-500 mb-3">or $149/year (save 35%)</div>
             <ul className="space-y-2 text-sm text-zinc-300">
               <li className="flex items-center gap-2">
                 <svg className="w-4 h-4 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
