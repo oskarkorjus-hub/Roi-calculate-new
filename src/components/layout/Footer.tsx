@@ -6,11 +6,9 @@ export function Footer() {
   const footerLinks = {
     product: [
       { label: 'Features', path: '/features' },
-      { label: 'Calculators', path: '/calculators' },
       { label: 'Pricing', path: '/pricing' },
     ],
     company: [
-      { label: 'About', path: '/contact' },
       { label: 'Contact', path: '/contact' },
       { label: 'Terms of Service', path: '/terms' },
       { label: 'Privacy Policy', path: '/privacy' },
