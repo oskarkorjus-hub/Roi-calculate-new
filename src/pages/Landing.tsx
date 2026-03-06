@@ -307,10 +307,10 @@ const InteractiveCalculator = () => {
   };
 
   return (
-    <GlassCard className="p-6">
+    <GlassCard className="p-4 sm:p-6">
       {/* Header */}
-      <div className="flex items-center justify-between mb-6">
-        <span className="text-sm font-medium text-zinc-400">Quick ROI Analysis</span>
+      <div className="flex items-center justify-between mb-4 sm:mb-6">
+        <span className="text-xs sm:text-sm font-medium text-zinc-400">Quick ROI Analysis</span>
         <motion.span
           className="px-2 py-1 bg-emerald-500/20 text-emerald-400 text-xs font-bold rounded"
           animate={{ opacity: isCalculating ? [1, 0.3, 1] : 1 }}
@@ -632,17 +632,17 @@ export function Landing() {
           </span>
         </motion.div>
 
-        <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 sm:pt-28 lg:pt-36 pb-12 sm:pb-16 z-10">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
+        <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 sm:pt-24 lg:pt-36 pb-8 sm:pb-12 lg:pb-16 z-10">
+          <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
 
             {/* Left Column - Copy */}
-            <div>
+            <div className="text-center lg:text-left">
               {/* Social Proof Badge */}
               <motion.div
                 initial={{ opacity: 0, y: 20, scale: 0.9 }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 transition={{ duration: 0.6 }}
-                className="inline-flex items-center gap-2 px-3 sm:px-4 py-2 mb-6 sm:mb-8 rounded-full bg-zinc-800/50 border border-zinc-700/50 backdrop-blur-sm"
+                className="inline-flex items-center gap-2 px-3 sm:px-4 py-2 mb-4 sm:mb-6 lg:mb-8 rounded-full bg-zinc-800/50 border border-zinc-700/50 backdrop-blur-sm"
               >
                 <motion.span
                   className="w-2 h-2 rounded-full bg-emerald-400 flex-shrink-0"
@@ -657,77 +657,94 @@ export function Landing() {
                   ))}
                 </div>
                 <span className="text-xs sm:text-sm text-zinc-300">
-                  <strong className="text-white">2,847</strong> <span className="hidden xs:inline">investors</span> analyzed deals
+                  <strong className="text-white">2,847</strong> analyzed deals
                 </span>
               </motion.div>
 
-              {/* Main Headline */}
+              {/* Main Headline - Mobile Optimized */}
               <motion.h1
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.2 }}
-                className="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-bold text-white leading-[1.1] mb-4 sm:mb-6"
+                className="text-[1.75rem] leading-tight sm:text-3xl md:text-4xl lg:text-4xl xl:text-5xl font-bold text-white mb-3 sm:mb-4 lg:mb-6"
               >
-                Know Your{' '}
+                <span className="block sm:inline">Know Your </span>
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-cyan-400">
                   Exact ROI
-                </span>{' '}
-                in 60 Seconds
+                </span>
+                <span className="block sm:inline"> in 60 Seconds</span>
                 <motion.span
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ delay: 0.5 }}
-                  className="block text-lg sm:text-xl lg:text-2xl xl:text-3xl mt-2 sm:mt-3 font-semibold text-zinc-400"
+                  className="block text-base sm:text-lg md:text-xl lg:text-2xl xl:text-3xl mt-2 sm:mt-3 font-semibold text-zinc-400"
                 >
                   (Before You Risk a Single Dollar)
                 </motion.span>
               </motion.h1>
 
-              {/* Subheadline */}
+              {/* Subheadline - Mobile Optimized */}
               <motion.p
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.4 }}
-                className="text-base sm:text-lg lg:text-xl text-zinc-400 mb-6 sm:mb-8 leading-relaxed"
+                className="text-sm sm:text-base md:text-lg lg:text-xl text-zinc-400 mb-5 sm:mb-6 lg:mb-8 leading-relaxed max-w-lg mx-auto lg:mx-0"
               >
-                The same calculator used by <strong className="text-white">$50M+ property investors</strong> to
-                analyze villa flips, rental yields, and development deals —
-                <span className="text-emerald-400 font-semibold"> without expensive consultants or complex spreadsheets.</span>
+                <span className="hidden sm:inline">The same calculator used by </span>
+                <span className="sm:hidden">Used by </span>
+                <strong className="text-white">$50M+ property investors</strong>
+                <span className="hidden sm:inline"> to analyze villa flips, rental yields, and development deals</span>
+                <span className="sm:hidden"> for villa & rental analysis</span>
+                <span className="text-emerald-400 font-semibold"> — no spreadsheets needed.</span>
               </motion.p>
 
-              {/* CTA Button */}
+              {/* CTA Button - Mobile Optimized */}
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.6 }}
-                className="mb-6 flex flex-col sm:flex-row gap-3"
+                className="mb-5 sm:mb-6 flex flex-col sm:flex-row gap-3 justify-center lg:justify-start"
               >
                 <Link
                   to="/signup"
-                  className="inline-flex items-center justify-center gap-3 px-8 py-4 min-h-[52px] bg-gradient-to-r from-emerald-500 to-cyan-500 text-white font-bold text-lg rounded-xl hover:from-emerald-600 hover:to-cyan-600 transition-all duration-300 shadow-lg shadow-emerald-500/30"
+                  className="inline-flex items-center justify-center gap-2 sm:gap-3 px-6 sm:px-8 py-3.5 sm:py-4 min-h-[48px] sm:min-h-[52px] bg-gradient-to-r from-emerald-500 to-cyan-500 text-white font-bold text-base sm:text-lg rounded-xl hover:from-emerald-600 hover:to-cyan-600 transition-all duration-300 shadow-lg shadow-emerald-500/30 w-full sm:w-auto"
                 >
                   Start Free Now
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
                   </svg>
                 </Link>
               </motion.div>
 
-              {/* Trust indicators */}
+              {/* Trust indicators - Mobile Optimized */}
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.8 }}
-                className="flex flex-wrap items-center gap-4 text-sm text-zinc-500"
+                className="flex flex-col sm:flex-row flex-wrap items-center justify-center lg:justify-start gap-2 sm:gap-4 text-xs sm:text-sm text-zinc-500"
               >
-                {['Free forever plan', 'No credit card required', 'Results in 60 seconds'].map((text, i) => (
-                  <span key={i} className="flex items-center gap-2">
-                    <svg className="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                    </svg>
-                    {text}
-                  </span>
-                ))}
+                {/* Mobile: Show abbreviated version */}
+                <div className="flex items-center gap-3 sm:hidden">
+                  {['Free forever', 'No card', '60s results'].map((text, i) => (
+                    <span key={i} className="flex items-center gap-1">
+                      <svg className="w-3.5 h-3.5 text-emerald-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                      </svg>
+                      <span className="whitespace-nowrap">{text}</span>
+                    </span>
+                  ))}
+                </div>
+                {/* Desktop: Show full version */}
+                <div className="hidden sm:flex flex-wrap items-center gap-4">
+                  {['Free forever plan', 'No credit card required', 'Results in 60 seconds'].map((text, i) => (
+                    <span key={i} className="flex items-center gap-2">
+                      <svg className="w-4 h-4 text-emerald-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                      </svg>
+                      {text}
+                    </span>
+                  ))}
+                </div>
               </motion.div>
             </div>
 
@@ -736,24 +753,24 @@ export function Landing() {
               initial={{ opacity: 0, x: 50, rotateY: -10 }}
               animate={{ opacity: 1, x: 0, rotateY: 0 }}
               transition={{ duration: 1, delay: 0.4 }}
-              className="relative"
+              className="relative mt-4 lg:mt-0"
               style={{ perspective: 1000 }}
             >
               <InteractiveCalculator />
 
-              {/* Floating elements */}
+              {/* Floating elements - Hidden on mobile */}
               <motion.div
-                className="absolute -top-4 -right-4 w-20 h-20 bg-gradient-to-br from-emerald-500 to-cyan-500 rounded-2xl flex items-center justify-center shadow-lg shadow-emerald-500/30"
+                className="hidden sm:flex absolute -top-4 -right-4 w-16 h-16 lg:w-20 lg:h-20 bg-gradient-to-br from-emerald-500 to-cyan-500 rounded-2xl items-center justify-center shadow-lg shadow-emerald-500/30"
                 animate={{ y: [0, -10, 0], rotate: [0, 5, 0] }}
                 transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
               >
-                <svg className="w-10 h-10 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg className="w-8 h-8 lg:w-10 lg:h-10 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
                 </svg>
               </motion.div>
 
               <motion.div
-                className="absolute -bottom-4 -left-4 px-4 py-2 bg-zinc-800 border border-zinc-700 rounded-xl text-sm z-10"
+                className="hidden sm:block absolute -bottom-4 -left-4 px-3 lg:px-4 py-2 bg-zinc-800 border border-zinc-700 rounded-xl text-xs lg:text-sm z-10"
                 animate={{ y: [0, 8, 0] }}
                 transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut', delay: 0.5 }}
               >
