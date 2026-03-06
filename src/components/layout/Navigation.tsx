@@ -187,98 +187,124 @@ export function Navigation() {
         </div>
       </div>
 
-      {/* Mobile Menu */}
+      {/* Mobile Menu - Full Screen Overlay */}
       <AnimatePresence>
         {mobileMenuOpen && (
           <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.3 }}
-            className="md:hidden bg-[#0a0a0a]/95 backdrop-blur-xl border-t border-zinc-800/50"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="md:hidden fixed inset-0 top-16 bg-[#0a0a0a] z-40"
           >
-            <div className="px-6 py-6 space-y-2">
-              {navLinks.map((link, idx) => (
-                <motion.div
-                  key={link.path}
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: idx * 0.05 }}
-                >
-                  <Link
-                    to={link.path}
-                    className={`block px-4 py-3 rounded-xl font-medium transition-all ${
-                      isActive(link.path)
-                        ? 'bg-zinc-800 text-white'
-                        : 'text-zinc-400 hover:bg-zinc-800/50 hover:text-white'
-                    }`}
+            <div className="flex flex-col h-full px-6 py-8">
+              {/* Navigation Links */}
+              <nav className="flex-1 space-y-1">
+                {navLinks.map((link, idx) => (
+                  <motion.div
+                    key={link.path}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: idx * 0.05 }}
                   >
-                    {link.label}
-                  </Link>
-                </motion.div>
-              ))}
+                    <Link
+                      to={link.path}
+                      className={`flex items-center gap-3 px-4 py-4 rounded-xl text-lg font-medium transition-all ${
+                        isActive(link.path)
+                          ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
+                          : 'text-zinc-300 active:bg-zinc-800'
+                      }`}
+                    >
+                      {link.label}
+                      {isActive(link.path) && (
+                        <svg className="w-5 h-5 ml-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                        </svg>
+                      )}
+                    </Link>
+                  </motion.div>
+                ))}
+              </nav>
 
+              {/* CTA Section */}
               <motion.div
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: navLinks.length * 0.05 }}
-                className="pt-4 border-t border-zinc-800 mt-4"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2 }}
+                className="pt-6 border-t border-zinc-800 space-y-3"
               >
                 {!loading && (
                   <>
                     {user ? (
-                      /* Logged In */
-                      <div className="space-y-2">
-                        <div className="px-4 py-2 text-sm text-zinc-400">
-                          Signed in as <span className="text-white">{user.email}</span>
+                      /* Logged In */}
+                      <div className="space-y-3">
+                        <div className="flex items-center gap-3 px-4 py-3 bg-zinc-900 rounded-xl">
+                          <div className="w-10 h-10 rounded-full bg-emerald-500/20 flex items-center justify-center">
+                            <span className="text-emerald-400 font-bold">
+                              {user.name?.charAt(0) || user.email?.charAt(0) || 'U'}
+                            </span>
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm font-medium text-white truncate">{user.name || 'User'}</p>
+                            <p className="text-xs text-zinc-500 truncate">{user.email}</p>
+                          </div>
                         </div>
                         <Link
                           to="/calculators"
-                          className="block w-full py-3 text-center bg-gradient-to-r from-emerald-500 to-cyan-500 text-white font-semibold rounded-xl"
+                          className="flex items-center justify-center gap-2 w-full py-4 bg-gradient-to-r from-emerald-500 to-cyan-500 text-white font-bold rounded-xl text-base"
                         >
-                          Go to Calculators
+                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                          </svg>
+                          Open Calculators
                         </Link>
-                        <Link
-                          to="/settings"
-                          className="block w-full py-3 text-center border border-zinc-700 text-zinc-300 font-medium rounded-xl hover:bg-zinc-800 transition-all"
-                        >
-                          Account Settings
-                        </Link>
-                        <button
-                          onClick={handleSignOut}
-                          className="block w-full py-3 text-center border border-red-500/30 text-red-400 font-medium rounded-xl hover:bg-red-500/10 transition-all"
-                        >
-                          Sign Out
-                        </button>
+                        <div className="grid grid-cols-2 gap-3">
+                          <Link
+                            to="/settings"
+                            className="py-3 text-center border border-zinc-700 text-zinc-300 font-medium rounded-xl active:bg-zinc-800"
+                          >
+                            Settings
+                          </Link>
+                          <button
+                            onClick={handleSignOut}
+                            className="py-3 text-center border border-red-500/30 text-red-400 font-medium rounded-xl active:bg-red-500/10"
+                          >
+                            Sign Out
+                          </button>
+                        </div>
                       </div>
                     ) : (
                       /* Not Logged In */
                       <div className="space-y-3">
-                        <div className="text-center py-3 px-4 bg-emerald-500/10 border border-emerald-500/20 rounded-xl">
-                          <p className="text-emerald-400 text-sm font-medium">Join 2,847+ investors</p>
-                        </div>
                         <Link
                           to="/signup"
-                          className="block w-full py-3.5 text-center bg-gradient-to-r from-emerald-500 to-cyan-500 text-white font-bold rounded-xl shadow-lg shadow-emerald-500/20"
+                          className="flex items-center justify-center gap-2 w-full py-4 bg-gradient-to-r from-emerald-500 to-cyan-500 text-white font-bold rounded-xl text-base shadow-lg shadow-emerald-500/20"
                         >
                           Start Free Analysis
+                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                          </svg>
                         </Link>
                         <Link
                           to="/login"
-                          className="block w-full py-3 text-center border border-zinc-700 text-zinc-300 font-medium rounded-xl hover:bg-zinc-800 transition-all"
+                          className="block w-full py-4 text-center border border-zinc-700 text-zinc-300 font-medium rounded-xl active:bg-zinc-800"
                         >
                           Sign In
                         </Link>
+                        <p className="text-center text-xs text-zinc-500 pt-2">
+                          Join <span className="text-emerald-400 font-medium">2,847+</span> investors analyzing deals
+                        </p>
                       </div>
                     )}
                   </>
                 )}
-
-                <div className="flex justify-center gap-6 mt-4 text-xs text-zinc-500">
-                  <Link to="/terms" className="hover:text-zinc-300 transition-colors">Terms</Link>
-                  <Link to="/privacy" className="hover:text-zinc-300 transition-colors">Privacy</Link>
-                </div>
               </motion.div>
+
+              {/* Footer Links */}
+              <div className="flex justify-center gap-8 pt-6 text-sm text-zinc-500">
+                <Link to="/terms" className="active:text-zinc-300">Terms</Link>
+                <Link to="/privacy" className="active:text-zinc-300">Privacy</Link>
+              </div>
             </div>
           </motion.div>
         )}
