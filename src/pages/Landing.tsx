@@ -593,14 +593,19 @@ export function Landing() {
       {/* ============================================ */}
       {/* SECTION 1: HERO */}
       {/* ============================================ */}
-      <section ref={heroRef} className="relative min-h-screen flex items-center overflow-hidden">
-        {/* Background Effects */}
-        <AnimatedBlobs />
-        <ParticleField />
+      <section ref={heroRef} className="relative min-h-screen overflow-hidden">
+        {/* Background Effects - z-0 */}
+        <div className="absolute inset-0 z-0">
+          <AnimatedBlobs />
+          {/* Hide particles on mobile for performance */}
+          <div className="hidden sm:block">
+            <ParticleField />
+          </div>
+        </div>
 
-        {/* Mouse-following spotlight */}
+        {/* Mouse-following spotlight - desktop only */}
         <motion.div
-          className="absolute w-[800px] h-[800px] rounded-full pointer-events-none"
+          className="absolute w-[800px] h-[800px] rounded-full pointer-events-none z-0 hidden lg:block"
           style={{
             background: 'radial-gradient(circle, rgba(16, 185, 129, 0.08) 0%, transparent 70%)',
             left: `${mousePosition.x}%`,
@@ -609,30 +614,20 @@ export function Landing() {
           }}
         />
 
-        {/* Urgency Bar */}
-        <motion.div
-          initial={{ y: -50, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-          className="absolute top-16 sm:top-20 left-0 right-0 bg-gradient-to-r from-emerald-600 to-cyan-600 text-white py-2 sm:py-3 px-3 sm:px-4 text-center text-xs sm:text-sm font-medium z-20"
-        >
-          <span className="inline-flex items-center gap-1 sm:gap-2 flex-wrap justify-center">
-            <motion.span
-              animate={{ scale: [1, 1.2, 1] }}
-              transition={{ duration: 1.5, repeat: Infinity }}
-              className="inline-flex"
-            >
-              <svg className="w-5 h-5 text-orange-400" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M12 23c-3.866 0-7-3.134-7-7 0-2.828 1.635-5.095 3.5-7 .5-.512 1.5-1.5 2-2.5.5 1 1.5 2 2.5 2.5 1.865 1.905 3.5 4.172 3.5 7 0 3.866-3.134 7-7 7zm0-2c2.761 0 5-2.239 5-5 0-1.887-1.135-3.665-2.5-5-.425.434-.925.934-1.5 1.5l-.5.5-.5-.5c-.575-.566-1.075-1.066-1.5-1.5C9.135 12.335 8 14.113 8 16c0 2.761 2.239 5 5 5z"/>
-              </svg>
-            </motion.span>
+        {/* Urgency Bar - z-30 */}
+        <div className="absolute top-16 sm:top-20 left-0 right-0 bg-gradient-to-r from-emerald-600 to-cyan-600 text-white py-2 px-4 text-center text-xs sm:text-sm font-medium z-30">
+          <span className="inline-flex items-center gap-2 justify-center">
+            <svg className="w-4 h-4 text-orange-400 animate-pulse" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M12 23c-3.866 0-7-3.134-7-7 0-2.828 1.635-5.095 3.5-7 .5-.512 1.5-1.5 2-2.5.5 1 1.5 2 2.5 2.5 1.865 1.905 3.5 4.172 3.5 7 0 3.866-3.134 7-7 7zm0-2c2.761 0 5-2.239 5-5 0-1.887-1.135-3.665-2.5-5-.425.434-.925.934-1.5 1.5l-.5.5-.5-.5c-.575-.566-1.075-1.066-1.5-1.5C9.135 12.335 8 14.113 8 16c0 2.761 2.239 5 5 5z"/>
+            </svg>
             <span className="hidden sm:inline">LIMITED: Free Pro Access for the next {timeLeft.hours}h {timeLeft.minutes}m —</span>
-            <span className="sm:hidden">Free Pro: {timeLeft.hours}h {timeLeft.minutes}m left —</span>
+            <span className="sm:hidden">Free Pro: {timeLeft.hours}h {timeLeft.minutes}m —</span>
             <span className="underline font-bold">Claim Your Spot</span>
           </span>
-        </motion.div>
+        </div>
 
-        <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 sm:pt-20 lg:pt-32 pb-6 sm:pb-10 lg:pb-16 z-10">
+        {/* Main Content - z-20 */}
+        <div className="relative w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-28 sm:pt-32 lg:pt-40 pb-8 sm:pb-12 lg:pb-16 z-20">
           {/* Mobile-First Layout: Stack on mobile, grid on desktop */}
           <div className="flex flex-col lg:grid lg:grid-cols-2 gap-6 lg:gap-12 items-center">
 
