@@ -236,7 +236,7 @@ export function Navigation() {
                 {!loading && (
                   <>
                     {user ? (
-                      /* Logged In */}
+                      /* Logged In */
                       <div className="space-y-3">
                         <div className="flex items-center gap-3 px-4 py-3 bg-zinc-900 rounded-xl">
                           <div className="w-10 h-10 rounded-full bg-emerald-500/20 flex items-center justify-center">
