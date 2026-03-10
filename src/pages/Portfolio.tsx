@@ -1,4 +1,5 @@
 import { useState, useCallback, useMemo, useRef, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { usePortfolio } from '../lib/portfolio-context';
 import { PortfolioStats } from '../components/PortfolioStats';
 import { PortfolioFilters } from '../components/PortfolioFilters';
@@ -14,8 +15,46 @@ import {
   formatCashFlow,
   formatTimeMetric,
   generateComparisonInsights,
-  getCalculatorLabel,
 } from '../utils/crossCalculatorComparison';
+
+// Custom easing for premium animations
+const premiumEase: [number, number, number, number] = [0.16, 1, 0.3, 1];
+
+// Animation variants
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.06,
+      delayChildren: 0.1,
+    },
+  },
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.5,
+      ease: premiumEase,
+    },
+  },
+};
+
+const cardVariants = {
+  hidden: { opacity: 0, scale: 0.95 },
+  visible: {
+    opacity: 1,
+    scale: 1,
+    transition: {
+      duration: 0.4,
+      ease: premiumEase,
+    },
+  },
+};
 
 // Cross-Calculator Comparison Component
 function CrossCalculatorComparison({ projects }: { projects: PortfolioProject[] }) {
@@ -46,95 +85,104 @@ function CrossCalculatorComparison({ projects }: { projects: PortfolioProject[] 
   };
 
   return (
-    <div className="bg-zinc-900 rounded-xl border border-zinc-800 p-4 sm:p-6 mt-6 space-y-4">
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+      className="card-premium rounded-2xl p-6 mt-6 space-y-5"
+    >
       <div className="flex items-center justify-between">
-        <h3 className="text-lg font-bold text-white">Cross-Calculator Comparison</h3>
-        <span className="text-xs text-zinc-500">Smart metric mapping across different analysis types</span>
+        <div className="flex items-center gap-3">
+          <div className="section-icon">
+            <span className="material-symbols-outlined text-emerald-400">compare</span>
+          </div>
+          <h3 className="section-title">Cross-Calculator Comparison</h3>
+        </div>
+        <span className="text-xs text-zinc-500 font-body">Smart metric mapping across different analysis types</span>
       </div>
 
       {/* Comparison Insights */}
       {insights.length > 0 && (
         <div className="space-y-2">
           {insights.map((insight, idx) => (
-            <div
+            <motion.div
               key={idx}
-              className={`flex items-start gap-2 px-3 py-2 rounded-lg text-xs sm:text-sm ${
+              initial={{ opacity: 0, x: -10 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: idx * 0.1 }}
+              className={`flex items-start gap-2 px-4 py-3 rounded-xl text-sm font-body ${
                 insight.type === 'warning'
                   ? 'bg-amber-500/10 text-amber-300 border border-amber-500/20'
                   : insight.type === 'comparison'
                     ? 'bg-emerald-500/10 text-emerald-300 border border-emerald-500/20'
-                    : 'bg-zinc-800 text-zinc-400 border border-zinc-700'
+                    : 'bg-zinc-800/50 text-zinc-400 border border-zinc-700/50'
               }`}
             >
               <span className="mt-0.5">
                 {insight.type === 'warning' ? '⚠️' : insight.type === 'comparison' ? '📊' : 'ℹ️'}
               </span>
               <span>{insight.message}</span>
-            </div>
+            </motion.div>
           ))}
         </div>
       )}
 
       {/* Main Comparison Table */}
-      <div className="overflow-x-auto -mx-4 px-4 sm:mx-0 sm:px-0">
-        <table className="w-full text-xs sm:text-sm min-w-[800px]">
-          <thead className="bg-zinc-800 border-b border-zinc-700">
+      <div className="overflow-x-auto -mx-6 px-6">
+        <table className="w-full text-sm min-w-[800px]">
+          <thead className="bg-zinc-800/50 border-b border-zinc-700/50">
             <tr>
-              <th className="px-3 py-3 text-left font-semibold text-zinc-300">Project</th>
-              <th className="px-3 py-3 text-center font-semibold text-zinc-300">Type</th>
-              <th className="px-3 py-3 text-right font-semibold text-zinc-300">Capital</th>
-              <th className="px-3 py-3 text-right font-semibold text-zinc-300">
+              <th className="px-4 py-4 text-left font-display font-semibold text-zinc-300">Project</th>
+              <th className="px-4 py-4 text-center font-display font-semibold text-zinc-300">Type</th>
+              <th className="px-4 py-4 text-right font-display font-semibold text-zinc-300">Capital</th>
+              <th className="px-4 py-4 text-right font-display font-semibold text-zinc-300">
                 <span className="block">Primary Return</span>
-                <span className="block text-[10px] text-zinc-500 font-normal">Calculator-specific</span>
+                <span className="block text-[10px] text-zinc-500 font-normal font-body">Calculator-specific</span>
               </th>
-              <th className="px-3 py-3 text-right font-semibold text-zinc-300">
+              <th className="px-4 py-4 text-right font-display font-semibold text-zinc-300">
                 <span className="block">Cash Flow</span>
-                <span className="block text-[10px] text-zinc-500 font-normal">Net amount</span>
+                <span className="block text-[10px] text-zinc-500 font-normal font-body">Net amount</span>
               </th>
-              <th className="px-3 py-3 text-right font-semibold text-zinc-300">Timeline</th>
-              <th className="px-3 py-3 text-right font-semibold text-zinc-300">Score</th>
+              <th className="px-4 py-4 text-right font-display font-semibold text-zinc-300">Timeline</th>
+              <th className="px-4 py-4 text-right font-display font-semibold text-zinc-300">Score</th>
             </tr>
           </thead>
           <tbody>
             {comparisonData.map(({ project, metrics }, idx) => (
-              <tr
+              <motion.tr
                 key={project.id}
-                className={`border-b border-zinc-800 ${idx % 2 === 0 ? 'bg-zinc-900' : 'bg-zinc-800/50'}`}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: idx * 0.05 }}
+                className={`border-b border-zinc-800/50 hover:bg-zinc-800/30 transition-colors ${idx % 2 === 0 ? 'bg-zinc-900/30' : 'bg-zinc-800/20'}`}
               >
-                {/* Project Name & Strategy */}
-                <td className="px-3 py-3">
-                  <div className="font-semibold text-white">{project.projectName}</div>
+                <td className="px-4 py-4">
+                  <div className="font-display font-semibold text-white">{project.projectName}</div>
                   {project.strategy && (
-                    <div className="text-[10px] text-zinc-500 capitalize mt-0.5">
+                    <div className="text-xs text-zinc-500 capitalize mt-0.5 font-body">
                       {project.strategy}
                     </div>
                   )}
                 </td>
-
-                {/* Calculator Type Badge */}
-                <td className="px-3 py-3 text-center">
+                <td className="px-4 py-4 text-center">
                   <span
-                    className={`inline-block px-2 py-1 rounded-md text-[10px] font-medium border ${getCategoryStyles(metrics.category)}`}
+                    className={`inline-block px-2.5 py-1 rounded-lg text-xs font-medium border ${getCategoryStyles(metrics.category)}`}
                     title={metrics.calculatorPurpose}
                   >
                     {metrics.categoryLabel}
                   </span>
                 </td>
-
-                {/* Capital Required */}
-                <td className="px-3 py-3 text-right">
-                  <div className="text-zinc-300 font-medium">
+                <td className="px-4 py-4 text-right">
+                  <div className="text-zinc-300 font-mono font-medium">
                     {formatMetricValue(metrics.capitalRequired, 'currency')}
                   </div>
-                  <div className="text-[10px] text-zinc-500">{metrics.capitalLabel}</div>
+                  <div className="text-xs text-zinc-500 font-body">{metrics.capitalLabel}</div>
                 </td>
-
-                {/* Primary Return Metric */}
-                <td className="px-3 py-3 text-right">
+                <td className="px-4 py-4 text-right">
                   {metrics.primaryReturn !== null ? (
                     <>
                       <div
-                        className={`font-bold ${
+                        className={`font-mono font-bold ${
                           metrics.primaryReturnFormat === 'percent' && metrics.primaryReturn >= 15
                             ? 'text-emerald-400'
                             : metrics.primaryReturnFormat === 'currency' && metrics.primaryReturn > 0
@@ -148,50 +196,44 @@ function CrossCalculatorComparison({ projects }: { projects: PortfolioProject[] 
                       >
                         {formatMetricValue(metrics.primaryReturn, metrics.primaryReturnFormat)}
                       </div>
-                      <div className="text-[10px] text-zinc-500">{metrics.primaryReturnLabel}</div>
+                      <div className="text-xs text-zinc-500 font-body">{metrics.primaryReturnLabel}</div>
                     </>
                   ) : (
                     <span className="text-zinc-600">N/A</span>
                   )}
                 </td>
-
-                {/* Cash Flow */}
-                <td className="px-3 py-3 text-right">
+                <td className="px-4 py-4 text-right">
                   {metrics.cashFlowIndicator !== null ? (
                     <>
                       <div
-                        className={`font-medium ${
+                        className={`font-mono font-medium ${
                           metrics.cashFlowIndicator > 0 ? 'text-emerald-400' : metrics.cashFlowIndicator < 0 ? 'text-red-400' : 'text-zinc-400'
                         }`}
                       >
                         {formatCashFlow(metrics.cashFlowIndicator, metrics.cashFlowPeriod)}
                       </div>
-                      <div className="text-[10px] text-zinc-500">{metrics.cashFlowLabel}</div>
+                      <div className="text-xs text-zinc-500 font-body">{metrics.cashFlowLabel}</div>
                     </>
                   ) : (
                     <span className="text-zinc-600">N/A</span>
                   )}
                 </td>
-
-                {/* Time Metric */}
-                <td className="px-3 py-3 text-right">
+                <td className="px-4 py-4 text-right">
                   {metrics.timeMetric !== null && metrics.timeMetricUnit !== null ? (
                     <>
-                      <div className="text-zinc-300">
+                      <div className="text-zinc-300 font-mono">
                         {formatTimeMetric(metrics.timeMetric, metrics.timeMetricUnit)}
                       </div>
-                      <div className="text-[10px] text-zinc-500">{metrics.timeMetricLabel}</div>
+                      <div className="text-xs text-zinc-500 font-body">{metrics.timeMetricLabel}</div>
                     </>
                   ) : (
                     <span className="text-zinc-600">N/A</span>
                   )}
                 </td>
-
-                {/* Investment Score */}
-                <td className="px-3 py-3 text-right">
+                <td className="px-4 py-4 text-right">
                   {project.investmentScore > 0 ? (
                     <span
-                      className={`inline-block px-2 py-1 rounded text-xs font-bold ${
+                      className={`inline-block px-3 py-1.5 rounded-lg text-sm font-mono font-bold ${
                         project.investmentScore >= 85
                           ? 'bg-emerald-500/20 text-emerald-400'
                           : project.investmentScore >= 70
@@ -207,33 +249,33 @@ function CrossCalculatorComparison({ projects }: { projects: PortfolioProject[] 
                     <span className="text-zinc-600 text-xs">N/A</span>
                   )}
                 </td>
-              </tr>
+              </motion.tr>
             ))}
           </tbody>
         </table>
       </div>
 
       {/* Legend */}
-      <div className="flex flex-wrap gap-3 pt-2 border-t border-zinc-800">
-        <span className="text-[10px] text-zinc-500">Analysis Types:</span>
-        <span className="inline-flex items-center gap-1 text-[10px]">
-          <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
+      <div className="flex flex-wrap gap-4 pt-4 border-t border-zinc-800/50">
+        <span className="text-xs text-zinc-500 font-body">Analysis Types:</span>
+        <span className="inline-flex items-center gap-1.5 text-xs font-body">
+          <span className="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
           <span className="text-zinc-400">Exit Return</span>
         </span>
-        <span className="inline-flex items-center gap-1 text-[10px]">
-          <span className="w-2 h-2 rounded-full bg-cyan-500"></span>
+        <span className="inline-flex items-center gap-1.5 text-xs font-body">
+          <span className="w-2.5 h-2.5 rounded-full bg-cyan-500"></span>
           <span className="text-zinc-400">Income Analysis</span>
         </span>
-        <span className="inline-flex items-center gap-1 text-[10px]">
-          <span className="w-2 h-2 rounded-full bg-amber-500"></span>
+        <span className="inline-flex items-center gap-1.5 text-xs font-body">
+          <span className="w-2.5 h-2.5 rounded-full bg-amber-500"></span>
           <span className="text-zinc-400">Financing</span>
         </span>
-        <span className="inline-flex items-center gap-1 text-[10px]">
-          <span className="w-2 h-2 rounded-full bg-purple-500"></span>
+        <span className="inline-flex items-center gap-1.5 text-xs font-body">
+          <span className="w-2.5 h-2.5 rounded-full bg-purple-500"></span>
           <span className="text-zinc-400">Risk Analysis</span>
         </span>
       </div>
-    </div>
+    </motion.div>
   );
 }
 
@@ -247,7 +289,6 @@ export function Portfolio() {
   const [showComparisonView, setShowComparisonView] = useState(false);
   const comparisonRef = useRef<HTMLDivElement>(null);
 
-  // Auto-scroll to comparison when shown
   useEffect(() => {
     if (showComparisonView && comparisonRef.current) {
       setTimeout(() => {
@@ -298,208 +339,309 @@ export function Portfolio() {
   // Scenario Analysis View
   if (scenarioViewProjectId) {
     return (
-      <ScenarioAnalysisPage 
+      <ScenarioAnalysisPage
         projectId={scenarioViewProjectId}
         onBack={() => setScenarioViewProjectId(null)}
       />
     );
   }
 
+  // Empty State
   if (projects.length === 0) {
     return (
-      <div className="min-h-screen bg-[#0a0a0a] text-white -mx-4 md:-mx-10 lg:-mx-20 -my-8 px-6 py-8">
-        <div className="max-w-[100%] mx-auto">
-          <header className="mb-8 flex items-center gap-4">
-            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-600 to-purple-800 flex items-center justify-center shadow-lg shadow-purple-900/30">
-              <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <div className="min-h-screen bg-mesh-gradient text-white -mx-4 md:-mx-10 lg:-mx-20 -my-8 px-6 py-8">
+        {/* Atmospheric effects */}
+        <div className="fixed inset-0 bg-grid-pattern opacity-20 pointer-events-none" />
+        <div className="fixed inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute top-40 left-1/3 w-96 h-96 bg-purple-500/5 rounded-full blur-3xl animate-float" />
+        </div>
+
+        <div className="relative z-10 max-w-[100%] mx-auto">
+          <motion.header
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="mb-8 flex items-center gap-4"
+          >
+            <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-purple-600/20 to-purple-800/20 border border-purple-500/30 flex items-center justify-center shadow-lg">
+              <svg className="w-7 h-7 text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
               </svg>
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-white">Investment Portfolio</h1>
-              <p className="text-zinc-500 text-sm mt-1">
+              <h1 className="text-3xl font-display font-bold text-white tracking-tight">Investment Portfolio</h1>
+              <p className="text-zinc-400 text-sm mt-1 font-body">
                 Track, analyze, and compare your investment projects
               </p>
             </div>
-          </header>
+          </motion.header>
 
-          <div className="flex items-center justify-center py-20">
-            <div className="text-center p-8 bg-zinc-900 rounded-xl border border-zinc-800">
-              <h3 className="text-2xl font-bold text-white mb-3">No Projects Yet</h3>
-              <p className="text-zinc-400 max-w-sm mb-4">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+            className="flex items-center justify-center py-20"
+          >
+            <div className="text-center p-10 card-premium rounded-2xl max-w-md">
+              <div className="w-16 h-16 mx-auto mb-6 rounded-2xl bg-zinc-800/80 flex items-center justify-center">
+                <span className="material-symbols-outlined text-3xl text-zinc-500">folder_open</span>
+              </div>
+              <h3 className="text-2xl font-display font-bold text-white mb-3">No Projects Yet</h3>
+              <p className="text-zinc-400 font-body mb-6">
                 Start by using any calculator to create your first investment project. Your portfolio analytics will appear here.
               </p>
-              <p className="text-sm text-zinc-500">
-                Tip: Save projects from the calculator results to build your portfolio!
-              </p>
+              <div className="stat-card text-left">
+                <div className="flex items-center gap-3">
+                  <span className="material-symbols-outlined text-emerald-400">lightbulb</span>
+                  <p className="text-sm text-zinc-400 font-body">
+                    <span className="text-zinc-300 font-medium">Tip:</span> Save projects from the calculator results to build your portfolio!
+                  </p>
+                </div>
+              </div>
             </div>
-          </div>
+          </motion.div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] text-white -mx-4 md:-mx-10 lg:-mx-20 -my-8 px-6 py-8">
-      <div className="max-w-[100%] mx-auto space-y-6">
+    <div className="min-h-screen bg-mesh-gradient text-white -mx-4 md:-mx-10 lg:-mx-20 -my-8 px-6 py-8">
+      {/* Atmospheric effects */}
+      <div className="fixed inset-0 bg-grid-pattern opacity-20 pointer-events-none" />
+      <div className="fixed inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-20 right-1/4 w-96 h-96 bg-purple-500/5 rounded-full blur-3xl animate-float" />
+        <div className="absolute bottom-40 left-1/3 w-80 h-80 bg-cyan-500/5 rounded-full blur-3xl animate-float" style={{ animationDelay: '2s' }} />
+      </div>
+
+      <motion.div
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+        className="relative z-10 max-w-[100%] mx-auto space-y-8"
+      >
         {/* Header */}
-        <header className="mb-6 sm:mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4 sm:gap-6">
+        <motion.header
+          variants={itemVariants}
+          className="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-6"
+        >
           <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-600 to-purple-800 flex items-center justify-center shadow-lg shadow-purple-900/30">
-              <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-              </svg>
-            </div>
+            <motion.div
+              initial={{ scale: 0, rotate: -180 }}
+              animate={{ scale: 1, rotate: 0 }}
+              transition={{ duration: 0.6, ease: premiumEase, delay: 0.2 }}
+              className="relative"
+            >
+              <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-purple-600/20 to-purple-800/20 border border-purple-500/30 flex items-center justify-center shadow-lg">
+                <svg className="w-7 h-7 text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                </svg>
+              </div>
+              <div className="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-purple-500 border-2 border-zinc-900 flex items-center justify-center">
+                <span className="text-[8px] font-mono font-bold text-white">{projects.length}</span>
+              </div>
+            </motion.div>
             <div>
-              <h1 className="text-2xl font-bold text-white">Investment Portfolio</h1>
-              <p className="text-zinc-500 text-sm mt-1">
+              <h1 className="text-3xl font-display font-bold text-white tracking-tight">Investment Portfolio</h1>
+              <p className="text-zinc-400 text-sm mt-1 font-body">
                 Track, analyze, and compare your investment projects
               </p>
             </div>
           </div>
 
-          <div className="flex items-center gap-3 flex-wrap">
+          <motion.div
+            variants={itemVariants}
+            className="flex items-center gap-3 flex-wrap"
+          >
             <button
               onClick={() => generatePortfolioComparisionPDF(projects)}
               disabled={projects.length === 0}
-              className="px-3 sm:px-4 py-3 min-h-[44px] bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition font-medium disabled:bg-zinc-700 disabled:cursor-not-allowed flex items-center gap-2 text-xs sm:text-sm"
+              className="btn-premium px-4 py-3 text-sm flex items-center gap-2"
             >
+              <span className="material-symbols-outlined text-lg">picture_as_pdf</span>
               Portfolio PDF
             </button>
             <button
               onClick={downloadCSV}
               disabled={filteredProjects.length === 0}
-              className="px-3 sm:px-4 py-3 min-h-[44px] bg-zinc-800 text-zinc-300 border border-zinc-700 rounded-lg hover:bg-zinc-700 transition font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 text-xs sm:text-sm"
+              className="btn-ghost px-4 py-3 text-sm flex items-center gap-2"
             >
+              <span className="material-symbols-outlined text-lg">download</span>
               Download CSV
             </button>
             {selectedForComparison.size > 1 && (
               <button
                 onClick={() => generatePortfolioComparisionPDF(projectsForComparison)}
-                className="px-3 sm:px-4 py-3 min-h-[44px] bg-cyan-600 text-white rounded-lg hover:bg-cyan-700 transition font-medium flex items-center gap-2 text-xs sm:text-sm"
+                className="px-4 py-3 bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 rounded-xl hover:bg-cyan-500/30 transition font-display font-medium flex items-center gap-2 text-sm"
               >
+                <span className="material-symbols-outlined text-lg">compare_arrows</span>
                 Compare ({selectedForComparison.size})
               </button>
             )}
-          </div>
-        </header>
+          </motion.div>
+        </motion.header>
 
         {/* Portfolio Summary Stats */}
-        <PortfolioStats projects={projects} />
+        <motion.div variants={itemVariants}>
+          <PortfolioStats projects={projects} />
+        </motion.div>
 
-      {/* Filters & Sorting */}
-      <PortfolioFilters projects={projects} onFiltersChange={setFilteredProjects} />
+        {/* Filters & Sorting */}
+        <motion.div variants={itemVariants}>
+          <PortfolioFilters projects={projects} onFiltersChange={setFilteredProjects} />
+        </motion.div>
 
-      {/* Analytics Charts */}
-      <PortfolioCharts projects={filteredProjects} />
+        {/* Analytics Charts */}
+        <motion.div variants={itemVariants}>
+          <PortfolioCharts projects={filteredProjects} />
+        </motion.div>
 
-      {/* Projects Grid */}
-      <div className="space-y-4">
-        <div className="flex items-center justify-between">
-          <h2 className="text-xl font-bold text-white">
-            Projects ({filteredProjects.length})
-          </h2>
-          {selectedForComparison.size > 0 && (
-            <button
-              onClick={() => setShowComparisonView(!showComparisonView)}
-              className={`px-3 py-2 min-h-[44px] border rounded-lg text-xs sm:text-sm font-medium transition flex items-center gap-2 ${
-                showComparisonView
-                  ? 'bg-cyan-500 text-white border-cyan-400'
-                  : 'bg-cyan-500/20 text-cyan-400 border-cyan-500/30 hover:bg-cyan-500/30'
-              }`}
-            >
-              {showComparisonView ? (
-                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
-                </svg>
-              ) : (
-                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                </svg>
-              )}
-              {showComparisonView ? 'Hide Comparison' : `Compare ${selectedForComparison.size} projects`}
-            </button>
-          )}
-        </div>
-
-        {filteredProjects.length === 0 ? (
-          <div className="bg-zinc-900 rounded-xl border border-zinc-800 p-8 text-center">
-            <p className="text-zinc-400">No projects match your filters</p>
+        {/* Projects Grid */}
+        <motion.div variants={itemVariants} className="space-y-5">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="section-icon">
+                <span className="material-symbols-outlined text-emerald-400">grid_view</span>
+              </div>
+              <h2 className="section-title">
+                Projects <span className="text-zinc-500">({filteredProjects.length})</span>
+              </h2>
+            </div>
+            {selectedForComparison.size > 0 && (
+              <button
+                onClick={() => setShowComparisonView(!showComparisonView)}
+                className={`px-4 py-2.5 border rounded-xl text-sm font-display font-medium transition-all flex items-center gap-2 ${
+                  showComparisonView
+                    ? 'bg-cyan-500 text-white border-cyan-400 shadow-lg shadow-cyan-500/20'
+                    : 'bg-cyan-500/10 text-cyan-400 border-cyan-500/30 hover:bg-cyan-500/20'
+                }`}
+              >
+                <span className="material-symbols-outlined text-lg">
+                  {showComparisonView ? 'expand_less' : 'expand_more'}
+                </span>
+                {showComparisonView ? 'Hide Comparison' : `Compare ${selectedForComparison.size} projects`}
+              </button>
+            )}
           </div>
-        ) : (
-          <>
-            {/* Grid View */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {filteredProjects.map(project => (
-                <div key={project.id} className="relative">
-                  {selectedForComparison.has(project.id) && (
-                    <div className="absolute -top-2 -right-2 z-10">
-                      <div className="w-6 h-6 bg-emerald-500 text-white rounded-full flex items-center justify-center text-xs font-bold">
-                        ✓
-                      </div>
-                    </div>
-                  )}
-                  <div
-                    className={`cursor-pointer transition-opacity ${selectedForComparison.has(project.id) ? 'opacity-100 ring-2 ring-emerald-500 rounded-xl' : 'opacity-100'}`}
-                    onClick={() => handleToggleComparison(project.id)}
+
+          {filteredProjects.length === 0 ? (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="card-premium rounded-2xl p-10 text-center"
+            >
+              <span className="material-symbols-outlined text-4xl text-zinc-600 mb-3">filter_list_off</span>
+              <p className="text-zinc-400 font-body">No projects match your filters</p>
+            </motion.div>
+          ) : (
+            <>
+              {/* Grid View */}
+              <motion.div
+                variants={containerVariants}
+                className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5"
+              >
+                {filteredProjects.map((project, idx) => (
+                  <motion.div
+                    key={project.id}
+                    variants={cardVariants}
+                    className="relative"
                   >
-                    <ProjectCard
-                      project={project}
-                      onView={setSelectedProject}
-                      onViewScenarios={setScenarioViewProjectId}
-                      onDelete={() => setShowDeleteConfirm(project.id)}
-                    />
+                    {selectedForComparison.has(project.id) && (
+                      <motion.div
+                        initial={{ scale: 0 }}
+                        animate={{ scale: 1 }}
+                        className="absolute -top-2 -right-2 z-10"
+                      >
+                        <div className="w-7 h-7 bg-gradient-to-br from-emerald-500 to-cyan-500 text-white rounded-full flex items-center justify-center text-xs font-bold shadow-lg">
+                          ✓
+                        </div>
+                      </motion.div>
+                    )}
+                    <div
+                      className={`cursor-pointer transition-all ${selectedForComparison.has(project.id) ? 'ring-2 ring-emerald-500/50 rounded-xl' : ''}`}
+                      onClick={() => handleToggleComparison(project.id)}
+                    >
+                      <ProjectCard
+                        project={project}
+                        onView={setSelectedProject}
+                        onViewScenarios={setScenarioViewProjectId}
+                        onDelete={() => setShowDeleteConfirm(project.id)}
+                      />
+                    </div>
+                  </motion.div>
+                ))}
+              </motion.div>
+
+              {/* Comparison View */}
+              <AnimatePresence>
+                {showComparisonView && projectsForComparison.length > 1 && (
+                  <div ref={comparisonRef}>
+                    <CrossCalculatorComparison projects={projectsForComparison} />
+                  </div>
+                )}
+              </AnimatePresence>
+            </>
+          )}
+        </motion.div>
+
+        {/* Project Details Modal */}
+        <AnimatePresence>
+          {selectedProject && (
+            <ProjectDetailsModal
+              project={selectedProject}
+              onClose={() => setSelectedProject(null)}
+              onDelete={(id) => setShowDeleteConfirm(id)}
+            />
+          )}
+        </AnimatePresence>
+
+        {/* Delete Confirmation Modal */}
+        <AnimatePresence>
+          {showDeleteConfirm && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 bg-black/70 backdrop-blur-md flex items-center justify-center z-50 p-4"
+            >
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.9, y: 20 }}
+                transition={{ duration: 0.3, ease: premiumEase }}
+                className="card-premium rounded-2xl p-6 max-w-sm w-full"
+              >
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-12 h-12 rounded-xl bg-red-500/20 flex items-center justify-center">
+                    <span className="material-symbols-outlined text-red-400">warning</span>
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-display font-bold text-white">Delete Project?</h3>
+                    <p className="text-sm text-zinc-400 font-body">This action cannot be undone</p>
                   </div>
                 </div>
-              ))}
-            </div>
-
-            {/* Comparison View - Cross-Calculator Smart Comparison */}
-            {showComparisonView && projectsForComparison.length > 1 && (
-              <div ref={comparisonRef}>
-                <CrossCalculatorComparison projects={projectsForComparison} />
-              </div>
-            )}
-          </>
-        )}
-      </div>
-
-      {/* Project Details Modal */}
-      {selectedProject && (
-        <ProjectDetailsModal
-          project={selectedProject}
-          onClose={() => setSelectedProject(null)}
-          onDelete={(id) => setShowDeleteConfirm(id)}
-        />
-      )}
-
-      {/* Delete Confirmation Modal */}
-      {showDeleteConfirm && (
-        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-zinc-900 rounded-2xl border border-zinc-800 p-6 max-w-sm w-full">
-            <h3 className="text-lg font-bold text-white mb-2">Delete Project?</h3>
-            <p className="text-zinc-400 mb-6">
-              This action cannot be undone. The project and all its data will be permanently deleted.
-            </p>
-            <div className="flex gap-3">
-              <button
-                onClick={() => setShowDeleteConfirm(null)}
-                className="flex-1 px-3 sm:px-4 py-3 min-h-[44px] text-zinc-300 border border-zinc-700 rounded-lg hover:bg-zinc-800 transition font-medium text-xs sm:text-sm"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={() => handleDeleteProject(showDeleteConfirm)}
-                className="flex-1 px-3 sm:px-4 py-3 min-h-[44px] bg-red-600 text-white rounded-lg hover:bg-red-700 transition font-medium text-xs sm:text-sm"
-              >
-                Delete
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      </div>
+                <p className="text-zinc-400 mb-6 font-body">
+                  The project and all its data will be permanently deleted.
+                </p>
+                <div className="flex gap-3">
+                  <button
+                    onClick={() => setShowDeleteConfirm(null)}
+                    className="flex-1 btn-ghost py-3 text-sm"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={() => handleDeleteProject(showDeleteConfirm)}
+                    className="flex-1 px-4 py-3 bg-red-600 text-white rounded-xl hover:bg-red-700 transition font-display font-medium text-sm"
+                  >
+                    Delete
+                  </button>
+                </div>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </motion.div>
     </div>
   );
 }
