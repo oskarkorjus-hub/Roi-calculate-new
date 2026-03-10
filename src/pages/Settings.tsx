@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../lib/auth-context';
 import { useTier } from '../lib/tier-context';
@@ -13,7 +13,18 @@ export function Settings() {
   const { user, loading: authLoading } = useAuth();
   const { tier, loading: tierLoading } = useTier();
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState<SettingsTab>('profile');
+  const location = useLocation();
+
+  // Get initial tab from URL hash or default to 'profile'
+  const getInitialTab = (): SettingsTab => {
+    const hash = location.hash.replace('#', '');
+    if (hash === 'billing' || hash === 'subscription' || hash === 'profile') {
+      return hash;
+    }
+    return 'profile';
+  };
+
+  const [activeTab, setActiveTab] = useState<SettingsTab>(getInitialTab);
   const [billingData, setBillingData] = useState<BillingData | null>(null);
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
 
@@ -23,6 +34,23 @@ export function Settings() {
       navigate('/login', { state: { from: { pathname: '/settings' } } });
     }
   }, [user, authLoading, navigate]);
+
+  // Update URL hash when tab changes
+  useEffect(() => {
+    if (activeTab !== 'profile') {
+      window.history.replaceState(null, '', `#${activeTab}`);
+    } else {
+      window.history.replaceState(null, '', location.pathname);
+    }
+  }, [activeTab, location.pathname]);
+
+  // Listen for hash changes (e.g., from sidebar navigation)
+  useEffect(() => {
+    const hash = location.hash.replace('#', '');
+    if (hash === 'billing' || hash === 'subscription' || hash === 'profile') {
+      setActiveTab(hash);
+    }
+  }, [location.hash]);
 
   // Load billing data when tier is loaded
   useEffect(() => {

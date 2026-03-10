@@ -23,15 +23,15 @@ export function Sidebar({ activeView, onViewChange, onOpenCommandPalette }: Side
   }, [collapsed]);
 
   const mainNavItems = [
-    { id: 'home', label: 'Calculators', shortcut: '1' },
-    { id: 'portfolio', label: 'Portfolio', shortcut: '2' },
-    { id: 'comparison', label: 'Compare', shortcut: '3' },
+    { id: 'home', label: 'Calculators', shortcut: '1', icon: 'calculate' },
+    { id: 'portfolio', label: 'Portfolio', shortcut: '2', icon: 'folder_open' },
+    { id: 'comparison', label: 'Compare', shortcut: '3', icon: 'compare_arrows' },
   ];
 
   const accountNavItems = [
-    { id: 'settings', label: 'Settings', href: '/settings' },
-    { id: 'billing', label: 'Billing', href: '/settings?tab=billing' },
-    { id: 'help', label: 'Help', href: '/contact' },
+    { id: 'settings', label: 'Settings', href: '/settings', icon: 'settings' },
+    { id: 'billing', label: 'Billing', href: '/settings#billing', icon: 'credit_card' },
+    { id: 'help', label: 'Help', href: '/contact', icon: 'help_outline' },
   ];
 
   const handleNavClick = (id: string) => {
@@ -95,7 +95,7 @@ export function Sidebar({ activeView, onViewChange, onOpenCommandPalette }: Side
                   : 'text-zinc-400 hover:bg-zinc-800/40 hover:text-zinc-200'
               } ${collapsed ? 'justify-center' : ''}`}
             >
-              <span className="text-sm">{item.label.charAt(0)}</span>
+              <span className="material-symbols-outlined text-xl">{item.icon}</span>
 
               {!collapsed && (
                 <div className="flex-1 flex items-center justify-between">
@@ -126,7 +126,7 @@ export function Sidebar({ activeView, onViewChange, onOpenCommandPalette }: Side
               collapsed ? 'justify-center' : ''
             }`}
           >
-            <span className="text-sm">{item.label.charAt(0)}</span>
+            <span className="material-symbols-outlined text-xl">{item.icon}</span>
 
             {!collapsed && (
               <span className="text-sm">{item.label}</span>
