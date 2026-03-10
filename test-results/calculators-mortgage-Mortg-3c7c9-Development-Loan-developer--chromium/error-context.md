@@ -1,0 +1,289 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e3]:
+  - complementary [ref=e4]:
+    - link "ROI ROI Calculate" [ref=e6] [cursor=pointer]:
+      - /url: /
+      - img "ROI" [ref=e7]
+      - generic [ref=e8]: ROI Calculate
+    - button "Search /" [ref=e10]:
+      - img [ref=e11]
+      - generic [ref=e13]:
+        - generic [ref=e14]: Search
+        - generic [ref=e15]: /
+    - navigation [ref=e16]:
+      - button "calculate Calculators 1" [ref=e17]:
+        - generic [ref=e18]: calculate
+        - generic [ref=e19]:
+          - generic [ref=e20]: Calculators
+          - generic [ref=e21]: "1"
+      - button "folder_open Portfolio 2" [ref=e22]:
+        - generic [ref=e23]: folder_open
+        - generic [ref=e24]:
+          - generic [ref=e25]: Portfolio
+          - generic [ref=e26]: "2"
+      - button "compare_arrows Compare 3" [ref=e27]:
+        - generic [ref=e28]: compare_arrows
+        - generic [ref=e29]:
+          - generic [ref=e30]: Compare
+          - generic [ref=e31]: "3"
+      - link "settings Settings" [ref=e33] [cursor=pointer]:
+        - /url: /settings
+        - generic [ref=e34]: settings
+        - generic [ref=e35]: Settings
+      - link "credit_card Billing" [ref=e36] [cursor=pointer]:
+        - /url: /settings#billing
+        - generic [ref=e37]: credit_card
+        - generic [ref=e38]: Billing
+      - link "help_outline Help" [ref=e39] [cursor=pointer]:
+        - /url: /contact
+        - generic [ref=e40]: help_outline
+        - generic [ref=e41]: Help
+    - link "O Oskar Korjus free" [ref=e43] [cursor=pointer]:
+      - /url: /settings
+      - generic [ref=e45]: O
+      - generic [ref=e46]:
+        - paragraph [ref=e47]: Oskar Korjus
+        - paragraph [ref=e48]: free
+    - button "Collapse" [ref=e50]:
+      - img [ref=e51]
+      - generic [ref=e53]: Collapse
+  - generic [ref=e54]:
+    - banner [ref=e55]:
+      - generic [ref=e56]:
+        - heading "Calculator" [level=1] [ref=e58]
+        - generic [ref=e59]:
+          - button "search Search ⌘K" [ref=e60]:
+            - generic [ref=e61]: search
+            - generic [ref=e62]: Search
+            - generic [ref=e63]: ⌘K
+          - button "notifications" [ref=e65]:
+            - generic [ref=e66]: notifications
+          - link "O Oskar Korjus" [ref=e68] [cursor=pointer]:
+            - /url: /settings
+            - generic [ref=e70]: O
+            - paragraph [ref=e72]: Oskar Korjus
+    - main [ref=e73]:
+      - generic [ref=e74]:
+        - generic [ref=e75]:
+          - generic [ref=e76]:
+            - button "Calculators" [ref=e77]
+            - generic [ref=e78]: ›
+            - generic [ref=e79]: Mortgage Calculator
+          - generic [ref=e80]:
+            - generic [ref=e81]:
+              - generic [ref=e82]:
+                - generic [ref=e84]: account_balance
+                - heading "Mortgage Calculator" [level=1] [ref=e85]
+              - paragraph [ref=e86]: Analyze loan terms, monthly payments, and full amortization schedules
+            - button "View calculator details" [ref=e87]:
+              - img [ref=e88]
+          - button "Back to Calculators" [ref=e91]:
+            - img [ref=e92]
+            - text: Back to Calculators
+        - generic [ref=e96]:
+          - generic [ref=e97]:
+            - generic [ref=e98]:
+              - img [ref=e100]
+              - generic [ref=e102]:
+                - heading "Mortgage Calculator" [level=1] [ref=e103]
+                - paragraph [ref=e104]: Calculate monthly payments, total interest, and view your amortization schedule
+            - generic [ref=e105]:
+              - button "Drafts" [ref=e107]:
+                - img [ref=e108]
+                - generic [ref=e110]: Drafts
+                - img [ref=e111]
+              - generic [ref=e113]:
+                - generic [ref=e115]:
+                  - img [ref=e116]
+                  - generic [ref=e118]: "3"
+                - button "Rp IDR" [ref=e120]:
+                  - generic [ref=e121]: Rp
+                  - generic [ref=e122]: IDR
+                  - img [ref=e123]
+                - generic [ref=e126]:
+                  - button "Reset all values" [ref=e127]:
+                    - img [ref=e128]
+                  - button "Export PDF report" [ref=e130]:
+                    - img [ref=e131]
+                  - button "Save to Portfolio" [ref=e133]:
+                    - img [ref=e135]
+          - generic [ref=e137]:
+            - generic [ref=e140]:
+              - generic [ref=e141]:
+                - generic [ref=e143]:
+                  - generic [ref=e144]: account_balance
+                  - heading "Loan Details" [level=2] [ref=e145]
+                - generic [ref=e146]:
+                  - generic [ref=e147]:
+                    - generic [ref=e148]:
+                      - text: Loan Amount
+                      - button "Loan Amount" [ref=e150]: "?"
+                    - generic [ref=e151]:
+                      - generic [ref=e152]: Rp
+                      - textbox "0" [ref=e153]: "800000"
+                  - generic [ref=e154]:
+                    - generic [ref=e155]:
+                      - text: Annual Interest Rate
+                      - button "Annual Interest Rate" [ref=e157]: "?"
+                    - generic [ref=e158]:
+                      - textbox "0" [ref=e159]: "8.5"
+                      - generic [ref=e160]: "%"
+                  - generic [ref=e161]:
+                    - generic [ref=e162]:
+                      - text: Loan Term
+                      - button "Loan Term" [ref=e164]: "?"
+                    - generic [ref=e165]:
+                      - textbox "0" [active] [ref=e166]: "15"
+                      - generic [ref=e167]: years
+              - button "Advanced Options (Fees, taxes, insurance, PMI, HOA) ▼" [ref=e169]:
+                - generic [ref=e170]:
+                  - img [ref=e171]
+                  - heading "Advanced Options" [level=3] [ref=e174]
+                  - generic [ref=e175]: (Fees, taxes, insurance, PMI, HOA)
+                - generic [ref=e176]: ▼
+            - generic [ref=e179]:
+              - generic [ref=e181]:
+                - generic [ref=e182]: analytics
+                - heading "Results" [level=3] [ref=e183]
+              - generic [ref=e184]:
+                - generic [ref=e185]:
+                  - generic [ref=e186]:
+                    - generic [ref=e187]:
+                      - text: Monthly Payment (P+I)
+                      - generic [ref=e188]: Rp 7,878
+                    - img [ref=e190]
+                  - generic [ref=e194]: Principal + Interest
+                - generic [ref=e195]:
+                  - generic [ref=e196]:
+                    - generic [ref=e197]:
+                      - text: Total Payment (15Y)
+                      - generic [ref=e198]: Rp 1,418,025
+                    - img [ref=e200]
+                  - generic [ref=e204]: Over 15 years
+                - generic [ref=e205]:
+                  - generic [ref=e206]:
+                    - generic [ref=e207]:
+                      - text: Total Interest Paid
+                      - generic [ref=e208]: Rp 618,025
+                    - img [ref=e210]
+                  - generic [ref=e214]: 43.6% of total
+                - generic [ref=e215]:
+                  - generic [ref=e216]:
+                    - generic [ref=e217]:
+                      - text: Principal Borrowed
+                      - generic [ref=e218]: Rp 800,000
+                    - img [ref=e220]
+                  - generic [ref=e224]: Total loan amount
+              - generic [ref=e225]:
+                - button "Save to Compare" [ref=e226]:
+                  - img [ref=e227]
+                  - text: Save to Compare
+                - button "View Comparisons" [ref=e229]:
+                  - img [ref=e230]
+                  - text: View Comparisons
+          - generic [ref=e233]:
+            - generic [ref=e235]:
+              - generic [ref=e236]: table_chart
+              - heading "Amortization Schedule (Yearly)" [level=3] [ref=e237]
+            - table [ref=e239]:
+              - rowgroup [ref=e240]:
+                - row "Year P&I Payment Principal Interest Balance" [ref=e241]:
+                  - columnheader "Year" [ref=e242]
+                  - columnheader "P&I Payment" [ref=e243]
+                  - columnheader "Principal" [ref=e244]
+                  - columnheader "Interest" [ref=e245]
+                  - columnheader "Balance" [ref=e246]
+              - rowgroup [ref=e247]:
+                - row "1 Rp 94,535 Rp 28,677 Rp 65,858 Rp 772,406" [ref=e248]:
+                  - cell "1" [ref=e249]
+                  - cell "Rp 94,535" [ref=e250]
+                  - cell "Rp 28,677" [ref=e251]
+                  - cell "Rp 65,858" [ref=e252]
+                  - cell "Rp 772,406" [ref=e253]
+                - row "2 Rp 94,535 Rp 31,212 Rp 63,323 Rp 742,374" [ref=e254]:
+                  - cell "2" [ref=e255]
+                  - cell "Rp 94,535" [ref=e256]
+                  - cell "Rp 31,212" [ref=e257]
+                  - cell "Rp 63,323" [ref=e258]
+                  - cell "Rp 742,374" [ref=e259]
+                - row "3 Rp 94,535 Rp 33,971 Rp 60,564 Rp 709,687" [ref=e260]:
+                  - cell "3" [ref=e261]
+                  - cell "Rp 94,535" [ref=e262]
+                  - cell "Rp 33,971" [ref=e263]
+                  - cell "Rp 60,564" [ref=e264]
+                  - cell "Rp 709,687" [ref=e265]
+                - row "4 Rp 94,535 Rp 36,974 Rp 57,561 Rp 674,110" [ref=e266]:
+                  - cell "4" [ref=e267]
+                  - cell "Rp 94,535" [ref=e268]
+                  - cell "Rp 36,974" [ref=e269]
+                  - cell "Rp 57,561" [ref=e270]
+                  - cell "Rp 674,110" [ref=e271]
+                - row "5 Rp 94,535 Rp 40,242 Rp 54,293 Rp 635,389" [ref=e272]:
+                  - cell "5" [ref=e273]
+                  - cell "Rp 94,535" [ref=e274]
+                  - cell "Rp 40,242" [ref=e275]
+                  - cell "Rp 54,293" [ref=e276]
+                  - cell "Rp 635,389" [ref=e277]
+                - row "6 Rp 94,535 Rp 43,799 Rp 50,736 Rp 593,246" [ref=e278]:
+                  - cell "6" [ref=e279]
+                  - cell "Rp 94,535" [ref=e280]
+                  - cell "Rp 43,799" [ref=e281]
+                  - cell "Rp 50,736" [ref=e282]
+                  - cell "Rp 593,246" [ref=e283]
+                - row "7 Rp 94,535 Rp 47,670 Rp 46,865 Rp 547,377" [ref=e284]:
+                  - cell "7" [ref=e285]
+                  - cell "Rp 94,535" [ref=e286]
+                  - cell "Rp 47,670" [ref=e287]
+                  - cell "Rp 46,865" [ref=e288]
+                  - cell "Rp 547,377" [ref=e289]
+                - row "8 Rp 94,535 Rp 51,884 Rp 42,651 Rp 497,454" [ref=e290]:
+                  - cell "8" [ref=e291]
+                  - cell "Rp 94,535" [ref=e292]
+                  - cell "Rp 51,884" [ref=e293]
+                  - cell "Rp 42,651" [ref=e294]
+                  - cell "Rp 497,454" [ref=e295]
+                - row "9 Rp 94,535 Rp 56,470 Rp 38,065 Rp 443,118" [ref=e296]:
+                  - cell "9" [ref=e297]
+                  - cell "Rp 94,535" [ref=e298]
+                  - cell "Rp 56,470" [ref=e299]
+                  - cell "Rp 38,065" [ref=e300]
+                  - cell "Rp 443,118" [ref=e301]
+                - row "10 Rp 94,535 Rp 61,461 Rp 33,074 Rp 383,979" [ref=e302]:
+                  - cell "10" [ref=e303]
+                  - cell "Rp 94,535" [ref=e304]
+                  - cell "Rp 61,461" [ref=e305]
+                  - cell "Rp 33,074" [ref=e306]
+                  - cell "Rp 383,979" [ref=e307]
+                - row "11 Rp 94,535 Rp 66,894 Rp 27,641 Rp 319,613" [ref=e308]:
+                  - cell "11" [ref=e309]
+                  - cell "Rp 94,535" [ref=e310]
+                  - cell "Rp 66,894" [ref=e311]
+                  - cell "Rp 27,641" [ref=e312]
+                  - cell "Rp 319,613" [ref=e313]
+                - row "12 Rp 94,535 Rp 72,807 Rp 21,728 Rp 249,558" [ref=e314]:
+                  - cell "12" [ref=e315]
+                  - cell "Rp 94,535" [ref=e316]
+                  - cell "Rp 72,807" [ref=e317]
+                  - cell "Rp 21,728" [ref=e318]
+                  - cell "Rp 249,558" [ref=e319]
+                - row "13 Rp 94,535 Rp 79,242 Rp 15,293 Rp 173,310" [ref=e320]:
+                  - cell "13" [ref=e321]
+                  - cell "Rp 94,535" [ref=e322]
+                  - cell "Rp 79,242" [ref=e323]
+                  - cell "Rp 15,293" [ref=e324]
+                  - cell "Rp 173,310" [ref=e325]
+                - row "14 Rp 94,535 Rp 86,247 Rp 8,288 Rp 90,323" [ref=e326]:
+                  - cell "14" [ref=e327]
+                  - cell "Rp 94,535" [ref=e328]
+                  - cell "Rp 86,247" [ref=e329]
+                  - cell "Rp 8,288" [ref=e330]
+                  - cell "Rp 90,323" [ref=e331]
+                - row "15 Rp 94,535 Rp 93,870 Rp 665 Rp 0" [ref=e332]:
+                  - cell "15" [ref=e333]
+                  - cell "Rp 94,535" [ref=e334]
+                  - cell "Rp 93,870" [ref=e335]
+                  - cell "Rp 665" [ref=e336]
+                  - cell "Rp 0" [ref=e337]
+```

@@ -1,0 +1,199 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e3]:
+  - complementary [ref=e4]:
+    - link "ROI ROI Calculate" [ref=e6] [cursor=pointer]:
+      - /url: /
+      - img "ROI" [ref=e7]
+      - generic [ref=e8]: ROI Calculate
+    - button "Search /" [ref=e10]:
+      - img [ref=e11]
+      - generic [ref=e13]:
+        - generic [ref=e14]: Search
+        - generic [ref=e15]: /
+    - navigation [ref=e16]:
+      - button "calculate Calculators 1" [ref=e17]:
+        - generic [ref=e18]: calculate
+        - generic [ref=e19]:
+          - generic [ref=e20]: Calculators
+          - generic [ref=e21]: "1"
+      - button "folder_open Portfolio 2" [ref=e22]:
+        - generic [ref=e23]: folder_open
+        - generic [ref=e24]:
+          - generic [ref=e25]: Portfolio
+          - generic [ref=e26]: "2"
+      - button "compare_arrows Compare 3" [ref=e27]:
+        - generic [ref=e28]: compare_arrows
+        - generic [ref=e29]:
+          - generic [ref=e30]: Compare
+          - generic [ref=e31]: "3"
+      - link "settings Settings" [ref=e33] [cursor=pointer]:
+        - /url: /settings
+        - generic [ref=e34]: settings
+        - generic [ref=e35]: Settings
+      - link "credit_card Billing" [ref=e36] [cursor=pointer]:
+        - /url: /settings#billing
+        - generic [ref=e37]: credit_card
+        - generic [ref=e38]: Billing
+      - link "help_outline Help" [ref=e39] [cursor=pointer]:
+        - /url: /contact
+        - generic [ref=e40]: help_outline
+        - generic [ref=e41]: Help
+    - link "O Oskar Korjus free" [ref=e43] [cursor=pointer]:
+      - /url: /settings
+      - generic [ref=e45]: O
+      - generic [ref=e46]:
+        - paragraph [ref=e47]: Oskar Korjus
+        - paragraph [ref=e48]: free
+    - button "Collapse" [ref=e50]:
+      - img [ref=e51]
+      - generic [ref=e53]: Collapse
+  - generic [ref=e54]:
+    - banner [ref=e55]:
+      - generic [ref=e56]:
+        - heading "Calculator" [level=1] [ref=e58]
+        - generic [ref=e59]:
+          - button "search Search ⌘K" [ref=e60]:
+            - generic [ref=e61]: search
+            - generic [ref=e62]: Search
+            - generic [ref=e63]: ⌘K
+          - button "notifications" [ref=e65]:
+            - generic [ref=e66]: notifications
+          - link "O Oskar Korjus" [ref=e68] [cursor=pointer]:
+            - /url: /settings
+            - generic [ref=e70]: O
+            - paragraph [ref=e72]: Oskar Korjus
+    - main [ref=e73]:
+      - generic [ref=e74]:
+        - generic [ref=e75]:
+          - generic [ref=e76]:
+            - button "Calculators" [ref=e77]
+            - generic [ref=e78]: ›
+            - generic [ref=e79]: Mortgage Calculator
+          - generic [ref=e80]:
+            - generic [ref=e81]:
+              - generic [ref=e82]:
+                - generic [ref=e84]: account_balance
+                - heading "Mortgage Calculator" [level=1] [ref=e85]
+              - paragraph [ref=e86]: Analyze loan terms, monthly payments, and full amortization schedules
+            - button "View calculator details" [ref=e87]:
+              - img [ref=e88]
+          - button "Back to Calculators" [ref=e91]:
+            - img [ref=e92]
+            - text: Back to Calculators
+        - generic [ref=e96]:
+          - generic [ref=e97]:
+            - generic [ref=e98]:
+              - img [ref=e100]
+              - generic [ref=e102]:
+                - heading "Mortgage Calculator" [level=1] [ref=e103]
+                - paragraph [ref=e104]: Calculate monthly payments, total interest, and view your amortization schedule
+            - generic [ref=e105]:
+              - button "Drafts" [ref=e107]:
+                - img [ref=e108]
+                - generic [ref=e110]: Drafts
+                - img [ref=e111]
+              - generic [ref=e113]:
+                - generic [ref=e115]:
+                  - img [ref=e116]
+                  - generic [ref=e118]: "3"
+                - button "Rp IDR" [ref=e120]:
+                  - generic [ref=e121]: Rp
+                  - generic [ref=e122]: IDR
+                  - img [ref=e123]
+                - generic [ref=e126]:
+                  - button "Reset all values" [ref=e127]:
+                    - img [ref=e128]
+                  - button "Export PDF report" [ref=e130]:
+                    - img [ref=e131]
+                  - button "Save to Portfolio" [ref=e133]:
+                    - img [ref=e135]
+          - generic [ref=e137]:
+            - generic [ref=e140]:
+              - generic [ref=e141]:
+                - generic [ref=e143]:
+                  - generic [ref=e144]: account_balance
+                  - heading "Loan Details" [level=2] [ref=e145]
+                - generic [ref=e146]:
+                  - generic [ref=e147]:
+                    - generic [ref=e148]:
+                      - text: Loan Amount
+                      - button "Loan Amount" [ref=e150]: "?"
+                    - generic [ref=e151]:
+                      - generic [ref=e152]: Rp
+                      - textbox "0" [ref=e153]
+                  - generic [ref=e154]:
+                    - generic [ref=e155]:
+                      - text: Annual Interest Rate
+                      - button "Annual Interest Rate" [ref=e157]: "?"
+                    - generic [ref=e158]:
+                      - textbox "0" [ref=e159]
+                      - generic [ref=e160]: "%"
+                  - generic [ref=e161]:
+                    - generic [ref=e162]:
+                      - text: Loan Term
+                      - button "Loan Term" [ref=e164]: "?"
+                    - generic [ref=e165]:
+                      - textbox "0" [ref=e166]
+                      - generic [ref=e167]: years
+              - button "Advanced Options (Fees, taxes, insurance, PMI, HOA) ▼" [ref=e169]:
+                - generic [ref=e170]:
+                  - img [ref=e171]
+                  - heading "Advanced Options" [level=3] [ref=e174]
+                  - generic [ref=e175]: (Fees, taxes, insurance, PMI, HOA)
+                - generic [ref=e176]: ▼
+            - generic [ref=e179]:
+              - generic [ref=e181]:
+                - generic [ref=e182]: analytics
+                - heading "Results" [level=3] [ref=e183]
+              - generic [ref=e184]:
+                - generic [ref=e185]:
+                  - generic [ref=e186]:
+                    - generic [ref=e187]:
+                      - text: Monthly Payment (P+I)
+                      - generic [ref=e188]: Rp 0
+                    - img [ref=e190]
+                  - generic [ref=e194]: Principal + Interest
+                - generic [ref=e195]:
+                  - generic [ref=e196]:
+                    - generic [ref=e197]:
+                      - text: Total Payment (0Y)
+                      - generic [ref=e198]: Rp 0
+                    - img [ref=e200]
+                  - generic [ref=e204]: Over 0 years
+                - generic [ref=e205]:
+                  - generic [ref=e206]:
+                    - generic [ref=e207]:
+                      - text: Total Interest Paid
+                      - generic [ref=e208]: Rp 0
+                    - img [ref=e210]
+                  - generic [ref=e214]: NaN% of total
+                - generic [ref=e215]:
+                  - generic [ref=e216]:
+                    - generic [ref=e217]:
+                      - text: Principal Borrowed
+                      - generic [ref=e218]: Rp 0
+                    - img [ref=e220]
+                  - generic [ref=e224]: Total loan amount
+              - generic [ref=e225]:
+                - button "Save to Compare" [ref=e226]:
+                  - img [ref=e227]
+                  - text: Save to Compare
+                - button "View Comparisons" [ref=e229]:
+                  - img [ref=e230]
+                  - text: View Comparisons
+          - generic [ref=e233]:
+            - generic [ref=e235]:
+              - generic [ref=e236]: table_chart
+              - heading "Amortization Schedule (Yearly)" [level=3] [ref=e237]
+            - table [ref=e239]:
+              - rowgroup [ref=e240]:
+                - row "Year P&I Payment Principal Interest Balance" [ref=e241]:
+                  - columnheader "Year" [ref=e242]
+                  - columnheader "P&I Payment" [ref=e243]
+                  - columnheader "Principal" [ref=e244]
+                  - columnheader "Interest" [ref=e245]
+                  - columnheader "Balance" [ref=e246]
+              - rowgroup
+```

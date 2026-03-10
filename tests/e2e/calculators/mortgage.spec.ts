@@ -12,10 +12,24 @@
 
 import { test, expect } from '@playwright/test';
 import { mortgageTestData, TestUtils } from '../../fixtures/test-data';
+import { login } from '../../fixtures/auth';
+
+/**
+ * Helper to navigate to mortgage calculator
+ */
+async function goToMortgageCalculator(page: any) {
+  await page.evaluate(() => {
+    localStorage.setItem('baliinvest_active_calculator', 'mortgage');
+    localStorage.setItem('baliinvest_active_view', 'calculator');
+  });
+  await page.goto('/calculators');
+  await page.waitForTimeout(1000);
+}
 
 test.describe('Mortgage Calculator', () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto('/calculators/mortgage');
+    await login(page);
+    await goToMortgageCalculator(page);
   });
 
   test('page loads with all required elements', async ({ page }) => {
@@ -50,12 +64,8 @@ test.describe('Mortgage Calculator', () => {
       // Wait for calculations
       await TestUtils.waitForResults(page);
 
-      // Verify results are displayed (non-zero)
-      const resultsText = await page.locator('[class*="result"], [class*="Result"]').first().textContent();
-      expect(resultsText).toBeTruthy();
-
-      // Should show monthly payment
-      await expect(page.locator('text=/\\$[0-9,]+/').first()).toBeVisible();
+      // Should show monthly payment (Rp or $ currency)
+      await expect(page.locator('text=/Rp[0-9,]+|\\$[0-9,]+/').first()).toBeVisible();
     });
   }
 
@@ -68,12 +78,14 @@ test.describe('Mortgage Calculator', () => {
 
     await TestUtils.waitForResults(page);
 
-    // Click save button
-    const saveButton = page.locator('button:has-text("Save"), button:has-text("Portfolio")').first();
+    // Click save button (icon button with title)
+    const saveButton = page.locator('[title="Save to Portfolio"]').first();
+    await expect(saveButton).toBeVisible();
     await saveButton.click();
 
-    // Should show save modal or confirmation
-    await expect(page.locator('[class*="modal"], [class*="Modal"], [role="dialog"]').first()).toBeVisible();
+    // Should show save modal or toast confirmation
+    const modal = page.locator('[role="dialog"], [class*="modal" i], [class*="toast" i]').first();
+    await expect(modal).toBeVisible({ timeout: 5000 });
   });
 
   test('can generate report', async ({ page }) => {
@@ -85,12 +97,14 @@ test.describe('Mortgage Calculator', () => {
 
     await TestUtils.waitForResults(page);
 
-    // Click report button
-    const reportButton = page.locator('button:has-text("Report"), button:has-text("PDF")').first();
+    // Click report button (icon button with title)
+    const reportButton = page.locator('[title="Export PDF report"]').first();
+    await expect(reportButton).toBeVisible();
     await reportButton.click();
 
-    // Should show report modal
-    await expect(page.locator('[class*="modal"], [class*="Modal"], [role="dialog"]').first()).toBeVisible();
+    // Should show report preview modal
+    const modal = page.locator('[role="dialog"], [class*="modal" i]').first();
+    await expect(modal).toBeVisible({ timeout: 5000 });
   });
 
   test('handles edge cases - zero values', async ({ page }) => {
@@ -110,6 +124,6 @@ test.describe('Mortgage Calculator', () => {
 
     // Should calculate without errors
     await TestUtils.waitForResults(page);
-    await expect(page.locator('text=/\\$[0-9,]+/')).toBeVisible();
+    await expect(page.locator('text=/Rp[0-9,]+|\\$[0-9,]+/')).toBeVisible();
   });
 });

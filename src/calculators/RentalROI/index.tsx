@@ -197,7 +197,7 @@ export function RentalROICalculator() {
 
           {/* Sticky Sidebar - Right Side */}
           <div className="lg:col-span-3">
-            <div className="sticky top-8">
+            <div className="sticky top-20">
               <DashboardHeader
                 data={data}
                 currency={currency}

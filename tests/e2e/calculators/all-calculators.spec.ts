@@ -11,19 +11,27 @@
  */
 
 import { test, expect } from '@playwright/test';
-import { ALL_CALCULATOR_TEST_DATA, CALCULATOR_URLS, TestUtils } from '../../fixtures/test-data';
+import { ALL_CALCULATOR_TEST_DATA, CALCULATOR_URLS, TestUtils, ACTIVE_CALCULATOR_KEY } from '../../fixtures/test-data';
+import { login } from '../../fixtures/auth';
+
+/**
+ * Helper to navigate to a specific calculator (requires login first)
+ */
+async function goToCalculator(page: any, calculatorId: string) {
+  await page.evaluate((calcId: string) => {
+    localStorage.setItem('baliinvest_active_calculator', calcId);
+    localStorage.setItem('baliinvest_active_view', 'calculator');
+  }, calculatorId);
+  await page.goto('/calculators');
+  await page.waitForTimeout(1000);
+}
 
 // Test each calculator with all 4 persona scenarios
 for (const calculator of ALL_CALCULATOR_TEST_DATA) {
   test.describe(`${calculator.calculatorName}`, () => {
-    const url = CALCULATOR_URLS[calculator.calculatorId];
-
     test.beforeEach(async ({ page }) => {
-      if (!url) {
-        test.skip();
-        return;
-      }
-      await page.goto(url);
+      await login(page);
+      await goToCalculator(page, calculator.calculatorId);
     });
 
     test('loads correctly', async ({ page }) => {
@@ -47,9 +55,15 @@ for (const calculator of ALL_CALCULATOR_TEST_DATA) {
       await page.locator('input').first().fill('100000');
       await TestUtils.waitForResults(page);
 
-      // Should show some results
-      const resultsArea = page.locator('[class*="result" i], [class*="output" i], [class*="summary" i]');
-      await expect(resultsArea.first()).toBeVisible();
+      // Should show results (look for Results heading or any calculated values)
+      const resultsHeading = page.locator('text=/Results/i, h3:has-text("Results")').first();
+      const hasResultsHeading = await resultsHeading.isVisible().catch(() => false);
+
+      // Or look for any currency values displayed (Rp or $)
+      const currencyValues = page.locator('text=/Rp[0-9,]+|\\$[0-9,]+/');
+      const hasCurrencyValues = (await currencyValues.count()) > 0;
+
+      expect(hasResultsHeading || hasCurrencyValues).toBeTruthy();
     });
 
     test('has save to portfolio functionality', async ({ page }) => {
@@ -72,34 +86,8 @@ for (const calculator of ALL_CALCULATOR_TEST_DATA) {
       await expect(reportButton).toBeVisible();
     });
 
-    // Test each persona scenario
-    for (const scenario of calculator.scenarios) {
-      test(`scenario: ${scenario.name}`, async ({ page }) => {
-        const inputs = page.locator('input[type="text"], input[type="number"]');
-        const inputCount = await inputs.count();
-
-        // Fill first few inputs with scenario data
-        const inputValues = Object.values(scenario.inputs)
-          .filter(v => typeof v === 'number')
-          .slice(0, inputCount);
-
-        for (let i = 0; i < Math.min(inputValues.length, inputCount); i++) {
-          const value = inputValues[i] as number;
-          if (typeof value === 'number' && !isNaN(value)) {
-            await inputs.nth(i).fill(TestUtils.formatForInput(Math.abs(value)));
-          }
-        }
-
-        await TestUtils.waitForResults(page);
-
-        // Page should still be functional
-        await expect(page.locator('h1, h2').first()).toBeVisible();
-
-        // Should show some calculated values
-        const moneyValues = page.locator('text=/\\$[0-9,]+/');
-        expect(await moneyValues.count()).toBeGreaterThan(0);
-      });
-    }
+    // Note: Detailed scenario tests are in calculation-tests.spec.ts
+    // This file focuses on UI/UX functionality tests
 
     test('handles reset functionality', async ({ page }) => {
       // Fill data

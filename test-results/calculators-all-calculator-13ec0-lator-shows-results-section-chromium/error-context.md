@@ -1,0 +1,247 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e3]:
+  - complementary [ref=e4]:
+    - link "ROI ROI Calculate" [ref=e6] [cursor=pointer]:
+      - /url: /
+      - img "ROI" [ref=e7]
+      - generic [ref=e8]: ROI Calculate
+    - button "Search /" [ref=e10]:
+      - img [ref=e11]
+      - generic [ref=e13]:
+        - generic [ref=e14]: Search
+        - generic [ref=e15]: /
+    - navigation [ref=e16]:
+      - button "calculate Calculators 1" [ref=e17]:
+        - generic [ref=e18]: calculate
+        - generic [ref=e19]:
+          - generic [ref=e20]: Calculators
+          - generic [ref=e21]: "1"
+      - button "folder_open Portfolio 2" [ref=e22]:
+        - generic [ref=e23]: folder_open
+        - generic [ref=e24]:
+          - generic [ref=e25]: Portfolio
+          - generic [ref=e26]: "2"
+      - button "compare_arrows Compare 3" [ref=e27]:
+        - generic [ref=e28]: compare_arrows
+        - generic [ref=e29]:
+          - generic [ref=e30]: Compare
+          - generic [ref=e31]: "3"
+      - link "settings Settings" [ref=e33] [cursor=pointer]:
+        - /url: /settings
+        - generic [ref=e34]: settings
+        - generic [ref=e35]: Settings
+      - link "credit_card Billing" [ref=e36] [cursor=pointer]:
+        - /url: /settings#billing
+        - generic [ref=e37]: credit_card
+        - generic [ref=e38]: Billing
+      - link "help_outline Help" [ref=e39] [cursor=pointer]:
+        - /url: /contact
+        - generic [ref=e40]: help_outline
+        - generic [ref=e41]: Help
+    - link "O Oskar Korjus free" [ref=e43] [cursor=pointer]:
+      - /url: /settings
+      - generic [ref=e45]: O
+      - generic [ref=e46]:
+        - paragraph [ref=e47]: Oskar Korjus
+        - paragraph [ref=e48]: free
+    - button "Collapse" [ref=e50]:
+      - img [ref=e51]
+      - generic [ref=e53]: Collapse
+  - generic [ref=e54]:
+    - banner [ref=e55]:
+      - generic [ref=e56]:
+        - heading "Calculator" [level=1] [ref=e58]
+        - generic [ref=e59]:
+          - button "search Search ⌘K" [ref=e60]:
+            - generic [ref=e61]: search
+            - generic [ref=e62]: Search
+            - generic [ref=e63]: ⌘K
+          - button "notifications" [ref=e65]:
+            - generic [ref=e66]: notifications
+          - link "O Oskar Korjus" [ref=e68] [cursor=pointer]:
+            - /url: /settings
+            - generic [ref=e70]: O
+            - paragraph [ref=e72]: Oskar Korjus
+    - main [ref=e73]:
+      - generic [ref=e74]:
+        - generic [ref=e75]:
+          - generic [ref=e76]:
+            - button "Calculators" [ref=e77]
+            - generic [ref=e78]: ›
+            - generic [ref=e79]: NPV Calculator
+          - generic [ref=e80]:
+            - generic [ref=e81]:
+              - generic [ref=e82]:
+                - generic [ref=e84]: savings
+                - heading "NPV Calculator" [level=1] [ref=e85]
+              - paragraph [ref=e86]: Calculate net present value of future cash flows at any discount rate
+            - button "View calculator details" [ref=e87]:
+              - img [ref=e88]
+          - button "Back to Calculators" [ref=e91]:
+            - img [ref=e92]
+            - text: Back to Calculators
+        - generic [ref=e96]:
+          - generic [ref=e97]:
+            - generic [ref=e98]:
+              - img [ref=e100]
+              - generic [ref=e102]:
+                - heading "NPV Calculator" [level=1] [ref=e103]
+                - paragraph [ref=e104]: Calculate Net Present Value of your investment project
+            - generic [ref=e105]:
+              - button "Drafts" [ref=e107]:
+                - img [ref=e108]
+                - generic [ref=e110]: Drafts
+                - img [ref=e111]
+              - generic [ref=e113]:
+                - generic [ref=e115]:
+                  - img [ref=e116]
+                  - generic [ref=e118]: "3"
+                - button "$ USD" [ref=e120]:
+                  - generic [ref=e121]: $
+                  - generic [ref=e122]: USD
+                  - img [ref=e123]
+                - generic [ref=e126]:
+                  - button "Reset all values" [ref=e127]:
+                    - img [ref=e128]
+                  - button "Export PDF report" [ref=e130]:
+                    - img [ref=e131]
+                  - button "Save to Portfolio" [ref=e133]:
+                    - img [ref=e135]
+          - generic [ref=e137]:
+            - generic [ref=e138]:
+              - generic [ref=e139]:
+                - generic [ref=e141]:
+                  - generic [ref=e142]: info
+                  - heading "NPV (Net Present Value)" [level=2] [ref=e143]
+                - paragraph [ref=e144]: NPV is the present value of all future cash flows minus the initial investment. If NPV is positive, the investment is profitable.
+                - paragraph [ref=e145]: "Formula: NPV = Σ (CF_t / (1 + r)^t) where CF_t is cash flow in year t and r is discount rate"
+              - generic [ref=e146]:
+                - generic [ref=e148]:
+                  - generic [ref=e149]: tune
+                  - heading "Settings" [level=2] [ref=e150]
+                - generic [ref=e151]:
+                  - generic [ref=e152]: Discount Rate (%) - Required Rate of Return
+                  - textbox "0" [active] [ref=e153]: "100000"
+                  - paragraph [ref=e154]: Typically 8-12% for real estate. This is your minimum required return.
+              - generic [ref=e155]:
+                - generic [ref=e156]:
+                  - generic [ref=e157]:
+                    - generic [ref=e158]: account_balance
+                    - heading "Cash Flows" [level=2] [ref=e159]
+                  - button "add Add Year" [ref=e160]:
+                    - generic [ref=e161]: add
+                    - text: Add Year
+                - table [ref=e163]:
+                  - rowgroup [ref=e164]:
+                    - row "Year Cash Flow Discount Factor Discounted Value Action" [ref=e165]:
+                      - columnheader "Year" [ref=e166]
+                      - columnheader "Cash Flow" [ref=e167]
+                      - columnheader "Discount Factor" [ref=e168]
+                      - columnheader "Discounted Value" [ref=e169]
+                      - columnheader "Action" [ref=e170]
+                  - rowgroup [ref=e171]:
+                    - row "0 1.0000 0" [ref=e172]:
+                      - cell "0" [ref=e173]
+                      - cell [ref=e174]:
+                        - textbox "0" [ref=e175]
+                      - cell "1.0000" [ref=e176]
+                      - cell "0" [ref=e177]
+                      - cell [ref=e178]
+                    - row "1 0.0010 0 delete" [ref=e179]:
+                      - cell "1" [ref=e180]
+                      - cell [ref=e181]:
+                        - textbox "0" [ref=e182]
+                      - cell "0.0010" [ref=e183]
+                      - cell "0" [ref=e184]
+                      - cell "delete" [ref=e185]:
+                        - button "delete" [ref=e186]:
+                          - generic [ref=e187]: delete
+                    - row "2 0.0000 0 delete" [ref=e188]:
+                      - cell "2" [ref=e189]
+                      - cell [ref=e190]:
+                        - textbox "0" [ref=e191]
+                      - cell "0.0000" [ref=e192]
+                      - cell "0" [ref=e193]
+                      - cell "delete" [ref=e194]:
+                        - button "delete" [ref=e195]:
+                          - generic [ref=e196]: delete
+                    - row "3 0.0000 0 delete" [ref=e197]:
+                      - cell "3" [ref=e198]
+                      - cell [ref=e199]:
+                        - textbox "0" [ref=e200]
+                      - cell "0.0000" [ref=e201]
+                      - cell "0" [ref=e202]
+                      - cell "delete" [ref=e203]:
+                        - button "delete" [ref=e204]:
+                          - generic [ref=e205]: delete
+                    - row "4 0.0000 0 delete" [ref=e206]:
+                      - cell "4" [ref=e207]
+                      - cell [ref=e208]:
+                        - textbox "0" [ref=e209]
+                      - cell "0.0000" [ref=e210]
+                      - cell "0" [ref=e211]
+                      - cell "delete" [ref=e212]:
+                        - button "delete" [ref=e213]:
+                          - generic [ref=e214]: delete
+                    - row "5 0.0000 0 delete" [ref=e215]:
+                      - cell "5" [ref=e216]
+                      - cell [ref=e217]:
+                        - textbox "0" [ref=e218]
+                      - cell "0.0000" [ref=e219]
+                      - cell "0" [ref=e220]
+                      - cell "delete" [ref=e221]:
+                        - button "delete" [ref=e222]:
+                          - generic [ref=e223]: delete
+                - generic [ref=e225]:
+                  - generic [ref=e226]: lightbulb
+                  - paragraph [ref=e227]: "Tip: Negative cash flows are outflows (investments), positive are inflows (returns)."
+            - generic [ref=e230]:
+              - generic [ref=e232]:
+                - generic [ref=e233]: analytics
+                - heading "Results" [level=3] [ref=e234]
+              - generic [ref=e235]:
+                - generic [ref=e236]:
+                  - generic [ref=e237]:
+                    - generic [ref=e238]:
+                      - text: NPV @ 100000%
+                      - generic [ref=e239]: "0"
+                    - img [ref=e241]
+                  - generic [ref=e245]: Investment is not profitable
+                - generic [ref=e246]:
+                  - generic [ref=e247]:
+                    - generic [ref=e248]:
+                      - text: Profitability Index
+                      - generic [ref=e249]: 0.00x
+                    - img [ref=e251]
+                  - generic [ref=e255]: Return per dollar invested
+                - generic [ref=e256]:
+                  - generic [ref=e257]:
+                    - generic [ref=e258]: Total Inflows
+                    - generic [ref=e259]: "0"
+                  - generic [ref=e260]:
+                    - generic [ref=e261]: Total Outflows
+                    - generic [ref=e262]: "-0"
+                  - generic [ref=e263]:
+                    - generic [ref=e264]: Net Cash Flow
+                    - generic [ref=e265]: "0"
+                - generic [ref=e266]:
+                  - generic [ref=e267]:
+                    - generic [ref=e268]: gavel
+                    - paragraph [ref=e269]: Decision
+                  - list [ref=e270]:
+                    - listitem [ref=e271]:
+                      - generic [ref=e272]: ✗
+                      - text: NPV is negative
+                    - listitem [ref=e273]:
+                      - generic [ref=e274]: ✗
+                      - text: Reject this investment
+                - generic [ref=e275]:
+                  - button "Save to Compare" [ref=e276]:
+                    - img [ref=e277]
+                    - text: Save to Compare
+                  - button "View Comparisons" [ref=e279]:
+                    - img [ref=e280]
+                    - text: View Comparisons
+```

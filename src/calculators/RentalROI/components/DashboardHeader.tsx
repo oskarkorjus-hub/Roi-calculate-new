@@ -98,7 +98,7 @@ const DashboardHeader: React.FC<Props> = ({ data, currency, assumptions, onCompa
   const isFull = comparisonCount >= MAX_COMPARISONS;
 
   return (
-    <div className="sticky top-24 flex flex-col gap-4 z-40">
+    <div className="sticky top-20 flex flex-col gap-4 z-40">
       {/* Save to Compare Button */}
       <div className="bg-zinc-900 p-4 rounded-2xl border border-zinc-800">
         {showLabelInput ? (

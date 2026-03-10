@@ -1,0 +1,374 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e3]:
+  - complementary [ref=e4]:
+    - link "ROI ROI Calculate" [ref=e6] [cursor=pointer]:
+      - /url: /
+      - img "ROI" [ref=e7]
+      - generic [ref=e8]: ROI Calculate
+    - button "Search /" [ref=e10]:
+      - img [ref=e11]
+      - generic [ref=e13]:
+        - generic [ref=e14]: Search
+        - generic [ref=e15]: /
+    - navigation [ref=e16]:
+      - button "calculate Calculators 1" [ref=e17]:
+        - generic [ref=e18]: calculate
+        - generic [ref=e19]:
+          - generic [ref=e20]: Calculators
+          - generic [ref=e21]: "1"
+      - button "folder_open Portfolio 2" [ref=e22]:
+        - generic [ref=e23]: folder_open
+        - generic [ref=e24]:
+          - generic [ref=e25]: Portfolio
+          - generic [ref=e26]: "2"
+      - button "compare_arrows Compare 3" [ref=e27]:
+        - generic [ref=e28]: compare_arrows
+        - generic [ref=e29]:
+          - generic [ref=e30]: Compare
+          - generic [ref=e31]: "3"
+      - link "settings Settings" [ref=e33] [cursor=pointer]:
+        - /url: /settings
+        - generic [ref=e34]: settings
+        - generic [ref=e35]: Settings
+      - link "credit_card Billing" [ref=e36] [cursor=pointer]:
+        - /url: /settings#billing
+        - generic [ref=e37]: credit_card
+        - generic [ref=e38]: Billing
+      - link "help_outline Help" [ref=e39] [cursor=pointer]:
+        - /url: /contact
+        - generic [ref=e40]: help_outline
+        - generic [ref=e41]: Help
+    - link "O Oskar Korjus free" [ref=e43] [cursor=pointer]:
+      - /url: /settings
+      - generic [ref=e45]: O
+      - generic [ref=e46]:
+        - paragraph [ref=e47]: Oskar Korjus
+        - paragraph [ref=e48]: free
+    - button "Collapse" [ref=e50]:
+      - img [ref=e51]
+      - generic [ref=e53]: Collapse
+  - generic [ref=e54]:
+    - banner [ref=e55]:
+      - generic [ref=e56]:
+        - heading "Calculator" [level=1] [ref=e58]
+        - generic [ref=e59]:
+          - button "search Search ⌘K" [ref=e60]:
+            - generic [ref=e61]: search
+            - generic [ref=e62]: Search
+            - generic [ref=e63]: ⌘K
+          - button "notifications" [ref=e65]:
+            - generic [ref=e66]: notifications
+          - link "O Oskar Korjus" [ref=e68] [cursor=pointer]:
+            - /url: /settings
+            - generic [ref=e70]: O
+            - paragraph [ref=e72]: Oskar Korjus
+    - main [ref=e73]:
+      - generic [ref=e74]:
+        - generic [ref=e75]:
+          - generic [ref=e76]:
+            - button "Calculators" [ref=e77]
+            - generic [ref=e78]: ›
+            - generic [ref=e79]: Development Feasibility
+          - generic [ref=e80]:
+            - generic [ref=e81]:
+              - generic [ref=e82]:
+                - generic [ref=e84]: construction
+                - heading "Development Feasibility" [level=1] [ref=e85]
+              - paragraph [ref=e86]: "Evaluate land development projects: construction costs, timelines, ROI"
+            - button "View calculator details" [ref=e87]:
+              - img [ref=e88]
+          - button "Back to Calculators" [ref=e91]:
+            - img [ref=e92]
+            - text: Back to Calculators
+        - generic [ref=e96]:
+          - generic [ref=e97]:
+            - generic [ref=e98]:
+              - img [ref=e100]
+              - generic [ref=e102]:
+                - heading "Dev Feasibility" [level=1] [ref=e103]
+                - paragraph [ref=e104]: Analyze property development scenarios for flip and hold strategies
+            - generic [ref=e105]:
+              - button "Drafts" [ref=e107]:
+                - img [ref=e108]
+                - generic [ref=e110]: Drafts
+                - img [ref=e111]
+              - generic [ref=e113]:
+                - generic [ref=e115]:
+                  - img [ref=e116]
+                  - generic [ref=e118]: "3"
+                - button "Rp IDR" [ref=e120]:
+                  - generic [ref=e121]: Rp
+                  - generic [ref=e122]: IDR
+                  - img [ref=e123]
+                - generic [ref=e126]:
+                  - button "Reset all values" [ref=e127]:
+                    - img [ref=e128]
+                  - button "Export PDF report" [ref=e130]:
+                    - img [ref=e131]
+                  - button "Save to Portfolio" [ref=e133]:
+                    - img [ref=e135]
+          - generic [ref=e137]:
+            - generic [ref=e138]:
+              - generic [ref=e139]:
+                - generic [ref=e141]:
+                  - generic [ref=e142]: landscape
+                  - heading "Land & Construction" [level=2] [ref=e143]
+                - generic [ref=e144]:
+                  - generic [ref=e145]:
+                    - generic [ref=e146]:
+                      - text: Land Size
+                      - button "Land Size" [ref=e148]: "?"
+                    - generic [ref=e149]:
+                      - textbox "0" [active] [ref=e150]: "100000"
+                      - generic [ref=e151]: m²
+                  - generic [ref=e152]:
+                    - generic [ref=e153]:
+                      - text: Land Cost
+                      - button "Land Cost" [ref=e155]: "?"
+                    - generic [ref=e156]:
+                      - generic [ref=e157]: Rp
+                      - textbox "0" [ref=e158]
+                  - generic [ref=e159]:
+                    - generic [ref=e160]:
+                      - text: Construction Cost
+                      - button "Construction Cost" [ref=e162]: "?"
+                    - generic [ref=e163]:
+                      - generic [ref=e164]: Rp
+                      - textbox "0" [ref=e165]
+                      - generic [ref=e166]: /m²
+              - generic [ref=e167]:
+                - generic [ref=e169]:
+                  - generic [ref=e170]: home
+                  - heading "Villa Configuration" [level=2] [ref=e171]
+                - generic [ref=e172]:
+                  - generic [ref=e173]:
+                    - generic [ref=e174]:
+                      - text: Number of Villas
+                      - button "Number of Villas" [ref=e176]: "?"
+                    - textbox "0" [ref=e178]
+                  - generic [ref=e179]:
+                    - generic [ref=e180]:
+                      - text: Average Villa Size
+                      - button "Average Villa Size" [ref=e182]: "?"
+                    - generic [ref=e183]:
+                      - textbox "0" [ref=e184]
+                      - generic [ref=e185]: m²
+                  - generic [ref=e186]:
+                    - generic [ref=e187]:
+                      - text: Sale Price (per villa)
+                      - button "Sale Price (per villa)" [ref=e189]: "?"
+                    - generic [ref=e190]:
+                      - generic [ref=e191]: Rp
+                      - textbox "0" [ref=e192]
+                  - generic [ref=e193]:
+                    - generic [ref=e194]:
+                      - text: Annual Rental Income
+                      - button "Annual Rental Income" [ref=e196]: "?"
+                    - generic [ref=e197]:
+                      - generic [ref=e198]: Rp
+                      - textbox "0" [ref=e199]
+                  - generic [ref=e200]:
+                    - generic [ref=e201]:
+                      - text: Hold Period
+                      - button "Hold Period" [ref=e203]: "?"
+                    - generic [ref=e204]:
+                      - textbox "0" [ref=e205]
+                      - generic [ref=e206]: years
+              - button "Permits & Infrastructure (Permits, licenses, and infrastructure costs) ▼" [ref=e208]:
+                - generic [ref=e209]:
+                  - img [ref=e210]
+                  - heading "Permits & Infrastructure" [level=3] [ref=e213]
+                  - generic [ref=e214]: (Permits, licenses, and infrastructure costs)
+                - generic [ref=e215]: ▼
+              - button "Soft Costs (Professional fees and commissions) ▼" [ref=e217]:
+                - generic [ref=e218]:
+                  - img [ref=e219]
+                  - heading "Soft Costs" [level=3] [ref=e222]
+                  - generic [ref=e223]: (Professional fees and commissions)
+                - generic [ref=e224]: ▼
+              - button "Financing (Loan and interest calculations) ▼" [ref=e226]:
+                - generic [ref=e227]:
+                  - img [ref=e228]
+                  - heading "Financing" [level=3] [ref=e231]
+                  - generic [ref=e232]: (Loan and interest calculations)
+                - generic [ref=e233]: ▼
+              - button "Exit Costs (Sales commissions and taxes) ▼" [ref=e235]:
+                - generic [ref=e236]:
+                  - img [ref=e237]
+                  - heading "Exit Costs" [level=3] [ref=e240]
+                  - generic [ref=e241]: (Sales commissions and taxes)
+                - generic [ref=e242]: ▼
+            - generic [ref=e245]:
+              - generic [ref=e247]:
+                - generic [ref=e248]: analytics
+                - heading "Results" [level=3] [ref=e249]
+              - generic [ref=e250]:
+                - generic [ref=e251]:
+                  - generic [ref=e252]:
+                    - generic [ref=e253]:
+                      - text: Best Flip ROI
+                      - generic [ref=e254]: NaN%
+                    - img [ref=e256]
+                  - generic [ref=e260]: 1 villas • Rp 0 profit
+                - generic [ref=e261]:
+                  - generic [ref=e262]:
+                    - generic [ref=e263]:
+                      - text: Best Hold ROI (0yr)
+                      - generic [ref=e264]: NaN%
+                    - img [ref=e266]
+                  - generic [ref=e270]: 1 villas • Rp 0 return
+                - generic [ref=e271]:
+                  - paragraph [ref=e272]: Total Project Cost
+                  - paragraph [ref=e273]: Rp 0
+                - generic [ref=e274]:
+                  - paragraph [ref=e275]: Sale Revenue
+                  - paragraph [ref=e276]: Rp 0
+              - generic [ref=e277]:
+                - button "Save to Compare" [ref=e278]:
+                  - img [ref=e279]
+                  - text: Save to Compare
+                - button "View Comparisons" [ref=e281]:
+                  - img [ref=e282]
+                  - text: View Comparisons
+          - generic [ref=e285]:
+            - generic [ref=e287]:
+              - generic [ref=e288]: table_chart
+              - heading "Development Scenarios" [level=3] [ref=e289]
+            - table [ref=e291]:
+              - rowgroup [ref=e292]:
+                - row "Villas Build Cost Soft Costs Permits Finance Total Cost Sale Revenue Exit Cost Flip Profit Flip ROI Hold ROI" [ref=e293]:
+                  - columnheader "Villas" [ref=e294]
+                  - columnheader "Build Cost" [ref=e295]
+                  - columnheader "Soft Costs" [ref=e296]
+                  - columnheader "Permits" [ref=e297]
+                  - columnheader "Finance" [ref=e298]
+                  - columnheader "Total Cost" [ref=e299]
+                  - columnheader "Sale Revenue" [ref=e300]
+                  - columnheader "Exit Cost" [ref=e301]
+                  - columnheader "Flip Profit" [ref=e302]
+                  - columnheader "Flip ROI" [ref=e303]
+                  - columnheader "Hold ROI" [ref=e304]
+              - rowgroup [ref=e305]:
+                - row "1 Rp 0 Rp 0 Rp 0 Rp 0 Rp 0 Rp 0 Rp 0 Rp 0 NaN% NaN%" [ref=e306]:
+                  - cell "1" [ref=e307]
+                  - cell "Rp 0" [ref=e308]
+                  - cell "Rp 0" [ref=e309]
+                  - cell "Rp 0" [ref=e310]
+                  - cell "Rp 0" [ref=e311]
+                  - cell "Rp 0" [ref=e312]
+                  - cell "Rp 0" [ref=e313]
+                  - cell "Rp 0" [ref=e314]
+                  - cell "Rp 0" [ref=e315]
+                  - cell "NaN%" [ref=e316]
+                  - cell "NaN%" [ref=e317]
+                - row "2 Rp 0 Rp 0 Rp 0 Rp 0 Rp 0 Rp 0 Rp 0 Rp 0 NaN% NaN%" [ref=e318]:
+                  - cell "2" [ref=e319]
+                  - cell "Rp 0" [ref=e320]
+                  - cell "Rp 0" [ref=e321]
+                  - cell "Rp 0" [ref=e322]
+                  - cell "Rp 0" [ref=e323]
+                  - cell "Rp 0" [ref=e324]
+                  - cell "Rp 0" [ref=e325]
+                  - cell "Rp 0" [ref=e326]
+                  - cell "Rp 0" [ref=e327]
+                  - cell "NaN%" [ref=e328]
+                  - cell "NaN%" [ref=e329]
+                - row "3 Rp 0 Rp 0 Rp 0 Rp 0 Rp 0 Rp 0 Rp 0 Rp 0 NaN% NaN%" [ref=e330]:
+                  - cell "3" [ref=e331]
+                  - cell "Rp 0" [ref=e332]
+                  - cell "Rp 0" [ref=e333]
+                  - cell "Rp 0" [ref=e334]
+                  - cell "Rp 0" [ref=e335]
+                  - cell "Rp 0" [ref=e336]
+                  - cell "Rp 0" [ref=e337]
+                  - cell "Rp 0" [ref=e338]
+                  - cell "Rp 0" [ref=e339]
+                  - cell "NaN%" [ref=e340]
+                  - cell "NaN%" [ref=e341]
+                - row "4 Rp 0 Rp 0 Rp 0 Rp 0 Rp 0 Rp 0 Rp 0 Rp 0 NaN% NaN%" [ref=e342]:
+                  - cell "4" [ref=e343]
+                  - cell "Rp 0" [ref=e344]
+                  - cell "Rp 0" [ref=e345]
+                  - cell "Rp 0" [ref=e346]
+                  - cell "Rp 0" [ref=e347]
+                  - cell "Rp 0" [ref=e348]
+                  - cell "Rp 0" [ref=e349]
+                  - cell "Rp 0" [ref=e350]
+                  - cell "Rp 0" [ref=e351]
+                  - cell "NaN%" [ref=e352]
+                  - cell "NaN%" [ref=e353]
+                - row "5 Rp 0 Rp 0 Rp 0 Rp 0 Rp 0 Rp 0 Rp 0 Rp 0 NaN% NaN%" [ref=e354]:
+                  - cell "5" [ref=e355]
+                  - cell "Rp 0" [ref=e356]
+                  - cell "Rp 0" [ref=e357]
+                  - cell "Rp 0" [ref=e358]
+                  - cell "Rp 0" [ref=e359]
+                  - cell "Rp 0" [ref=e360]
+                  - cell "Rp 0" [ref=e361]
+                  - cell "Rp 0" [ref=e362]
+                  - cell "Rp 0" [ref=e363]
+                  - cell "NaN%" [ref=e364]
+                  - cell "NaN%" [ref=e365]
+                - row "6 Rp 0 Rp 0 Rp 0 Rp 0 Rp 0 Rp 0 Rp 0 Rp 0 NaN% NaN%" [ref=e366]:
+                  - cell "6" [ref=e367]
+                  - cell "Rp 0" [ref=e368]
+                  - cell "Rp 0" [ref=e369]
+                  - cell "Rp 0" [ref=e370]
+                  - cell "Rp 0" [ref=e371]
+                  - cell "Rp 0" [ref=e372]
+                  - cell "Rp 0" [ref=e373]
+                  - cell "Rp 0" [ref=e374]
+                  - cell "Rp 0" [ref=e375]
+                  - cell "NaN%" [ref=e376]
+                  - cell "NaN%" [ref=e377]
+                - row "7 Rp 0 Rp 0 Rp 0 Rp 0 Rp 0 Rp 0 Rp 0 Rp 0 NaN% NaN%" [ref=e378]:
+                  - cell "7" [ref=e379]
+                  - cell "Rp 0" [ref=e380]
+                  - cell "Rp 0" [ref=e381]
+                  - cell "Rp 0" [ref=e382]
+                  - cell "Rp 0" [ref=e383]
+                  - cell "Rp 0" [ref=e384]
+                  - cell "Rp 0" [ref=e385]
+                  - cell "Rp 0" [ref=e386]
+                  - cell "Rp 0" [ref=e387]
+                  - cell "NaN%" [ref=e388]
+                  - cell "NaN%" [ref=e389]
+                - row "8 Rp 0 Rp 0 Rp 0 Rp 0 Rp 0 Rp 0 Rp 0 Rp 0 NaN% NaN%" [ref=e390]:
+                  - cell "8" [ref=e391]
+                  - cell "Rp 0" [ref=e392]
+                  - cell "Rp 0" [ref=e393]
+                  - cell "Rp 0" [ref=e394]
+                  - cell "Rp 0" [ref=e395]
+                  - cell "Rp 0" [ref=e396]
+                  - cell "Rp 0" [ref=e397]
+                  - cell "Rp 0" [ref=e398]
+                  - cell "Rp 0" [ref=e399]
+                  - cell "NaN%" [ref=e400]
+                  - cell "NaN%" [ref=e401]
+                - row "9 Rp 0 Rp 0 Rp 0 Rp 0 Rp 0 Rp 0 Rp 0 Rp 0 NaN% NaN%" [ref=e402]:
+                  - cell "9" [ref=e403]
+                  - cell "Rp 0" [ref=e404]
+                  - cell "Rp 0" [ref=e405]
+                  - cell "Rp 0" [ref=e406]
+                  - cell "Rp 0" [ref=e407]
+                  - cell "Rp 0" [ref=e408]
+                  - cell "Rp 0" [ref=e409]
+                  - cell "Rp 0" [ref=e410]
+                  - cell "Rp 0" [ref=e411]
+                  - cell "NaN%" [ref=e412]
+                  - cell "NaN%" [ref=e413]
+                - row "10 Rp 0 Rp 0 Rp 0 Rp 0 Rp 0 Rp 0 Rp 0 Rp 0 NaN% NaN%" [ref=e414]:
+                  - cell "10" [ref=e415]
+                  - cell "Rp 0" [ref=e416]
+                  - cell "Rp 0" [ref=e417]
+                  - cell "Rp 0" [ref=e418]
+                  - cell "Rp 0" [ref=e419]
+                  - cell "Rp 0" [ref=e420]
+                  - cell "Rp 0" [ref=e421]
+                  - cell "Rp 0" [ref=e422]
+                  - cell "Rp 0" [ref=e423]
+                  - cell "NaN%" [ref=e424]
+                  - cell "NaN%" [ref=e425]
+```

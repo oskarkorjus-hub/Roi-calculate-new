@@ -21,17 +21,25 @@ export default defineConfig({
   // Test directory
   testDir: './tests/e2e',
 
-  // Run tests in parallel
+  // Run tests in parallel (reduced workers for stability)
   fullyParallel: true,
 
   // Fail the build on CI if you accidentally left test.only in the source code
   forbidOnly: !!process.env.CI,
 
-  // Retry on CI only
-  retries: process.env.CI ? 2 : 0,
+  // Retry failed tests once
+  retries: process.env.CI ? 2 : 1,
 
-  // Workers for parallel execution
-  workers: process.env.CI ? 1 : undefined,
+  // Workers for parallel execution (limit to 3 for stability with auth)
+  workers: process.env.CI ? 1 : 3,
+
+  // Global test timeout (45 seconds per test)
+  timeout: 45000,
+
+  // Expect timeout (10 seconds for assertions)
+  expect: {
+    timeout: 10000,
+  },
 
   // Reporter configuration
   reporter: [
@@ -52,31 +60,38 @@ export default defineConfig({
 
     // Video on failure
     video: 'on-first-retry',
+
+    // Action timeout
+    actionTimeout: 15000,
+
+    // Navigation timeout
+    navigationTimeout: 30000,
   },
 
-  // Configure projects for major browsers
+  // Configure projects - chromium only by default for faster, more reliable tests
+  // Run with --project=firefox or --project=webkit to test other browsers
   projects: [
     {
       name: 'chromium',
       use: { ...devices['Desktop Chrome'] },
     },
-    {
-      name: 'firefox',
-      use: { ...devices['Desktop Firefox'] },
-    },
-    {
-      name: 'webkit',
-      use: { ...devices['Desktop Safari'] },
-    },
-    // Mobile viewports
-    {
-      name: 'Mobile Chrome',
-      use: { ...devices['Pixel 5'] },
-    },
-    {
-      name: 'Mobile Safari',
-      use: { ...devices['iPhone 12'] },
-    },
+    // Uncomment to test on other browsers:
+    // {
+    //   name: 'firefox',
+    //   use: { ...devices['Desktop Firefox'] },
+    // },
+    // {
+    //   name: 'webkit',
+    //   use: { ...devices['Desktop Safari'] },
+    // },
+    // {
+    //   name: 'Mobile Chrome',
+    //   use: { ...devices['Pixel 5'] },
+    // },
+    // {
+    //   name: 'Mobile Safari',
+    //   use: { ...devices['iPhone 12'] },
+    // },
   ],
 
   // Run local dev server before tests

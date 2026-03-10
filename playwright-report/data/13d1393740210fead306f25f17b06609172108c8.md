@@ -1,0 +1,260 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e3]:
+  - complementary [ref=e4]:
+    - link "ROI ROI Calculate" [ref=e6] [cursor=pointer]:
+      - /url: /
+      - img "ROI" [ref=e7]
+      - generic [ref=e8]: ROI Calculate
+    - button "Search /" [ref=e10]:
+      - img [ref=e11]
+      - generic [ref=e13]:
+        - generic [ref=e14]: Search
+        - generic [ref=e15]: /
+    - navigation [ref=e16]:
+      - button "calculate Calculators 1" [ref=e17]:
+        - generic [ref=e18]: calculate
+        - generic [ref=e19]:
+          - generic [ref=e20]: Calculators
+          - generic [ref=e21]: "1"
+      - button "folder_open Portfolio 2" [ref=e22]:
+        - generic [ref=e23]: folder_open
+        - generic [ref=e24]:
+          - generic [ref=e25]: Portfolio
+          - generic [ref=e26]: "2"
+      - button "compare_arrows Compare 3" [ref=e27]:
+        - generic [ref=e28]: compare_arrows
+        - generic [ref=e29]:
+          - generic [ref=e30]: Compare
+          - generic [ref=e31]: "3"
+      - link "settings Settings" [ref=e33] [cursor=pointer]:
+        - /url: /settings
+        - generic [ref=e34]: settings
+        - generic [ref=e35]: Settings
+      - link "credit_card Billing" [ref=e36] [cursor=pointer]:
+        - /url: /settings#billing
+        - generic [ref=e37]: credit_card
+        - generic [ref=e38]: Billing
+      - link "help_outline Help" [ref=e39] [cursor=pointer]:
+        - /url: /contact
+        - generic [ref=e40]: help_outline
+        - generic [ref=e41]: Help
+    - link "O Oskar Korjus free" [ref=e43] [cursor=pointer]:
+      - /url: /settings
+      - generic [ref=e45]: O
+      - generic [ref=e46]:
+        - paragraph [ref=e47]: Oskar Korjus
+        - paragraph [ref=e48]: free
+    - button "Collapse" [ref=e50]:
+      - img [ref=e51]
+      - generic [ref=e53]: Collapse
+  - generic [ref=e54]:
+    - banner [ref=e55]:
+      - generic [ref=e56]:
+        - heading "Calculator" [level=1] [ref=e58]
+        - generic [ref=e59]:
+          - button "search Search ⌘K" [ref=e60]:
+            - generic [ref=e61]: search
+            - generic [ref=e62]: Search
+            - generic [ref=e63]: ⌘K
+          - button "notifications" [ref=e65]:
+            - generic [ref=e66]: notifications
+          - link "O Oskar Korjus" [ref=e68] [cursor=pointer]:
+            - /url: /settings
+            - generic [ref=e70]: O
+            - paragraph [ref=e72]: Oskar Korjus
+    - main [ref=e73]:
+      - generic [ref=e74]:
+        - generic [ref=e75]:
+          - generic [ref=e76]:
+            - button "Calculators" [ref=e77]
+            - generic [ref=e78]: ›
+            - generic [ref=e79]: Indonesia Tax Optimizer
+          - generic [ref=e80]:
+            - generic [ref=e81]:
+              - generic [ref=e82]:
+                - generic [ref=e84]: receipt_long
+                - heading "Indonesia Tax Optimizer" [level=1] [ref=e85]
+              - paragraph [ref=e86]: Optimize Indonesian real estate taxes with depreciation, deductions, and ownership analysis
+            - button "View calculator details" [ref=e87]:
+              - img [ref=e88]
+          - button "Back to Calculators" [ref=e91]:
+            - img [ref=e92]
+            - text: Back to Calculators
+        - generic [ref=e96]:
+          - generic [ref=e97]:
+            - generic [ref=e98]:
+              - generic [ref=e100]: ID
+              - generic [ref=e101]:
+                - heading "Indonesia Tax Optimizer" [level=1] [ref=e102]
+                - paragraph [ref=e103]: Optimize real estate taxes with depreciation, deductions, and ownership structure analysis
+            - generic [ref=e104]:
+              - button "Drafts" [ref=e106]:
+                - img [ref=e107]
+                - generic [ref=e109]: Drafts
+                - img [ref=e110]
+              - generic [ref=e112]:
+                - generic [ref=e114]:
+                  - img [ref=e115]
+                  - generic [ref=e117]: "3"
+                - button "Rp IDR" [ref=e119]:
+                  - generic [ref=e120]: Rp
+                  - generic [ref=e121]: IDR
+                  - img [ref=e122]
+                - generic [ref=e125]:
+                  - button "Reset all values" [ref=e126]:
+                    - img [ref=e127]
+                  - button "Export PDF report" [ref=e129]:
+                    - img [ref=e130]
+                  - button "Save to Portfolio" [ref=e132]:
+                    - img [ref=e134]
+          - generic [ref=e136]:
+            - generic [ref=e137]:
+              - generic [ref=e138]:
+                - generic [ref=e140]:
+                  - generic [ref=e141]: receipt_long
+                  - heading "Property & Investment Details" [level=2] [ref=e142]
+                - generic [ref=e143]:
+                  - generic [ref=e144]:
+                    - generic [ref=e145]:
+                      - text: Purchase Price
+                      - button "Purchase Price" [ref=e147]: "?"
+                    - generic [ref=e148]:
+                      - generic [ref=e149]: Rp
+                      - textbox "0" [active] [ref=e150]: "100000"
+                  - generic [ref=e151]:
+                    - generic [ref=e152]:
+                      - text: Holding Period
+                      - button "Holding Period" [ref=e154]: "?"
+                    - generic [ref=e155]:
+                      - textbox "0" [ref=e156]
+                      - generic [ref=e157]: years
+                  - generic [ref=e158]:
+                    - generic [ref=e159]:
+                      - text: Projected Sale Price
+                      - button "Projected Sale Price" [ref=e161]: "?"
+                    - generic [ref=e162]:
+                      - generic [ref=e163]: Rp
+                      - textbox "0" [ref=e164]
+                  - generic [ref=e165]:
+                    - generic [ref=e166]:
+                      - text: Ownership Structure
+                      - button "Ownership Structure" [ref=e168]: "?"
+                    - combobox [ref=e169]:
+                      - option "PT (Company)" [selected]
+                      - option "Freehold (Individual)"
+                      - option "Leasehold"
+                  - generic [ref=e170]:
+                    - generic [ref=e171]:
+                      - text: Annual Maintenance
+                      - button "Annual Maintenance" [ref=e173]: "?"
+                    - generic [ref=e174]:
+                      - generic [ref=e175]: Rp
+                      - textbox "0" [ref=e176]
+                  - generic [ref=e177]:
+                    - generic [ref=e178]:
+                      - text: Property Tax Rate
+                      - button "Property Tax Rate" [ref=e180]: "?"
+                    - generic [ref=e181]:
+                      - textbox "0" [ref=e182]
+                      - generic [ref=e183]: "%"
+              - button "Depreciation Schedule (Year-by-year depreciation impact) ▼" [ref=e185]:
+                - generic [ref=e186]:
+                  - img [ref=e187]
+                  - heading "Depreciation Schedule" [level=3] [ref=e190]
+                  - generic [ref=e191]: (Year-by-year depreciation impact)
+                - generic [ref=e192]: ▼
+              - button "Deduction Categories (Itemize deductible expenses) ▼" [ref=e194]:
+                - generic [ref=e195]:
+                  - img [ref=e196]
+                  - heading "Deduction Categories" [level=3] [ref=e199]
+                  - generic [ref=e200]: (Itemize deductible expenses)
+                - generic [ref=e201]: ▼
+              - button "Capital Gains Tax (Acquisition and selling costs) ▼" [ref=e203]:
+                - generic [ref=e204]:
+                  - img [ref=e205]
+                  - heading "Capital Gains Tax" [level=3] [ref=e208]
+                  - generic [ref=e209]: (Acquisition and selling costs)
+                - generic [ref=e210]: ▼
+              - button "Ownership Structure Impact (Compare tax by ownership type) ▼" [ref=e212]:
+                - generic [ref=e213]:
+                  - img [ref=e214]
+                  - heading "Ownership Structure Impact" [level=3] [ref=e217]
+                  - generic [ref=e218]: (Compare tax by ownership type)
+                - generic [ref=e219]: ▼
+              - button "Reinvestment Strategy (Tax-deferred reinvestment scenarios) ▼" [ref=e221]:
+                - generic [ref=e222]:
+                  - img [ref=e223]
+                  - heading "Reinvestment Strategy" [level=3] [ref=e226]
+                  - generic [ref=e227]: (Tax-deferred reinvestment scenarios)
+                - generic [ref=e228]: ▼
+            - generic [ref=e230]:
+              - generic [ref=e231]:
+                - generic [ref=e232]:
+                  - generic [ref=e234]:
+                    - generic [ref=e235]: analytics
+                    - heading "Tax Analysis" [level=3] [ref=e236]
+                  - generic [ref=e237]:
+                    - generic [ref=e239]:
+                      - generic [ref=e240]:
+                        - paragraph [ref=e241]: Tax Efficiency
+                        - generic [ref=e242]:
+                          - generic [ref=e243]: A
+                          - generic [ref=e244]: Excellent
+                      - generic [ref=e245]:
+                        - paragraph [ref=e246]: Effective Rate
+                        - paragraph [ref=e247]: 0.0%
+                    - generic [ref=e248]:
+                      - generic [ref=e249]:
+                        - paragraph [ref=e250]: Gross ROI
+                        - paragraph [ref=e251]: "-100.0%"
+                        - paragraph [ref=e252]: Before taxes
+                      - generic [ref=e253]:
+                        - paragraph [ref=e254]: Net ROI
+                        - paragraph [ref=e255]: "-100.0%"
+                        - paragraph [ref=e256]: After taxes
+                    - generic [ref=e257]:
+                      - generic [ref=e258]:
+                        - generic [ref=e259]: Capital Gains Tax
+                        - generic [ref=e260]: "-Rp 0"
+                      - generic [ref=e261]:
+                        - generic [ref=e262]: Total Tax Liability
+                        - generic [ref=e263]: Rp 0
+                    - generic [ref=e264]:
+                      - generic [ref=e265]:
+                        - generic [ref=e266]: Net Proceeds
+                        - generic [ref=e267]: Rp 0
+                      - generic [ref=e268]:
+                        - generic [ref=e269]: Net Profit
+                        - generic [ref=e270]: Rp 100,000
+                - generic [ref=e271]:
+                  - generic [ref=e272]:
+                    - generic [ref=e273]: check_circle
+                    - heading "Optimal Structure Selected" [level=4] [ref=e274]
+                  - paragraph [ref=e275]:
+                    - text: Your current
+                    - strong [ref=e276]: PT (Company)
+                    - text: ownership minimizes your tax liability for this scenario.
+                - generic [ref=e277]:
+                  - heading "Quick Stats" [level=4] [ref=e278]
+                  - generic [ref=e279]:
+                    - generic [ref=e280]:
+                      - generic [ref=e281]: Holding Period
+                      - generic [ref=e282]: 0 years
+                    - generic [ref=e283]:
+                      - generic [ref=e284]: Capital Gain
+                      - generic [ref=e285]: Rp 100,000
+                - generic [ref=e286]:
+                  - generic [ref=e287]:
+                    - img [ref=e288]
+                    - heading "Short-Term Holding Warning" [level=4] [ref=e290]
+                  - paragraph [ref=e291]: Holding less than 5 years may trigger higher short-term capital gains rates. Consider extending your holding period to reduce tax burden.
+              - generic [ref=e292]:
+                - button "Save to Compare" [ref=e293]:
+                  - img [ref=e294]
+                  - text: Save to Compare
+                - button "View Comparisons" [ref=e296]:
+                  - img [ref=e297]
+                  - text: View Comparisons
+```

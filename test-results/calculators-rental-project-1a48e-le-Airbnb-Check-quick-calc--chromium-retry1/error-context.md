@@ -1,0 +1,317 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e3]:
+  - complementary [ref=e4]:
+    - link "ROI ROI Calculate" [ref=e6] [cursor=pointer]:
+      - /url: /
+      - img "ROI" [ref=e7]
+      - generic [ref=e8]: ROI Calculate
+    - button "Search /" [ref=e10]:
+      - img [ref=e11]
+      - generic [ref=e13]:
+        - generic [ref=e14]: Search
+        - generic [ref=e15]: /
+    - navigation [ref=e16]:
+      - button "calculate Calculators 1" [ref=e17]:
+        - generic [ref=e18]: calculate
+        - generic [ref=e19]:
+          - generic [ref=e20]: Calculators
+          - generic [ref=e21]: "1"
+      - button "folder_open Portfolio 2" [ref=e22]:
+        - generic [ref=e23]: folder_open
+        - generic [ref=e24]:
+          - generic [ref=e25]: Portfolio
+          - generic [ref=e26]: "2"
+      - button "compare_arrows Compare 3" [ref=e27]:
+        - generic [ref=e28]: compare_arrows
+        - generic [ref=e29]:
+          - generic [ref=e30]: Compare
+          - generic [ref=e31]: "3"
+      - link "settings Settings" [ref=e33] [cursor=pointer]:
+        - /url: /settings
+        - generic [ref=e34]: settings
+        - generic [ref=e35]: Settings
+      - link "credit_card Billing" [ref=e36] [cursor=pointer]:
+        - /url: /settings#billing
+        - generic [ref=e37]: credit_card
+        - generic [ref=e38]: Billing
+      - link "help_outline Help" [ref=e39] [cursor=pointer]:
+        - /url: /contact
+        - generic [ref=e40]: help_outline
+        - generic [ref=e41]: Help
+    - link "O Oskar Korjus free" [ref=e43] [cursor=pointer]:
+      - /url: /settings
+      - generic [ref=e45]: O
+      - generic [ref=e46]:
+        - paragraph [ref=e47]: Oskar Korjus
+        - paragraph [ref=e48]: free
+    - button "Collapse" [ref=e50]:
+      - img [ref=e51]
+      - generic [ref=e53]: Collapse
+  - generic [ref=e54]:
+    - banner [ref=e55]:
+      - generic [ref=e56]:
+        - heading "Calculator" [level=1] [ref=e58]
+        - generic [ref=e59]:
+          - button "search Search ⌘K" [ref=e60]:
+            - generic [ref=e61]: search
+            - generic [ref=e62]: Search
+            - generic [ref=e63]: ⌘K
+          - button "notifications" [ref=e65]:
+            - generic [ref=e66]: notifications
+          - link "O Oskar Korjus" [ref=e68] [cursor=pointer]:
+            - /url: /settings
+            - generic [ref=e70]: O
+            - paragraph [ref=e72]: Oskar Korjus
+    - main [ref=e73]:
+      - generic [ref=e74]:
+        - generic [ref=e75]:
+          - generic [ref=e76]:
+            - button "Calculators" [ref=e77]
+            - generic [ref=e78]: ›
+            - generic [ref=e79]: Rental Income Projection
+          - generic [ref=e80]:
+            - generic [ref=e81]:
+              - generic [ref=e82]:
+                - generic [ref=e84]: calendar_month
+                - heading "Rental Income Projection" [level=1] [ref=e85]
+              - paragraph [ref=e86]: Advanced vacation rental projections with seasonality, occupancy curves, and dynamic pricing
+            - button "View calculator details" [ref=e87]:
+              - img [ref=e88]
+          - button "Back to Calculators" [ref=e91]:
+            - img [ref=e92]
+            - text: Back to Calculators
+        - generic [ref=e96]:
+          - generic [ref=e97]:
+            - generic [ref=e98]:
+              - img [ref=e100]
+              - generic [ref=e102]:
+                - heading "Rental Income Projection" [level=1] [ref=e103]
+                - paragraph [ref=e104]: Advanced vacation rental projections with seasonality, occupancy curves, and dynamic pricing
+            - generic [ref=e105]:
+              - button "Drafts" [ref=e107]:
+                - img [ref=e108]
+                - generic [ref=e110]: Drafts
+                - img [ref=e111]
+              - generic [ref=e113]:
+                - generic [ref=e115]:
+                  - img [ref=e116]
+                  - generic [ref=e118]: "3"
+                - button "Rp IDR" [ref=e120]:
+                  - generic [ref=e121]: Rp
+                  - generic [ref=e122]: IDR
+                  - img [ref=e123]
+                - generic [ref=e126]:
+                  - button "Reset all values" [ref=e127]:
+                    - img [ref=e128]
+                  - button "Export PDF report" [ref=e130]:
+                    - img [ref=e131]
+                  - button "Save to Portfolio" [ref=e133]:
+                    - img [ref=e135]
+          - generic [ref=e137]:
+            - generic [ref=e138]:
+              - generic [ref=e139]:
+                - generic [ref=e141]:
+                  - generic [ref=e142]: home
+                  - heading "Property & Revenue Basics" [level=2] [ref=e143]
+                - generic [ref=e144]:
+                  - generic [ref=e145]:
+                    - generic [ref=e146]:
+                      - text: Property Size
+                      - button "Property Size" [ref=e148]: "?"
+                    - generic [ref=e149]:
+                      - textbox "0" [ref=e150]: "120"
+                      - generic [ref=e151]: m²
+                  - generic [ref=e152]:
+                    - generic [ref=e153]:
+                      - text: Base Nightly Rate
+                      - button "Base Nightly Rate" [ref=e155]: "?"
+                    - generic [ref=e156]:
+                      - generic [ref=e157]: Rp
+                      - textbox "0" [active] [ref=e158]: "55"
+                  - generic [ref=e159]:
+                    - generic [ref=e160]:
+                      - text: Monthly Operating Expenses
+                      - button "Monthly Operating Expenses" [ref=e162]: "?"
+                    - generic [ref=e163]:
+                      - generic [ref=e164]: Rp
+                      - textbox "0" [ref=e165]
+                  - generic [ref=e166]:
+                    - generic [ref=e167]:
+                      - text: Location
+                      - button "Location" [ref=e169]: "?"
+                    - combobox [ref=e170]:
+                      - option "Ubud"
+                      - option "Seminyak"
+                      - option "Canggu" [selected]
+                      - option "Other Bali"
+                      - option "International"
+                  - generic [ref=e171]:
+                    - generic [ref=e172]:
+                      - text: Projection Period
+                      - button "Projection Period" [ref=e174]: "?"
+                    - generic [ref=e175]:
+                      - textbox "0" [ref=e176]
+                      - generic [ref=e177]: years
+                  - generic [ref=e178]:
+                    - generic [ref=e179]:
+                      - text: Annual Growth Rate
+                      - button "Annual Growth Rate" [ref=e181]: "?"
+                    - generic [ref=e182]:
+                      - textbox "0" [ref=e183]
+                      - generic [ref=e184]: "%"
+              - button "Seasonality Profile (Peak, shoulder, and low season adjustments) ▼" [ref=e186]:
+                - generic [ref=e187]:
+                  - img [ref=e188]
+                  - heading "Seasonality Profile" [level=3] [ref=e191]
+                  - generic [ref=e192]: (Peak, shoulder, and low season adjustments)
+                - generic [ref=e193]: ▼
+              - button "Occupancy Management (Vacancy, turnover, and cancellations) ▼" [ref=e195]:
+                - generic [ref=e196]:
+                  - img [ref=e197]
+                  - heading "Occupancy Management" [level=3] [ref=e200]
+                  - generic [ref=e201]: (Vacancy, turnover, and cancellations)
+                - generic [ref=e202]: ▼
+              - button "Dynamic Pricing Impact (Rate vs occupancy optimization) ▼" [ref=e204]:
+                - generic [ref=e205]:
+                  - img [ref=e206]
+                  - heading "Dynamic Pricing Impact" [level=3] [ref=e209]
+                  - generic [ref=e210]: (Rate vs occupancy optimization)
+                - generic [ref=e211]: ▼
+              - button "Expense Breakdown (Fixed and variable costs) ▼" [ref=e213]:
+                - generic [ref=e214]:
+                  - img [ref=e215]
+                  - heading "Expense Breakdown" [level=3] [ref=e218]
+                  - generic [ref=e219]: (Fixed and variable costs)
+                - generic [ref=e220]: ▼
+              - generic [ref=e221]:
+                - generic [ref=e222]:
+                  - generic [ref=e223]:
+                    - generic [ref=e224]: trending_up
+                    - heading "0-Year Cash Flow Projection" [level=3] [ref=e225]
+                  - generic [ref=e226]:
+                    - generic [ref=e229]: Revenue
+                    - generic [ref=e232]: Expenses
+                    - generic [ref=e235]: Cumulative
+                - generic [ref=e238]:
+                  - list [ref=e240]:
+                    - listitem [ref=e241]:
+                      - img "Cumulative Cash Flow legend icon" [ref=e242]
+                      - text: Cumulative Cash Flow
+                    - listitem [ref=e244]:
+                      - img "Expenses legend icon" [ref=e245]
+                      - text: Expenses
+                    - listitem [ref=e247]:
+                      - img "Revenue legend icon" [ref=e248]
+                      - text: Revenue
+                  - application [ref=e250]
+                - generic [ref=e256]:
+                  - heading "Cumulative Cash Flow Growth" [level=4] [ref=e257]
+                  - application [ref=e261]
+                - generic [ref=e267]:
+                  - generic [ref=e268]:
+                    - paragraph [ref=e269]: 0Y Total Revenue
+                    - paragraph [ref=e270]: Rp 0
+                  - generic [ref=e271]:
+                    - paragraph [ref=e272]: 0Y Total Expenses
+                    - paragraph [ref=e273]: Rp 0
+                  - generic [ref=e274]:
+                    - paragraph [ref=e275]: 0Y Net Income
+                    - paragraph [ref=e276]: Rp 0
+                  - generic [ref=e277]:
+                    - paragraph [ref=e278]: Avg Annual Net
+                    - paragraph [ref=e279]: Rp 0
+                - table [ref=e281]:
+                  - rowgroup [ref=e282]:
+                    - row "Year Revenue Expenses Net Income Occupancy Avg Rate Cumulative" [ref=e283]:
+                      - columnheader "Year" [ref=e284]
+                      - columnheader "Revenue" [ref=e285]
+                      - columnheader "Expenses" [ref=e286]
+                      - columnheader "Net Income" [ref=e287]
+                      - columnheader "Occupancy" [ref=e288]
+                      - columnheader "Avg Rate" [ref=e289]
+                      - columnheader "Cumulative" [ref=e290]
+                  - rowgroup
+            - generic [ref=e292]:
+              - generic [ref=e293]:
+                - generic [ref=e294]:
+                  - generic [ref=e296]:
+                    - generic [ref=e297]: analytics
+                    - heading "Projection Results" [level=3] [ref=e298]
+                  - generic [ref=e299]:
+                    - generic [ref=e301]:
+                      - generic [ref=e302]:
+                        - paragraph [ref=e303]: Performance
+                        - generic [ref=e304]:
+                          - generic [ref=e305]: D
+                          - generic [ref=e306]: Poor
+                      - generic [ref=e307]:
+                        - paragraph [ref=e308]: Avg Occupancy
+                        - paragraph [ref=e309]: 0.0%
+                    - generic [ref=e310]:
+                      - generic [ref=e311]:
+                        - paragraph [ref=e312]: Annual Revenue
+                        - paragraph [ref=e313]: Rp 0
+                      - generic [ref=e314]:
+                        - paragraph [ref=e315]: Annual Net
+                        - paragraph [ref=e316]: Rp 0
+                    - generic [ref=e317]:
+                      - paragraph [ref=e318]: 0-Year Total Cash Flow
+                      - paragraph [ref=e319]: Rp 0
+                    - generic [ref=e320]:
+                      - generic [ref=e321]:
+                        - generic [ref=e322]: Annual Expenses
+                        - generic [ref=e323]: "-Rp 0"
+                      - generic [ref=e324]:
+                        - generic [ref=e325]: Average Nightly Rate
+                        - generic [ref=e326]: Rp 55
+                      - generic [ref=e327]:
+                        - generic [ref=e328]: Peak Season Revenue
+                        - generic [ref=e329]: Rp 0
+                      - generic [ref=e330]:
+                        - generic [ref=e331]: Low Season Revenue
+                        - generic [ref=e332]: Rp 0
+                - generic [ref=e333]:
+                  - generic [ref=e334]:
+                    - img [ref=e335]
+                    - heading "Pricing Opportunity" [level=4] [ref=e337]
+                  - paragraph [ref=e338]:
+                    - text: "Optimal rate:"
+                    - strong [ref=e339]: Rp 80
+                  - paragraph [ref=e340]: "Potential additional annual revenue:"
+                  - paragraph [ref=e341]: +Rp 5,822
+                - generic [ref=e342]:
+                  - heading "Location Insights" [level=4] [ref=e343]
+                  - generic [ref=e344]:
+                    - img [ref=e345]
+                    - generic [ref=e348]: Canggu
+                  - paragraph [ref=e349]: Steady year-round. Digital nomad hub.
+                - generic [ref=e350]:
+                  - heading "Quick Stats" [level=4] [ref=e351]
+                  - generic [ref=e352]:
+                    - generic [ref=e353]:
+                      - generic [ref=e354]: Monthly Avg Revenue
+                      - generic [ref=e355]: Rp 0
+                    - generic [ref=e356]:
+                      - generic [ref=e357]: Monthly Avg Net
+                      - generic [ref=e358]: Rp 0
+                    - generic [ref=e359]:
+                      - generic [ref=e360]: Expense Ratio
+                      - generic [ref=e361]: NaN%
+                    - generic [ref=e362]:
+                      - generic [ref=e363]: Profit Margin
+                      - generic [ref=e364]: NaN%
+                - generic [ref=e365]:
+                  - generic [ref=e366]:
+                    - img [ref=e367]
+                    - heading "Occupancy Warning" [level=4] [ref=e369]
+                  - paragraph [ref=e370]: Occupancy below 60% may indicate pricing issues or market challenges. Consider lowering rates or improving listing quality.
+              - generic [ref=e371]:
+                - button "Save to Compare" [ref=e372]:
+                  - img [ref=e373]
+                  - text: Save to Compare
+                - button "View Comparisons" [ref=e375]:
+                  - img [ref=e376]
+                  - text: View Comparisons
+```

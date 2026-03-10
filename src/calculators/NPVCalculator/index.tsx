@@ -377,7 +377,7 @@ export function NPVCalculator() {
           </div>
 
           <div className="lg:col-span-3">
-            <div className="sticky top-24 flex flex-col gap-4">
+            <div className="sticky top-20 flex flex-col gap-4">
               <div className="bg-zinc-900 rounded-xl border border-zinc-800 p-6">
                 <div className="mb-4 flex items-center border-b border-zinc-800 pb-4">
                   <div className="flex items-center gap-2">

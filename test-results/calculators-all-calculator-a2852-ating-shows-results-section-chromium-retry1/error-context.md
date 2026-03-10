@@ -1,0 +1,357 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e3]:
+  - complementary [ref=e4]:
+    - link "ROI ROI Calculate" [ref=e6] [cursor=pointer]:
+      - /url: /
+      - img "ROI" [ref=e7]
+      - generic [ref=e8]: ROI Calculate
+    - button "Search /" [ref=e10]:
+      - img [ref=e11]
+      - generic [ref=e13]:
+        - generic [ref=e14]: Search
+        - generic [ref=e15]: /
+    - navigation [ref=e16]:
+      - button "calculate Calculators 1" [ref=e17]:
+        - generic [ref=e18]: calculate
+        - generic [ref=e19]:
+          - generic [ref=e20]: Calculators
+          - generic [ref=e21]: "1"
+      - button "folder_open Portfolio 2" [ref=e22]:
+        - generic [ref=e23]: folder_open
+        - generic [ref=e24]:
+          - generic [ref=e25]: Portfolio
+          - generic [ref=e26]: "2"
+      - button "compare_arrows Compare 3" [ref=e27]:
+        - generic [ref=e28]: compare_arrows
+        - generic [ref=e29]:
+          - generic [ref=e30]: Compare
+          - generic [ref=e31]: "3"
+      - link "settings Settings" [ref=e33] [cursor=pointer]:
+        - /url: /settings
+        - generic [ref=e34]: settings
+        - generic [ref=e35]: Settings
+      - link "credit_card Billing" [ref=e36] [cursor=pointer]:
+        - /url: /settings#billing
+        - generic [ref=e37]: credit_card
+        - generic [ref=e38]: Billing
+      - link "help_outline Help" [ref=e39] [cursor=pointer]:
+        - /url: /contact
+        - generic [ref=e40]: help_outline
+        - generic [ref=e41]: Help
+    - link "O Oskar Korjus free" [ref=e43] [cursor=pointer]:
+      - /url: /settings
+      - generic [ref=e45]: O
+      - generic [ref=e46]:
+        - paragraph [ref=e47]: Oskar Korjus
+        - paragraph [ref=e48]: free
+    - button "Collapse" [ref=e50]:
+      - img [ref=e51]
+      - generic [ref=e53]: Collapse
+  - generic [ref=e54]:
+    - banner [ref=e55]:
+      - generic [ref=e56]:
+        - heading "Calculator" [level=1] [ref=e58]
+        - generic [ref=e59]:
+          - button "search Search ⌘K" [ref=e60]:
+            - generic [ref=e61]: search
+            - generic [ref=e62]: Search
+            - generic [ref=e63]: ⌘K
+          - button "notifications" [ref=e65]:
+            - generic [ref=e66]: notifications
+          - link "O Oskar Korjus" [ref=e68] [cursor=pointer]:
+            - /url: /settings
+            - generic [ref=e70]: O
+            - paragraph [ref=e72]: Oskar Korjus
+    - main [ref=e73]:
+      - generic [ref=e74]:
+        - generic [ref=e75]:
+          - generic [ref=e76]:
+            - button "Calculators" [ref=e77]
+            - generic [ref=e78]: ›
+            - generic [ref=e79]: Risk Assessment & Rating
+          - generic [ref=e80]:
+            - generic [ref=e81]:
+              - generic [ref=e82]:
+                - generic [ref=e84]: shield
+                - heading "Risk Assessment & Rating" [level=1] [ref=e85]
+              - paragraph [ref=e86]: Comprehensive risk scoring with scenario analysis, sensitivity charts, and mitigation strategies
+            - button "View calculator details" [ref=e87]:
+              - img [ref=e88]
+          - button "Back to Calculators" [ref=e91]:
+            - img [ref=e92]
+            - text: Back to Calculators
+        - generic [ref=e96]:
+          - generic [ref=e97]:
+            - generic [ref=e98]:
+              - img [ref=e100]
+              - generic [ref=e102]:
+                - heading "Risk Assessment & Investment Rating" [level=1] [ref=e103]
+                - paragraph [ref=e104]: Comprehensive risk analysis with scenario modeling
+            - generic [ref=e105]:
+              - button "Drafts" [ref=e107]:
+                - img [ref=e108]
+                - generic [ref=e110]: Drafts
+                - img [ref=e111]
+              - generic [ref=e113]:
+                - generic [ref=e115]:
+                  - img [ref=e116]
+                  - generic [ref=e118]: "3"
+                - button "Rp IDR" [ref=e120]:
+                  - generic [ref=e121]: Rp
+                  - generic [ref=e122]: IDR
+                  - img [ref=e123]
+                - generic [ref=e126]:
+                  - button "Reset all values" [ref=e127]:
+                    - img [ref=e128]
+                  - button "Export PDF report" [ref=e130]:
+                    - img [ref=e131]
+                  - button "Save to Portfolio" [ref=e133]:
+                    - img [ref=e135]
+          - generic [ref=e138]:
+            - generic [ref=e139]:
+              - img [ref=e142]
+              - generic [ref=e149]:
+                - paragraph [ref=e150]: "33"
+                - paragraph [ref=e151]: out of 100
+                - generic [ref=e152]: Moderate Risk
+            - generic [ref=e153]:
+              - heading "Risk by Category" [level=4] [ref=e154]
+              - generic [ref=e155]:
+                - generic [ref=e156]:
+                  - generic [ref=e157]: Financial Risk
+                  - generic [ref=e158]: 40%
+                - generic [ref=e162]: "29"
+              - generic [ref=e163]:
+                - generic [ref=e164]:
+                  - generic [ref=e165]: Market Risk
+                  - generic [ref=e166]: 30%
+                - generic [ref=e170]: "54"
+              - generic [ref=e171]:
+                - generic [ref=e172]:
+                  - generic [ref=e173]: Regulatory Risk
+                  - generic [ref=e174]: 15%
+                - generic [ref=e178]: "20"
+              - generic [ref=e179]:
+                - generic [ref=e180]:
+                  - generic [ref=e181]: Property Risk
+                  - generic [ref=e182]: 15%
+                - generic [ref=e186]: "18"
+            - generic [ref=e187]:
+              - generic [ref=e188]:
+                - paragraph [ref=e189]: Investor Profile
+                - paragraph [ref=e190]: "Suitable for: Moderate risk investors"
+              - generic [ref=e191]:
+                - paragraph [ref=e192]: vs Market Benchmark
+                - generic [ref=e193]:
+                  - generic [ref=e194]: "-12"
+                  - generic [ref=e195]: safer typical Villa
+              - generic [ref=e196]:
+                - generic [ref=e197]:
+                  - paragraph [ref=e198]: Low
+                  - paragraph [ref=e199]: 0-30
+                - generic [ref=e200]:
+                  - paragraph [ref=e201]: Moderate
+                  - paragraph [ref=e202]: 30-60
+                - generic [ref=e203]:
+                  - paragraph [ref=e204]: High
+                  - paragraph [ref=e205]: 60-100
+          - generic [ref=e206]:
+            - button "Overview" [ref=e207]
+            - button "Risk Breakdown" [ref=e208]
+            - button "Scenarios" [ref=e209]
+            - button "Mitigation" [ref=e210]
+          - generic [ref=e211]:
+            - generic [ref=e212]:
+              - heading "Basic Metrics" [level=3] [ref=e213]
+              - generic [ref=e214]:
+                - generic [ref=e215]:
+                  - generic [ref=e216]:
+                    - text: Project ROI
+                    - button "Project ROI" [ref=e218]: "?"
+                  - generic [ref=e219]:
+                    - textbox "0" [active] [ref=e220]: "100000"
+                    - generic [ref=e221]: "%"
+                - generic [ref=e222]:
+                  - generic [ref=e223]:
+                    - text: Break-even
+                    - button "Break-even" [ref=e225]: "?"
+                  - generic [ref=e226]:
+                    - textbox "0" [ref=e227]
+                    - generic [ref=e228]: months
+                - generic [ref=e229]:
+                  - generic [ref=e230]: Investment Amount
+                  - generic [ref=e231]:
+                    - generic [ref=e232]: Rp
+                    - textbox "0" [ref=e233]
+                - generic [ref=e234]:
+                  - generic [ref=e235]: Annual Cash Flow
+                  - generic [ref=e236]:
+                    - generic [ref=e237]: Rp
+                    - textbox "0" [ref=e238]
+                - generic [ref=e239]:
+                  - generic [ref=e240]: Property Type
+                  - combobox [ref=e241]:
+                    - option "Villa" [selected]
+                    - option "Apartment"
+                    - option "Land"
+                    - option "Commercial"
+                    - option "Hotel/Resort"
+                - generic [ref=e242]:
+                  - generic [ref=e243]: Market Location
+                  - combobox [ref=e244]:
+                    - option "Bali - Seminyak"
+                    - option "Bali - Canggu" [selected]
+                    - option "Bali - Ubud"
+                    - option "Bali - Uluwatu"
+                    - option "Jakarta"
+                    - option "Lombok"
+                    - option "Other Location"
+                - generic [ref=e245]:
+                  - generic [ref=e246]: Cash Flow Type
+                  - combobox [ref=e247]:
+                    - option "Stable"
+                    - option "Moderate Variation" [selected]
+                    - option "Volatile"
+            - generic [ref=e248]:
+              - heading "Financial Factors (40% weight)" [level=3] [ref=e249]
+              - generic [ref=e250]:
+                - generic [ref=e251]:
+                  - generic [ref=e252]:
+                    - text: DSCR
+                    - button "DSCR" [ref=e254]: "?"
+                  - generic [ref=e255]:
+                    - textbox "0" [ref=e256]
+                    - generic [ref=e257]: x
+                - generic [ref=e258]:
+                  - generic [ref=e259]:
+                    - text: Leverage Ratio
+                    - button "Leverage Ratio" [ref=e261]: "?"
+                  - textbox "0" [ref=e263]
+                - generic [ref=e264]:
+                  - generic [ref=e265]: Equity Amount
+                  - generic [ref=e266]:
+                    - generic [ref=e267]: Rp
+                    - textbox "0" [ref=e268]
+                - generic [ref=e269]:
+                  - generic [ref=e270]: Debt Amount
+                  - generic [ref=e271]:
+                    - generic [ref=e272]: Rp
+                    - textbox "0" [ref=e273]
+            - generic [ref=e274]:
+              - heading "Market Factors (30% weight)" [level=3] [ref=e275]
+              - generic [ref=e276]:
+                - generic [ref=e277]:
+                  - generic [ref=e278]: Market Stability
+                  - combobox [ref=e279]:
+                    - option "Growing" [selected]
+                    - option "Stable"
+                    - option "Declining"
+                - generic [ref=e280]:
+                  - generic [ref=e281]:
+                    - text: Rental Strategy
+                    - button "Rental Strategy" [ref=e283]: "?"
+                  - combobox [ref=e284]:
+                    - option "Short-term Rental (STR)" [selected]
+                    - option "Long-term Rental (LTR)"
+                    - option "Mixed Strategy"
+                - generic [ref=e285]:
+                  - generic [ref=e286]: Avg Occupancy
+                  - generic [ref=e287]:
+                    - textbox "0" [ref=e288]
+                    - generic [ref=e289]: "%"
+                - generic [ref=e290]:
+                  - generic [ref=e291]: Price Volatility
+                  - combobox [ref=e292]:
+                    - option "Low"
+                    - option "Moderate" [selected]
+                    - option "High"
+                - generic [ref=e293]:
+                  - generic [ref=e294]: Demand Trend
+                  - combobox [ref=e295]:
+                    - option "Increasing" [selected]
+                    - option "Stable"
+                    - option "Decreasing"
+            - generic [ref=e296]:
+              - heading "Regulatory Factors (15% weight)" [level=3] [ref=e297]
+              - generic [ref=e298]:
+                - generic [ref=e299]:
+                  - checkbox [checked] [ref=e301]
+                  - generic [ref=e303]: STR Allowed
+                - generic [ref=e304]:
+                  - checkbox [ref=e306]
+                  - generic [ref=e308]: Tax Incentives Expiring
+                - generic [ref=e309]:
+                  - generic [ref=e310]:
+                    - text: Ownership Type
+                    - button "Ownership Type" [ref=e312]: "?"
+                  - combobox [ref=e313]:
+                    - option "Freehold"
+                    - option "Leasehold" [selected]
+                    - option "PT PMA"
+                - generic [ref=e314]:
+                  - generic [ref=e315]: Permit Difficulty
+                  - combobox [ref=e316]:
+                    - option "Easy"
+                    - option "Moderate" [selected]
+                    - option "Difficult"
+            - generic [ref=e317]:
+              - heading "Property Factors (15% weight)" [level=3] [ref=e318]
+              - generic [ref=e319]:
+                - generic [ref=e320]:
+                  - generic [ref=e321]: Property Age
+                  - generic [ref=e322]:
+                    - textbox "0" [ref=e323]
+                    - generic [ref=e324]: years
+                - generic [ref=e325]:
+                  - generic [ref=e326]: Condition
+                  - combobox [ref=e327]:
+                    - option "Excellent" [selected]
+                    - option "Good"
+                    - option "Fair"
+                    - option "Poor"
+                - generic [ref=e328]:
+                  - generic [ref=e329]: Location Quality
+                  - combobox [ref=e330]:
+                    - option "Prime" [selected]
+                    - option "Good"
+                    - option "Average"
+                    - option "Remote"
+                - generic [ref=e331]:
+                  - generic [ref=e332]: Amenity Level
+                  - combobox [ref=e333]:
+                    - option "Luxury" [selected]
+                    - option "Standard"
+                    - option "Basic"
+                - generic [ref=e334]:
+                  - generic [ref=e335]: Management Burden
+                  - combobox [ref=e336]:
+                    - option "Low"
+                    - option "Moderate" [selected]
+                    - option "High"
+                - generic [ref=e337]:
+                  - generic [ref=e338]: Exit Liquidity
+                  - combobox [ref=e339]:
+                    - option "High"
+                    - option "Moderate" [selected]
+                    - option "Low"
+          - generic [ref=e340]:
+            - heading "Market Comparison" [level=3] [ref=e341]
+            - generic [ref=e342]:
+              - generic [ref=e343]:
+                - paragraph [ref=e344]: Your Risk Score
+                - paragraph [ref=e345]: "33"
+              - generic [ref=e346]: vs
+              - generic [ref=e347]:
+                - paragraph [ref=e348]: Typical Villa
+                - paragraph [ref=e349]: "45"
+              - paragraph [ref=e351]: 12 points safer than market average
+            - generic [ref=e353]:
+              - button "Save to Compare" [ref=e354]:
+                - img [ref=e355]
+                - text: Save to Compare
+              - button "View Comparisons" [ref=e357]:
+                - img [ref=e358]
+                - text: View Comparisons
+```

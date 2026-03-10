@@ -840,7 +840,7 @@ export function RentalIncomeProjection() {
 
           {/* Results Section */}
           <div className="lg:col-span-3">
-            <div className="sticky top-24 space-y-4">
+            <div className="sticky top-20 space-y-4">
               <ProjectionResults
                 result={result}
                 inputs={inputs}

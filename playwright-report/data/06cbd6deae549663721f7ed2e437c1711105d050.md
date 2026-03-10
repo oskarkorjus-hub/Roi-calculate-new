@@ -1,0 +1,263 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e3]:
+  - complementary [ref=e4]:
+    - link "ROI ROI Calculate" [ref=e6] [cursor=pointer]:
+      - /url: /
+      - img "ROI" [ref=e7]
+      - generic [ref=e8]: ROI Calculate
+    - button "Search /" [ref=e10]:
+      - img [ref=e11]
+      - generic [ref=e13]:
+        - generic [ref=e14]: Search
+        - generic [ref=e15]: /
+    - navigation [ref=e16]:
+      - button "calculate Calculators 1" [ref=e17]:
+        - generic [ref=e18]: calculate
+        - generic [ref=e19]:
+          - generic [ref=e20]: Calculators
+          - generic [ref=e21]: "1"
+      - button "folder_open Portfolio 2" [ref=e22]:
+        - generic [ref=e23]: folder_open
+        - generic [ref=e24]:
+          - generic [ref=e25]: Portfolio
+          - generic [ref=e26]: "2"
+      - button "compare_arrows Compare 3" [ref=e27]:
+        - generic [ref=e28]: compare_arrows
+        - generic [ref=e29]:
+          - generic [ref=e30]: Compare
+          - generic [ref=e31]: "3"
+      - link "settings Settings" [ref=e33] [cursor=pointer]:
+        - /url: /settings
+        - generic [ref=e34]: settings
+        - generic [ref=e35]: Settings
+      - link "credit_card Billing" [ref=e36] [cursor=pointer]:
+        - /url: /settings#billing
+        - generic [ref=e37]: credit_card
+        - generic [ref=e38]: Billing
+      - link "help_outline Help" [ref=e39] [cursor=pointer]:
+        - /url: /contact
+        - generic [ref=e40]: help_outline
+        - generic [ref=e41]: Help
+    - link "O Oskar Korjus free" [ref=e43] [cursor=pointer]:
+      - /url: /settings
+      - generic [ref=e45]: O
+      - generic [ref=e46]:
+        - paragraph [ref=e47]: Oskar Korjus
+        - paragraph [ref=e48]: free
+    - button "Collapse" [ref=e50]:
+      - img [ref=e51]
+      - generic [ref=e53]: Collapse
+  - generic [ref=e54]:
+    - banner [ref=e55]:
+      - generic [ref=e56]:
+        - heading "Calculator" [level=1] [ref=e58]
+        - generic [ref=e59]:
+          - button "search Search ⌘K" [ref=e60]:
+            - generic [ref=e61]: search
+            - generic [ref=e62]: Search
+            - generic [ref=e63]: ⌘K
+          - button "notifications" [ref=e65]:
+            - generic [ref=e66]: notifications
+          - link "O Oskar Korjus" [ref=e68] [cursor=pointer]:
+            - /url: /settings
+            - generic [ref=e70]: O
+            - paragraph [ref=e72]: Oskar Korjus
+    - main [ref=e73]:
+      - generic [ref=e74]:
+        - generic [ref=e75]:
+          - generic [ref=e76]:
+            - button "Calculators" [ref=e77]
+            - generic [ref=e78]: ›
+            - generic [ref=e79]: IRR Calculator
+          - generic [ref=e80]:
+            - generic [ref=e81]:
+              - generic [ref=e82]:
+                - generic [ref=e84]: show_chart
+                - heading "IRR Calculator" [level=1] [ref=e85]
+              - paragraph [ref=e86]: Determine annualized return across any investment cash flow stream
+            - button "View calculator details" [ref=e87]:
+              - img [ref=e88]
+          - button "Back to Calculators" [ref=e91]:
+            - img [ref=e92]
+            - text: Back to Calculators
+        - generic [ref=e96]:
+          - generic [ref=e97]:
+            - generic [ref=e98]:
+              - img [ref=e100]
+              - generic [ref=e102]:
+                - heading "IRR Calculator" [level=1] [ref=e103]
+                - paragraph [ref=e104]: Calculate Internal Rate of Return and NPV for your investment project
+            - generic [ref=e105]:
+              - button "Drafts" [ref=e107]:
+                - img [ref=e108]
+                - generic [ref=e110]: Drafts
+                - img [ref=e111]
+              - generic [ref=e113]:
+                - generic [ref=e115]:
+                  - img [ref=e116]
+                  - generic [ref=e118]: "3"
+                - button "$ USD" [ref=e120]:
+                  - generic [ref=e121]: $
+                  - generic [ref=e122]: USD
+                  - img [ref=e123]
+                - generic [ref=e126]:
+                  - button "Reset all values" [ref=e127]:
+                    - img [ref=e128]
+                  - button "Export PDF report" [ref=e130]:
+                    - img [ref=e131]
+                  - button "Save to Portfolio" [ref=e133]:
+                    - img [ref=e135]
+          - generic [ref=e137]:
+            - generic [ref=e138]:
+              - generic [ref=e139]:
+                - generic [ref=e141]:
+                  - generic [ref=e142]: info
+                  - heading "IRR (Internal Rate of Return)" [level=2] [ref=e143]
+                - paragraph [ref=e144]: IRR is the discount rate that makes NPV = 0. It represents the annualized return on your investment.
+                - paragraph [ref=e145]: NPV at 100000% discount rate shows the present value of all future cash flows.
+              - generic [ref=e146]:
+                - generic [ref=e148]:
+                  - generic [ref=e149]: tune
+                  - heading "Settings" [level=2] [ref=e150]
+                - generic [ref=e151]:
+                  - generic [ref=e152]:
+                    - generic [ref=e153]: Discount Rate for NPV Calculation (%)
+                    - textbox "0" [active] [ref=e154]: "100000"
+                    - paragraph [ref=e155]: Typically 8-12%. Higher = more conservative.
+                  - button "Advanced Assumptions (MIRR and sensitivity analysis) ▼" [ref=e157]:
+                    - generic [ref=e158]:
+                      - img [ref=e159]
+                      - heading "Advanced Assumptions" [level=3] [ref=e162]
+                      - generic [ref=e163]: (MIRR and sensitivity analysis)
+                    - generic [ref=e164]: ▼
+              - generic [ref=e165]:
+                - generic [ref=e166]:
+                  - generic [ref=e167]:
+                    - generic [ref=e168]: account_balance
+                    - heading "Cash Flows" [level=2] [ref=e169]
+                  - button "add Add Year" [ref=e170]:
+                    - generic [ref=e171]: add
+                    - text: Add Year
+                - paragraph [ref=e172]: Enter cash flows for each year (USD)
+                - table [ref=e174]:
+                  - rowgroup [ref=e175]:
+                    - row "Year Cash Flow ($) Cumulative Action" [ref=e176]:
+                      - columnheader "Year" [ref=e177]
+                      - columnheader "Cash Flow ($)" [ref=e178]
+                      - columnheader "Cumulative" [ref=e179]
+                      - columnheader "Action" [ref=e180]
+                  - rowgroup [ref=e181]:
+                    - row "0 $ 0 delete" [ref=e182]:
+                      - cell "0" [ref=e183]
+                      - cell [ref=e184]:
+                        - textbox "0" [ref=e185]
+                      - cell "$ 0" [ref=e186]:
+                        - generic [ref=e187]: $ 0
+                      - cell "delete" [ref=e188]:
+                        - button "delete" [ref=e189]:
+                          - generic [ref=e190]: delete
+                    - row "1 $ 0 delete" [ref=e191]:
+                      - cell "1" [ref=e192]
+                      - cell [ref=e193]:
+                        - textbox "0" [ref=e194]
+                      - cell "$ 0" [ref=e195]:
+                        - generic [ref=e196]: $ 0
+                      - cell "delete" [ref=e197]:
+                        - button "delete" [ref=e198]:
+                          - generic [ref=e199]: delete
+                    - row "2 $ 0 delete" [ref=e200]:
+                      - cell "2" [ref=e201]
+                      - cell [ref=e202]:
+                        - textbox "0" [ref=e203]
+                      - cell "$ 0" [ref=e204]:
+                        - generic [ref=e205]: $ 0
+                      - cell "delete" [ref=e206]:
+                        - button "delete" [ref=e207]:
+                          - generic [ref=e208]: delete
+                    - row "3 $ 0 delete" [ref=e209]:
+                      - cell "3" [ref=e210]
+                      - cell [ref=e211]:
+                        - textbox "0" [ref=e212]
+                      - cell "$ 0" [ref=e213]:
+                        - generic [ref=e214]: $ 0
+                      - cell "delete" [ref=e215]:
+                        - button "delete" [ref=e216]:
+                          - generic [ref=e217]: delete
+                    - row "4 $ 0 delete" [ref=e218]:
+                      - cell "4" [ref=e219]
+                      - cell [ref=e220]:
+                        - textbox "0" [ref=e221]
+                      - cell "$ 0" [ref=e222]:
+                        - generic [ref=e223]: $ 0
+                      - cell "delete" [ref=e224]:
+                        - button "delete" [ref=e225]:
+                          - generic [ref=e226]: delete
+                    - row "5 $ 0 delete" [ref=e227]:
+                      - cell "5" [ref=e228]
+                      - cell [ref=e229]:
+                        - textbox "0" [ref=e230]
+                      - cell "$ 0" [ref=e231]:
+                        - generic [ref=e232]: $ 0
+                      - cell "delete" [ref=e233]:
+                        - button "delete" [ref=e234]:
+                          - generic [ref=e235]: delete
+                - generic [ref=e237]:
+                  - generic [ref=e238]: lightbulb
+                  - paragraph [ref=e239]: "Tip: Negative cash flows are outflows (investments), positive are inflows (returns)."
+            - generic [ref=e242]:
+              - generic [ref=e244]:
+                - generic [ref=e245]: analytics
+                - heading "Results" [level=3] [ref=e246]
+              - generic [ref=e247]:
+                - generic [ref=e248]:
+                  - generic [ref=e249]:
+                    - generic [ref=e250]:
+                      - text: IRR
+                      - generic [ref=e251]: 10.00%
+                    - img [ref=e253]
+                  - generic [ref=e257]: Annualized return
+                - generic [ref=e258]:
+                  - generic [ref=e259]:
+                    - generic [ref=e260]:
+                      - text: NPV @ 100000%
+                      - generic [ref=e261]: "0"
+                    - img [ref=e263]
+                  - generic [ref=e267]: Present value
+                - generic [ref=e268]:
+                  - generic [ref=e269]:
+                    - generic [ref=e270]:
+                      - text: Payback Period
+                      - generic [ref=e271]: 5.0y
+                    - img [ref=e273]
+                  - generic [ref=e277]: Years to break even
+                - generic [ref=e278]:
+                  - generic [ref=e279]:
+                    - generic [ref=e280]:
+                      - text: Total Return
+                      - generic [ref=e281]: "0"
+                    - img [ref=e283]
+                  - generic [ref=e287]: Sum of all flows
+                - generic [ref=e288]:
+                  - generic [ref=e289]:
+                    - generic [ref=e290]: insights
+                    - heading "Analysis" [level=4] [ref=e291]
+                  - list [ref=e292]:
+                    - listitem [ref=e293]:
+                      - generic [ref=e294]: •
+                      - generic [ref=e295]: "IRR 10.0%: Acceptable returns"
+                    - listitem [ref=e296]:
+                      - generic [ref=e297]: •
+                      - generic [ref=e298]: Project destroys value
+                    - listitem [ref=e299]:
+                      - generic [ref=e300]: •
+                      - generic [ref=e301]: Payback in 5.0 years
+              - generic [ref=e302]:
+                - button "Save to Compare" [ref=e303]:
+                  - img [ref=e304]
+                  - text: Save to Compare
+                - button "View Comparisons" [ref=e306]:
+                  - img [ref=e307]
+                  - text: View Comparisons
+```
