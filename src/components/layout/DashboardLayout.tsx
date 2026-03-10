@@ -169,8 +169,10 @@ export function DashboardLayout({
         </header>
 
         {/* Page Content */}
-        <main className="p-6">
-          {children}
+        <main className="p-6 overflow-x-hidden">
+          <div className="max-w-full">
+            {children}
+          </div>
         </main>
       </motion.div>
     </div>
