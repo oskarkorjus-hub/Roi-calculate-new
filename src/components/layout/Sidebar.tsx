@@ -50,9 +50,7 @@ export function Sidebar({ activeView, onViewChange, onOpenCommandPalette }: Side
       {/* Logo */}
       <div className="h-14 flex items-center px-4 border-b border-zinc-800/60">
         <Link to="/" className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg bg-zinc-800 flex items-center justify-center flex-shrink-0">
-            <img src="/logo.png" alt="ROI" className="h-5 w-auto" />
-          </div>
+          <img src="/logo.png" alt="ROI" className="h-8 w-8 flex-shrink-0" />
           {!collapsed && (
             <span className="text-sm font-semibold text-zinc-100">ROI Calculate</span>
           )}
