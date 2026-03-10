@@ -841,12 +841,6 @@ export function RentalIncomeProjection() {
           {/* Results Section */}
           <div className="lg:col-span-3">
             <div className="sticky top-20 space-y-4">
-              <ProjectionResults
-                result={result}
-                inputs={inputs}
-                symbol={symbol}
-              />
-
               {/* Comparison Buttons */}
               <ComparisonButtons
                 calculatorType="rental-projection"
@@ -877,6 +871,12 @@ export function RentalIncomeProjection() {
                     investmentRating: rating,
                   } as Omit<RentalProjectionComparisonData, 'timestamp'>;
                 }}
+              />
+
+              <ProjectionResults
+                result={result}
+                inputs={inputs}
+                symbol={symbol}
               />
             </div>
           </div>

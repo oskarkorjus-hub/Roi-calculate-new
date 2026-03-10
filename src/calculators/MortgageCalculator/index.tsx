@@ -288,6 +288,36 @@ export function MortgageCalculator() {
 
           <div className="lg:col-span-3">
             <div className="sticky top-20 flex flex-col gap-4">
+              {/* Comparison Buttons */}
+              <ComparisonButtons
+                calculatorType="mortgage"
+                getComparisonData={() => {
+                  const rating = result.totalInterest <= result.principal * 0.3
+                    ? { grade: 'A+', label: 'Excellent' }
+                    : result.totalInterest <= result.principal * 0.5
+                    ? { grade: 'A', label: 'Great' }
+                    : result.totalInterest <= result.principal * 0.7
+                    ? { grade: 'B+', label: 'Good' }
+                    : result.totalInterest <= result.principal
+                    ? { grade: 'B', label: 'Fair' }
+                    : { grade: 'C', label: 'High Cost' };
+
+                  return {
+                    calculatorType: 'mortgage' as const,
+                    label: 'Mortgage Calc',
+                    currency: inputs.currency,
+                    loanAmount: inputs.loanAmount,
+                    interestRate: inputs.interestRate,
+                    loanTerm: inputs.loanTerm,
+                    monthlyPayment: result.monthlyPayment,
+                    totalPayment: result.totalPayment,
+                    totalInterest: result.totalInterest,
+                    totalMonthlyPayment: result.totalMonthlyPayment,
+                    investmentRating: rating,
+                  } as Omit<MortgageComparisonData, 'timestamp'>;
+                }}
+              />
+
               <div className="bg-zinc-900 rounded-xl border border-zinc-800 p-6">
                 <div className="mb-4 flex items-center border-b border-zinc-800 pb-4">
                   <div className="flex items-center gap-2">
@@ -303,36 +333,6 @@ export function MortgageCalculator() {
                   showAdvanced={inputs.showAdvanced}
                   pmiRequired={inputs.pmiRequired}
                   hoaFeesMonthly={inputs.hoaFeesMonthly}
-                />
-
-                {/* Comparison Buttons */}
-                <ComparisonButtons
-                  calculatorType="mortgage"
-                  getComparisonData={() => {
-                    const rating = result.totalInterest <= result.principal * 0.3
-                      ? { grade: 'A+', label: 'Excellent' }
-                      : result.totalInterest <= result.principal * 0.5
-                      ? { grade: 'A', label: 'Great' }
-                      : result.totalInterest <= result.principal * 0.7
-                      ? { grade: 'B+', label: 'Good' }
-                      : result.totalInterest <= result.principal
-                      ? { grade: 'B', label: 'Fair' }
-                      : { grade: 'C', label: 'High Cost' };
-
-                    return {
-                      calculatorType: 'mortgage' as const,
-                      label: 'Mortgage Calc',
-                      currency: inputs.currency,
-                      loanAmount: inputs.loanAmount,
-                      interestRate: inputs.interestRate,
-                      loanTerm: inputs.loanTerm,
-                      monthlyPayment: result.monthlyPayment,
-                      totalPayment: result.totalPayment,
-                      totalInterest: result.totalInterest,
-                      totalMonthlyPayment: result.totalMonthlyPayment,
-                      investmentRating: rating,
-                    } as Omit<MortgageComparisonData, 'timestamp'>;
-                  }}
                 />
               </div>
             </div>

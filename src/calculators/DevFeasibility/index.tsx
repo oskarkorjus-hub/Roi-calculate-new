@@ -563,6 +563,36 @@ export function DevFeasibilityCalculator() {
           {/* Results Section */}
           <div className="lg:col-span-3">
             <div className="sticky top-20 flex flex-col gap-4">
+              {/* Comparison Buttons */}
+              <ComparisonButtons
+                calculatorType="dev-feasibility"
+                getComparisonData={() => {
+                  const rating = bestFlipScenario.roiFlip >= 50
+                    ? { grade: 'A+', label: 'Excellent' }
+                    : bestFlipScenario.roiFlip >= 35
+                    ? { grade: 'A', label: 'Great' }
+                    : bestFlipScenario.roiFlip >= 20
+                    ? { grade: 'B+', label: 'Good' }
+                    : bestFlipScenario.roiFlip >= 10
+                    ? { grade: 'B', label: 'Fair' }
+                    : { grade: 'C', label: 'Low' };
+
+                  return {
+                    calculatorType: 'dev-feasibility' as const,
+                    label: 'Dev Feasibility',
+                    currency: inputs.currency,
+                    landCost: inputs.landCost,
+                    numVillas: bestFlipScenario.numVillas,
+                    totalProjectCost: bestFlipScenario.totalProjectCost,
+                    revenueFromSale: bestFlipScenario.revenueFromSale,
+                    flipProfit: bestFlipScenario.grossProfit,
+                    flipROI: bestFlipScenario.roiFlip,
+                    holdROI: bestHoldScenario.roiHold,
+                    investmentRating: rating,
+                  } as Omit<DevFeasibilityComparisonData, 'timestamp'>;
+                }}
+              />
+
               <div className="bg-zinc-900 rounded-xl border border-zinc-800 p-6">
                 <div className="mb-4 flex items-center border-b border-zinc-800 pb-4">
                   <div className="flex items-center gap-2">
@@ -600,36 +630,6 @@ export function DevFeasibilityCalculator() {
                     color="cyan"
                   />
                 </div>
-
-                {/* Comparison Buttons */}
-                <ComparisonButtons
-                  calculatorType="dev-feasibility"
-                  getComparisonData={() => {
-                    const rating = bestFlipScenario.roiFlip >= 50
-                      ? { grade: 'A+', label: 'Excellent' }
-                      : bestFlipScenario.roiFlip >= 35
-                      ? { grade: 'A', label: 'Great' }
-                      : bestFlipScenario.roiFlip >= 20
-                      ? { grade: 'B+', label: 'Good' }
-                      : bestFlipScenario.roiFlip >= 10
-                      ? { grade: 'B', label: 'Fair' }
-                      : { grade: 'C', label: 'Low' };
-
-                    return {
-                      calculatorType: 'dev-feasibility' as const,
-                      label: 'Dev Feasibility',
-                      currency: inputs.currency,
-                      landCost: inputs.landCost,
-                      numVillas: bestFlipScenario.numVillas,
-                      totalProjectCost: bestFlipScenario.totalProjectCost,
-                      revenueFromSale: bestFlipScenario.revenueFromSale,
-                      flipProfit: bestFlipScenario.grossProfit,
-                      flipROI: bestFlipScenario.roiFlip,
-                      holdROI: bestHoldScenario.roiHold,
-                      investmentRating: rating,
-                    } as Omit<DevFeasibilityComparisonData, 'timestamp'>;
-                  }}
-                />
               </div>
             </div>
           </div>

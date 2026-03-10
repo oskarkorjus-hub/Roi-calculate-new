@@ -303,38 +303,40 @@ export function XIRRCalculator() {
           </div>
 
           <div className="lg:col-span-3">
-            <ProjectForecast
-              result={result}
-              symbol={symbol}
-              formatDisplay={formatDisplay}
-            />
+            <div className="sticky top-20 flex flex-col gap-4">
+              {/* Comparison Buttons */}
+              <ComparisonButtons
+                calculatorType="xirr"
+                getComparisonData={() => {
+                  const xirrValue = result.rate >= -1 && result.rate <= 100 ? result.rate : 0;
+                  const rating = xirrValue >= 0.15 ? { grade: 'A+', label: 'Excellent' }
+                    : xirrValue >= 0.12 ? { grade: 'A', label: 'Great' }
+                    : xirrValue >= 0.08 ? { grade: 'B+', label: 'Good' }
+                    : xirrValue >= 0.05 ? { grade: 'B', label: 'Fair' }
+                    : { grade: 'C', label: 'Low' };
 
-            {/* Comparison Buttons */}
-            <ComparisonButtons
-              calculatorType="xirr"
-              getComparisonData={() => {
-                const xirrValue = result.rate >= -1 && result.rate <= 100 ? result.rate : 0;
-                const rating = xirrValue >= 0.15 ? { grade: 'A+', label: 'Excellent' }
-                  : xirrValue >= 0.12 ? { grade: 'A', label: 'Great' }
-                  : xirrValue >= 0.08 ? { grade: 'B+', label: 'Good' }
-                  : xirrValue >= 0.05 ? { grade: 'B', label: 'Fair' }
-                  : { grade: 'C', label: 'Low' };
+                  return {
+                    calculatorType: 'xirr' as const,
+                    label: data.property.projectName || 'XIRR Calc',
+                    currency,
+                    totalPrice: data.property.totalPrice / rate,
+                    projectedSalesPrice: data.exit.projectedSalesPrice / rate,
+                    location: data.property.location,
+                    xirr: xirrValue,
+                    totalInvested: result.totalInvested / rate,
+                    netProfit: result.netProfit / rate,
+                    holdPeriodMonths: result.holdPeriodMonths,
+                    investmentRating: rating,
+                  } as Omit<XIRRComparisonData, 'timestamp'>;
+                }}
+              />
 
-                return {
-                  calculatorType: 'xirr' as const,
-                  label: data.property.projectName || 'XIRR Calc',
-                  currency,
-                  totalPrice: data.property.totalPrice / rate,
-                  projectedSalesPrice: data.exit.projectedSalesPrice / rate,
-                  location: data.property.location,
-                  xirr: xirrValue,
-                  totalInvested: result.totalInvested / rate,
-                  netProfit: result.netProfit / rate,
-                  holdPeriodMonths: result.holdPeriodMonths,
-                  investmentRating: rating,
-                } as Omit<XIRRComparisonData, 'timestamp'>;
-              }}
-            />
+              <ProjectForecast
+                result={result}
+                symbol={symbol}
+                formatDisplay={formatDisplay}
+              />
+            </div>
           </div>
         </div>
       </div>

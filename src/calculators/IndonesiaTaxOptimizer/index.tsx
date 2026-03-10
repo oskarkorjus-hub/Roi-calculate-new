@@ -809,13 +809,7 @@ export function IndonesiaTaxOptimizer() {
           {/* Results Section */}
           <div className="lg:col-span-3">
             <div className="sticky top-20 space-y-4">
-              <TaxResults
-                result={result}
-                inputs={inputs}
-                symbol={symbol}
-              />
-
-              {/* Comparison Buttons */}
+              {/* Comparison Buttons - At Top */}
               <ComparisonButtons
                 calculatorType="indonesia-tax"
                 getComparisonData={() => {
@@ -843,6 +837,12 @@ export function IndonesiaTaxOptimizer() {
                     investmentRating: rating,
                   } as Omit<IndonesiaTaxComparisonData, 'timestamp'>;
                 }}
+              />
+
+              <TaxResults
+                result={result}
+                inputs={inputs}
+                symbol={symbol}
               />
             </div>
           </div>

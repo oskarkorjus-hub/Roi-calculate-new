@@ -1028,6 +1028,39 @@ export function RiskAssessment() {
           />
         )}
 
+        {/* Comparison Buttons - at the top */}
+        <div className="mb-8">
+          <ComparisonButtons
+            calculatorType="risk-assessment"
+            getComparisonData={() => {
+              const rating = riskScore.overall <= 30
+                ? { grade: 'A+', label: 'Low Risk' }
+                : riskScore.overall <= 45
+                ? { grade: 'A', label: 'Moderate-Low' }
+                : riskScore.overall <= 60
+                ? { grade: 'B+', label: 'Moderate' }
+                : riskScore.overall <= 75
+                ? { grade: 'B', label: 'High' }
+                : { grade: 'C', label: 'Very High' };
+
+              return {
+                calculatorType: 'risk-assessment' as const,
+                label: 'Risk Assessment',
+                currency: inputs.currency,
+                investmentAmount: inputs.investmentAmount,
+                projectROI: inputs.projectROI,
+                propertyType: inputs.propertyType,
+                overallRiskScore: riskScore.overall,
+                financialRiskScore: riskScore.financial,
+                marketRiskScore: riskScore.market,
+                regulatoryRiskScore: riskScore.regulatory,
+                propertyRiskScore: riskScore.propertySpecific,
+                investmentRating: rating,
+              } as Omit<RiskAssessmentComparisonData, 'timestamp'>;
+            }}
+          />
+        </div>
+
         {/* Benchmark Comparison */}
         <div className="mt-8 rounded-xl border border-zinc-800 bg-zinc-900 p-6">
           <h3 className="text-lg font-bold text-white mb-4">Market Comparison</h3>
@@ -1056,39 +1089,6 @@ export function RiskAssessment() {
                 }
               </p>
             </div>
-          </div>
-
-          {/* Comparison Buttons */}
-          <div className="mt-6 pt-6 border-t border-zinc-800">
-            <ComparisonButtons
-              calculatorType="risk-assessment"
-              getComparisonData={() => {
-                const rating = riskScore.overall <= 30
-                  ? { grade: 'A+', label: 'Low Risk' }
-                  : riskScore.overall <= 45
-                  ? { grade: 'A', label: 'Moderate-Low' }
-                  : riskScore.overall <= 60
-                  ? { grade: 'B+', label: 'Moderate' }
-                  : riskScore.overall <= 75
-                  ? { grade: 'B', label: 'High' }
-                  : { grade: 'C', label: 'Very High' };
-
-                return {
-                  calculatorType: 'risk-assessment' as const,
-                  label: 'Risk Assessment',
-                  currency: inputs.currency,
-                  investmentAmount: inputs.investmentAmount,
-                  projectROI: inputs.projectROI,
-                  propertyType: inputs.propertyType,
-                  overallRiskScore: riskScore.overall,
-                  financialRiskScore: riskScore.financial,
-                  marketRiskScore: riskScore.market,
-                  regulatoryRiskScore: riskScore.regulatory,
-                  propertyRiskScore: riskScore.propertySpecific,
-                  investmentRating: rating,
-                } as Omit<RiskAssessmentComparisonData, 'timestamp'>;
-              }}
-            />
           </div>
         </div>
       </div>

@@ -378,6 +378,34 @@ export function NPVCalculator() {
 
           <div className="lg:col-span-3">
             <div className="sticky top-20 flex flex-col gap-4">
+              {/* Comparison Buttons */}
+              <ComparisonButtons
+                calculatorType="npv"
+                getComparisonData={() => {
+                  const rating = result.npv > 0 && result.profitabilityIndex >= 1.5
+                    ? { grade: 'A+', label: 'Excellent' }
+                    : result.npv > 0 && result.profitabilityIndex >= 1.2
+                    ? { grade: 'A', label: 'Great' }
+                    : result.npv > 0
+                    ? { grade: 'B+', label: 'Good' }
+                    : result.npv === 0
+                    ? { grade: 'B', label: 'Break-even' }
+                    : { grade: 'C', label: 'Negative' };
+
+                  return {
+                    calculatorType: 'npv' as const,
+                    label: 'NPV Analysis',
+                    currency,
+                    discountRate,
+                    npv: result.npv,
+                    profitabilityIndex: result.profitabilityIndex,
+                    totalInflows: result.totalCashInflows,
+                    totalOutflows: result.totalCashOutflows,
+                    investmentRating: rating,
+                  } as Omit<NPVComparisonData, 'timestamp'>;
+                }}
+              />
+
               <div className="bg-zinc-900 rounded-xl border border-zinc-800 p-6">
                 <div className="mb-4 flex items-center border-b border-zinc-800 pb-4">
                   <div className="flex items-center gap-2">
@@ -449,34 +477,6 @@ export function NPVCalculator() {
                       </ul>
                     )}
                   </div>
-
-                  {/* Comparison Buttons */}
-                  <ComparisonButtons
-                    calculatorType="npv"
-                    getComparisonData={() => {
-                      const rating = result.npv > 0 && result.profitabilityIndex >= 1.5
-                        ? { grade: 'A+', label: 'Excellent' }
-                        : result.npv > 0 && result.profitabilityIndex >= 1.2
-                        ? { grade: 'A', label: 'Great' }
-                        : result.npv > 0
-                        ? { grade: 'B+', label: 'Good' }
-                        : result.npv === 0
-                        ? { grade: 'B', label: 'Break-even' }
-                        : { grade: 'C', label: 'Negative' };
-
-                      return {
-                        calculatorType: 'npv' as const,
-                        label: 'NPV Analysis',
-                        currency,
-                        discountRate,
-                        npv: result.npv,
-                        profitabilityIndex: result.profitabilityIndex,
-                        totalInflows: result.totalCashInflows,
-                        totalOutflows: result.totalCashOutflows,
-                        investmentRating: rating,
-                      } as Omit<NPVComparisonData, 'timestamp'>;
-                    }}
-                  />
                 </div>
               </div>
             </div>

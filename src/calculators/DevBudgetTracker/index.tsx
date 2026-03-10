@@ -340,6 +340,33 @@ export function DevBudgetTracker() {
           </div>
         </header>
 
+        {/* Comparison Buttons - at the top */}
+        <div className="mb-8">
+          <ComparisonButtons
+            calculatorType="dev-budget"
+            getComparisonData={() => {
+              const rating = calculations.healthScore >= 80
+                ? { grade: 'A+', label: 'Healthy' }
+                : calculations.healthScore >= 60
+                ? { grade: 'B+', label: 'At Risk' }
+                : { grade: 'C', label: 'Critical' };
+
+              return {
+                calculatorType: 'dev-budget' as const,
+                label: inputs.projectName || 'Dev Budget',
+                currency: inputs.currency,
+                totalBudget: calculations.totalBudgeted,
+                totalActual: calculations.totalActual,
+                variance: calculations.variance,
+                variancePercent: calculations.variancePercent,
+                healthScore: calculations.healthScore,
+                contingencyUsedPercent: calculations.contingencyUsedPercent,
+                investmentRating: rating,
+              } as Omit<DevBudgetComparisonData, 'timestamp'>;
+            }}
+          />
+        </div>
+
         {/* Project Health Overview */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
           <div className="bg-zinc-900 rounded-xl border border-zinc-800 p-4">
@@ -391,33 +418,6 @@ export function DevBudgetTracker() {
             <p className="text-xs text-zinc-500 mt-1">
               {symbol} {formatCurrency(calculations.contingencyRemaining, inputs.currency)} remaining
             </p>
-          </div>
-
-          {/* Comparison Buttons */}
-          <div className="bg-zinc-900 rounded-xl border border-zinc-800 p-4">
-            <ComparisonButtons
-              calculatorType="dev-budget"
-              getComparisonData={() => {
-                const rating = calculations.healthScore >= 80
-                  ? { grade: 'A+', label: 'Healthy' }
-                  : calculations.healthScore >= 60
-                  ? { grade: 'B+', label: 'At Risk' }
-                  : { grade: 'C', label: 'Critical' };
-
-                return {
-                  calculatorType: 'dev-budget' as const,
-                  label: inputs.projectName || 'Dev Budget',
-                  currency: inputs.currency,
-                  totalBudget: calculations.totalBudgeted,
-                  totalActual: calculations.totalActual,
-                  variance: calculations.variance,
-                  variancePercent: calculations.variancePercent,
-                  healthScore: calculations.healthScore,
-                  contingencyUsedPercent: calculations.contingencyUsedPercent,
-                  investmentRating: rating,
-                } as Omit<DevBudgetComparisonData, 'timestamp'>;
-              }}
-            />
           </div>
         </div>
 

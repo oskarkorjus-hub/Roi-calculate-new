@@ -259,6 +259,33 @@ export function CapRateCalculator() {
 
           <div className="lg:col-span-3">
             <div className="sticky top-20 flex flex-col gap-4">
+              {/* Comparison Buttons */}
+              <ComparisonButtons
+                calculatorType="cap-rate"
+                getComparisonData={() => {
+                  const rating = result.capRate >= 10
+                    ? { grade: 'A+', label: 'Excellent' }
+                    : result.capRate >= 8
+                    ? { grade: 'A', label: 'Great' }
+                    : result.capRate >= 6
+                    ? { grade: 'B+', label: 'Good' }
+                    : result.capRate >= 4
+                    ? { grade: 'B', label: 'Fair' }
+                    : { grade: 'C', label: 'Low' };
+
+                  return {
+                    calculatorType: 'cap-rate' as const,
+                    label: 'Cap Rate Analysis',
+                    currency: inputs.currency,
+                    propertyValue: inputs.propertyValue,
+                    annualNOI: inputs.annualNOI,
+                    capRate: result.capRate,
+                    monthlyNOI: result.monthlyNOI,
+                    investmentRating: rating,
+                  } as Omit<CapRateComparisonData, 'timestamp'>;
+                }}
+              />
+
               <div className="bg-zinc-900 rounded-xl border border-zinc-800 p-6">
                 <div className="mb-4 flex items-center border-b border-zinc-800 pb-4">
                   <div className="flex items-center gap-2">
@@ -293,33 +320,6 @@ export function CapRateCalculator() {
                   </li>
                 </ul>
               </div>
-
-              {/* Comparison Buttons */}
-              <ComparisonButtons
-                calculatorType="cap-rate"
-                getComparisonData={() => {
-                  const rating = result.capRate >= 10
-                    ? { grade: 'A+', label: 'Excellent' }
-                    : result.capRate >= 8
-                    ? { grade: 'A', label: 'Great' }
-                    : result.capRate >= 6
-                    ? { grade: 'B+', label: 'Good' }
-                    : result.capRate >= 4
-                    ? { grade: 'B', label: 'Fair' }
-                    : { grade: 'C', label: 'Low' };
-
-                  return {
-                    calculatorType: 'cap-rate' as const,
-                    label: 'Cap Rate Analysis',
-                    currency: inputs.currency,
-                    propertyValue: inputs.propertyValue,
-                    annualNOI: inputs.annualNOI,
-                    capRate: result.capRate,
-                    monthlyNOI: result.monthlyNOI,
-                    investmentRating: rating,
-                  } as Omit<CapRateComparisonData, 'timestamp'>;
-                }}
-              />
             </div>
           </div>
         </div>

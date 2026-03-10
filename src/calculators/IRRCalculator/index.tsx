@@ -408,6 +408,33 @@ export function IRRCalculator() {
 
           <div className="lg:col-span-3">
             <div className="sticky top-20 flex flex-col gap-4">
+              {/* Comparison Buttons */}
+              <ComparisonButtons
+                calculatorType="irr"
+                getComparisonData={() => {
+                  const rating = result.irr >= 20
+                    ? { grade: 'A+', label: 'Excellent' }
+                    : result.irr >= 15
+                    ? { grade: 'A', label: 'Great' }
+                    : result.irr >= 10
+                    ? { grade: 'B+', label: 'Good' }
+                    : result.irr >= 5
+                    ? { grade: 'B', label: 'Fair' }
+                    : { grade: 'C', label: 'Low' };
+
+                  return {
+                    calculatorType: 'irr' as const,
+                    label: 'IRR Analysis',
+                    currency,
+                    totalInvested: result.totalInvested,
+                    irr: result.irr,
+                    npv: result.npv,
+                    paybackPeriod: result.paybackPeriod,
+                    investmentRating: rating,
+                  } as Omit<IRRComparisonData, 'timestamp'>;
+                }}
+              />
+
               <div className="bg-zinc-900 rounded-xl border border-zinc-800 p-6">
                 <div className="mb-4 flex items-center border-b border-zinc-800 pb-4">
                   <div className="flex items-center gap-2">
@@ -422,33 +449,6 @@ export function IRRCalculator() {
                   npvAlt={npvAlt}
                   showAdvanced={showAdvanced}
                   reinvestmentRate={reinvestmentRate}
-                />
-
-                {/* Comparison Buttons */}
-                <ComparisonButtons
-                  calculatorType="irr"
-                  getComparisonData={() => {
-                    const rating = result.irr >= 20
-                      ? { grade: 'A+', label: 'Excellent' }
-                      : result.irr >= 15
-                      ? { grade: 'A', label: 'Great' }
-                      : result.irr >= 10
-                      ? { grade: 'B+', label: 'Good' }
-                      : result.irr >= 5
-                      ? { grade: 'B', label: 'Fair' }
-                      : { grade: 'C', label: 'Low' };
-
-                    return {
-                      calculatorType: 'irr' as const,
-                      label: 'IRR Analysis',
-                      currency,
-                      totalInvested: result.totalInvested,
-                      irr: result.irr,
-                      npv: result.npv,
-                      paybackPeriod: result.paybackPeriod,
-                      investmentRating: rating,
-                    } as Omit<IRRComparisonData, 'timestamp'>;
-                  }}
                 />
               </div>
             </div>

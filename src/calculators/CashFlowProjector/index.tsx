@@ -301,6 +301,39 @@ export function CashFlowProjector() {
             {/* Quick Stats */}
             {schedule.length > 0 && (
               <div className="sticky top-20 flex flex-col gap-4">
+                {/* Comparison Buttons */}
+                <ComparisonButtons
+                  calculatorType="cashflow"
+                  getComparisonData={() => {
+                    const totalCashFlow = schedule[schedule.length - 1]?.cumulativeCashFlow || 0;
+                    const avgAnnualCashFlow = totalCashFlow / inputs.projectionYears;
+                    const y1CashFlow = schedule[0]?.netCashFlow || 0;
+
+                    const rating = avgAnnualCashFlow > 0
+                      ? avgAnnualCashFlow >= inputs.monthlyRentalIncome * 12 * 0.5
+                        ? { grade: 'A+', label: 'Excellent' }
+                        : avgAnnualCashFlow >= inputs.monthlyRentalIncome * 12 * 0.3
+                        ? { grade: 'A', label: 'Great' }
+                        : avgAnnualCashFlow >= inputs.monthlyRentalIncome * 12 * 0.2
+                        ? { grade: 'B+', label: 'Good' }
+                        : { grade: 'B', label: 'Fair' }
+                      : { grade: 'C', label: 'Negative' };
+
+                    return {
+                      calculatorType: 'cashflow' as const,
+                      label: 'Cash Flow Projection',
+                      currency: inputs.currency,
+                      monthlyRentalIncome: inputs.monthlyRentalIncome,
+                      vacancyRate: inputs.vacancyRate,
+                      projectionYears: inputs.projectionYears,
+                      y1NetCashFlow: y1CashFlow,
+                      totalCashFlow,
+                      avgAnnualCashFlow,
+                      investmentRating: rating,
+                    } as Omit<CashFlowComparisonData, 'timestamp'>;
+                  }}
+                />
+
                 <div className="bg-zinc-900 rounded-xl border border-zinc-800 p-6">
                   <div className="mb-4 flex items-center border-b border-zinc-800 pb-4">
                     <div className="flex items-center gap-2">
@@ -331,39 +364,6 @@ export function CashFlowProjector() {
                       icon={<svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" /></svg>}
                     />
                   </div>
-
-                  {/* Comparison Buttons */}
-                  <ComparisonButtons
-                    calculatorType="cashflow"
-                    getComparisonData={() => {
-                      const totalCashFlow = schedule[schedule.length - 1]?.cumulativeCashFlow || 0;
-                      const avgAnnualCashFlow = totalCashFlow / inputs.projectionYears;
-                      const y1CashFlow = schedule[0]?.netCashFlow || 0;
-
-                      const rating = avgAnnualCashFlow > 0
-                        ? avgAnnualCashFlow >= inputs.monthlyRentalIncome * 12 * 0.5
-                          ? { grade: 'A+', label: 'Excellent' }
-                          : avgAnnualCashFlow >= inputs.monthlyRentalIncome * 12 * 0.3
-                          ? { grade: 'A', label: 'Great' }
-                          : avgAnnualCashFlow >= inputs.monthlyRentalIncome * 12 * 0.2
-                          ? { grade: 'B+', label: 'Good' }
-                          : { grade: 'B', label: 'Fair' }
-                        : { grade: 'C', label: 'Negative' };
-
-                      return {
-                        calculatorType: 'cashflow' as const,
-                        label: 'Cash Flow Projection',
-                        currency: inputs.currency,
-                        monthlyRentalIncome: inputs.monthlyRentalIncome,
-                        vacancyRate: inputs.vacancyRate,
-                        projectionYears: inputs.projectionYears,
-                        y1NetCashFlow: y1CashFlow,
-                        totalCashFlow,
-                        avgAnnualCashFlow,
-                        investmentRating: rating,
-                      } as Omit<CashFlowComparisonData, 'timestamp'>;
-                    }}
-                  />
                 </div>
               </div>
             )}
