@@ -49,22 +49,29 @@ export {
 
 /**
  * Calculator URL mapping
+ * Note: All calculators are at /calculators with state managed via localStorage
+ * The 'activeCalculator' key sets which calculator to show
  */
 export const CALCULATOR_URLS: Record<string, string> = {
-  'mortgage': '/calculators/mortgage',
-  'rental-roi': '/calculators/rental-roi',
-  'xirr': '/calculators/xirr',
-  'cashflow': '/calculators/cashflow',
-  'cap-rate': '/calculators/cap-rate',
-  'irr': '/calculators/irr',
-  'npv': '/calculators/npv',
-  'dev-feasibility': '/calculators/dev-feasibility',
-  'indonesia-tax': '/calculators/indonesia-tax',
-  'rental-projection': '/calculators/rental-projection',
-  'financing': '/calculators/financing',
-  'dev-budget': '/calculators/dev-budget',
-  'risk-assessment': '/calculators/risk-assessment',
+  'mortgage': '/calculators',
+  'rental-roi': '/calculators',
+  'xirr': '/calculators',
+  'cashflow': '/calculators',
+  'cap-rate': '/calculators',
+  'irr': '/calculators',
+  'npv': '/calculators',
+  'dev-feasibility': '/calculators',
+  'indonesia-tax': '/calculators',
+  'rental-projection': '/calculators',
+  'financing': '/calculators',
+  'dev-budget': '/calculators',
+  'risk-assessment': '/calculators',
 };
+
+/**
+ * Calculator localStorage key for setting active calculator
+ */
+export const ACTIVE_CALCULATOR_KEY = 'baliinvest_active_calculator';
 
 /**
  * Input field selectors by calculator type

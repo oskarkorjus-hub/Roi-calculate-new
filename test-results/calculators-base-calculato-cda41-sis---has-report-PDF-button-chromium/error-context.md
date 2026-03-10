@@ -1,0 +1,582 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e3]:
+  - navigation [ref=e4]:
+    - generic [ref=e6]:
+      - link "ROI Calculate ROI Calculate" [ref=e7] [cursor=pointer]:
+        - /url: /
+        - img "ROI Calculate" [ref=e8]
+        - generic [ref=e9]: ROI Calculate
+      - generic [ref=e10]:
+        - link "Home" [ref=e11] [cursor=pointer]:
+          - /url: /
+        - link "Features" [ref=e12] [cursor=pointer]:
+          - /url: /features
+        - link "Pricing" [ref=e13] [cursor=pointer]:
+          - /url: /pricing
+        - link "Contact" [ref=e14] [cursor=pointer]:
+          - /url: /contact
+      - generic [ref=e15]:
+        - link "Sign In" [ref=e16] [cursor=pointer]:
+          - /url: /login
+        - link "Start Free" [ref=e17] [cursor=pointer]:
+          - /url: /signup
+          - generic [ref=e20]:
+            - text: Start Free
+            - img [ref=e21]
+  - main [ref=e23]:
+    - generic [ref=e24]:
+      - generic [ref=e25]:
+        - generic [ref=e28]:
+          - img [ref=e29]
+          - generic [ref=e31]: "LIMITED: Free Pro Access for the next 4h 49m —"
+          - generic [ref=e32]: Claim Your Spot
+        - generic [ref=e33]:
+          - generic [ref=e34]:
+            - generic [ref=e35]:
+              - generic [ref=e36]:
+                - generic [ref=e38]:
+                  - generic [ref=e39]: JK
+                  - generic [ref=e40]: MR
+                  - generic [ref=e41]: DL
+                - generic [ref=e42]:
+                  - strong [ref=e43]: 2,847
+                  - text: deals analyzed
+              - heading "Know Your Exact ROI in 60 Seconds" [level=1] [ref=e44]
+              - paragraph [ref=e45]: (Before You Risk a Single Dollar)
+              - paragraph [ref=e46]:
+                - text: Used by
+                - strong [ref=e47]: $50M+ investors
+                - text: for villa flips & rental analysis — no spreadsheets.
+              - link "Start Free Now" [ref=e49] [cursor=pointer]:
+                - /url: /signup
+                - text: Start Free Now
+                - img [ref=e50]
+              - generic [ref=e52]:
+                - generic [ref=e53]:
+                  - img [ref=e54]
+                  - text: Free forever
+                - generic [ref=e56]:
+                  - img [ref=e57]
+                  - text: No card needed
+                - generic [ref=e59]:
+                  - img [ref=e60]
+                  - text: 60s results
+            - generic [ref=e62]:
+              - generic [ref=e63]:
+                - generic [ref=e64]:
+                  - generic [ref=e65]: Quick ROI Analysis
+                  - generic [ref=e66]: LIVE
+                - generic [ref=e67]:
+                  - generic [ref=e68]:
+                    - generic [ref=e69]: Purchase Price
+                    - generic [ref=e70]:
+                      - generic [ref=e71]: $
+                      - textbox [ref=e72]: 450,000
+                  - generic [ref=e73]:
+                    - generic [ref=e74]: Expected Sale Price
+                    - generic [ref=e75]:
+                      - generic [ref=e76]: $
+                      - textbox [ref=e77]: 620,000
+                  - generic [ref=e78]:
+                    - generic [ref=e79]: Hold Period (months)
+                    - slider [ref=e80] [cursor=pointer]: "18"
+                    - generic [ref=e81]:
+                      - generic [ref=e82]: 1 mo
+                      - generic [ref=e83]: 18 months
+                      - generic [ref=e84]: 10 yrs
+                - generic [ref=e85]:
+                  - generic [ref=e86]:
+                    - paragraph [ref=e87]: Your Annualized Return
+                    - paragraph [ref=e88]: +23.8%
+                    - paragraph [ref=e89]: +$170,000 in 18mo
+                  - generic [ref=e90]:
+                    - generic [ref=e91]:
+                      - paragraph [ref=e92]: Total ROI
+                      - paragraph [ref=e93]: +37.8%
+                    - generic [ref=e94]:
+                      - paragraph [ref=e95]: Monthly Gain
+                      - paragraph [ref=e96]: $9,444/mo
+                - link "Get Full Analysis" [ref=e97] [cursor=pointer]:
+                  - /url: "#pricing"
+                - generic [ref=e98]:
+                  - generic [ref=e99]:
+                    - img [ref=e100]
+                    - text: Secure
+                  - generic [ref=e102]:
+                    - img [ref=e103]
+                    - text: Instant
+              - img [ref=e106]
+              - generic [ref=e108]: +847%avg ROI tracked
+          - generic [ref=e109]:
+            - paragraph [ref=e110]: Trusted by innovative companies
+            - generic [ref=e112]:
+              - generic [ref=e113]:
+                - img "Pellago" [ref=e115]
+                - img "Investland Bali" [ref=e117]
+                - img "Luup Design" [ref=e119]
+                - img "Constructland Indonesia" [ref=e121]
+                - img "diil.ai" [ref=e123]
+              - generic [ref=e124]:
+                - img "Pellago" [ref=e126]
+                - img "Investland Bali" [ref=e128]
+                - img "Luup Design" [ref=e130]
+                - img "Constructland Indonesia" [ref=e132]
+                - img "diil.ai" [ref=e134]
+              - generic [ref=e135]:
+                - img "Pellago" [ref=e137]
+                - img "Investland Bali" [ref=e139]
+                - img "Luup Design" [ref=e141]
+                - img "Constructland Indonesia" [ref=e143]
+                - img "diil.ai" [ref=e145]
+              - generic [ref=e146]:
+                - img "Pellago" [ref=e148]
+                - img "Investland Bali" [ref=e150]
+                - img "Luup Design" [ref=e152]
+                - img "Constructland Indonesia" [ref=e154]
+                - img "diil.ai" [ref=e156]
+      - generic [ref=e159]:
+        - generic [ref=e160]:
+          - generic [ref=e161]: THE UNCOMFORTABLE TRUTH
+          - heading "You're Probably Losing $47,000+ on Every Deal" [level=2] [ref=e162]
+          - paragraph [ref=e163]: (And you don't even know it)
+        - generic [ref=e164]:
+          - generic [ref=e170]:
+            - heading "\"I thought I was getting 15% returns... it was actually 6%\"" [level=3] [ref=e171]
+            - paragraph [ref=e172]: Most investors calculate ROI wrong. They forget closing costs, renovation overruns, vacancy periods, and time value of money. One investor told us he "made $80,000" on a flip — until he realized his actual annualized return was worse than a savings account.
+          - generic [ref=e178]:
+            - heading "\"By the time I finished my spreadsheet, someone else bought it\"" [level=3] [ref=e179]
+            - paragraph [ref=e180]: Good deals don't wait. While you're fumbling with Excel formulas and Googling "how to calculate XIRR," your competitors are making offers. Speed kills in real estate — but only if your numbers are right.
+          - generic [ref=e186]:
+            - heading "\"I'm basically gambling with six figures\"" [level=3] [ref=e187]
+            - paragraph [ref=e188]: You wouldn't invest $500,000 in stocks without analyzing the fundamentals. So why are you buying properties based on "it feels like a good deal"? Gut feelings don't compound. Precise calculations do.
+        - generic [ref=e189]:
+          - paragraph [ref=e190]: "Every day you operate on guesswork is another day you're:"
+          - generic [ref=e191]:
+            - generic [ref=e192]:
+              - paragraph [ref=e193]: "0"
+              - paragraph [ref=e194]: money left on table
+            - generic [ref=e195]:
+              - paragraph [ref=e196]: "0"
+              - paragraph [ref=e197]: wasted monthly
+            - generic [ref=e198]:
+              - paragraph [ref=e199]: "0"
+              - paragraph [ref=e200]: missed annually
+          - paragraph [ref=e201]: That's potentially $200,000+ in lost profits every year.
+      - generic [ref=e203]:
+        - generic [ref=e204]:
+          - generic [ref=e205]: THE SOLUTION
+          - heading "What If You Could Analyze Any Deal in Under 60 Seconds?" [level=2] [ref=e206]
+          - paragraph [ref=e207]: Introducing ROI Calculate — the precision investment analysis tool that turns complex financial modeling into a simple 3-step process.
+        - generic [ref=e208]:
+          - generic [ref=e209]:
+            - generic [ref=e210]: BEFORE
+            - generic [ref=e214]:
+              - heading "The Old Way" [level=3] [ref=e215]
+              - list [ref=e216]:
+                - listitem [ref=e217]:
+                  - generic [ref=e218]: ✗
+                  - text: Hours building spreadsheets
+                - listitem [ref=e219]:
+                  - generic [ref=e220]: ✗
+                  - text: Googling formulas constantly
+                - listitem [ref=e221]:
+                  - generic [ref=e222]: ✗
+                  - text: Second-guessing calculations
+                - listitem [ref=e223]:
+                  - generic [ref=e224]: ✗
+                  - text: Missing critical factors
+                - listitem [ref=e225]:
+                  - generic [ref=e226]: ✗
+                  - text: Losing deals to competitors
+                - listitem [ref=e227]:
+                  - generic [ref=e228]: ✗
+                  - text: Paying $500/hr consultants
+          - generic [ref=e229]:
+            - generic [ref=e230]: AFTER
+            - generic [ref=e234]:
+              - heading "With ROI Calculate" [level=3] [ref=e235]
+              - list [ref=e236]:
+                - listitem [ref=e237]:
+                  - generic [ref=e238]: ✓
+                  - strong [ref=e240]: 60-second analysis
+                - listitem [ref=e241]:
+                  - generic [ref=e242]: ✓
+                  - strong [ref=e244]: Institutional formulas
+                - listitem [ref=e245]:
+                  - generic [ref=e246]: ✓
+                  - strong [ref=e248]: 100% confidence
+                - listitem [ref=e249]:
+                  - generic [ref=e250]: ✓
+                  - strong [ref=e252]: XIRR, IRR, NPV, Cap Rate
+                - listitem [ref=e253]:
+                  - generic [ref=e254]: ✓
+                  - strong [ref=e256]: Beat competitors
+                - listitem [ref=e257]:
+                  - generic [ref=e258]: ✓
+                  - strong [ref=e260]: $19/month vs. $500/hr
+        - generic [ref=e265]:
+          - heading "How It Works (3 Simple Steps)" [level=3] [ref=e266]
+          - generic [ref=e267]:
+            - generic [ref=e268]:
+              - generic [ref=e269]: "1"
+              - heading "Enter Numbers" [level=4] [ref=e270]
+              - paragraph [ref=e271]: Purchase price, returns, hold period. 30 seconds.
+            - generic [ref=e272]:
+              - generic [ref=e273]: "2"
+              - heading "Get Analysis" [level=4] [ref=e274]
+              - paragraph [ref=e275]: XIRR, ROI, projections — all automatic.
+            - generic [ref=e276]:
+              - generic [ref=e277]: "3"
+              - heading "Decide Confidently" [level=4] [ref=e278]
+              - paragraph [ref=e279]: Know your returns. Export PDF reports.
+      - generic [ref=e281]:
+        - generic [ref=e282]:
+          - heading "13 Professional Calculators. One Platform." [level=2] [ref=e283]
+          - paragraph [ref=e284]: Every tool you need to analyze any real estate investment scenario.
+        - generic [ref=e285]:
+          - generic [ref=e290]:
+            - generic [ref=e292]: calculate
+            - heading "XIRR Calculator" [level=3] [ref=e293]
+            - paragraph [ref=e294]: Exact returns on villa flips with irregular cash flows
+            - generic [ref=e295]: MOST POPULAR
+          - generic [ref=e300]:
+            - generic [ref=e302]: trending_up
+            - heading "Annualized ROI" [level=3] [ref=e303]
+            - paragraph [ref=e304]: Project 10-year rental income and calculate annual returns
+            - generic [ref=e305]: MOST POPULAR
+          - generic [ref=e310]:
+            - generic [ref=e312]: account_balance
+            - heading "Mortgage Calculator" [level=3] [ref=e313]
+            - paragraph [ref=e314]: Analyze loan terms and full amortization schedules
+          - generic [ref=e319]:
+            - generic [ref=e321]: payments
+            - heading "Cash Flow Projector" [level=3] [ref=e322]
+            - paragraph [ref=e323]: Model rental income, expenses, and net cash flow
+          - generic [ref=e328]:
+            - generic [ref=e330]: construction
+            - heading "Development Feasibility" [level=3] [ref=e331]
+            - paragraph [ref=e332]: Evaluate construction costs, timelines, and ROI
+            - generic [ref=e333]: MOST POPULAR
+          - generic [ref=e338]:
+            - generic [ref=e340]: percent
+            - heading "Cap Rate Analysis" [level=3] [ref=e341]
+            - paragraph [ref=e342]: Compare yields across different properties
+          - generic [ref=e347]:
+            - generic [ref=e349]: show_chart
+            - heading "IRR Calculator" [level=3] [ref=e350]
+            - paragraph [ref=e351]: Annualized returns for any cash flow stream
+          - generic [ref=e356]:
+            - generic [ref=e358]: savings
+            - heading "NPV Calculator" [level=3] [ref=e359]
+            - paragraph [ref=e360]: Net present value at any discount rate
+          - generic [ref=e365]:
+            - generic [ref=e367]: receipt_long
+            - heading "Indonesia Tax Optimizer" [level=3] [ref=e368]
+            - paragraph [ref=e369]: Optimize taxes with depreciation and deductions
+            - generic [ref=e370]: MOST POPULAR
+          - generic [ref=e375]:
+            - generic [ref=e377]: calendar_month
+            - heading "Rental Income Projection" [level=3] [ref=e378]
+            - paragraph [ref=e379]: Advanced vacation rental with seasonality
+          - generic [ref=e384]:
+            - generic [ref=e386]: account_balance
+            - heading "Financing Comparison" [level=3] [ref=e387]
+            - paragraph [ref=e388]: Compare up to 4 loan options side-by-side
+          - generic [ref=e393]:
+            - generic [ref=e395]: track_changes
+            - heading "Budget Tracker" [level=3] [ref=e396]
+            - paragraph [ref=e397]: Track construction budgets and timelines
+          - generic [ref=e402]:
+            - generic [ref=e404]: shield
+            - heading "Risk Assessment" [level=3] [ref=e405]
+            - paragraph [ref=e406]: Comprehensive risk scoring with scenarios
+        - link "Try All Calculators Free" [ref=e408] [cursor=pointer]:
+          - /url: "#pricing"
+          - text: Try All Calculators Free
+          - img [ref=e409]
+      - generic [ref=e412]:
+        - generic [ref=e413]:
+          - generic [ref=e414]: REAL RESULTS
+          - heading "Join 2,847+ Investors Making Smarter Decisions" [level=2] [ref=e415]
+        - generic [ref=e416]:
+          - generic [ref=e421]:
+            - generic [ref=e422]:
+              - generic [ref=e423]: ★
+              - generic [ref=e424]: ★
+              - generic [ref=e425]: ★
+              - generic [ref=e426]: ★
+              - generic [ref=e427]: ★
+            - paragraph [ref=e428]:
+              - text: "\"I was skeptical about switching from our spreadsheets and WhatsApp groups. But once we migrated, I wondered why we waited so long. Project timelines, contractor updates, and cost tracking — all in one place instead of scattered across six different apps.\""
+              - generic [ref=e429]: Cut admin time by 60%.
+            - generic [ref=e430]:
+              - generic [ref=e431]: RK
+              - generic [ref=e432]:
+                - paragraph [ref=e433]: Ragnar Kenk
+                - paragraph [ref=e434]: Director of Construction, Constructland
+          - generic [ref=e439]:
+            - generic [ref=e440]:
+              - generic [ref=e441]: ★
+              - generic [ref=e442]: ★
+              - generic [ref=e443]: ★
+              - generic [ref=e444]: ★
+              - generic [ref=e445]: ★
+            - paragraph [ref=e446]:
+              - text: "\"Before, we lost deals simply because follow-ups fell through the cracks. Now every inquiry gets tracked properly, and we know exactly when to reach out. We closed more deals last quarter than the entire previous year.\""
+              - generic [ref=e447]: 3x faster lead response.
+            - generic [ref=e448]:
+              - generic [ref=e449]: AC
+              - generic [ref=e450]:
+                - paragraph [ref=e451]: Alliyah Canta
+                - paragraph [ref=e452]: Head of Business Development, Luup Design
+          - generic [ref=e457]:
+            - generic [ref=e458]:
+              - generic [ref=e459]: ★
+              - generic [ref=e460]: ★
+              - generic [ref=e461]: ★
+              - generic [ref=e462]: ★
+              - generic [ref=e463]: ★
+            - paragraph [ref=e464]:
+              - text: "\"Our investors used to call constantly asking for updates. Now they can see real-time returns and projections themselves. The trust we've built has turned one-time investors into repeat clients.\""
+              - generic [ref=e465]: 40% more investor renewals.
+            - generic [ref=e466]:
+              - generic [ref=e467]: KS
+              - generic [ref=e468]:
+                - paragraph [ref=e469]: Kevin Sooaluste
+                - paragraph [ref=e470]: Founder, Pellago Real Estate Management
+        - generic [ref=e476]:
+          - generic [ref=e477]:
+            - paragraph [ref=e478]: "0"
+            - paragraph [ref=e479]: Investors
+          - generic [ref=e480]:
+            - paragraph [ref=e481]: "0"
+            - paragraph [ref=e482]: Analyzed
+          - generic [ref=e483]:
+            - paragraph [ref=e484]: "0"
+            - paragraph [ref=e485]: Calculations
+          - generic [ref=e486]:
+            - paragraph [ref=e487]: "0"
+            - paragraph [ref=e488]: Rating
+      - generic [ref=e490]:
+        - generic [ref=e491]:
+          - heading "Everything You Need to Invest with Confidence" [level=2] [ref=e492]
+          - paragraph [ref=e493]: Start free, upgrade when you're ready.
+        - generic [ref=e494]:
+          - generic [ref=e499]:
+            - heading "Free" [level=3] [ref=e500]
+            - paragraph [ref=e501]: Try before you commit
+            - generic [ref=e502]: $0/forever
+            - list [ref=e503]:
+              - listitem [ref=e504]:
+                - img [ref=e505]
+                - text: 3 calculations per month
+              - listitem [ref=e507]:
+                - img [ref=e508]
+                - text: All 13 calculators
+              - listitem [ref=e510]:
+                - img [ref=e511]
+                - text: Save 1 project
+            - link "Get Started Free" [ref=e513] [cursor=pointer]:
+              - /url: /signup
+            - paragraph [ref=e514]: No credit card required
+          - generic [ref=e515]:
+            - generic [ref=e516]: MOST POPULAR - 73% Choose This
+            - generic [ref=e517]:
+              - heading "Pro" [level=3] [ref=e518]
+              - paragraph [ref=e519]: For serious investors
+              - generic [ref=e520]:
+                - text: $19/month
+                - paragraph [ref=e521]: or $149/year (save 35%)
+              - list [ref=e522]:
+                - listitem [ref=e523]:
+                  - img [ref=e524]
+                  - text: Unlimited calculations
+                - listitem [ref=e526]:
+                  - img [ref=e527]
+                  - text: All 13 calculators
+                - listitem [ref=e529]:
+                  - img [ref=e530]
+                  - text: 25 saved projects
+                - listitem [ref=e532]:
+                  - img [ref=e533]
+                  - text: PDF export
+                - listitem [ref=e535]:
+                  - img [ref=e536]
+                  - text: Multi-currency support
+                - listitem [ref=e538]:
+                  - img [ref=e539]
+                  - text: Email support
+              - link "Start Free - Upgrade Later" [ref=e541] [cursor=pointer]:
+                - /url: /signup
+              - paragraph [ref=e542]: Free 7-day trial, no credit card
+          - generic [ref=e547]:
+            - heading "Enterprise" [level=3] [ref=e548]
+            - paragraph [ref=e549]: For teams & funds
+            - generic [ref=e550]:
+              - text: $79/month
+              - paragraph [ref=e551]: or $599/year (save 37%)
+            - list [ref=e552]:
+              - listitem [ref=e553]:
+                - img [ref=e554]
+                - text: Everything in Pro
+              - listitem [ref=e556]:
+                - img [ref=e557]
+                - text: Unlimited projects
+              - listitem [ref=e559]:
+                - img [ref=e560]
+                - text: Up to 5 team seats
+              - listitem [ref=e562]:
+                - img [ref=e563]
+                - text: API access
+              - listitem [ref=e565]:
+                - img [ref=e566]
+                - text: White-label option
+              - listitem [ref=e568]:
+                - img [ref=e569]
+                - text: 24/7 priority support
+            - link "Start Enterprise Trial" [ref=e571] [cursor=pointer]:
+              - /url: /signup
+            - paragraph [ref=e572]: 14-day free trial included
+      - generic [ref=e579]:
+        - img [ref=e581]
+        - heading "The \"Better Decisions or Free\" Guarantee" [level=2] [ref=e583]
+        - paragraph [ref=e584]:
+          - text: Try ROI Calculate risk-free for
+          - strong [ref=e585]: 30 full days
+          - text: . If you don't feel more confident about your investment decisions — just email us and we'll refund every penny. No questions asked.
+        - generic [ref=e586]:
+          - generic [ref=e587]:
+            - img [ref=e588]
+            - text: 30-day guarantee
+          - generic [ref=e590]:
+            - img [ref=e591]
+            - text: Cancel anytime
+          - generic [ref=e593]:
+            - img [ref=e594]
+            - text: No credit card
+      - generic [ref=e597]:
+        - heading "Frequently Asked Questions" [level=2] [ref=e598]
+        - generic [ref=e599]:
+          - generic [ref=e601]:
+            - button "Can't I just use Excel?" [ref=e602]:
+              - generic [ref=e603]: Can't I just use Excel?
+              - img [ref=e604]
+            - generic [ref=e607]: "Sure, if you want to spend 4-5 hours building formulas, debugging #REF errors, and still wonder if your XIRR calculation is correct. Most investors who switch from Excel tell us they save 20+ hours per month. At $19/month, that's less than $1 per hour saved. Plus, Excel doesn't give you instant scenario comparison, PDF exports for lenders, or mobile access when you're on-site at a property."
+          - button "Is this accurate for international investments?" [ref=e610]:
+            - generic [ref=e611]: Is this accurate for international investments?
+            - img [ref=e612]
+          - button "What if I'm just getting started in real estate?" [ref=e616]:
+            - generic [ref=e617]: What if I'm just getting started in real estate?
+            - img [ref=e618]
+          - button "How is this different from other ROI calculators?" [ref=e622]:
+            - generic [ref=e623]: How is this different from other ROI calculators?
+            - img [ref=e624]
+          - button "Can I cancel anytime?" [ref=e628]:
+            - generic [ref=e629]: Can I cancel anytime?
+            - img [ref=e630]
+          - button "Is my financial data secure?" [ref=e634]:
+            - generic [ref=e635]: Is my financial data secure?
+            - img [ref=e636]
+        - generic [ref=e638]:
+          - paragraph [ref=e639]: Still have questions? We're here to help.
+          - link "Contact Support" [ref=e640] [cursor=pointer]:
+            - /url: mailto:hello@investlandgroup.com
+            - img [ref=e641]
+            - text: Contact Support
+      - generic [ref=e645]:
+        - generic [ref=e646]: "⏰ Free Pro: 4h 49m left"
+        - heading "Still Analyzing Deals on Gut Feeling?" [level=2] [ref=e647]
+        - paragraph [ref=e648]: Every day you wait is another opportunity missed. The best time to start was yesterday. The second best time is right now.
+        - generic [ref=e652]:
+          - generic [ref=e653]:
+            - generic [ref=e654]:
+              - generic [ref=e655]: JK
+              - generic [ref=e656]: MR
+              - generic [ref=e657]: DL
+              - generic [ref=e658]: AS
+            - generic [ref=e659]: +47 joined today
+          - paragraph [ref=e660]: "Start your free analysis in 60 seconds:"
+          - link "Create Free Account Now" [ref=e661] [cursor=pointer]:
+            - /url: /signup
+          - generic [ref=e662]:
+            - generic [ref=e663]:
+              - img [ref=e664]
+              - text: Free forever
+            - generic [ref=e666]:
+              - img [ref=e667]
+              - text: No credit card
+            - generic [ref=e669]:
+              - img [ref=e670]
+              - text: 60s results
+        - generic [ref=e672]:
+          - generic [ref=e673]:
+            - img [ref=e674]
+            - text: 256-bit Encryption
+          - generic [ref=e676]:
+            - img [ref=e677]
+            - text: GDPR Compliant
+          - generic [ref=e679]:
+            - img [ref=e680]
+            - text: 2,847+ Investors
+          - generic [ref=e682]:
+            - img [ref=e683]
+            - text: 30-Day Guarantee
+      - paragraph [ref=e687]: © 2026 ROI Calculate. Built for serious property investors.
+  - contentinfo [ref=e688]:
+    - generic [ref=e690]:
+      - generic [ref=e691]:
+        - link "ROI Calculate ROI Calculate" [ref=e692] [cursor=pointer]:
+          - /url: /
+          - img "ROI Calculate" [ref=e693]
+          - generic [ref=e694]: ROI Calculate
+        - paragraph [ref=e695]: Professional property investment analysis tools. Calculate ROI, rental yields, and cash flow projections with institutional-grade accuracy.
+      - generic [ref=e696]:
+        - heading "Product" [level=4] [ref=e697]
+        - list [ref=e698]:
+          - listitem [ref=e699]:
+            - link "Features" [ref=e700] [cursor=pointer]:
+              - /url: /features
+          - listitem [ref=e701]:
+            - link "Pricing" [ref=e702] [cursor=pointer]:
+              - /url: /pricing
+      - generic [ref=e703]:
+        - heading "Company" [level=4] [ref=e704]
+        - list [ref=e705]:
+          - listitem [ref=e706]:
+            - link "Contact" [ref=e707] [cursor=pointer]:
+              - /url: /contact
+          - listitem [ref=e708]:
+            - link "Terms of Service" [ref=e709] [cursor=pointer]:
+              - /url: /terms
+          - listitem [ref=e710]:
+            - link "Privacy Policy" [ref=e711] [cursor=pointer]:
+              - /url: /privacy
+      - generic [ref=e712]:
+        - heading "Stay Updated" [level=4] [ref=e713]
+        - paragraph [ref=e714]: Get investment tips and product updates.
+        - generic [ref=e715]:
+          - textbox "Enter your email" [ref=e716]
+          - button "Join" [ref=e717]
+        - generic [ref=e718]:
+          - generic [ref=e719]:
+            - img [ref=e720]
+            - link "hello@investlandgroup.com" [ref=e722] [cursor=pointer]:
+              - /url: mailto:hello@investlandgroup.com
+          - generic [ref=e723]:
+            - img [ref=e724]
+            - generic [ref=e727]: Bali, Indonesia
+    - generic [ref=e730]:
+      - paragraph [ref=e731]: © 2026 ROI Calculate. All rights reserved.
+      - generic [ref=e732]:
+        - generic [ref=e733]:
+          - img [ref=e734]
+          - text: 256-bit SSL Encrypted
+        - generic [ref=e736]:
+          - img [ref=e737]
+          - text: GDPR Compliant
+    - paragraph [ref=e741]:
+      - strong [ref=e742]: "Disclaimer:"
+      - text: The calculations and projections provided are for informational purposes only and should not be considered financial advice. Investment returns are not guaranteed. Always consult with a qualified financial advisor before making investment decisions.
+```

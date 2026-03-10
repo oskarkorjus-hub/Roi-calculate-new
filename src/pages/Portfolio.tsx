@@ -1,21 +1,10 @@
-import { useState, useCallback, useMemo, useRef, useEffect } from 'react';
+import { useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { usePortfolio } from '../lib/portfolio-context';
-import { PortfolioStats } from '../components/PortfolioStats';
-import { PortfolioFilters } from '../components/PortfolioFilters';
-import { PortfolioCharts } from '../components/PortfolioCharts';
 import { ProjectCard } from '../components/ProjectCard';
 import { ProjectDetailsModal } from '../components/ProjectDetailsModal';
 import { ScenarioAnalysisPage } from './ScenarioAnalysis';
 import type { PortfolioProject } from '../types/portfolio';
-import { generatePortfolioComparisionPDF } from '../utils/pdfExport';
-import {
-  extractUniversalMetrics,
-  formatMetricValue,
-  formatCashFlow,
-  formatTimeMetric,
-  generateComparisonInsights,
-} from '../utils/crossCalculatorComparison';
 
 // Custom easing for premium animations
 const premiumEase: [number, number, number, number] = [0.16, 1, 0.3, 1];
@@ -56,246 +45,11 @@ const cardVariants = {
   },
 };
 
-// Cross-Calculator Comparison Component
-function CrossCalculatorComparison({ projects }: { projects: PortfolioProject[] }) {
-  const comparisonData = useMemo(() => {
-    return projects.map(project => ({
-      project,
-      metrics: extractUniversalMetrics(project),
-    }));
-  }, [projects]);
-
-  const insights = useMemo(() => {
-    return generateComparisonInsights(projects);
-  }, [projects]);
-
-  const getCategoryStyles = (category: string) => {
-    switch (category) {
-      case 'return-analysis':
-        return 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30';
-      case 'income-analysis':
-        return 'bg-cyan-500/15 text-cyan-400 border-cyan-500/30';
-      case 'financing-tool':
-        return 'bg-amber-500/15 text-amber-400 border-amber-500/30';
-      case 'risk-tool':
-        return 'bg-purple-500/15 text-purple-400 border-purple-500/30';
-      default:
-        return 'bg-zinc-500/15 text-zinc-400 border-zinc-500/30';
-    }
-  };
-
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
-      className="card-premium rounded-2xl p-6 mt-6 space-y-5"
-    >
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="section-icon">
-            <span className="material-symbols-outlined text-emerald-400">compare</span>
-          </div>
-          <h3 className="section-title">Cross-Calculator Comparison</h3>
-        </div>
-        <span className="text-xs text-zinc-500 font-body">Smart metric mapping across different analysis types</span>
-      </div>
-
-      {/* Comparison Insights */}
-      {insights.length > 0 && (
-        <div className="space-y-2">
-          {insights.map((insight, idx) => (
-            <motion.div
-              key={idx}
-              initial={{ opacity: 0, x: -10 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: idx * 0.1 }}
-              className={`flex items-start gap-2 px-4 py-3 rounded-xl text-sm font-body ${
-                insight.type === 'warning'
-                  ? 'bg-amber-500/10 text-amber-300 border border-amber-500/20'
-                  : insight.type === 'comparison'
-                    ? 'bg-emerald-500/10 text-emerald-300 border border-emerald-500/20'
-                    : 'bg-zinc-800/50 text-zinc-400 border border-zinc-700/50'
-              }`}
-            >
-              <span className="text-xs font-medium uppercase tracking-wide opacity-60">
-                {insight.type === 'warning' ? 'Note' : insight.type === 'comparison' ? 'Insight' : 'Info'}
-              </span>
-              <span>{insight.message}</span>
-            </motion.div>
-          ))}
-        </div>
-      )}
-
-      {/* Main Comparison Table */}
-      <div className="overflow-x-auto -mx-6 px-6">
-        <table className="w-full text-sm min-w-[800px]">
-          <thead className="bg-zinc-800/50 border-b border-zinc-700/50">
-            <tr>
-              <th className="px-4 py-4 text-left font-display font-semibold text-zinc-300">Project</th>
-              <th className="px-4 py-4 text-center font-display font-semibold text-zinc-300">Type</th>
-              <th className="px-4 py-4 text-right font-display font-semibold text-zinc-300">Capital</th>
-              <th className="px-4 py-4 text-right font-display font-semibold text-zinc-300">
-                <span className="block">Primary Return</span>
-                <span className="block text-[10px] text-zinc-500 font-normal font-body">Calculator-specific</span>
-              </th>
-              <th className="px-4 py-4 text-right font-display font-semibold text-zinc-300">
-                <span className="block">Cash Flow</span>
-                <span className="block text-[10px] text-zinc-500 font-normal font-body">Net amount</span>
-              </th>
-              <th className="px-4 py-4 text-right font-display font-semibold text-zinc-300">Timeline</th>
-              <th className="px-4 py-4 text-right font-display font-semibold text-zinc-300">Score</th>
-            </tr>
-          </thead>
-          <tbody>
-            {comparisonData.map(({ project, metrics }, idx) => (
-              <motion.tr
-                key={project.id}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: idx * 0.05 }}
-                className={`border-b border-zinc-800/50 hover:bg-zinc-800/30 transition-colors ${idx % 2 === 0 ? 'bg-zinc-900/30' : 'bg-zinc-800/20'}`}
-              >
-                <td className="px-4 py-4">
-                  <div className="font-display font-semibold text-white">{project.projectName}</div>
-                  {project.strategy && (
-                    <div className="text-xs text-zinc-500 capitalize mt-0.5 font-body">
-                      {project.strategy}
-                    </div>
-                  )}
-                </td>
-                <td className="px-4 py-4 text-center">
-                  <span
-                    className={`inline-block px-2.5 py-1 rounded-lg text-xs font-medium border ${getCategoryStyles(metrics.category)}`}
-                    title={metrics.calculatorPurpose}
-                  >
-                    {metrics.categoryLabel}
-                  </span>
-                </td>
-                <td className="px-4 py-4 text-right">
-                  <div className="text-zinc-300 font-mono font-medium">
-                    {formatMetricValue(metrics.capitalRequired, 'currency')}
-                  </div>
-                  <div className="text-xs text-zinc-500 font-body">{metrics.capitalLabel}</div>
-                </td>
-                <td className="px-4 py-4 text-right">
-                  {metrics.primaryReturn !== null ? (
-                    <>
-                      <div
-                        className={`font-mono font-bold ${
-                          metrics.primaryReturnFormat === 'percent' && metrics.primaryReturn >= 15
-                            ? 'text-emerald-400'
-                            : metrics.primaryReturnFormat === 'currency' && metrics.primaryReturn > 0
-                              ? 'text-emerald-400'
-                              : metrics.primaryReturnFormat === 'percent' && metrics.primaryReturn >= 8
-                                ? 'text-cyan-400'
-                                : metrics.primaryReturn < 0
-                                  ? 'text-red-400'
-                                  : 'text-orange-400'
-                        }`}
-                      >
-                        {formatMetricValue(metrics.primaryReturn, metrics.primaryReturnFormat)}
-                      </div>
-                      <div className="text-xs text-zinc-500 font-body">{metrics.primaryReturnLabel}</div>
-                    </>
-                  ) : (
-                    <span className="text-zinc-600">N/A</span>
-                  )}
-                </td>
-                <td className="px-4 py-4 text-right">
-                  {metrics.cashFlowIndicator !== null ? (
-                    <>
-                      <div
-                        className={`font-mono font-medium ${
-                          metrics.cashFlowIndicator > 0 ? 'text-emerald-400' : metrics.cashFlowIndicator < 0 ? 'text-red-400' : 'text-zinc-400'
-                        }`}
-                      >
-                        {formatCashFlow(metrics.cashFlowIndicator, metrics.cashFlowPeriod)}
-                      </div>
-                      <div className="text-xs text-zinc-500 font-body">{metrics.cashFlowLabel}</div>
-                    </>
-                  ) : (
-                    <span className="text-zinc-600">N/A</span>
-                  )}
-                </td>
-                <td className="px-4 py-4 text-right">
-                  {metrics.timeMetric !== null && metrics.timeMetricUnit !== null ? (
-                    <>
-                      <div className="text-zinc-300 font-mono">
-                        {formatTimeMetric(metrics.timeMetric, metrics.timeMetricUnit)}
-                      </div>
-                      <div className="text-xs text-zinc-500 font-body">{metrics.timeMetricLabel}</div>
-                    </>
-                  ) : (
-                    <span className="text-zinc-600">N/A</span>
-                  )}
-                </td>
-                <td className="px-4 py-4 text-right">
-                  {project.investmentScore > 0 ? (
-                    <span
-                      className={`inline-block px-3 py-1.5 rounded-lg text-sm font-mono font-bold ${
-                        project.investmentScore >= 85
-                          ? 'bg-emerald-500/20 text-emerald-400'
-                          : project.investmentScore >= 70
-                            ? 'bg-cyan-500/20 text-cyan-400'
-                            : project.investmentScore >= 50
-                              ? 'bg-orange-500/20 text-orange-400'
-                              : 'bg-red-500/20 text-red-400'
-                      }`}
-                    >
-                      {Math.round(project.investmentScore)}
-                    </span>
-                  ) : (
-                    <span className="text-zinc-600 text-xs">N/A</span>
-                  )}
-                </td>
-              </motion.tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-
-      {/* Legend */}
-      <div className="flex flex-wrap gap-4 pt-4 border-t border-zinc-800/50">
-        <span className="text-xs text-zinc-500 font-body">Analysis Types:</span>
-        <span className="inline-flex items-center gap-1.5 text-xs font-body">
-          <span className="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
-          <span className="text-zinc-400">Exit Return</span>
-        </span>
-        <span className="inline-flex items-center gap-1.5 text-xs font-body">
-          <span className="w-2.5 h-2.5 rounded-full bg-cyan-500"></span>
-          <span className="text-zinc-400">Income Analysis</span>
-        </span>
-        <span className="inline-flex items-center gap-1.5 text-xs font-body">
-          <span className="w-2.5 h-2.5 rounded-full bg-amber-500"></span>
-          <span className="text-zinc-400">Financing</span>
-        </span>
-        <span className="inline-flex items-center gap-1.5 text-xs font-body">
-          <span className="w-2.5 h-2.5 rounded-full bg-purple-500"></span>
-          <span className="text-zinc-400">Risk Analysis</span>
-        </span>
-      </div>
-    </motion.div>
-  );
-}
-
 export function Portfolio() {
   const { projects, deleteProject } = usePortfolio();
-  const [filteredProjects, setFilteredProjects] = useState<PortfolioProject[]>(projects);
   const [selectedProject, setSelectedProject] = useState<PortfolioProject | null>(null);
   const [scenarioViewProjectId, setScenarioViewProjectId] = useState<string | null>(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState<string | null>(null);
-  const [selectedForComparison, setSelectedForComparison] = useState<Set<string>>(new Set());
-  const [showComparisonView, setShowComparisonView] = useState(false);
-  const comparisonRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (showComparisonView && comparisonRef.current) {
-      setTimeout(() => {
-        comparisonRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }, 100);
-    }
-  }, [showComparisonView]);
 
   const handleDeleteProject = useCallback((projectId: string) => {
     deleteProject(projectId);
@@ -304,37 +58,6 @@ export function Portfolio() {
       setSelectedProject(null);
     }
   }, [deleteProject, selectedProject]);
-
-  const handleToggleComparison = useCallback((projectId: string) => {
-    const newSet = new Set(selectedForComparison);
-    if (newSet.has(projectId)) {
-      newSet.delete(projectId);
-    } else if (newSet.size < 3) {
-      newSet.add(projectId);
-    }
-    setSelectedForComparison(newSet);
-  }, [selectedForComparison]);
-
-  const projectsForComparison = useMemo(() => {
-    return projects.filter(p => selectedForComparison.has(p.id));
-  }, [projects, selectedForComparison]);
-
-  const downloadCSV = useCallback(() => {
-    if (filteredProjects.length === 0) return;
-
-    let csv = 'Project Name,Location,Strategy,Investment,ROI %,Avg Cash Flow,Break-even (months),Score,Status\n';
-    filteredProjects.forEach(p => {
-      csv += `"${p.projectName}","${p.location}","${p.strategy || 'N/A'}",${p.totalInvestment},${(p.roi || 0).toFixed(1)},${p.avgCashFlow},${p.breakEvenMonths},${Math.round(p.investmentScore || 0)},"${p.status || 'active'}"\n`;
-    });
-
-    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-    const link = document.createElement('a');
-    const url = URL.createObjectURL(blob);
-    link.setAttribute('href', url);
-    link.setAttribute('download', `portfolio_${new Date().toISOString().split('T')[0]}.csv`);
-    link.click();
-    URL.revokeObjectURL(url);
-  }, [filteredProjects]);
 
   // Scenario Analysis View
   if (scenarioViewProjectId) {
@@ -414,150 +137,31 @@ export function Portfolio() {
         className="space-y-6"
       >
         {/* Header */}
-        <motion.header
-          variants={itemVariants}
-          className="flex flex-col lg:flex-row lg:items-center justify-between gap-4"
-        >
-          <div>
-            <h1 className="text-2xl font-semibold text-white">Investment Portfolio</h1>
-            <p className="text-zinc-500 text-sm mt-1">
-              {projects.length} projects
-            </p>
-          </div>
-
-          <div className="flex items-center gap-2 flex-wrap">
-            <button
-              onClick={() => generatePortfolioComparisionPDF(projects)}
-              disabled={projects.length === 0}
-              className="px-3 py-2 text-sm bg-zinc-800 text-white rounded-lg hover:bg-zinc-700 transition flex items-center gap-2 disabled:opacity-50"
-            >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
-              </svg>
-              Export PDF
-            </button>
-            <button
-              onClick={downloadCSV}
-              disabled={filteredProjects.length === 0}
-              className="px-3 py-2 text-sm text-zinc-400 hover:text-white rounded-lg hover:bg-zinc-800 transition flex items-center gap-2 disabled:opacity-50"
-            >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-              </svg>
-              CSV
-            </button>
-            {selectedForComparison.size > 1 && (
-              <button
-                onClick={() => generatePortfolioComparisionPDF(projectsForComparison)}
-                className="px-3 py-2 text-sm bg-zinc-700 text-white rounded-lg hover:bg-zinc-600 transition flex items-center gap-2"
-              >
-                Compare {selectedForComparison.size}
-              </button>
-            )}
-          </div>
+        <motion.header variants={itemVariants}>
+          <h1 className="text-2xl font-semibold text-white">Saved Calculations</h1>
+          <p className="text-zinc-500 text-sm mt-1">
+            {projects.length} {projects.length === 1 ? 'project' : 'projects'}
+          </p>
         </motion.header>
 
-        {/* Portfolio Summary Stats */}
-        <motion.div variants={itemVariants}>
-          <PortfolioStats projects={projects} />
-        </motion.div>
-
-        {/* Filters & Sorting */}
-        <motion.div variants={itemVariants}>
-          <PortfolioFilters projects={projects} onFiltersChange={setFilteredProjects} />
-        </motion.div>
-
-        {/* Analytics Charts */}
-        <motion.div variants={itemVariants}>
-          <PortfolioCharts projects={filteredProjects} />
-        </motion.div>
-
         {/* Projects Grid */}
-        <motion.div variants={itemVariants} className="space-y-5">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="section-icon">
-                <span className="material-symbols-outlined text-emerald-400">grid_view</span>
-              </div>
-              <h2 className="section-title">
-                Projects <span className="text-zinc-500">({filteredProjects.length})</span>
-              </h2>
-            </div>
-            {selectedForComparison.size > 0 && (
-              <button
-                onClick={() => setShowComparisonView(!showComparisonView)}
-                className={`px-4 py-2.5 border rounded-xl text-sm font-display font-medium transition-all flex items-center gap-2 ${
-                  showComparisonView
-                    ? 'bg-cyan-500 text-white border-cyan-400 shadow-lg shadow-cyan-500/20'
-                    : 'bg-cyan-500/10 text-cyan-400 border-cyan-500/30 hover:bg-cyan-500/20'
-                }`}
-              >
-                <span className="material-symbols-outlined text-lg">
-                  {showComparisonView ? 'expand_less' : 'expand_more'}
-                </span>
-                {showComparisonView ? 'Hide Comparison' : `Compare ${selectedForComparison.size} projects`}
-              </button>
-            )}
-          </div>
-
-          {filteredProjects.length === 0 ? (
+        <motion.div
+          variants={containerVariants}
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5"
+        >
+          {projects.map((project) => (
             <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="card-premium rounded-2xl p-10 text-center"
+              key={project.id}
+              variants={cardVariants}
             >
-              <span className="material-symbols-outlined text-4xl text-zinc-600 mb-3">filter_list_off</span>
-              <p className="text-zinc-400 font-body">No projects match your filters</p>
+              <ProjectCard
+                project={project}
+                onView={setSelectedProject}
+                onViewScenarios={setScenarioViewProjectId}
+                onDelete={() => setShowDeleteConfirm(project.id)}
+              />
             </motion.div>
-          ) : (
-            <>
-              {/* Grid View */}
-              <motion.div
-                variants={containerVariants}
-                className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5"
-              >
-                {filteredProjects.map((project, idx) => (
-                  <motion.div
-                    key={project.id}
-                    variants={cardVariants}
-                    className="relative"
-                  >
-                    {selectedForComparison.has(project.id) && (
-                      <motion.div
-                        initial={{ scale: 0 }}
-                        animate={{ scale: 1 }}
-                        className="absolute -top-2 -right-2 z-10"
-                      >
-                        <div className="w-7 h-7 bg-gradient-to-br from-emerald-500 to-cyan-500 text-white rounded-full flex items-center justify-center text-xs font-bold shadow-lg">
-                          ✓
-                        </div>
-                      </motion.div>
-                    )}
-                    <div
-                      className={`cursor-pointer transition-all ${selectedForComparison.has(project.id) ? 'ring-2 ring-emerald-500/50 rounded-xl' : ''}`}
-                      onClick={() => handleToggleComparison(project.id)}
-                    >
-                      <ProjectCard
-                        project={project}
-                        onView={setSelectedProject}
-                        onViewScenarios={setScenarioViewProjectId}
-                        onDelete={() => setShowDeleteConfirm(project.id)}
-                      />
-                    </div>
-                  </motion.div>
-                ))}
-              </motion.div>
-
-              {/* Comparison View */}
-              <AnimatePresence>
-                {showComparisonView && projectsForComparison.length > 1 && (
-                  <div ref={comparisonRef}>
-                    <CrossCalculatorComparison projects={projectsForComparison} />
-                  </div>
-                )}
-              </AnimatePresence>
-            </>
-          )}
+          ))}
         </motion.div>
 
         {/* Project Details Modal */}
