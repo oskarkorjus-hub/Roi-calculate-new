@@ -844,43 +844,33 @@ export function ProjectDetailsModal({ project, onClose, onDelete }: ProjectDetai
           </div>
 
           {/* Action Buttons */}
-          <div className="flex flex-col gap-4 border-t border-zinc-800 pt-4">
-            {/* Export Options */}
-            <div className="space-y-2">
-              <div className="text-xs font-medium text-zinc-500 uppercase tracking-wider">Export Options</div>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-                <button
-                  onClick={() => {
-                    generateProjectPDF(project);
-                  }}
-                  className="flex items-center justify-center gap-2 px-4 py-3 bg-zinc-800 border border-zinc-700 text-white rounded-lg hover:bg-zinc-700 transition font-medium text-sm"
-                >
-                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                  </svg>
-                  Summary PDF
-                </button>
-              </div>
-            </div>
-
-            {/* Main Actions */}
-            <div className="flex gap-3">
-              <button
-                onClick={onClose}
-                className="flex-1 px-3 sm:px-4 py-3 min-h-[44px] text-zinc-300 border border-zinc-700 rounded-lg hover:bg-zinc-800 transition font-medium text-xs sm:text-sm"
-              >
-                Close
-              </button>
-              <button
-                onClick={() => {
-                  onDelete(project.id);
-                  onClose();
-                }}
-                className="flex-1 px-3 sm:px-4 py-3 min-h-[44px] bg-red-600 text-white rounded-lg hover:bg-red-700 transition font-medium text-xs sm:text-sm"
-              >
-                Delete Project
-              </button>
-            </div>
+          <div className="flex gap-3 border-t border-zinc-800 pt-4">
+            <button
+              onClick={() => {
+                generateProjectPDF(project);
+              }}
+              className="flex items-center justify-center gap-2 px-4 py-3 min-h-[44px] bg-zinc-800 border border-zinc-700 text-white rounded-lg hover:bg-zinc-700 transition font-medium text-sm"
+            >
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+              PDF
+            </button>
+            <button
+              onClick={onClose}
+              className="flex-1 px-4 py-3 min-h-[44px] text-zinc-300 border border-zinc-700 rounded-lg hover:bg-zinc-800 transition font-medium text-sm"
+            >
+              Close
+            </button>
+            <button
+              onClick={() => {
+                onDelete(project.id);
+                onClose();
+              }}
+              className="flex-1 px-4 py-3 min-h-[44px] bg-red-600 text-white rounded-lg hover:bg-red-700 transition font-medium text-sm"
+            >
+              Delete
+            </button>
           </div>
         </div>
       </div>
