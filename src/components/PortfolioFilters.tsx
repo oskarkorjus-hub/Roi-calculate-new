@@ -254,22 +254,21 @@ export function PortfolioFilters({ projects, onFiltersChange }: PortfolioFilters
         <div className="flex flex-wrap gap-2">
           <span className="text-xs text-zinc-500 flex items-center mr-1">Quick filters:</span>
           {[
-            { id: 'top-performers', label: 'Top Performers', icon: '⭐' },
-            { id: 'high-roi', label: 'High ROI', icon: '📈' },
-            { id: 'positive-cashflow', label: 'Positive Cash Flow', icon: '💰' },
-            { id: 'recent', label: 'Recent (30d)', icon: '🕐' },
-            { id: 'needs-attention', label: 'Needs Attention', icon: '⚠️' },
+            { id: 'top-performers', label: 'Top Performers' },
+            { id: 'high-roi', label: 'High ROI' },
+            { id: 'positive-cashflow', label: 'Positive Cash Flow' },
+            { id: 'recent', label: 'Recent (30d)' },
+            { id: 'needs-attention', label: 'Needs Attention' },
           ].map(preset => (
             <button
               key={preset.id}
               onClick={() => applyQuickFilter(quickFilter === preset.id ? 'none' : preset.id as QuickFilter)}
-              className={`px-3 py-1.5 rounded-full text-xs font-medium transition flex items-center gap-1.5 ${
+              className={`px-3 py-1.5 rounded-lg text-xs font-medium transition ${
                 quickFilter === preset.id
-                  ? 'bg-emerald-500 text-white'
-                  : 'bg-zinc-800 text-zinc-400 hover:bg-zinc-700 hover:text-white border border-zinc-700'
+                  ? 'bg-zinc-700 text-white'
+                  : 'bg-zinc-800/60 text-zinc-400 hover:bg-zinc-800 hover:text-zinc-200 border border-zinc-700/50'
               }`}
             >
-              <span>{preset.icon}</span>
               {preset.label}
             </button>
           ))}
@@ -436,7 +435,7 @@ export function PortfolioFilters({ projects, onFiltersChange }: PortfolioFilters
               <option value="very-good" className="bg-zinc-800">Very Good (70-84)</option>
               <option value="good" className="bg-zinc-800">Good (60-69)</option>
               <option value="moderate" className="bg-zinc-800">Moderate (50-59)</option>
-              <option value="high-risk" className="bg-zinc-800">⚠️ High Risk (&lt;50)</option>
+              <option value="high-risk" className="bg-zinc-800">High Risk (&lt;50)</option>
             </select>
           </div>
         </div>

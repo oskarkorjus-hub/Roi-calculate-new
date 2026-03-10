@@ -213,20 +213,19 @@ export function CalculatorGrid({
                     onClick={() => onSelectCalculator(calc.id)}
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
-                    className="group relative p-5 rounded-2xl bg-gradient-to-br from-zinc-900 to-zinc-900/50 border border-zinc-800 hover:border-emerald-500/40 text-left transition-all"
+                    className="group relative p-4 rounded-xl bg-zinc-900/80 border border-zinc-800 hover:border-zinc-700 text-left transition-all"
                   >
-                    <div className="flex items-center gap-3 mb-3">
-                      <div className="w-10 h-10 rounded-xl bg-emerald-500/20 flex items-center justify-center">
-                        <span className="material-symbols-outlined text-xl text-emerald-400">
+                    <div className="flex items-center gap-3 mb-2">
+                      <div className="w-9 h-9 rounded-lg bg-zinc-800 flex items-center justify-center">
+                        <span className="material-symbols-outlined text-lg text-zinc-400">
                           {calc.icon}
                         </span>
                       </div>
-                      <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
                     </div>
-                    <h3 className="font-semibold text-white group-hover:text-emerald-400 transition-colors">
+                    <h3 className="font-medium text-white group-hover:text-zinc-100 transition-colors text-sm">
                       {calc.shortName}
                     </h3>
-                    <p className="text-sm text-zinc-500 mt-1">Click to continue</p>
+                    <p className="text-xs text-zinc-600 mt-0.5">Continue</p>
                   </motion.button>
                 ))}
               </div>

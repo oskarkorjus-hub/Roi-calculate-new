@@ -213,8 +213,8 @@ export function ScenarioComparison() {
                     : 'bg-zinc-800 text-zinc-400 border border-zinc-700'
               }`}
             >
-              <span className="mt-0.5">
-                {insight.type === 'warning' ? '⚠️' : insight.type === 'comparison' ? '📊' : 'ℹ️'}
+              <span className="text-xs font-medium uppercase tracking-wide opacity-60">
+                {insight.type === 'warning' ? 'Note' : insight.type === 'comparison' ? 'Insight' : 'Info'}
               </span>
               <span>{insight.message}</span>
             </div>

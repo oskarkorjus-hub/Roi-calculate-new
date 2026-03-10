@@ -105,7 +105,7 @@ export function DashboardLayout({
       {/* Main Content Area */}
       <motion.div
         initial={false}
-        animate={{ marginLeft: sidebarCollapsed ? 72 : 260 }}
+        animate={{ marginLeft: sidebarCollapsed ? 64 : 240 }}
         transition={{ duration: 0.2, ease: [0.4, 0, 0.2, 1] }}
         className="min-h-screen"
       >
