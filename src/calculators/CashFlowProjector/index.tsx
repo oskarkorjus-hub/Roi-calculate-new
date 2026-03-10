@@ -6,6 +6,7 @@ import { ReportPreviewModal } from '../../components/ui/ReportPreviewModal';
 import { ComparisonButtons } from '../../components/ui/ComparisonButtons';
 import { generateCashFlowReport } from '../../hooks/useReportGenerator';
 import { useArchivedDrafts, type ArchivedDraft } from '../../hooks/useArchivedDrafts';
+import { useAutoSave } from '../../hooks/useAutoSave';
 import { useAuth } from '../../lib/auth-context';
 import { parseDecimalInput } from '../../utils/numberParsing';
 import { CashFlowInputs } from './components/CashFlowInputs';
@@ -74,6 +75,13 @@ export function CashFlowProjector() {
   const [currentDraftName, setCurrentDraftName] = useState<string | undefined>();
 
   const { drafts, saveDraft: saveArchivedDraft, deleteDraft } = useArchivedDrafts<CashFlowInputsType>('cashflow', user?.id);
+
+  // Auto-save for "Continue Where You Left Off"
+  useAutoSave('cashflow', inputs, (data) => ({
+    monthlyIncome: data.monthlyRentalIncome,
+    projectionYears: data.projectionYears,
+    currency: data.currency,
+  }));
 
   const handleSelectDraft = useCallback((draft: ArchivedDraft<CashFlowInputsType>) => {
     setInputs(draft.data);

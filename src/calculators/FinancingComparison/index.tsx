@@ -11,6 +11,7 @@ import { LoanComparisonChart } from './components/LoanComparisonChart';
 import { AmortizationTable } from './components/AmortizationTable';
 import { LoanCard } from './components/LoanCard';
 import { useArchivedDrafts, type ArchivedDraft } from '../../hooks/useArchivedDrafts';
+import { useAutoSave } from '../../hooks/useAutoSave';
 import { useAuth } from '../../lib/auth-context';
 import type { FinancingComparisonData } from '../../lib/comparison-types';
 
@@ -141,6 +142,13 @@ export function FinancingComparison() {
 
   const { user } = useAuth();
   const { drafts, saveDraft: saveArchivedDraft, deleteDraft } = useArchivedDrafts<FinancingInputs>('financing', user?.id);
+
+  // Auto-save for "Continue Where You Left Off"
+  useAutoSave('financing', inputs, (data) => ({
+    propertyValue: data.propertyValue,
+    loanCount: data.loans.length,
+    currency: data.currency,
+  }));
 
   const handleSelectDraft = useCallback((draft: ArchivedDraft<FinancingInputs>) => {
     setInputs(draft.data);

@@ -6,6 +6,7 @@ import { ReportPreviewModal } from '../../components/ui/ReportPreviewModal';
 import { ComparisonButtons } from '../../components/ui/ComparisonButtons';
 import { generateMortgageReport } from '../../hooks/useReportGenerator';
 import { useArchivedDrafts, type ArchivedDraft } from '../../hooks/useArchivedDrafts';
+import { useAutoSave } from '../../hooks/useAutoSave';
 import { useAuth } from '../../lib/auth-context';
 import { parseDecimalInput } from '../../utils/numberParsing';
 import { MortgageInputs } from './components/MortgageInputs';
@@ -82,6 +83,14 @@ export function MortgageCalculator() {
   const [currentDraftName, setCurrentDraftName] = useState<string | undefined>();
 
   const { drafts, saveDraft: saveArchivedDraft, deleteDraft } = useArchivedDrafts<MortgageInputsType>('mortgage', user?.id);
+
+  // Auto-save for "Continue Where You Left Off"
+  useAutoSave('mortgage', inputs, (data) => ({
+    loanAmount: data.loanAmount,
+    interestRate: data.interestRate,
+    loanTerm: data.loanTerm,
+    currency: data.currency,
+  }));
 
   const handleSelectDraft = useCallback((draft: ArchivedDraft<MortgageInputsType>) => {
     setInputs(draft.data);

@@ -7,6 +7,7 @@ import { ReportPreviewModal } from '../../components/ui/ReportPreviewModal';
 import { ComparisonButtons } from '../../components/ui/ComparisonButtons';
 import { generateIRRReport } from '../../hooks/useReportGenerator';
 import { useArchivedDrafts, type ArchivedDraft } from '../../hooks/useArchivedDrafts';
+import { useAutoSave } from '../../hooks/useAutoSave';
 import { useAuth } from '../../lib/auth-context';
 import { parseDecimalInput } from '../../utils/numberParsing';
 import { CashFlowInputs } from './components/CashFlowInputs';
@@ -64,6 +65,17 @@ export function IRRCalculator() {
   const [currentDraftName, setCurrentDraftName] = useState<string | undefined>();
 
   const { drafts, saveDraft: saveArchivedDraft, deleteDraft } = useArchivedDrafts<IRRInputs>('irr', user?.id);
+
+  // Auto-save for "Continue Where You Left Off"
+  const autoSaveData = useMemo(() => ({ currency, discountRate, cashFlows, showAdvanced, reinvestmentRate, alternativeDiscountRate }), [currency, discountRate, cashFlows, showAdvanced, reinvestmentRate, alternativeDiscountRate]);
+  useAutoSave('irr', autoSaveData, (data) => {
+    const initialInvestment = Math.abs(data.cashFlows[0]?.amount || 0);
+    return {
+      initialInvestment,
+      years: data.cashFlows.length - 1,
+      currency: data.currency,
+    };
+  });
 
   const handleSelectDraft = useCallback((draft: ArchivedDraft<IRRInputs>) => {
     setCurrency(draft.data.currency);

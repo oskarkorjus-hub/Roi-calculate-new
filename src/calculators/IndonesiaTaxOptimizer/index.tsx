@@ -12,6 +12,7 @@ import { TaxResults } from './components/TaxResults';
 import { TaxProjectionTable } from './components/TaxProjectionTable';
 import { OwnershipComparison } from './components/OwnershipComparison';
 import { useArchivedDrafts, type ArchivedDraft } from '../../hooks/useArchivedDrafts';
+import { useAutoSave } from '../../hooks/useAutoSave';
 import { useAuth } from '../../lib/auth-context';
 import type { IndonesiaTaxComparisonData } from '../../lib/comparison-types';
 
@@ -164,6 +165,13 @@ export function IndonesiaTaxOptimizer() {
 
   const { user } = useAuth();
   const { drafts, saveDraft: saveArchivedDraft, deleteDraft } = useArchivedDrafts<TaxInputs>('indonesia-tax', user?.id);
+
+  // Auto-save for "Continue Where You Left Off"
+  useAutoSave('indonesia-tax', inputs, (data) => ({
+    purchasePrice: data.purchasePrice,
+    holdingPeriod: data.holdingPeriod,
+    ownershipType: data.ownershipStructure,
+  }));
 
   const handleSelectDraft = useCallback((draft: ArchivedDraft<TaxInputs>) => {
     setInputs(draft.data);

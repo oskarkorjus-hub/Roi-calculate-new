@@ -6,6 +6,7 @@ import { ReportPreviewModal } from '../../components/ui/ReportPreviewModal';
 import { ComparisonButtons } from '../../components/ui/ComparisonButtons';
 import { generateCapRateReport } from '../../hooks/useReportGenerator';
 import { useArchivedDrafts, type ArchivedDraft } from '../../hooks/useArchivedDrafts';
+import { useAutoSave } from '../../hooks/useAutoSave';
 import { useAuth } from '../../lib/auth-context';
 import { formatCurrency, parseDecimalInput } from '../../utils/numberParsing';
 import { PropertyInputs } from './components/PropertyInputs';
@@ -63,6 +64,13 @@ export function CapRateCalculator() {
   const [currentDraftName, setCurrentDraftName] = useState<string | undefined>();
 
   const { drafts, saveDraft: saveArchivedDraft, deleteDraft } = useArchivedDrafts<CapRateInputs>('cap-rate', user?.id);
+
+  // Auto-save for "Continue Where You Left Off"
+  useAutoSave('cap-rate', inputs, (data) => ({
+    propertyValue: data.propertyValue,
+    annualNOI: data.annualNOI,
+    currency: data.currency,
+  }));
 
   const handleSelectDraft = useCallback((draft: ArchivedDraft<CapRateInputs>) => {
     setInputs(draft.data);

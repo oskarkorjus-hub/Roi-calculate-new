@@ -12,6 +12,7 @@ import { BudgetChart } from './components/BudgetChart';
 import { TimelineGantt } from './components/TimelineGantt';
 import { CostOverrunAnalysis } from './components/CostOverrunAnalysis';
 import { useArchivedDrafts, type ArchivedDraft } from '../../hooks/useArchivedDrafts';
+import { useAutoSave } from '../../hooks/useAutoSave';
 import { useAuth } from '../../lib/auth-context';
 import type { DevBudgetComparisonData } from '../../lib/comparison-types';
 
@@ -131,6 +132,13 @@ export function DevBudgetTracker() {
 
   const { user } = useAuth();
   const { drafts, saveDraft: saveArchivedDraft, deleteDraft } = useArchivedDrafts<TrackerInputs>('dev-budget', user?.id);
+
+  // Auto-save for "Continue Where You Left Off"
+  useAutoSave('dev-budget', inputs, (data) => ({
+    projectName: data.projectName,
+    totalBudget: data.landCost + data.constructionHard + data.softCosts + data.contingency + data.financing + data.marketing,
+    currency: data.currency,
+  }));
 
   const handleSelectDraft = useCallback((draft: ArchivedDraft<TrackerInputs>) => {
     setInputs(draft.data);

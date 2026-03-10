@@ -13,6 +13,7 @@ import { CalculatorToolbar } from '../../components/ui/CalculatorToolbar';
 import { ReportPreviewModal } from '../../components/ui/ReportPreviewModal';
 import { generateRentalROIReport } from '../../hooks/useReportGenerator';
 import { useArchivedDrafts, type ArchivedDraft } from '../../hooks/useArchivedDrafts';
+import { useAutoSave } from '../../hooks/useAutoSave';
 import { useAuth } from '../../lib/auth-context';
 
 const DRAFT_STORAGE_KEY = 'rental_roi_draft';
@@ -52,6 +53,14 @@ export function RentalROICalculator() {
 
   // Pass user ID to isolate drafts per user
   const { drafts, saveDraft: saveArchivedDraft, deleteDraft } = useArchivedDrafts<Assumptions>('rental-roi', user?.id);
+
+  // Auto-save for "Continue Where You Left Off"
+  useAutoSave('rental-roi', assumptions, (data) => ({
+    initialInvestment: data.initialInvestment,
+    keys: data.keys,
+    y1ADR: data.y1ADR,
+    currency: currencyCode,
+  }));
 
   const handleReset = useCallback(() => {
     if (showResetConfirm) {

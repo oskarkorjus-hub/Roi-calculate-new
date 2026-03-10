@@ -9,6 +9,7 @@ import { formatCurrency, parseDecimalInput } from '../../utils/numberParsing';
 import { AdvancedSection } from '../../components/AdvancedSection';
 import { Tooltip } from '../../components/ui/Tooltip';
 import { useArchivedDrafts, type ArchivedDraft } from '../../hooks/useArchivedDrafts';
+import { useAutoSave } from '../../hooks/useAutoSave';
 import { useAuth } from '../../lib/auth-context';
 import type { DevFeasibilityComparisonData } from '../../lib/comparison-types';
 
@@ -97,6 +98,13 @@ export function DevFeasibilityCalculator() {
 
   const { user } = useAuth();
   const { drafts, saveDraft: saveArchivedDraft, deleteDraft } = useArchivedDrafts<DevInputs>('dev-feasibility', user?.id);
+
+  // Auto-save for "Continue Where You Left Off"
+  useAutoSave('dev-feasibility', inputs, (data) => ({
+    landCost: data.landCost,
+    avgSalePrice: data.avgSalePrice,
+    currency: data.currency,
+  }));
 
   const handleSelectDraft = useCallback((draft: ArchivedDraft<DevInputs>) => {
     setInputs(draft.data);

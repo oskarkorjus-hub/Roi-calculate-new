@@ -1,6 +1,7 @@
 import { useState, useCallback, useRef, useEffect, useMemo } from 'react';
 import { useInvestment } from '../../hooks/useInvestment';
 import { useArchivedDrafts, type ArchivedDraft } from '../../hooks/useArchivedDrafts';
+import { useAutoSave } from '../../hooks/useAutoSave';
 import {
   PropertyDetails,
   PaymentTerms,
@@ -52,6 +53,13 @@ export function XIRRCalculator() {
 
   // Pass user ID to isolate drafts per user
   const { drafts, saveDraft: saveArchivedDraft, deleteDraft } = useArchivedDrafts<InvestmentData>('xirr', user?.id);
+
+  // Auto-save for "Continue Where You Left Off"
+  useAutoSave('xirr', data, (d) => ({
+    propertyPrice: d.property?.totalPrice || 0,
+    exitPrice: d.exit?.projectedSalesPrice || 0,
+    currency: currency,
+  }));
 
   const handleReset = useCallback(() => {
     if (showResetConfirm) {

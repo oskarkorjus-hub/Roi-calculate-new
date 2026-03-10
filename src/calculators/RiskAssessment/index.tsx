@@ -13,6 +13,7 @@ import { ScenarioAnalysis } from './components/ScenarioAnalysis';
 import { SensitivityChart } from './components/SensitivityChart';
 import { RiskMitigation } from './components/RiskMitigation';
 import { useArchivedDrafts, type ArchivedDraft } from '../../hooks/useArchivedDrafts';
+import { useAutoSave } from '../../hooks/useAutoSave';
 import { useAuth } from '../../lib/auth-context';
 import type { RiskAssessmentComparisonData } from '../../lib/comparison-types';
 
@@ -178,6 +179,14 @@ export function RiskAssessment() {
 
   const { user } = useAuth();
   const { drafts, saveDraft: saveArchivedDraft, deleteDraft } = useArchivedDrafts<RiskInputs>('risk-assessment', user?.id);
+
+  // Auto-save for "Continue Where You Left Off"
+  useAutoSave('risk-assessment', inputs, (data) => ({
+    investmentAmount: data.investmentAmount,
+    projectROI: data.projectROI,
+    propertyType: data.propertyType,
+    currency: data.currency,
+  }));
 
   const handleSelectDraft = useCallback((draft: ArchivedDraft<RiskInputs>) => {
     setInputs(draft.data);

@@ -6,6 +6,7 @@ import { ReportPreviewModal } from '../../components/ui/ReportPreviewModal';
 import { ComparisonButtons } from '../../components/ui/ComparisonButtons';
 import { generateNPVReport } from '../../hooks/useReportGenerator';
 import { useArchivedDrafts, type ArchivedDraft } from '../../hooks/useArchivedDrafts';
+import { useAutoSave } from '../../hooks/useAutoSave';
 import { useAuth } from '../../lib/auth-context';
 import { formatCurrency, parseDecimalInput } from '../../utils/numberParsing';
 import type { NPVComparisonData } from '../../lib/comparison-types';
@@ -54,6 +55,18 @@ export function NPVCalculator() {
   const [currentDraftName, setCurrentDraftName] = useState<string | undefined>();
 
   const { drafts, saveDraft: saveArchivedDraft, deleteDraft } = useArchivedDrafts<NPVInputs>('npv', user?.id);
+
+  // Auto-save for "Continue Where You Left Off"
+  const autoSaveData = useMemo(() => ({ currency, discountRate, cashFlows }), [currency, discountRate, cashFlows]);
+  useAutoSave('npv', autoSaveData, (data) => {
+    const initialInvestment = Math.abs(data.cashFlows[0]?.amount || 0);
+    return {
+      initialInvestment,
+      discountRate: data.discountRate,
+      years: data.cashFlows.length - 1,
+      currency: data.currency,
+    };
+  });
 
   const handleSelectDraft = useCallback((draft: ArchivedDraft<NPVInputs>) => {
     setCurrency(draft.data.currency);

@@ -2,6 +2,7 @@ import { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { CALCULATORS } from '../calculators/registry';
 import type { Calculator } from '../calculators/registry';
+import { loadAutoSave, type AutoSaveData } from '../hooks/useAutoSave';
 
 interface CalculatorGridProps {
   onSelectCalculator: (id: string) => void;
@@ -77,11 +78,19 @@ export function CalculatorGrid({
     );
   }, [searchQuery]);
 
-  // Get recent calculators
+  // Get recent calculators with auto-save data
   const recentCalcs = useMemo(() => {
     return recentCalculators
-      .map(id => CALCULATORS.find(c => c.id === id))
-      .filter((c): c is Calculator => c !== undefined)
+      .map(id => {
+        const calc = CALCULATORS.find(c => c.id === id);
+        if (!calc) return null;
+        const autoSave = loadAutoSave(id);
+        return {
+          calculator: calc,
+          autoSave,
+        };
+      })
+      .filter((c): c is { calculator: Calculator; autoSave: AutoSaveData<unknown> | null } => c !== null)
       .slice(0, 4);
   }, [recentCalculators]);
 
@@ -207,27 +216,35 @@ export function CalculatorGrid({
                 <h2 className="text-lg font-semibold text-white">Continue Where You Left Off</h2>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                {recentCalcs.map(calc => (
-                  <motion.button
-                    key={calc.id}
-                    onClick={() => onSelectCalculator(calc.id)}
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    className="group relative p-4 rounded-xl bg-zinc-900/80 border border-zinc-800 hover:border-zinc-700 text-left transition-all"
-                  >
-                    <div className="flex items-center gap-3 mb-2">
-                      <div className="w-9 h-9 rounded-lg bg-zinc-800 flex items-center justify-center">
-                        <span className="material-symbols-outlined text-lg text-zinc-400">
-                          {calc.icon}
-                        </span>
+                {recentCalcs.map(({ calculator: calc, autoSave }) => {
+                  const previewText = getPreviewText(calc.id, autoSave?.preview as Record<string, string | number> | undefined);
+                  const hasData = previewText !== 'Continue';
+                  const colors = ICON_COLORS[calc.id] || { bg: 'bg-zinc-800', text: 'text-zinc-400' };
+
+                  return (
+                    <motion.button
+                      key={calc.id}
+                      onClick={() => onSelectCalculator(calc.id)}
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      className="group relative p-4 rounded-xl bg-zinc-900/80 border border-zinc-800 hover:border-zinc-700 text-left transition-all"
+                    >
+                      <div className="flex items-center gap-3 mb-2">
+                        <div className={`w-9 h-9 rounded-lg ${colors.bg} flex items-center justify-center`}>
+                          <span className={`material-symbols-outlined text-lg ${colors.text}`}>
+                            {calc.icon}
+                          </span>
+                        </div>
                       </div>
-                    </div>
-                    <h3 className="font-medium text-white group-hover:text-zinc-100 transition-colors text-sm">
-                      {calc.shortName}
-                    </h3>
-                    <p className="text-xs text-zinc-600 mt-0.5">Continue</p>
-                  </motion.button>
-                ))}
+                      <h3 className="font-medium text-white group-hover:text-zinc-100 transition-colors text-sm">
+                        {calc.shortName}
+                      </h3>
+                      <p className={`text-xs mt-0.5 ${hasData ? 'text-emerald-400' : 'text-zinc-600'}`}>
+                        {previewText}
+                      </p>
+                    </motion.button>
+                  );
+                })}
               </div>
             </section>
           )}
@@ -285,6 +302,75 @@ interface CalculatorCardProps {
   calculator: Calculator;
   onSelect: (id: string) => void;
   showFullDescription?: boolean;
+}
+
+// Format currency values for preview display
+const CURRENCY_SYMBOLS: Record<string, string> = {
+  IDR: 'Rp', USD: '$', AUD: 'A$', EUR: '€', GBP: '£', INR: '₹', CNY: '¥', AED: 'د.إ', RUB: '₽'
+};
+
+function formatPreviewValue(value: number, currency?: string): string {
+  if (!value || value === 0) return '';
+  const symbol = currency ? CURRENCY_SYMBOLS[currency] || '' : '';
+  if (value >= 1000000000) {
+    return `${symbol}${(value / 1000000000).toFixed(1)}B`;
+  }
+  if (value >= 1000000) {
+    return `${symbol}${(value / 1000000).toFixed(1)}M`;
+  }
+  if (value >= 1000) {
+    return `${symbol}${(value / 1000).toFixed(0)}K`;
+  }
+  return `${symbol}${value.toFixed(0)}`;
+}
+
+function getPreviewText(calcId: string, preview: Record<string, string | number> | undefined): string {
+  if (!preview) return 'Continue';
+
+  const currency = preview.currency as string | undefined;
+
+  switch (calcId) {
+    case 'mortgage':
+      if (preview.loanAmount) return `Loan: ${formatPreviewValue(preview.loanAmount as number, currency)}`;
+      break;
+    case 'rental-roi':
+      if (preview.initialInvestment) return `Investment: ${formatPreviewValue(preview.initialInvestment as number, currency)}`;
+      break;
+    case 'npv':
+    case 'irr':
+      if (preview.initialInvestment) return `Investment: ${formatPreviewValue(preview.initialInvestment as number, currency)}`;
+      break;
+    case 'cashflow':
+      if (preview.monthlyIncome) return `Income: ${formatPreviewValue(preview.monthlyIncome as number, currency)}/mo`;
+      break;
+    case 'cap-rate':
+      if (preview.propertyValue) return `Value: ${formatPreviewValue(preview.propertyValue as number, currency)}`;
+      break;
+    case 'xirr':
+      if (preview.propertyPrice) return `Price: ${formatPreviewValue(preview.propertyPrice as number, currency)}`;
+      break;
+    case 'dev-feasibility':
+      if (preview.landCost) return `Land: ${formatPreviewValue(preview.landCost as number, currency)}`;
+      break;
+    case 'dev-budget':
+      if (preview.totalBudget) return `Budget: ${formatPreviewValue(preview.totalBudget as number, currency)}`;
+      if (preview.projectName) return `${preview.projectName}`;
+      break;
+    case 'financing':
+      if (preview.propertyValue) return `Value: ${formatPreviewValue(preview.propertyValue as number, currency)}`;
+      break;
+    case 'indonesia-tax':
+      if (preview.purchasePrice) return `Price: ${formatPreviewValue(preview.purchasePrice as number, currency)}`;
+      break;
+    case 'rental-projection':
+      if (preview.nightlyRate) return `${formatPreviewValue(preview.nightlyRate as number, currency)}/night`;
+      break;
+    case 'risk-assessment':
+      if (preview.investmentAmount) return `Investment: ${formatPreviewValue(preview.investmentAmount as number, currency)}`;
+      break;
+  }
+
+  return 'Continue';
 }
 
 const ICON_COLORS: Record<string, { bg: string; text: string }> = {

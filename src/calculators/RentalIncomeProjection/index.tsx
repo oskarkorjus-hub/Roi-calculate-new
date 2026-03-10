@@ -13,6 +13,7 @@ import { OccupancyHeatmap } from './components/OccupancyHeatmap';
 import { CashFlowChart } from './components/CashFlowChart';
 import { ProjectionResults } from './components/ProjectionResults';
 import { useArchivedDrafts, type ArchivedDraft } from '../../hooks/useArchivedDrafts';
+import { useAutoSave } from '../../hooks/useAutoSave';
 import { useAuth } from '../../lib/auth-context';
 import type { RentalProjectionComparisonData } from '../../lib/comparison-types';
 
@@ -243,6 +244,14 @@ export function RentalIncomeProjection() {
 
   const { user } = useAuth();
   const { drafts, saveDraft: saveArchivedDraft, deleteDraft } = useArchivedDrafts<RentalInputs>('rental-projection', user?.id);
+
+  // Auto-save for "Continue Where You Left Off"
+  useAutoSave('rental-projection', inputs, (data) => ({
+    nightlyRate: data.nightlyRate,
+    projectionYears: data.projectionYears,
+    location: data.location,
+    currency: data.currency,
+  }));
 
   const handleSelectDraft = useCallback((draft: ArchivedDraft<RentalInputs>) => {
     setInputs(draft.data);
