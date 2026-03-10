@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { Sidebar } from './Sidebar';
 import { CommandPalette } from './CommandPalette';
+import { NotificationPanel } from '../NotificationPanel';
 import { useAuth } from '../../lib/auth-context';
 
 interface DashboardLayoutProps {
@@ -139,12 +140,8 @@ export function DashboardLayout({
                 </kbd>
               </button>
 
-              {/* Notifications (placeholder) */}
-              <button className="w-10 h-10 rounded-xl bg-zinc-800/50 border border-zinc-700/50 flex items-center justify-center text-zinc-400 hover:text-white hover:bg-zinc-800 transition-all relative">
-                <span className="material-symbols-outlined text-xl">notifications</span>
-                {/* Notification dot */}
-                <span className="absolute top-2 right-2 w-2 h-2 bg-emerald-500 rounded-full" />
-              </button>
+              {/* Notifications */}
+              <NotificationPanel />
 
               {/* User Menu */}
               {user && (

@@ -6,16 +6,19 @@ import { AuthProvider } from './lib/auth-context'
 import { TierProvider } from './lib/tier-context'
 import { PortfolioProvider } from './lib/portfolio-context'
 import { ComparisonProvider } from './lib/comparison-context'
+import { NotificationProvider } from './lib/notification-context'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <AuthProvider>
       <TierProvider>
-        <PortfolioProvider>
-          <ComparisonProvider>
-            <App />
-          </ComparisonProvider>
-        </PortfolioProvider>
+        <NotificationProvider>
+          <PortfolioProvider>
+            <ComparisonProvider>
+              <App />
+            </ComparisonProvider>
+          </PortfolioProvider>
+        </NotificationProvider>
       </TierProvider>
     </AuthProvider>
   </StrictMode>,
