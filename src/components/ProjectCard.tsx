@@ -424,7 +424,10 @@ export function ProjectCard({
   // Compact view for dashboards
   if (compact) {
     return (
-      <div className="bg-zinc-900 rounded-xl border border-zinc-800 p-4 hover:border-zinc-700 transition-all group">
+      <div
+        className="bg-zinc-900 rounded-xl border border-zinc-800 p-4 hover:border-zinc-700 transition-all group cursor-pointer"
+        onClick={() => onView?.(project)}
+      >
         <div className="flex items-start justify-between gap-3">
           <div className="flex-1 min-w-0">
             <h3 className="font-semibold text-white truncate text-sm">{project.projectName}</h3>
@@ -465,7 +468,8 @@ export function ProjectCard({
   // Full enterprise-level view
   return (
     <div
-      className="bg-zinc-900 rounded-xl border border-zinc-800 overflow-hidden hover:border-zinc-700/80 transition-all group"
+      className="bg-zinc-900 rounded-xl border border-zinc-800 overflow-hidden hover:border-zinc-700/80 transition-all group cursor-pointer"
+      onClick={() => onView?.(project)}
       onMouseEnter={() => setShowActions(true)}
       onMouseLeave={() => {
         setShowActions(false);
