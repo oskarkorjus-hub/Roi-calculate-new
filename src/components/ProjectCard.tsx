@@ -1,14 +1,12 @@
 import { useState, useMemo } from 'react';
 import type { PortfolioProject } from '../types/portfolio';
 import { generateProjectPDF } from '../utils/pdfExport';
-import { ScenarioCreator } from './ScenarioCreator';
 import { getScoreColor, recalculateProjectScore } from '../utils/investmentScoring';
 
 interface ProjectCardProps {
   project: PortfolioProject;
   onDelete?: (projectId: string) => void;
   onView?: (project: PortfolioProject) => void;
-  onViewScenarios?: (projectId: string) => void;
   compact?: boolean;
 }
 
@@ -351,12 +349,10 @@ export function ProjectCard({
   project,
   onDelete,
   onView,
-  onViewScenarios,
   compact = false,
 }: ProjectCardProps) {
   const [showActions, setShowActions] = useState(false);
   const [showExportMenu, setShowExportMenu] = useState(false);
-  const [showScenarioModal, setShowScenarioModal] = useState(false);
 
   const categoryConfig = getCategoryConfig(project.calculatorId);
 
@@ -659,20 +655,6 @@ export function ProjectCard({
             </button>
           )}
 
-          {/* Scenarios Badge (if any) */}
-          {(project.scenarios?.length ?? 0) > 0 && onViewScenarios && (
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                onViewScenarios(project.id);
-              }}
-              className="px-2 py-1.5 text-xs font-medium text-amber-400 bg-amber-500/10 hover:bg-amber-500/20 rounded-lg transition"
-              title={`Compare ${project.scenarios?.length || 0} scenarios`}
-            >
-              {project.scenarios?.length} Scenarios
-            </button>
-          )}
-
           {/* Actions Menu */}
           <div className="relative" onClick={(e) => e.stopPropagation()}>
             <button
@@ -707,24 +689,6 @@ export function ProjectCard({
                   Download PDF
                 </button>
 
-                {/* Tools Section */}
-                <div className="px-3 py-2 border-t border-b border-zinc-700">
-                  <span className="text-[10px] font-semibold text-zinc-500 uppercase tracking-wider">Tools</span>
-                </div>
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setShowScenarioModal(true);
-                    setShowExportMenu(false);
-                  }}
-                  className="w-full px-3 py-2.5 text-left text-xs text-zinc-300 hover:bg-zinc-700 flex items-center gap-2"
-                >
-                  <svg className="w-4 h-4 text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
-                  </svg>
-                  What-if Scenario
-                </button>
-
                 {/* Delete */}
                 {onDelete && (
                   <>
@@ -749,17 +713,6 @@ export function ProjectCard({
           </div>
         </div>
       </div>
-
-      {/* Modals - rendered outside menu to persist state */}
-      {showScenarioModal && (
-        <ScenarioCreator
-          project={project}
-          variant="default"
-          onClose={() => setShowScenarioModal(false)}
-          isOpen={showScenarioModal}
-          onOpenChange={setShowScenarioModal}
-        />
-      )}
     </div>
   );
 }

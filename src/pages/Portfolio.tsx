@@ -3,7 +3,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { usePortfolio } from '../lib/portfolio-context';
 import { ProjectCard } from '../components/ProjectCard';
 import { ProjectDetailsModal } from '../components/ProjectDetailsModal';
-import { ScenarioAnalysisPage } from './ScenarioAnalysis';
 import type { PortfolioProject } from '../types/portfolio';
 
 // Custom easing for premium animations
@@ -48,7 +47,6 @@ const cardVariants = {
 export function Portfolio() {
   const { projects, deleteProject } = usePortfolio();
   const [selectedProject, setSelectedProject] = useState<PortfolioProject | null>(null);
-  const [scenarioViewProjectId, setScenarioViewProjectId] = useState<string | null>(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState<string | null>(null);
 
   const handleDeleteProject = useCallback((projectId: string) => {
@@ -58,16 +56,6 @@ export function Portfolio() {
       setSelectedProject(null);
     }
   }, [deleteProject, selectedProject]);
-
-  // Scenario Analysis View
-  if (scenarioViewProjectId) {
-    return (
-      <ScenarioAnalysisPage
-        projectId={scenarioViewProjectId}
-        onBack={() => setScenarioViewProjectId(null)}
-      />
-    );
-  }
 
   // Empty State
   if (projects.length === 0) {
@@ -157,7 +145,6 @@ export function Portfolio() {
               <ProjectCard
                 project={project}
                 onView={setSelectedProject}
-                onViewScenarios={setScenarioViewProjectId}
                 onDelete={() => setShowDeleteConfirm(project.id)}
               />
             </motion.div>
