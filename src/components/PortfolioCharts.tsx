@@ -387,28 +387,20 @@ export function PortfolioCharts({ projects }: PortfolioChartsProps) {
           <div className="flex flex-wrap gap-2">
             {Array.from(calculatorTypes.entries()).map(([calcId, info]) => {
               const isIncluded = !excludedCalculators.has(calcId);
-              const categoryColor = CATEGORY_COLORS[info.category] || '#71717a';
               return (
                 <button
                   key={calcId}
                   onClick={() => toggleCalculator(calcId)}
                   className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm transition-all ${
                     isIncluded
-                      ? 'bg-zinc-800 border-2 text-white'
-                      : 'bg-zinc-900 border border-zinc-700 text-zinc-500 opacity-60'
+                      ? 'bg-zinc-800 border border-zinc-600 text-white'
+                      : 'bg-zinc-900 border border-zinc-800 text-zinc-500 opacity-60'
                   }`}
-                  style={{ borderColor: isIncluded ? categoryColor : undefined }}
                 >
-                  {isIncluded ? (
-                    <Eye className="h-3.5 w-3.5 text-emerald-400" />
-                  ) : (
-                    <EyeOff className="h-3.5 w-3.5" />
-                  )}
                   <span>{getCalculatorLabel(calcId)}</span>
-                  <span className="text-xs px-1.5 py-0.5 rounded-full" style={{
-                    backgroundColor: isIncluded ? `${categoryColor}30` : 'rgb(39, 39, 42)',
-                    color: isIncluded ? categoryColor : 'rgb(113, 113, 122)'
-                  }}>
+                  <span className={`text-xs px-1.5 py-0.5 rounded ${
+                    isIncluded ? 'bg-zinc-700 text-zinc-300' : 'bg-zinc-800 text-zinc-500'
+                  }`}>
                     {info.count}
                   </span>
                 </button>
