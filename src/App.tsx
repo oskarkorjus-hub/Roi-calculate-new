@@ -73,12 +73,10 @@ function CalculatorApp() {
     >
       {/* Show calculator header when viewing a calculator */}
       {activeView === 'calculator' && activeCalculator && (
-        <div className="-mx-6 -mt-6 mb-6">
-          <CalculatorHeader
-            calculator={activeCalculator}
-            onNavigateHome={handleNavigateHome}
-          />
-        </div>
+        <CalculatorHeader
+          calculator={activeCalculator}
+          onNavigateHome={handleNavigateHome}
+        />
       )}
 
       {/* Main Content */}
@@ -86,7 +84,7 @@ function CalculatorApp() {
         {activeView === 'home' ? (
           <CalculatorHome onSelectCalculator={handleCalculatorChange} />
         ) : activeView === 'calculator' && ActiveComponent ? (
-          <div className="max-w-6xl">
+          <div className="w-full">
             <ActiveComponent />
           </div>
         ) : activeView === 'portfolio' ? (

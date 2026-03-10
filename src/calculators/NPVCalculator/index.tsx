@@ -164,7 +164,7 @@ export function NPVCalculator() {
   }, [showResetConfirm]);
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] text-white -mx-4 md:-mx-10 lg:-mx-20 -my-8 px-6 py-8">
+    <div className="text-white w-full overflow-hidden">
       {toast && (
         <Toast
           message={toast.message}

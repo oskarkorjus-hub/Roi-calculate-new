@@ -349,7 +349,7 @@ export function Portfolio() {
   // Empty State
   if (projects.length === 0) {
     return (
-      <div className="min-h-screen bg-mesh-gradient text-white -mx-4 md:-mx-10 lg:-mx-20 -my-8 px-6 py-8">
+      <div className="text-white">
         {/* Atmospheric effects */}
         <div className="fixed inset-0 bg-grid-pattern opacity-20 pointer-events-none" />
         <div className="fixed inset-0 overflow-hidden pointer-events-none">
