@@ -406,79 +406,55 @@ export function Portfolio() {
   }
 
   return (
-    <div className="min-h-screen bg-mesh-gradient text-white -mx-4 md:-mx-10 lg:-mx-20 -my-8 px-6 py-8">
-      {/* Atmospheric effects */}
-      <div className="fixed inset-0 bg-grid-pattern opacity-20 pointer-events-none" />
-      <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-20 right-1/4 w-96 h-96 bg-purple-500/5 rounded-full blur-3xl animate-float" />
-        <div className="absolute bottom-40 left-1/3 w-80 h-80 bg-cyan-500/5 rounded-full blur-3xl animate-float" style={{ animationDelay: '2s' }} />
-      </div>
-
+    <div className="text-white">
       <motion.div
         variants={containerVariants}
         initial="hidden"
         animate="visible"
-        className="relative z-10 max-w-[100%] mx-auto space-y-8"
+        className="space-y-6"
       >
         {/* Header */}
         <motion.header
           variants={itemVariants}
-          className="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-6"
+          className="flex flex-col lg:flex-row lg:items-center justify-between gap-4"
         >
-          <div className="flex items-center gap-4">
-            <motion.div
-              initial={{ scale: 0, rotate: -180 }}
-              animate={{ scale: 1, rotate: 0 }}
-              transition={{ duration: 0.6, ease: premiumEase, delay: 0.2 }}
-              className="relative"
-            >
-              <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-purple-600/20 to-purple-800/20 border border-purple-500/30 flex items-center justify-center shadow-lg">
-                <svg className="w-7 h-7 text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                </svg>
-              </div>
-              <div className="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-purple-500 border-2 border-zinc-900 flex items-center justify-center">
-                <span className="text-[8px] font-mono font-bold text-white">{projects.length}</span>
-              </div>
-            </motion.div>
-            <div>
-              <h1 className="text-3xl font-display font-bold text-white tracking-tight">Investment Portfolio</h1>
-              <p className="text-zinc-400 text-sm mt-1 font-body">
-                Track, analyze, and compare your investment projects
-              </p>
-            </div>
+          <div>
+            <h1 className="text-2xl font-semibold text-white">Investment Portfolio</h1>
+            <p className="text-zinc-500 text-sm mt-1">
+              {projects.length} projects
+            </p>
           </div>
 
-          <motion.div
-            variants={itemVariants}
-            className="flex items-center gap-3 flex-wrap"
-          >
+          <div className="flex items-center gap-2 flex-wrap">
             <button
               onClick={() => generatePortfolioComparisionPDF(projects)}
               disabled={projects.length === 0}
-              className="btn-premium px-4 py-3 text-sm flex items-center gap-2"
+              className="px-3 py-2 text-sm bg-zinc-800 text-white rounded-lg hover:bg-zinc-700 transition flex items-center gap-2 disabled:opacity-50"
             >
-              <span className="material-symbols-outlined text-lg">picture_as_pdf</span>
-              Portfolio PDF
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+              </svg>
+              Export PDF
             </button>
             <button
               onClick={downloadCSV}
               disabled={filteredProjects.length === 0}
-              className="btn-ghost px-4 py-3 text-sm flex items-center gap-2"
+              className="px-3 py-2 text-sm text-zinc-400 hover:text-white rounded-lg hover:bg-zinc-800 transition flex items-center gap-2 disabled:opacity-50"
             >
-              <span className="material-symbols-outlined text-lg">download</span>
-              Download CSV
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+              </svg>
+              CSV
             </button>
             {selectedForComparison.size > 1 && (
               <button
                 onClick={() => generatePortfolioComparisionPDF(projectsForComparison)}
-                className="px-4 py-3 bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 rounded-xl hover:bg-cyan-500/30 transition font-display font-medium flex items-center gap-2 text-sm"
+                className="px-3 py-2 text-sm bg-zinc-700 text-white rounded-lg hover:bg-zinc-600 transition flex items-center gap-2"
               >
-                <span className="material-symbols-outlined text-lg">compare_arrows</span>
-                Compare ({selectedForComparison.size})
+                Compare {selectedForComparison.size}
               </button>
             )}
-          </motion.div>
+          </div>
         </motion.header>
 
         {/* Portfolio Summary Stats */}
