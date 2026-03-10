@@ -9,9 +9,10 @@ interface Props {
     regulatory: number;
     property: number;
   };
+  isIncomplete?: boolean;
 }
 
-export function RiskScorePanel({ score, investorProfile, benchmark, propertyType, categoryScores }: Props) {
+export function RiskScorePanel({ score, investorProfile, benchmark, propertyType, categoryScores, isIncomplete }: Props) {
   const getRiskColor = (s: number) => {
     if (s <= 30) return { text: 'text-emerald-400', bg: 'bg-emerald-500', ring: 'ring-emerald-500/30' };
     if (s <= 60) return { text: 'text-amber-400', bg: 'bg-amber-500', ring: 'ring-amber-500/30' };
@@ -28,7 +29,61 @@ export function RiskScorePanel({ score, investorProfile, benchmark, propertyType
   const riskDiff = score - benchmark;
 
   // Calculate gauge rotation (0-100 maps to -90deg to 90deg)
-  const gaugeRotation = (score / 100) * 180 - 90;
+  const gaugeRotation = isIncomplete ? -90 : (score / 100) * 180 - 90;
+
+  // Show incomplete state
+  if (isIncomplete) {
+    return (
+      <div className="rounded-xl border border-zinc-800 bg-zinc-900 p-6 mb-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Main Score Display - Empty State */}
+          <div className="lg:col-span-1 flex flex-col items-center justify-center">
+            <div className="relative w-48 h-24 overflow-hidden">
+              <div className="absolute bottom-0 left-0 right-0 h-24">
+                <svg viewBox="0 0 200 100" className="w-full h-full opacity-40">
+                  <path d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke="#3f3f46" strokeWidth="12" strokeLinecap="round" />
+                  <circle cx="100" cy="100" r="8" fill="#52525b" />
+                </svg>
+              </div>
+            </div>
+            <div className="text-center mt-4">
+              <p className="text-5xl font-bold text-zinc-600">--</p>
+              <p className="text-xs text-zinc-600 uppercase tracking-wider mt-1">out of 100</p>
+              <div className="mt-3 px-4 py-1.5 rounded-full bg-zinc-800 text-zinc-500 text-sm font-bold inline-block">
+                Enter Data
+              </div>
+            </div>
+          </div>
+
+          {/* Category Breakdown - Empty State */}
+          <div className="lg:col-span-1 space-y-3">
+            <h4 className="text-sm font-medium text-zinc-400 mb-4">Risk by Category</h4>
+            <CategoryBar label="Financial Risk" score={0} weight="40%" color="cyan" />
+            <CategoryBar label="Market Risk" score={0} weight="30%" color="purple" />
+            <CategoryBar label="Regulatory Risk" score={0} weight="15%" color="amber" />
+            <CategoryBar label="Property Risk" score={0} weight="15%" color="pink" />
+          </div>
+
+          {/* Summary Info - Empty State */}
+          <div className="lg:col-span-1 space-y-4">
+            <div className="bg-zinc-800/50 rounded-lg p-4">
+              <p className="text-xs text-zinc-500 uppercase mb-1">Getting Started</p>
+              <p className="text-sm text-zinc-400">Fill in the basic metrics below to calculate your investment risk score.</p>
+            </div>
+
+            <div className="bg-zinc-800/30 rounded-lg p-4 border border-dashed border-zinc-700">
+              <p className="text-xs text-zinc-500 mb-2">Required fields:</p>
+              <ul className="text-xs text-zinc-400 space-y-1">
+                <li>• Project ROI or Investment Amount</li>
+                <li>• Annual Cash Flow</li>
+                <li>• Financial metrics (DSCR, leverage)</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="rounded-xl border border-zinc-800 bg-zinc-900 p-6 mb-6">

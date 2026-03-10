@@ -537,6 +537,13 @@ export function RiskAssessment() {
   const benchmark = MARKET_BENCHMARKS[inputs.propertyType];
   const riskDiff = riskScore.overall - benchmark;
 
+  // Check if user has entered any meaningful data
+  const isIncomplete = inputs.projectROI === 0 &&
+                       inputs.investmentAmount === 0 &&
+                       inputs.annualCashFlow === 0 &&
+                       inputs.debtServiceCoverageRatio === 0 &&
+                       inputs.leverageRatio === 0;
+
   // Report data
   const reportData = useMemo(() => {
     return generateRiskAssessmentReport(
@@ -647,6 +654,7 @@ export function RiskAssessment() {
             regulatory: riskScore.regulatory,
             property: riskScore.propertySpecific,
           }}
+          isIncomplete={isIncomplete}
         />
 
         {/* Tab Navigation */}
