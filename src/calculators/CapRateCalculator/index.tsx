@@ -6,7 +6,7 @@ import { ReportPreviewModal } from '../../components/ui/ReportPreviewModal';
 import { ComparisonButtons } from '../../components/ui/ComparisonButtons';
 import { generateCapRateReport } from '../../hooks/useReportGenerator';
 import { useArchivedDrafts, type ArchivedDraft } from '../../hooks/useArchivedDrafts';
-import { useAutoSave } from '../../hooks/useAutoSave';
+import { useAutoSave, loadAutoSave } from '../../hooks/useAutoSave';
 import { useAuth } from '../../lib/auth-context';
 import { formatCurrency, parseDecimalInput } from '../../utils/numberParsing';
 import { PropertyInputs } from './components/PropertyInputs';
@@ -57,7 +57,10 @@ const INITIAL_INPUTS: CapRateInputs = {
 
 export function CapRateCalculator() {
   const { user } = useAuth();
-  const [inputs, setInputs] = useState<CapRateInputs>(INITIAL_INPUTS);
+  const [inputs, setInputs] = useState<CapRateInputs>(() => {
+    const saved = loadAutoSave<CapRateInputs>('cap-rate');
+    return saved?.data || INITIAL_INPUTS;
+  });
   const [toast, setToast] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
   const [showResetConfirm, setShowResetConfirm] = useState(false);
   const [showReportModal, setShowReportModal] = useState(false);

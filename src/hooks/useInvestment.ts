@@ -3,6 +3,7 @@ import type { InvestmentData, XIRRResult, CashFlowEntry, ExitStrategyType, Payme
 import { calculateInvestmentReturn } from '../utils/xirr';
 import { useExchangeRates } from './useExchangeRates';
 import { v4 as uuidv4 } from 'uuid';
+import { loadAutoSave } from './useAutoSave';
 
 // All values stored in IDR internally
 // Empty defaults - users fill in their own data with placeholder guidance
@@ -49,32 +50,37 @@ const CURRENCY_SYMBOLS: Record<string, string> = {
 };
 
 export function useInvestment() {
-  const [data, setData] = useState<InvestmentData>(DEFAULT_INVESTMENT);
-  
-  // Live exchange rates
-  const { 
-    getRate, 
-    loading: ratesLoading, 
-    error: ratesError,
-    source: ratesSource,
-    lastUpdatedFormatted: ratesLastUpdated,
-    refreshRates 
-  } = useExchangeRates();
-
-  // Load saved draft on mount
-  useEffect(() => {
+  // Load auto-saved data on initialization
+  const [data, setData] = useState<InvestmentData>(() => {
+    // First check the standardized auto-save
+    const autoSaved = loadAutoSave<InvestmentData>('xirr');
+    if (autoSaved?.data) {
+      return autoSaved.data;
+    }
+    // Fallback to legacy draft storage
     try {
       const saved = localStorage.getItem("baliinvest_draft");
       if (saved) {
         const draft = JSON.parse(saved);
         if (draft.data) {
-          setData(draft.data);
+          return draft.data;
         }
       }
     } catch (e) {
       console.error("Failed to load draft:", e);
     }
-  }, []);
+    return DEFAULT_INVESTMENT;
+  });
+
+  // Live exchange rates
+  const {
+    getRate,
+    loading: ratesLoading,
+    error: ratesError,
+    source: ratesSource,
+    lastUpdatedFormatted: ratesLastUpdated,
+    refreshRates
+  } = useExchangeRates();
   
   const currency = data.property.currency;
   const rate = getRate(currency);

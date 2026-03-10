@@ -6,7 +6,7 @@ import { ReportPreviewModal } from '../../components/ui/ReportPreviewModal';
 import { ComparisonButtons } from '../../components/ui/ComparisonButtons';
 import { generateNPVReport } from '../../hooks/useReportGenerator';
 import { useArchivedDrafts, type ArchivedDraft } from '../../hooks/useArchivedDrafts';
-import { useAutoSave } from '../../hooks/useAutoSave';
+import { useAutoSave, loadAutoSave } from '../../hooks/useAutoSave';
 import { useAuth } from '../../lib/auth-context';
 import { formatCurrency, parseDecimalInput } from '../../utils/numberParsing';
 import type { NPVComparisonData } from '../../lib/comparison-types';
@@ -46,9 +46,13 @@ interface NPVInputs {
 
 export function NPVCalculator() {
   const { user } = useAuth();
-  const [currency, setCurrency] = useState<CurrencyType>('USD');
-  const [discountRate, setDiscountRate] = useState(0);
-  const [cashFlows, setCashFlows] = useState<CashFlow[]>(INITIAL_CASH_FLOWS);
+
+  // Load from auto-save on init
+  const savedData = loadAutoSave<NPVInputs>('npv')?.data;
+
+  const [currency, setCurrency] = useState<CurrencyType>(savedData?.currency || 'USD');
+  const [discountRate, setDiscountRate] = useState(savedData?.discountRate || 0);
+  const [cashFlows, setCashFlows] = useState<CashFlow[]>(savedData?.cashFlows || INITIAL_CASH_FLOWS);
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
   const [showReportModal, setShowReportModal] = useState(false);
   const [showResetConfirm, setShowResetConfirm] = useState(false);

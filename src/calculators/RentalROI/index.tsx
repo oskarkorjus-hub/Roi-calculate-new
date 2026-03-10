@@ -13,7 +13,7 @@ import { CalculatorToolbar } from '../../components/ui/CalculatorToolbar';
 import { ReportPreviewModal } from '../../components/ui/ReportPreviewModal';
 import { generateRentalROIReport } from '../../hooks/useReportGenerator';
 import { useArchivedDrafts, type ArchivedDraft } from '../../hooks/useArchivedDrafts';
-import { useAutoSave } from '../../hooks/useAutoSave';
+import { useAutoSave, loadAutoSave } from '../../hooks/useAutoSave';
 import { useAuth } from '../../lib/auth-context';
 
 const DRAFT_STORAGE_KEY = 'rental_roi_draft';
@@ -35,6 +35,12 @@ export function RentalROICalculator() {
   }, [currencyCode]);
 
   const [assumptions, setAssumptions] = useState<Assumptions>(() => {
+    // First try auto-save (for "Continue Where You Left Off")
+    const autoSaved = loadAutoSave<Assumptions>('rental-roi');
+    if (autoSaved?.data) {
+      return autoSaved.data;
+    }
+    // Fall back to draft storage
     try {
       const saved = localStorage.getItem(DRAFT_STORAGE_KEY);
       if (saved) {

@@ -1,7 +1,7 @@
 import { useState, useCallback, useRef, useEffect, useMemo } from 'react';
 import { useInvestment } from '../../hooks/useInvestment';
 import { useArchivedDrafts, type ArchivedDraft } from '../../hooks/useArchivedDrafts';
-import { useAutoSave } from '../../hooks/useAutoSave';
+import { useAutoSave, loadAutoSave } from '../../hooks/useAutoSave';
 import {
   PropertyDetails,
   PaymentTerms,

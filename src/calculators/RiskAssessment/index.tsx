@@ -13,7 +13,7 @@ import { ScenarioAnalysis } from './components/ScenarioAnalysis';
 import { SensitivityChart } from './components/SensitivityChart';
 import { RiskMitigation } from './components/RiskMitigation';
 import { useArchivedDrafts, type ArchivedDraft } from '../../hooks/useArchivedDrafts';
-import { useAutoSave } from '../../hooks/useAutoSave';
+import { useAutoSave, loadAutoSave } from '../../hooks/useAutoSave';
 import { useAuth } from '../../lib/auth-context';
 import type { RiskAssessmentComparisonData } from '../../lib/comparison-types';
 
@@ -170,7 +170,10 @@ const MARKET_BENCHMARKS: Record<PropertyType, number> = {
 };
 
 export function RiskAssessment() {
-  const [inputs, setInputs] = useState<RiskInputs>(INITIAL_INPUTS);
+  const [inputs, setInputs] = useState<RiskInputs>(() => {
+    const saved = loadAutoSave<RiskInputs>('risk-assessment');
+    return saved?.data || INITIAL_INPUTS;
+  });
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
   const [showResetConfirm, setShowResetConfirm] = useState(false);
   const [showReportModal, setShowReportModal] = useState(false);

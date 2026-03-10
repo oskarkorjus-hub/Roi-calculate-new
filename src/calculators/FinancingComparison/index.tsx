@@ -11,7 +11,7 @@ import { LoanComparisonChart } from './components/LoanComparisonChart';
 import { AmortizationTable } from './components/AmortizationTable';
 import { LoanCard } from './components/LoanCard';
 import { useArchivedDrafts, type ArchivedDraft } from '../../hooks/useArchivedDrafts';
-import { useAutoSave } from '../../hooks/useAutoSave';
+import { useAutoSave, loadAutoSave } from '../../hooks/useAutoSave';
 import { useAuth } from '../../lib/auth-context';
 import type { FinancingComparisonData } from '../../lib/comparison-types';
 
@@ -133,7 +133,10 @@ const lenderDescriptions: Record<LenderType, string> = {
 };
 
 export function FinancingComparison() {
-  const [inputs, setInputs] = useState<FinancingInputs>(INITIAL_INPUTS);
+  const [inputs, setInputs] = useState<FinancingInputs>(() => {
+    const saved = loadAutoSave<FinancingInputs>('financing');
+    return saved?.data || INITIAL_INPUTS;
+  });
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
   const [showResetConfirm, setShowResetConfirm] = useState(false);
   const [showReportModal, setShowReportModal] = useState(false);

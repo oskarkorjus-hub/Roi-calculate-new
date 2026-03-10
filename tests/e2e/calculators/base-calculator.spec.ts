@@ -12,30 +12,23 @@
 
 import { test, expect } from '@playwright/test';
 import { ALL_CALCULATOR_TEST_DATA, CALCULATOR_URLS, ACTIVE_CALCULATOR_KEY } from '../../fixtures/test-data';
+import { login } from '../../fixtures/auth';
 
 /**
- * Helper to navigate to a specific calculator
- * Note: Requires authentication - tests will be skipped if not logged in
+ * Helper to navigate to a specific calculator (requires login first)
  */
-async function goToCalculator(page: any, calculatorId: string): Promise<boolean> {
-  // Set the active calculator in localStorage before navigating
-  await page.addInitScript((calcId: string) => {
+async function goToCalculator(page: any, calculatorId: string) {
+  // Set the active calculator in localStorage
+  await page.evaluate((calcId: string) => {
     localStorage.setItem('baliinvest_active_calculator', calcId);
     localStorage.setItem('baliinvest_active_view', 'calculator');
   }, calculatorId);
 
   await page.goto('/calculators');
   await page.waitForTimeout(1000);
-
-  // Check if we're on the calculator page (authenticated) or login prompt
-  const isAuthenticated = await page.locator('[title="Save to Portfolio"], [title="Export PDF report"]').first().isVisible().catch(() => false);
-  return isAuthenticated;
 }
 
 test.describe('All Calculators - Basic Functionality', () => {
-  // Note: These tests require authentication
-  // They will pass if calculators load, or be skipped if auth is required
-
   for (const calculator of ALL_CALCULATOR_TEST_DATA) {
     test(`${calculator.calculatorName} - page loads correctly`, async ({ page }) => {
       await page.goto('/calculators');
@@ -47,28 +40,23 @@ test.describe('All Calculators - Basic Functionality', () => {
   }
 });
 
-// Authentication-required tests - these test the calculator UI when logged in
-test.describe('Calculator Toolbar (requires auth)', () => {
-  test.skip(true, 'Skipping: requires authenticated user - run with auth setup');
+// Authentication-required tests - login once before all tests
+test.describe('Calculator Toolbar (authenticated)', () => {
+  // Login before running these tests
+  test.beforeEach(async ({ page }) => {
+    await login(page);
+  });
 
   for (const calculator of ALL_CALCULATOR_TEST_DATA) {
     test(`${calculator.calculatorName} - has save to portfolio button`, async ({ page }) => {
-      const isAuth = await goToCalculator(page, calculator.calculatorId);
-      if (!isAuth) {
-        test.skip();
-        return;
-      }
+      await goToCalculator(page, calculator.calculatorId);
 
       const saveButton = page.locator('[title="Save to Portfolio"]');
       await expect(saveButton).toBeVisible();
     });
 
     test(`${calculator.calculatorName} - has report/PDF button`, async ({ page }) => {
-      const isAuth = await goToCalculator(page, calculator.calculatorId);
-      if (!isAuth) {
-        test.skip();
-        return;
-      }
+      await goToCalculator(page, calculator.calculatorId);
 
       const reportButton = page.locator('[title="Export PDF report"]');
       await expect(reportButton).toBeVisible();

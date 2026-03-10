@@ -12,7 +12,7 @@ import { BudgetChart } from './components/BudgetChart';
 import { TimelineGantt } from './components/TimelineGantt';
 import { CostOverrunAnalysis } from './components/CostOverrunAnalysis';
 import { useArchivedDrafts, type ArchivedDraft } from '../../hooks/useArchivedDrafts';
-import { useAutoSave } from '../../hooks/useAutoSave';
+import { useAutoSave, loadAutoSave } from '../../hooks/useAutoSave';
 import { useAuth } from '../../lib/auth-context';
 import type { DevBudgetComparisonData } from '../../lib/comparison-types';
 
@@ -123,7 +123,10 @@ const categoryColors: Record<string, { bg: string; border: string; text: string 
 };
 
 export function DevBudgetTracker() {
-  const [inputs, setInputs] = useState<TrackerInputs>(INITIAL_INPUTS);
+  const [inputs, setInputs] = useState<TrackerInputs>(() => {
+    const saved = loadAutoSave<TrackerInputs>('dev-budget');
+    return saved?.data || INITIAL_INPUTS;
+  });
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
   const [showResetConfirm, setShowResetConfirm] = useState(false);
   const [showReportModal, setShowReportModal] = useState(false);

@@ -7,7 +7,7 @@ import { ReportPreviewModal } from '../../components/ui/ReportPreviewModal';
 import { ComparisonButtons } from '../../components/ui/ComparisonButtons';
 import { generateIRRReport } from '../../hooks/useReportGenerator';
 import { useArchivedDrafts, type ArchivedDraft } from '../../hooks/useArchivedDrafts';
-import { useAutoSave } from '../../hooks/useAutoSave';
+import { useAutoSave, loadAutoSave } from '../../hooks/useAutoSave';
 import { useAuth } from '../../lib/auth-context';
 import { parseDecimalInput } from '../../utils/numberParsing';
 import { CashFlowInputs } from './components/CashFlowInputs';
@@ -53,12 +53,17 @@ interface IRRInputs {
 
 export function IRRCalculator() {
   const { user } = useAuth();
-  const [currency, setCurrency] = useState<CurrencyType>('USD');
-  const [discountRate, setDiscountRate] = useState(0);
-  const [cashFlows, setCashFlows] = useState<CashFlow[]>(INITIAL_CASH_FLOWS);
-  const [showAdvanced, setShowAdvanced] = useState(false);
-  const [reinvestmentRate, setReinvestmentRate] = useState(0);
-  const [alternativeDiscountRate, setAlternativeDiscountRate] = useState(0);
+
+  // Load auto-saved data on initialization
+  const savedData = loadAutoSave<IRRInputs>('irr');
+  const initialData = savedData?.data;
+
+  const [currency, setCurrency] = useState<CurrencyType>(initialData?.currency || 'USD');
+  const [discountRate, setDiscountRate] = useState(initialData?.discountRate ?? 0);
+  const [cashFlows, setCashFlows] = useState<CashFlow[]>(initialData?.cashFlows || INITIAL_CASH_FLOWS);
+  const [showAdvanced, setShowAdvanced] = useState(initialData?.showAdvanced ?? false);
+  const [reinvestmentRate, setReinvestmentRate] = useState(initialData?.reinvestmentRate ?? 0);
+  const [alternativeDiscountRate, setAlternativeDiscountRate] = useState(initialData?.alternativeDiscountRate ?? 0);
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
   const [showReportModal, setShowReportModal] = useState(false);
   const [showResetConfirm, setShowResetConfirm] = useState(false);

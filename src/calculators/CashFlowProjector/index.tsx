@@ -6,7 +6,7 @@ import { ReportPreviewModal } from '../../components/ui/ReportPreviewModal';
 import { ComparisonButtons } from '../../components/ui/ComparisonButtons';
 import { generateCashFlowReport } from '../../hooks/useReportGenerator';
 import { useArchivedDrafts, type ArchivedDraft } from '../../hooks/useArchivedDrafts';
-import { useAutoSave } from '../../hooks/useAutoSave';
+import { useAutoSave, loadAutoSave } from '../../hooks/useAutoSave';
 import { useAuth } from '../../lib/auth-context';
 import { parseDecimalInput } from '../../utils/numberParsing';
 import { CashFlowInputs } from './components/CashFlowInputs';
@@ -68,7 +68,10 @@ const symbols: Record<CurrencyType, string> = { IDR: 'Rp', USD: '$', AUD: 'A$', 
 
 export function CashFlowProjector() {
   const { user } = useAuth();
-  const [inputs, setInputs] = useState<CashFlowInputsType>(INITIAL_INPUTS);
+  const [inputs, setInputs] = useState<CashFlowInputsType>(() => {
+    const saved = loadAutoSave<CashFlowInputsType>('cashflow');
+    return saved?.data || INITIAL_INPUTS;
+  });
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
   const [showResetConfirm, setShowResetConfirm] = useState(false);
   const [showReportModal, setShowReportModal] = useState(false);

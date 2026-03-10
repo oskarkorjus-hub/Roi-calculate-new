@@ -13,7 +13,7 @@ import { OccupancyHeatmap } from './components/OccupancyHeatmap';
 import { CashFlowChart } from './components/CashFlowChart';
 import { ProjectionResults } from './components/ProjectionResults';
 import { useArchivedDrafts, type ArchivedDraft } from '../../hooks/useArchivedDrafts';
-import { useAutoSave } from '../../hooks/useAutoSave';
+import { useAutoSave, loadAutoSave } from '../../hooks/useAutoSave';
 import { useAuth } from '../../lib/auth-context';
 import type { RentalProjectionComparisonData } from '../../lib/comparison-types';
 
@@ -236,7 +236,10 @@ const locationLabels: Record<LocationType, string> = {
 };
 
 export function RentalIncomeProjection() {
-  const [inputs, setInputs] = useState<RentalInputs>(INITIAL_INPUTS);
+  const [inputs, setInputs] = useState<RentalInputs>(() => {
+    const saved = loadAutoSave<RentalInputs>('rental-projection');
+    return saved?.data || INITIAL_INPUTS;
+  });
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
   const [showResetConfirm, setShowResetConfirm] = useState(false);
   const [showReportModal, setShowReportModal] = useState(false);

@@ -6,7 +6,7 @@ import { ReportPreviewModal } from '../../components/ui/ReportPreviewModal';
 import { ComparisonButtons } from '../../components/ui/ComparisonButtons';
 import { generateMortgageReport } from '../../hooks/useReportGenerator';
 import { useArchivedDrafts, type ArchivedDraft } from '../../hooks/useArchivedDrafts';
-import { useAutoSave } from '../../hooks/useAutoSave';
+import { useAutoSave, loadAutoSave } from '../../hooks/useAutoSave';
 import { useAuth } from '../../lib/auth-context';
 import { parseDecimalInput } from '../../utils/numberParsing';
 import { MortgageInputs } from './components/MortgageInputs';
@@ -76,7 +76,10 @@ const symbols: Record<CurrencyType, string> = { IDR: 'Rp', USD: '$', AUD: 'A$', 
 
 export function MortgageCalculator() {
   const { user } = useAuth();
-  const [inputs, setInputs] = useState<MortgageInputsType>(INITIAL_INPUTS);
+  const [inputs, setInputs] = useState<MortgageInputsType>(() => {
+    const saved = loadAutoSave<MortgageInputsType>('mortgage');
+    return saved?.data || INITIAL_INPUTS;
+  });
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
   const [showResetConfirm, setShowResetConfirm] = useState(false);
   const [showReportModal, setShowReportModal] = useState(false);

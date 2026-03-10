@@ -12,7 +12,7 @@ import { TaxResults } from './components/TaxResults';
 import { TaxProjectionTable } from './components/TaxProjectionTable';
 import { OwnershipComparison } from './components/OwnershipComparison';
 import { useArchivedDrafts, type ArchivedDraft } from '../../hooks/useArchivedDrafts';
-import { useAutoSave } from '../../hooks/useAutoSave';
+import { useAutoSave, loadAutoSave } from '../../hooks/useAutoSave';
 import { useAuth } from '../../lib/auth-context';
 import type { IndonesiaTaxComparisonData } from '../../lib/comparison-types';
 
@@ -157,7 +157,10 @@ const ownershipLabels: Record<OwnershipType, string> = {
 };
 
 export function IndonesiaTaxOptimizer() {
-  const [inputs, setInputs] = useState<TaxInputs>(INITIAL_INPUTS);
+  const [inputs, setInputs] = useState<TaxInputs>(() => {
+    const saved = loadAutoSave<TaxInputs>('indonesia-tax');
+    return saved?.data || INITIAL_INPUTS;
+  });
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
   const [showResetConfirm, setShowResetConfirm] = useState(false);
   const [showReportModal, setShowReportModal] = useState(false);
