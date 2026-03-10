@@ -232,44 +232,23 @@ export function CalculatorGrid({
             </section>
           )}
 
-          {/* Browse by Category */}
+          {/* Category Filters */}
           <section>
-            <div className="flex items-center gap-3 mb-6">
-              <div className="w-8 h-8 rounded-lg bg-blue-500/20 flex items-center justify-center">
-                <span className="material-symbols-outlined text-lg text-blue-400">category</span>
-              </div>
-              <h2 className="text-lg font-semibold text-white">Browse by Category</h2>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="flex flex-wrap gap-2">
               {CATEGORIES.map((category) => (
-                <motion.button
+                <button
                   key={category.id}
                   onClick={() => setSelectedCategory(category.id)}
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  className="group p-6 rounded-2xl bg-zinc-900/50 border border-zinc-800 hover:border-zinc-700 text-left transition-all"
+                  className="group flex items-center gap-2 px-3 py-1.5 rounded-lg bg-zinc-900 border border-zinc-800 hover:border-zinc-600 hover:bg-zinc-800 text-sm transition-all"
                 >
-                  <div className="flex items-start justify-between mb-4">
-                    <div className="w-12 h-12 rounded-xl bg-zinc-800 group-hover:bg-zinc-700 flex items-center justify-center transition-colors">
-                      <span className="material-symbols-outlined text-2xl text-zinc-400 group-hover:text-white transition-colors">
-                        {category.icon}
-                      </span>
-                    </div>
-                    <span className="text-xs text-zinc-600 bg-zinc-800 px-2 py-1 rounded-full">
-                      {category.calculatorIds.length} tools
-                    </span>
-                  </div>
-                  <h3 className="text-lg font-semibold text-white group-hover:text-emerald-400 transition-colors mb-1">
-                    {category.name}
-                  </h3>
-                  <p className="text-sm text-zinc-500">{category.description}</p>
-                  <div className="flex items-center gap-1 mt-4 text-sm text-zinc-600 group-hover:text-emerald-400 transition-colors">
-                    <span>View calculators</span>
-                    <svg className="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                    </svg>
-                  </div>
-                </motion.button>
+                  <span className="material-symbols-outlined text-base text-zinc-500 group-hover:text-zinc-300">
+                    {category.icon}
+                  </span>
+                  <span className="text-zinc-400 group-hover:text-white">{category.name}</span>
+                  <span className="text-[10px] text-zinc-600 bg-zinc-800 group-hover:bg-zinc-700 px-1.5 py-0.5 rounded">
+                    {category.calculatorIds.length}
+                  </span>
+                </button>
               ))}
             </div>
           </section>
