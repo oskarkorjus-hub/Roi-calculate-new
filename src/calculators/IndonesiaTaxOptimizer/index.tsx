@@ -808,7 +808,7 @@ export function IndonesiaTaxOptimizer() {
 
           {/* Results Section */}
           <div className="lg:col-span-3">
-            <div className="sticky top-24 space-y-4">
+            <div className="sticky top-20 space-y-4">
               <TaxResults
                 result={result}
                 inputs={inputs}
