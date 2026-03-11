@@ -70,9 +70,9 @@ interface TrackerInputs {
 }
 
 const DEFAULT_PHASES: ConstructionPhase[] = [
-  { id: '1', name: 'Site Preparation', startMonth: 1, duration: 1, budgetPercent: 5, status: 'completed', completionPercent: 100 },
-  { id: '2', name: 'Foundation', startMonth: 2, duration: 2, budgetPercent: 15, status: 'completed', completionPercent: 100 },
-  { id: '3', name: 'Structure', startMonth: 4, duration: 3, budgetPercent: 25, status: 'in-progress', completionPercent: 60 },
+  { id: '1', name: 'Site Preparation', startMonth: 1, duration: 1, budgetPercent: 5, status: 'not-started', completionPercent: 0 },
+  { id: '2', name: 'Foundation', startMonth: 2, duration: 2, budgetPercent: 15, status: 'not-started', completionPercent: 0 },
+  { id: '3', name: 'Structure', startMonth: 4, duration: 3, budgetPercent: 25, status: 'not-started', completionPercent: 0 },
   { id: '4', name: 'MEP Rough-in', startMonth: 6, duration: 2, budgetPercent: 15, status: 'not-started', completionPercent: 0 },
   { id: '5', name: 'Interior Finish', startMonth: 8, duration: 3, budgetPercent: 25, status: 'not-started', completionPercent: 0 },
   { id: '6', name: 'Landscaping & Final', startMonth: 10, duration: 2, budgetPercent: 15, status: 'not-started', completionPercent: 0 },
@@ -186,12 +186,15 @@ export function DevBudgetTracker() {
       ? (inputs.contingencyActual / inputs.contingency) * 100
       : 0;
 
-    // Project health score
-    let healthScore = 100;
-    if (variancePercent > 0) healthScore -= Math.min(variancePercent * 2, 30);
-    if (delayedPhases > 0) healthScore -= delayedPhases * 10;
-    if (contingencyUsedPercent > 50) healthScore -= (contingencyUsedPercent - 50) / 2;
-    healthScore = Math.max(0, Math.min(100, healthScore));
+    // Project health score - only calculate if there's budget data
+    let healthScore = 0;
+    if (totalBudgeted > 0) {
+      healthScore = 100;
+      if (variancePercent > 0) healthScore -= Math.min(variancePercent * 2, 30);
+      if (delayedPhases > 0) healthScore -= delayedPhases * 10;
+      if (contingencyUsedPercent > 50) healthScore -= (contingencyUsedPercent - 50) / 2;
+      healthScore = Math.max(0, Math.min(100, healthScore));
+    }
 
     return {
       totalBudgeted,
@@ -272,13 +275,17 @@ export function DevBudgetTracker() {
     }
   }, [showResetConfirm]);
 
+  const hasData = calculations.totalBudgeted > 0;
+
   const getHealthColor = (score: number) => {
+    if (!hasData) return 'text-zinc-500';
     if (score >= 80) return 'text-emerald-400';
     if (score >= 60) return 'text-amber-400';
     return 'text-red-400';
   };
 
   const getHealthLabel = (score: number) => {
+    if (!hasData) return 'No Data';
     if (score >= 80) return 'Healthy';
     if (score >= 60) return 'At Risk';
     return 'Critical';
