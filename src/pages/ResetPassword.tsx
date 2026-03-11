@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { updatePassword } from '../lib/auth-store';
 import { useAuth } from '../lib/auth-context';
+import { passwordSchema } from '../lib/validations';
 
 export function ResetPassword() {
   const navigate = useNavigate();
@@ -13,12 +14,35 @@ export function ResetPassword() {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
 
+  // Password strength calculation
+  const passwordStrength = useMemo(() => {
+    if (!password) return { score: 0, label: '', color: '' };
+    let score = 0;
+    if (password.length >= 8) score++;
+    if (/[A-Z]/.test(password)) score++;
+    if (/[a-z]/.test(password)) score++;
+    if (/[0-9]/.test(password)) score++;
+    if (password.length >= 12) score++;
+
+    const levels = [
+      { score: 0, label: '', color: '' },
+      { score: 1, label: 'Weak', color: 'bg-red-500' },
+      { score: 2, label: 'Fair', color: 'bg-orange-500' },
+      { score: 3, label: 'Good', color: 'bg-yellow-500' },
+      { score: 4, label: 'Strong', color: 'bg-emerald-500' },
+      { score: 5, label: 'Excellent', color: 'bg-emerald-400' },
+    ];
+    return levels[score] || levels[0];
+  }, [password]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
 
-    if (password.length < 6) {
-      setError('Password must be at least 6 characters');
+    // Validate password using the same schema as signup
+    const validation = passwordSchema.safeParse(password);
+    if (!validation.success) {
+      setError(validation.error.issues[0]?.message || 'Invalid password');
       return;
     }
 
@@ -113,8 +137,24 @@ export function ResetPassword() {
                 className="w-full px-4 py-3 bg-zinc-800/50 border border-zinc-700 rounded-xl text-white placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500 transition-all"
                 placeholder="Enter new password"
                 required
-                minLength={6}
+                minLength={8}
               />
+              {password && (
+                <div className="mt-2">
+                  <div className="flex items-center gap-2 mb-1">
+                    <div className="flex-1 h-1.5 bg-zinc-700 rounded-full overflow-hidden">
+                      <div
+                        className={`h-full transition-all ${passwordStrength.color}`}
+                        style={{ width: `${(passwordStrength.score / 5) * 100}%` }}
+                      />
+                    </div>
+                    <span className="text-xs text-zinc-400">{passwordStrength.label}</span>
+                  </div>
+                  <p className="text-xs text-zinc-500">
+                    Must be 8+ characters with uppercase, lowercase, and number
+                  </p>
+                </div>
+              )}
             </div>
 
             <div>
@@ -129,7 +169,7 @@ export function ResetPassword() {
                 className="w-full px-4 py-3 bg-zinc-800/50 border border-zinc-700 rounded-xl text-white placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500 transition-all"
                 placeholder="Confirm new password"
                 required
-                minLength={6}
+                minLength={8}
               />
             </div>
 

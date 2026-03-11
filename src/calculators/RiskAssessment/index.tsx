@@ -651,6 +651,34 @@ export function RiskAssessment() {
               projectName="Risk Assessment"
               showResetConfirm={showResetConfirm}
             />
+            <ComparisonButtons
+              calculatorType="risk-assessment"
+              inline
+              getComparisonData={() => {
+                const rating = riskScore.overall <= 30
+                  ? { grade: 'A+', label: 'Low Risk' }
+                  : riskScore.overall <= 50
+                  ? { grade: 'B', label: 'Moderate Risk' }
+                  : riskScore.overall <= 70
+                  ? { grade: 'C', label: 'High Risk' }
+                  : { grade: 'D', label: 'Very High Risk' };
+
+                return {
+                  calculatorType: 'risk-assessment' as const,
+                  label: 'Risk Assessment',
+                  currency: inputs.currency,
+                  investmentAmount: inputs.investmentAmount,
+                  projectROI: inputs.projectROI,
+                  propertyType: inputs.propertyType,
+                  overallRiskScore: riskScore.overall,
+                  financialRiskScore: riskScore.financial,
+                  marketRiskScore: riskScore.market,
+                  regulatoryRiskScore: riskScore.regulatory,
+                  propertyRiskScore: riskScore.propertySpecific,
+                  investmentRating: rating,
+                } as Omit<RiskAssessmentComparisonData, 'timestamp'>;
+              }}
+            />
           </div>
         </header>
 
@@ -1027,39 +1055,6 @@ export function RiskAssessment() {
             riskScore={riskScore.overall}
           />
         )}
-
-        {/* Comparison Buttons - at the top */}
-        <div className="mb-8">
-          <ComparisonButtons
-            calculatorType="risk-assessment"
-            getComparisonData={() => {
-              const rating = riskScore.overall <= 30
-                ? { grade: 'A+', label: 'Low Risk' }
-                : riskScore.overall <= 45
-                ? { grade: 'A', label: 'Moderate-Low' }
-                : riskScore.overall <= 60
-                ? { grade: 'B+', label: 'Moderate' }
-                : riskScore.overall <= 75
-                ? { grade: 'B', label: 'High' }
-                : { grade: 'C', label: 'Very High' };
-
-              return {
-                calculatorType: 'risk-assessment' as const,
-                label: 'Risk Assessment',
-                currency: inputs.currency,
-                investmentAmount: inputs.investmentAmount,
-                projectROI: inputs.projectROI,
-                propertyType: inputs.propertyType,
-                overallRiskScore: riskScore.overall,
-                financialRiskScore: riskScore.financial,
-                marketRiskScore: riskScore.market,
-                regulatoryRiskScore: riskScore.regulatory,
-                propertyRiskScore: riskScore.propertySpecific,
-                investmentRating: rating,
-              } as Omit<RiskAssessmentComparisonData, 'timestamp'>;
-            }}
-          />
-        </div>
 
         {/* Benchmark Comparison */}
         <div className="mt-8 rounded-xl border border-zinc-800 bg-zinc-900 p-6">

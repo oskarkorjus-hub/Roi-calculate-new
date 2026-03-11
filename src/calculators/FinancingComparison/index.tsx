@@ -411,40 +411,37 @@ export function FinancingComparison() {
               projectName="Financing Comparison"
               showResetConfirm={showResetConfirm}
             />
+            <ComparisonButtons
+              calculatorType="financing"
+              inline
+              getComparisonData={() => {
+                const rating = winner
+                  ? winner.effectiveRate <= 6
+                    ? { grade: 'A+', label: 'Excellent' }
+                    : winner.effectiveRate <= 8
+                    ? { grade: 'A', label: 'Great' }
+                    : winner.effectiveRate <= 10
+                    ? { grade: 'B+', label: 'Good' }
+                    : winner.effectiveRate <= 12
+                    ? { grade: 'B', label: 'Fair' }
+                    : { grade: 'C', label: 'High Cost' }
+                  : { grade: 'N/A', label: 'No Data' };
+
+                return {
+                  calculatorType: 'financing' as const,
+                  label: 'Financing Comparison',
+                  currency: inputs.currency,
+                  propertyValue: inputs.propertyValue,
+                  numberOfLoans: loanResults.length,
+                  bestLoanName: winner?.name || '',
+                  bestLoanRate: winner?.interestRate || 0,
+                  totalSavings: savingsFromWinner,
+                  investmentRating: rating,
+                } as Omit<FinancingComparisonData, 'timestamp'>;
+              }}
+            />
           </div>
         </header>
-
-        {/* Comparison Buttons - at the top */}
-        <div className="mb-8">
-          <ComparisonButtons
-            calculatorType="financing"
-            getComparisonData={() => {
-              const rating = winner
-                ? winner.effectiveRate <= 6
-                  ? { grade: 'A+', label: 'Excellent' }
-                  : winner.effectiveRate <= 8
-                  ? { grade: 'A', label: 'Great' }
-                  : winner.effectiveRate <= 10
-                  ? { grade: 'B+', label: 'Good' }
-                  : winner.effectiveRate <= 12
-                  ? { grade: 'B', label: 'Fair' }
-                  : { grade: 'C', label: 'High Cost' }
-                : { grade: 'N/A', label: 'No Data' };
-
-              return {
-                calculatorType: 'financing' as const,
-                label: 'Financing Comparison',
-                currency: inputs.currency,
-                propertyValue: inputs.propertyValue,
-                numberOfLoans: loanResults.length,
-                bestLoanName: winner?.name || '',
-                bestLoanRate: winner?.interestRate || 0,
-                totalSavings: savingsFromWinner,
-                investmentRating: rating,
-              } as Omit<FinancingComparisonData, 'timestamp'>;
-            }}
-          />
-        </div>
 
         {/* Property Value Section */}
         <div className="rounded-xl border border-zinc-800 bg-zinc-900 p-6 mb-8">

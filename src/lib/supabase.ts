@@ -3,22 +3,22 @@ import { createClient } from '@supabase/supabase-js';
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
-// Mock Supabase client for testing (always use mock, no credentials needed)
+// Mock Supabase client for when credentials are not configured
 const mockSupabaseClient = {
   auth: {
-    getSession: async () => ({ data: { session: null } }),
+    getSession: async () => ({ data: { session: null }, error: null }),
     onAuthStateChange: () => ({ data: { subscription: { unsubscribe: () => {} } } }),
-    signUp: async () => ({ error: new Error('Auth disabled') }),
-    signInWithPassword: async () => ({ error: new Error('Auth disabled') }),
-    signOut: async () => ({}),
-    resetPasswordForEmail: async () => ({}),
-    updateUser: async () => ({}),
+    signUp: async () => ({ data: { user: null, session: null }, error: new Error('Auth not configured. Please set up Supabase credentials.') }),
+    signInWithPassword: async () => ({ data: { user: null, session: null }, error: new Error('Auth not configured. Please set up Supabase credentials.') }),
+    signOut: async () => ({ error: null }),
+    resetPasswordForEmail: async () => ({ data: {}, error: new Error('Auth not configured. Please set up Supabase credentials.') }),
+    updateUser: async () => ({ data: { user: null }, error: new Error('Auth not configured. Please set up Supabase credentials.') }),
   },
   from: () => ({
-    select: () => ({ data: [] }),
-    insert: async () => ({}),
-    update: async () => ({}),
-    delete: async () => ({}),
+    select: () => ({ data: [], error: null }),
+    insert: async () => ({ data: null, error: null }),
+    update: async () => ({ data: null, error: null }),
+    delete: async () => ({ data: null, error: null }),
   }),
 };
 
