@@ -1524,4 +1524,137 @@ export function generateRentalROIReport(
   };
 }
 
+// BRRRR Calculator Report
+export function generateBRRRRReport(
+  inputs: {
+    purchasePrice: number;
+    rehabCost: number;
+    holdingCosts: number;
+    afterRepairValue: number;
+    refinanceLTV: number;
+    refinanceRate: number;
+    loanTerm: number;
+    monthlyRent: number;
+    operatingExpensesPct: number;
+  },
+  result: {
+    totalInvestment: number;
+    refinanceLoanAmount: number;
+    cashLeftInDeal: number;
+    monthlyMortgagePayment: number;
+    monthlyNOI: number;
+    monthlyCashFlow: number;
+    annualCashFlow: number;
+    cashOnCashROI: number;
+    equity: number;
+  },
+  symbol: string
+): ReportData {
+  const formatROI = (value: number): string => {
+    if (!isFinite(value)) return 'Infinite';
+    return `${value.toFixed(2)}%`;
+  };
+
+  const getRating = (): { grade: string; label: string; color: 'emerald' | 'cyan' | 'orange' | 'red' | 'purple' | 'blue' | 'amber' | 'zinc' } => {
+    const roi = result.cashOnCashROI;
+    if (!isFinite(roi)) {
+      return result.annualCashFlow > 0
+        ? { grade: 'A+', label: 'Infinite ROI', color: 'emerald' }
+        : { grade: 'N/A', label: 'No Investment', color: 'zinc' };
+    }
+    if (roi >= 20) return { grade: 'A+', label: 'Excellent', color: 'emerald' };
+    if (roi >= 15) return { grade: 'A', label: 'Great', color: 'emerald' };
+    if (roi >= 10) return { grade: 'B+', label: 'Good', color: 'blue' };
+    if (roi >= 5) return { grade: 'B', label: 'Fair', color: 'amber' };
+    if (roi >= 0) return { grade: 'C', label: 'Low', color: 'orange' };
+    return { grade: 'D', label: 'Negative', color: 'red' };
+  };
+
+  const rating = getRating();
+
+  const sections: ReportSection[] = [
+    {
+      title: 'Purchase & Rehab',
+      color: 'amber',
+      type: 'metrics',
+      data: [
+        { label: 'Purchase Price', value: formatCurrency(inputs.purchasePrice, symbol) },
+        { label: 'Rehab Costs', value: formatCurrency(inputs.rehabCost, symbol) },
+        { label: 'Holding Costs', value: formatCurrency(inputs.holdingCosts, symbol) },
+        { label: 'Total Investment', value: formatCurrency(result.totalInvestment, symbol), highlight: true },
+      ] as ReportMetric[],
+    },
+    {
+      title: 'Refinance Analysis',
+      color: 'blue',
+      type: 'metrics',
+      data: [
+        { label: 'After Repair Value', value: formatCurrency(inputs.afterRepairValue, symbol) },
+        { label: 'LTV', value: formatPercent(inputs.refinanceLTV) },
+        { label: 'Refinance Amount', value: formatCurrency(result.refinanceLoanAmount, symbol) },
+        { label: 'Cash Left in Deal', value: formatCurrency(result.cashLeftInDeal, symbol), highlight: true },
+      ] as ReportMetric[],
+    },
+    {
+      title: 'Cash Flow Analysis',
+      color: 'cyan',
+      type: 'metrics',
+      data: [
+        { label: 'Monthly Rent', value: formatCurrency(inputs.monthlyRent, symbol) },
+        { label: 'Operating Expenses', value: formatPercent(inputs.operatingExpensesPct) },
+        { label: 'Mortgage Payment', value: formatCurrency(result.monthlyMortgagePayment, symbol), negative: true },
+        { label: 'Monthly Cash Flow', value: formatCurrency(result.monthlyCashFlow, symbol), highlight: true, positive: result.monthlyCashFlow >= 0, negative: result.monthlyCashFlow < 0 },
+      ] as ReportMetric[],
+    },
+    {
+      title: 'Return Metrics',
+      color: 'emerald',
+      type: 'metrics',
+      data: [
+        { label: 'Annual Cash Flow', value: formatCurrency(result.annualCashFlow, symbol), positive: result.annualCashFlow >= 0, negative: result.annualCashFlow < 0 },
+        { label: 'Cash-on-Cash ROI', value: formatROI(result.cashOnCashROI), highlight: true, positive: result.cashOnCashROI >= 10 },
+        { label: 'Equity Position', value: formatCurrency(result.equity, symbol) },
+        { label: 'Interest Rate', value: formatPercent(inputs.refinanceRate) },
+      ] as ReportMetric[],
+    },
+  ];
+
+  // Summary highlight
+  let summaryText: string;
+  if (!isFinite(result.cashOnCashROI) && result.annualCashFlow > 0) {
+    summaryText = `Exceptional BRRRR deal! You've pulled out all your capital and still generate ${formatCurrency(result.annualCashFlow, symbol)} annual cash flow. Infinite returns on remaining investment.`;
+  } else if (result.cashOnCashROI >= 15) {
+    summaryText = `Strong BRRRR opportunity with ${formatROI(result.cashOnCashROI)} cash-on-cash return. ${formatCurrency(result.cashLeftInDeal, symbol)} left in deal generating ${formatCurrency(result.monthlyCashFlow, symbol)}/month.`;
+  } else if (result.cashOnCashROI >= 8) {
+    summaryText = `Solid BRRRR deal with ${formatROI(result.cashOnCashROI)} return. Consider negotiating purchase price or increasing ARV through strategic improvements.`;
+  } else if (result.cashOnCashROI >= 0) {
+    summaryText = `Marginal BRRRR returns at ${formatROI(result.cashOnCashROI)}. Review rehab costs, ARV estimates, or rental rates to improve profitability.`;
+  } else {
+    summaryText = `Negative cash flow property. This deal requires adjustments - consider lower purchase price, higher rents, or different exit strategy.`;
+  }
+
+  sections.push({
+    title: 'Investment Summary',
+    color: rating.color,
+    type: 'highlight',
+    data: summaryText,
+  });
+
+  return {
+    calculatorType: 'brrrr',
+    title: 'BRRRR Analysis Report',
+    subtitle: 'Buy, Rehab, Rent, Refinance, Repeat',
+    currency: symbol,
+    symbol,
+    generatedDate: getDate(),
+    rating: {
+      grade: rating.grade,
+      label: rating.label,
+      value: formatROI(result.cashOnCashROI),
+      description: 'Cash-on-Cash ROI',
+    },
+    sections,
+  };
+}
+
 export { formatCurrency, formatPercent, getDate };

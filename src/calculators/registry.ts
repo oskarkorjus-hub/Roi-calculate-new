@@ -52,6 +52,10 @@ const RiskAssessmentComp = lazy(() =>
   import('./RiskAssessment/index').then(m => ({ default: m.RiskAssessment }))
 );
 
+const BRRRRCalculatorComp = lazy(() =>
+  import('./BRRRRCalculator/index').then(m => ({ default: m.BRRRRCalculator }))
+);
+
 export interface Calculator {
   id: string;
   name: string;
@@ -193,6 +197,16 @@ export const CALCULATORS: Calculator[] = [
     useCases: ['Risk Analysis', 'Investment Rating', 'Due Diligence'],
     tags: ['risk', 'assessment', 'rating', 'scenarios', 'sensitivity', 'mitigation'],
     component: RiskAssessmentComp,
+  },
+  {
+    id: 'brrrr',
+    name: 'BRRRR Calculator',
+    shortName: 'BRRRR',
+    icon: 'home_work',
+    description: 'Buy, Rehab, Rent, Refinance, Repeat - Calculate cash flow from rehabbed rental properties',
+    useCases: ['Fix & Flip', 'Cash Flow Planning', 'Refinancing Strategy'],
+    tags: ['brrrr', 'rehab', 'fix-and-flip', 'cashflow', 'refinance'],
+    component: BRRRRCalculatorComp,
   },
 ];
 

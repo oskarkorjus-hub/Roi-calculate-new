@@ -13,7 +13,8 @@ export type CalculatorType =
   | 'indonesia-tax'
   | 'rental-projection'
   | 'risk-assessment'
-  | 'dev-budget';
+  | 'dev-budget'
+  | 'brrrr';
 
 export interface ArchivedDraft<T> {
   id: string;

@@ -22,6 +22,7 @@ const INITIAL_STATE: ComparisonState = {
   indonesiaTax: [],
   devBudget: [],
   riskAssessment: [],
+  brrrr: [],
 };
 
 interface ComparisonContextType {

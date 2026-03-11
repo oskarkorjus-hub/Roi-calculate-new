@@ -7,7 +7,7 @@ import { UpgradeModal } from './ui/UpgradeModal';
 import type { UpgradeReason } from '../types/tier';
 
 interface SaveToPortfolioButtonProps {
-  calculatorType: 'xirr' | 'rental-roi' | 'mortgage' | 'cashflow' | 'dev-feasibility' | 'cap-rate' | 'irr' | 'npv' | 'indonesia-tax' | 'rental-projection' | 'financing' | 'dev-budget' | 'risk-assessment';
+  calculatorType: 'xirr' | 'rental-roi' | 'mortgage' | 'cashflow' | 'dev-feasibility' | 'cap-rate' | 'irr' | 'npv' | 'indonesia-tax' | 'rental-projection' | 'financing' | 'dev-budget' | 'risk-assessment' | 'brrrr';
   projectData: Record<string, any>;
   defaultProjectName?: string;
   strategy?: 'flip' | 'hold' | 'rental' | 'development';

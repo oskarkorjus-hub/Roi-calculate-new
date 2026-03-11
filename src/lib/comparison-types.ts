@@ -13,7 +13,8 @@ export type CalculatorType =
   | 'rental-projection'
   | 'indonesia-tax'
   | 'dev-budget'
-  | 'risk-assessment';
+  | 'risk-assessment'
+  | 'brrrr';
 
 export interface ComparisonMetrics {
   label: string;
@@ -175,6 +176,24 @@ export interface RiskAssessmentComparisonData extends ComparisonMetrics {
   investmentRating: { grade: string; label: string };
 }
 
+export interface BRRRRComparisonData extends ComparisonMetrics {
+  calculatorType: 'brrrr';
+  purchasePrice: number;
+  rehabCost: number;
+  holdingCosts: number;
+  afterRepairValue: number;
+  refinanceLTV: number;
+  refinanceRate: number;
+  monthlyRent: number;
+  totalInvestment: number;
+  cashLeftInDeal: number;
+  monthlyCashFlow: number;
+  annualCashFlow: number;
+  cashOnCashROI: number;
+  equity: number;
+  investmentRating: { grade: string; label: string };
+}
+
 export type ComparisonData =
   | RentalROIComparisonData
   | XIRRComparisonData
@@ -188,7 +207,8 @@ export type ComparisonData =
   | RentalProjectionComparisonData
   | IndonesiaTaxComparisonData
   | DevBudgetComparisonData
-  | RiskAssessmentComparisonData;
+  | RiskAssessmentComparisonData
+  | BRRRRComparisonData;
 
 export interface ComparisonState {
   rentalROI: RentalROIComparisonData[];
@@ -204,6 +224,7 @@ export interface ComparisonState {
   indonesiaTax: IndonesiaTaxComparisonData[];
   devBudget: DevBudgetComparisonData[];
   riskAssessment: RiskAssessmentComparisonData[];
+  brrrr: BRRRRComparisonData[];
 }
 
 export const MAX_COMPARISONS = 5;
@@ -223,6 +244,7 @@ export const calculatorTypeToStateKey: Record<CalculatorType, keyof ComparisonSt
   'indonesia-tax': 'indonesiaTax',
   'dev-budget': 'devBudget',
   'risk-assessment': 'riskAssessment',
+  'brrrr': 'brrrr',
 };
 
 // Calculator display names
@@ -240,4 +262,5 @@ export const calculatorDisplayNames: Record<CalculatorType, string> = {
   'indonesia-tax': 'Indonesia Tax',
   'dev-budget': 'Dev Budget',
   'risk-assessment': 'Risk Assessment',
+  'brrrr': 'BRRRR',
 };

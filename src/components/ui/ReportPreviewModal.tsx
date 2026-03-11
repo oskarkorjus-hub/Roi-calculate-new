@@ -1,9 +1,10 @@
 import { useState, useCallback } from 'react';
 import { Toast } from './Toast';
+import { useNotifications } from '../../lib/notification-context';
 import jsPDF from 'jspdf';
 
 export interface ReportData {
-  calculatorType: 'mortgage' | 'cashflow' | 'cap-rate' | 'irr' | 'npv' | 'dev-feasibility' | 'rental-roi' | 'xirr' | 'indonesia-tax' | 'rental-projection' | 'financing';
+  calculatorType: 'mortgage' | 'cashflow' | 'cap-rate' | 'irr' | 'npv' | 'dev-feasibility' | 'rental-roi' | 'xirr' | 'indonesia-tax' | 'rental-projection' | 'financing' | 'brrrr';
   title: string;
   subtitle?: string;
   currency: string;
@@ -21,7 +22,7 @@ export interface ReportData {
 export interface ReportSection {
   title: string;
   icon?: string;
-  color?: 'emerald' | 'cyan' | 'orange' | 'red' | 'purple' | 'blue';
+  color?: 'emerald' | 'cyan' | 'orange' | 'red' | 'purple' | 'blue' | 'amber' | 'zinc';
   type: 'metrics' | 'table' | 'text' | 'highlight';
   data: ReportMetric[] | ReportTableRow[] | string;
 }
@@ -51,6 +52,7 @@ export function ReportPreviewModal({ isOpen, onClose, reportData }: Props) {
   const [isExporting, setIsExporting] = useState(false);
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
   const [emailError, setEmailError] = useState<string | null>(null);
+  const { addNotification } = useNotifications();
 
   const generatePDF = useCallback((): jsPDF => {
     const doc = new jsPDF('p', 'mm', 'a4');
@@ -497,13 +499,19 @@ export function ReportPreviewModal({ isOpen, onClose, reportData }: Props) {
       const filename = `${reportData.title.replace(/\s+/g, '-').toLowerCase()}-${Date.now()}.pdf`;
       doc.save(filename);
       setToast({ message: 'PDF downloaded successfully!', type: 'success' });
+      addNotification({
+        title: 'Report Downloaded',
+        message: `${reportData.title} PDF has been saved to your downloads`,
+        type: 'success',
+        icon: 'download',
+      });
       setTimeout(() => onClose(), 1500);
     } catch (error) {
       setToast({ message: 'Failed to generate PDF', type: 'error' });
     } finally {
       setIsExporting(false);
     }
-  }, [generatePDF, reportData.title, onClose]);
+  }, [generatePDF, reportData.title, onClose, addNotification]);
 
   const handleSendEmail = useCallback(async () => {
     const trimmed = email.trim().toLowerCase();
@@ -545,6 +553,12 @@ export function ReportPreviewModal({ isOpen, onClose, reportData }: Props) {
       }
 
       setToast({ message: `Report sent to ${trimmed}!`, type: 'success' });
+      addNotification({
+        title: 'Report Emailed',
+        message: `${reportData.title} has been sent to ${trimmed}`,
+        type: 'success',
+        icon: 'mail',
+      });
       setTimeout(() => onClose(), 2000);
     } catch (error) {
       const errorMsg = error instanceof Error ? error.message : 'Failed to send email';
@@ -552,7 +566,7 @@ export function ReportPreviewModal({ isOpen, onClose, reportData }: Props) {
     } finally {
       setIsExporting(false);
     }
-  }, [email, generatePDF, reportData, onClose]);
+  }, [email, generatePDF, reportData, onClose, addNotification]);
 
   if (!isOpen) return null;
 
