@@ -581,7 +581,7 @@ export function RentalIncomeProjection() {
                   <select
                     value={inputs.location}
                     onChange={(e) => handleInputChange('location', e.target.value)}
-                    className="w-full bg-zinc-800 border border-zinc-700 rounded-2xl py-4 px-6 text-[16px] font-bold text-white focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-all"
+                    className="w-full bg-zinc-800 border border-zinc-700 rounded-lg py-2.5 px-4 text-sm font-medium text-white focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-all"
                   >
                     <option value="ubud">Ubud</option>
                     <option value="seminyak">Seminyak</option>
@@ -935,7 +935,7 @@ function InputField({ label, value, onChange, prefix, suffix, tooltip }: {
           value={localValue}
           onChange={handleChange}
           placeholder="0"
-          className={`w-full bg-zinc-800 border border-zinc-700 rounded-2xl py-4 text-[16px] font-bold text-white placeholder:text-zinc-500 outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-all tabular-nums ${prefix ? 'pl-12 pr-6' : suffix ? 'pl-6 pr-16' : 'px-6'}`}
+          className={`w-full bg-zinc-800 border border-zinc-700 rounded-lg py-2.5 text-sm font-medium text-white placeholder:text-zinc-500 outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-all tabular-nums ${prefix ? 'pl-10 pr-4' : suffix ? 'pl-4 pr-12' : 'px-4'}`}
         />
         {suffix && (
           <span className="absolute right-5 top-1/2 -translate-y-1/2 text-[13px] font-bold text-zinc-500">{suffix}</span>

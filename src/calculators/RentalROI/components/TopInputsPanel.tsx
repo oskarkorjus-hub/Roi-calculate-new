@@ -516,7 +516,7 @@ const TopInputGroup: React.FC<{
           onFocus={() => setIsFocused(true)}
           onBlur={handleBlur}
           autoFocus={autoFocus}
-          className="w-full bg-zinc-800 border border-zinc-700 rounded-2xl py-4 text-[16px] font-bold text-white placeholder:text-zinc-500 outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all tabular-nums"
+          className="w-full bg-zinc-800 border border-zinc-700 rounded-lg py-2.5 text-sm font-medium text-white placeholder:text-zinc-500 outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all tabular-nums"
           style={{ paddingLeft: icon ? '2.75rem' : '1.25rem', paddingRight: '1rem' }}
         />
         {isPercentage && (

@@ -16,39 +16,44 @@ export function parseDecimalInput(value: string): number {
 
   if (!trimmed) return NaN;
 
-  // Count commas and periods
-  const commaCount = (trimmed.match(/,/g) || []).length;
-  const periodCount = (trimmed.match(/\./g) || []).length;
+  // Check for negative sign at the start
+  const isNegative = trimmed.startsWith('-');
+  const withoutSign = isNegative ? trimmed.slice(1) : trimmed;
 
-  let normalized = trimmed;
+  // Count commas and periods
+  const commaCount = (withoutSign.match(/,/g) || []).length;
+  const periodCount = (withoutSign.match(/\./g) || []).length;
+
+  let normalized = withoutSign;
 
   // Determine if commas are thousand separators or decimal separator
   if (commaCount > 1) {
     // Multiple commas = thousand separators, remove them
-    normalized = trimmed.replace(/,/g, '');
+    normalized = withoutSign.replace(/,/g, '');
   } else if (commaCount === 1) {
     // Single comma - check if it's a decimal separator or thousand separator
-    const commaIndex = trimmed.indexOf(',');
-    const afterComma = trimmed.slice(commaIndex + 1).replace(/[^0-9]/g, '');
+    const commaIndex = withoutSign.indexOf(',');
+    const afterComma = withoutSign.slice(commaIndex + 1).replace(/[^0-9]/g, '');
 
     if (periodCount > 0) {
       // Has both comma and period - comma is thousand separator
-      normalized = trimmed.replace(/,/g, '');
+      normalized = withoutSign.replace(/,/g, '');
     } else if (afterComma.length === 3 && commaIndex > 0) {
       // Pattern like "1,234" or "15,087" - comma is thousand separator
       // But also check if there's more after (like "15,087,472,000" already handled above)
       // Single comma with exactly 3 digits after = thousand separator
-      normalized = trimmed.replace(/,/g, '');
+      normalized = withoutSign.replace(/,/g, '');
     } else {
       // Comma is decimal separator (e.g., "5,5" or "5,25")
-      normalized = trimmed.replace(',', '.');
+      normalized = withoutSign.replace(',', '.');
     }
   }
 
   // Remove any remaining characters except digits and period
   const cleaned = normalized.replace(/[^0-9.]/g, '');
 
-  return parseFloat(cleaned);
+  const result = parseFloat(cleaned);
+  return isNegative ? -result : result;
 }
 
 /**

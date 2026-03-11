@@ -337,7 +337,7 @@ export function NPVCalculator() {
                               value={cf.amount === 0 ? '' : cf.amount}
                               onChange={(e) => handleCashFlowChange(idx, e.target.value)}
                               placeholder="0"
-                              className="w-full bg-zinc-800 border border-zinc-700 rounded-2xl px-4 py-3 text-[15px] font-bold text-white placeholder:text-zinc-500 outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all tabular-nums"
+                              className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2 text-sm font-medium text-white placeholder:text-zinc-500 outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all tabular-nums"
                             />
                           </td>
                           <td className="px-4 py-3 text-center">
