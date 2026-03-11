@@ -1059,32 +1059,36 @@ export function RiskAssessment() {
         {/* Benchmark Comparison */}
         <div className="mt-8 rounded-xl border border-zinc-800 bg-zinc-900 p-6">
           <h3 className="text-lg font-bold text-white mb-4">Market Comparison</h3>
-          <div className="flex items-center gap-6">
-            <div>
-              <p className="text-xs text-zinc-400 uppercase mb-1">Your Risk Score</p>
-              <p className={`text-3xl font-bold ${
-                riskScore.overall <= 30 ? 'text-emerald-400' :
-                riskScore.overall <= 60 ? 'text-amber-400' : 'text-red-400'
-              }`}>
-                {riskScore.overall}
-              </p>
+          {isIncomplete ? (
+            <p className="text-zinc-500 text-sm">Enter investment details above to see market comparison</p>
+          ) : (
+            <div className="flex items-center gap-6">
+              <div>
+                <p className="text-xs text-zinc-400 uppercase mb-1">Your Risk Score</p>
+                <p className={`text-3xl font-bold ${
+                  riskScore.overall <= 30 ? 'text-emerald-400' :
+                  riskScore.overall <= 60 ? 'text-amber-400' : 'text-red-400'
+                }`}>
+                  {riskScore.overall}
+                </p>
+              </div>
+              <div className="text-zinc-600 text-2xl">vs</div>
+              <div>
+                <p className="text-xs text-zinc-400 uppercase mb-1">Typical {propertyLabels[inputs.propertyType]}</p>
+                <p className="text-3xl font-bold text-zinc-400">{benchmark}</p>
+              </div>
+              <div className="flex-1">
+                <p className={`text-sm ${riskDiff > 0 ? 'text-red-400' : riskDiff < 0 ? 'text-emerald-400' : 'text-zinc-400'}`}>
+                  {riskDiff > 0
+                    ? `${riskDiff} points riskier than market average`
+                    : riskDiff < 0
+                      ? `${Math.abs(riskDiff)} points safer than market average`
+                      : 'Equal to market average'
+                  }
+                </p>
+              </div>
             </div>
-            <div className="text-zinc-600 text-2xl">vs</div>
-            <div>
-              <p className="text-xs text-zinc-400 uppercase mb-1">Typical {propertyLabels[inputs.propertyType]}</p>
-              <p className="text-3xl font-bold text-zinc-400">{benchmark}</p>
-            </div>
-            <div className="flex-1">
-              <p className={`text-sm ${riskDiff > 0 ? 'text-red-400' : riskDiff < 0 ? 'text-emerald-400' : 'text-zinc-400'}`}>
-                {riskDiff > 0
-                  ? `${riskDiff} points riskier than market average`
-                  : riskDiff < 0
-                    ? `${Math.abs(riskDiff)} points safer than market average`
-                    : 'Equal to market average'
-                }
-              </p>
-            </div>
-          </div>
+          )}
         </div>
       </div>
     </div>
