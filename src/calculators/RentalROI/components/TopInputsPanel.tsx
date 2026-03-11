@@ -55,7 +55,7 @@ const MonthYearPicker: React.FC<MonthYearPickerProps> = ({ value, onChange, minY
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-3 bg-zinc-800 border border-zinc-700 rounded-xl px-4 py-2.5 text-sm font-bold text-white hover:border-emerald-500 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 outline-none transition-all min-w-[160px]"
+        className="flex items-center gap-2 bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2 text-sm font-medium text-white hover:border-emerald-500 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/20 outline-none transition-all"
       >
         <svg className="w-4 h-4 text-zinc-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
