@@ -668,6 +668,13 @@ export function ProjectCard({
         </div>
       )}
 
+      {/* Empty spacer for consistent card height when no breakdown section */}
+      {!categoryConfig.showScoreBreakdown && categoryConfig.category !== 'budget' && (
+        <div className="px-4 py-3 bg-zinc-800/30">
+          <div className="h-[18px]" />
+        </div>
+      )}
+
       {/* Footer with Actions */}
       <div className="px-4 py-3 border-t border-zinc-800 flex items-center justify-between">
         <span className="text-xs text-zinc-500">
