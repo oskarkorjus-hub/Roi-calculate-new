@@ -171,6 +171,26 @@ const CALCULATOR_SCORING_CONFIGS: Record<string, CalculatorScoringConfig> = {
       evaluate: (results) => Math.max(0, 1 - (results.riskScore || 50) / 100), // Lower risk = better
     }],
   },
+  'brrrr': {
+    roiWeight: 45, // Cash-on-Cash ROI is primary metric
+    roiMax: 20, // 20% CoC ROI is excellent for BRRRR
+    cashFlowWeight: 35, // Monthly cash flow after refi
+    cashFlowMax: 10, // 10% cash yield is excellent
+    stabilityWeight: 10,
+    stabilityMax: 12, // BRRRR expects quick turnaround
+    locationWeight: 10,
+    customMetrics: [{
+      name: 'cashRecovery',
+      weight: 20,
+      evaluate: (results) => {
+        // Bonus for pulling out all capital (infinite ROI)
+        const cashLeft = results.cashLeftInDeal || 0;
+        const totalInvested = results.totalInvestment || 1;
+        const recoveryRatio = 1 - (cashLeft / totalInvested);
+        return Math.min(1, recoveryRatio); // 100% recovery = max score
+      },
+    }],
+  },
 };
 
 export interface InvestmentRisk {

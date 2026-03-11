@@ -71,6 +71,7 @@ const getCalculatorDisplayName = (calculatorId: string): string => {
     'financing': 'Financing',
     'dev-budget': 'Budget Tracker',
     'risk-assessment': 'Risk Assessment',
+    'brrrr': 'BRRRR',
   };
   return names[calculatorId] || calculatorId?.replace('-', ' ') || 'Calculator';
 };
@@ -614,6 +615,54 @@ const getCategoryConfig = (calculatorId: string): CategoryConfig => {
           {
             label: 'Status',
             getValue: (p) => (p.status || 'Active').charAt(0).toUpperCase() + (p.status || 'active').slice(1),
+          },
+        ],
+      };
+
+    // ===== BRRRR =====
+    case 'brrrr':
+      return {
+        category: 'investment',
+        showScore: true,
+        showScoreBreakdown: true,
+        accentColor: '#f59e0b', // amber
+        metrics: [
+          {
+            label: 'Purchase Price',
+            getValue: (p) => formatCurrency(p.data?.purchasePrice || 0),
+          },
+          {
+            label: 'Rehab Cost',
+            getValue: (p) => formatCurrency(p.data?.rehabCost || 0),
+          },
+          {
+            label: 'After Repair Value',
+            getValue: (p) => formatCurrency(p.data?.afterRepairValue || 0),
+            getColor: () => 'text-emerald-400',
+          },
+          {
+            label: 'Cash Left in Deal',
+            getValue: (p) => formatCurrency(p.data?.result?.cashLeftInDeal || 0),
+            getColor: (p) => (p.data?.result?.cashLeftInDeal || 0) <= 0 ? 'text-emerald-400' : 'text-white',
+          },
+          {
+            label: 'Monthly Cash Flow',
+            getValue: (p) => formatCurrency(p.data?.result?.monthlyCashFlow || p.avgCashFlow || 0),
+            getColor: (p) => (p.data?.result?.monthlyCashFlow || p.avgCashFlow || 0) >= 0 ? 'text-emerald-400' : 'text-red-400',
+          },
+          {
+            label: 'Cash-on-Cash ROI',
+            getValue: (p) => {
+              const roi = p.data?.result?.cashOnCashROI || p.roi || 0;
+              if (!isFinite(roi)) return 'Infinite';
+              return `${roi.toFixed(1)}%`;
+            },
+            getColor: (p) => {
+              const roi = p.data?.result?.cashOnCashROI || p.roi || 0;
+              if (!isFinite(roi) || roi >= 15) return 'text-emerald-400';
+              if (roi >= 8) return 'text-yellow-400';
+              return 'text-orange-400';
+            },
           },
         ],
       };
