@@ -138,8 +138,10 @@ export function CashFlowProjector() {
       monthlyMaintenance + monthlyPropertyTax + monthlyInsurance + monthlyUtilities + monthlyOtherExpenses;
 
     const yearlyBaseExpenses = monthlyExpenses * 12;
-    const fixedExpenses = (yearlyBaseExpenses * fixedExpensePercent) / 100;
-    const variableExpenses = (yearlyBaseExpenses * variableExpensePercent) / 100;
+
+    // Fixed portion stays constant, remaining portion grows with expense growth rate
+    const fixedPortion = (yearlyBaseExpenses * fixedExpensePercent) / 100;
+    const growingPortion = yearlyBaseExpenses - fixedPortion; // Remainder grows
 
     const schedule: CashFlowYear[] = [];
     let cumulativeCashFlow = 0;
@@ -153,9 +155,11 @@ export function CashFlowProjector() {
       const yearlyGrossIncome = monthlyRentalIncome * 12 * Math.pow(growthMultiplier, year - 1) * effectiveSeasonalMultiplier;
       const yearlyVacancyLoss = (yearlyGrossIncome * vacancyRate) / 100;
       const yearlyEffectiveIncome = yearlyGrossIncome - yearlyVacancyLoss;
-      
+
+      // If showAdvanced: fixed portion stays constant, rest grows
+      // If not advanced: all expenses grow with expense growth rate
       const yearlyExpenses = showAdvanced
-        ? fixedExpenses + variableExpenses * Math.pow(expenseMultiplier, year - 1)
+        ? fixedPortion + growingPortion * Math.pow(expenseMultiplier, year - 1)
         : yearlyBaseExpenses * Math.pow(expenseMultiplier, year - 1);
 
       const netCashFlow = yearlyEffectiveIncome - yearlyExpenses;
