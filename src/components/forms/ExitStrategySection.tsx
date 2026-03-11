@@ -141,9 +141,9 @@ export function ExitStrategySection({
                     onUpdate('closingCostPercent', 0);
                   }
                 }}
-                className="w-12 bg-transparent text-text-primary font-mono text-right focus:outline-none"
+                className="w-12 bg-transparent text-sm text-text-primary font-mono text-right focus:outline-none"
               />
-              <span className="text-text-muted font-mono">%</span>
+              <span className="text-text-muted font-mono text-sm">%</span>
             </div>
             <span className="text-text-muted flex-shrink-0">=</span>
             <div className="flex-1 min-w-0 relative">
