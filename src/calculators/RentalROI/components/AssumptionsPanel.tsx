@@ -25,7 +25,7 @@ const AssumptionsPanel = ({ assumptions, onChange, currency }: Props) => {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-x-8 gap-y-6">
+      <div className="space-y-6">
         {/* Cost Structure */}
         <section className="space-y-4">
           <div className="flex items-center gap-2">
@@ -34,7 +34,7 @@ const AssumptionsPanel = ({ assumptions, onChange, currency }: Props) => {
               Operating Cost Basis (% Revenue)
             </h3>
           </div>
-          <div className="grid grid-cols-2 gap-x-4 gap-y-4">
+          <div className="grid grid-cols-4 gap-x-4">
             <SecondaryInput label="Rooms Cost" value={assumptions.roomsCostPct} placeholder={PLACEHOLDER_VALUES.roomsCostPct} onChange={(v) => handleChange('roomsCostPct', v)} isPercentage tooltip="Direct cost of room operations as % of room revenue. Includes housekeeping, amenities, laundry, and linens." />
             <SecondaryInput label="F&B Cost" value={assumptions.fbCostPct} placeholder={PLACEHOLDER_VALUES.fbCostPct} onChange={(v) => handleChange('fbCostPct', v)} isPercentage tooltip="Cost of goods sold for F&B as % of F&B revenue. Includes ingredients, beverages, and kitchen supplies." />
             <SecondaryInput label="Wellness" value={assumptions.spaCostPct} placeholder={PLACEHOLDER_VALUES.spaCostPct} onChange={(v) => handleChange('spaCostPct', v)} isPercentage tooltip="Direct spa costs as % of spa revenue. Includes therapist wages, oils, products, and equipment." />
@@ -50,7 +50,7 @@ const AssumptionsPanel = ({ assumptions, onChange, currency }: Props) => {
               Undistributed Expenses (% Revenue)
             </h3>
           </div>
-          <div className="grid grid-cols-3 gap-x-4 gap-y-4">
+          <div className="grid grid-cols-3 gap-x-4">
             <SecondaryInput label="Admin & General" value={assumptions.adminPct} placeholder={PLACEHOLDER_VALUES.adminPct} onChange={(v) => handleChange('adminPct', v)} isPercentage tooltip="Administrative costs as % of revenue. Includes accounting, HR, insurance, and general office expenses." />
             <SecondaryInput label="Sales & Marketing" value={assumptions.salesPct} placeholder={PLACEHOLDER_VALUES.salesPct} onChange={(v) => handleChange('salesPct', v)} isPercentage tooltip="Sales & Marketing costs as % of revenue. Includes OTA commissions, advertising, and promotional activities." />
             <SecondaryInput label="Property Ops" value={assumptions.maintPct} placeholder={PLACEHOLDER_VALUES.maintPct} onChange={(v) => handleChange('maintPct', v)} isPercentage tooltip="Property operations and maintenance as % of revenue. Includes repairs, landscaping, and general upkeep." />
@@ -65,7 +65,7 @@ const AssumptionsPanel = ({ assumptions, onChange, currency }: Props) => {
               Annual Growth Rates (% p.a.)
             </h3>
           </div>
-          <div className="grid grid-cols-3 gap-x-4 gap-y-4">
+          <div className="grid grid-cols-6 gap-x-4">
             <SecondaryInput label="ADR Growth" value={assumptions.adrGrowth} placeholder={PLACEHOLDER_VALUES.adrGrowth} onChange={(v) => handleChange('adrGrowth', v)} isPercentage tooltip="Annual rate increase for room rates. Typically 3-6% in growing markets like Bali." />
             <SecondaryInput label="F&B Growth" value={assumptions.fbGrowth} placeholder={PLACEHOLDER_VALUES.fbGrowth} onChange={(v) => handleChange('fbGrowth', v)} isPercentage tooltip="Annual growth rate for Food & Beverage revenue. Typically 2-4%." />
             <SecondaryInput label="Wellness Growth" value={assumptions.spaGrowth} placeholder={PLACEHOLDER_VALUES.spaGrowth} onChange={(v) => handleChange('spaGrowth', v)} isPercentage tooltip="Annual growth rate for Spa/Wellness revenue. Typically 2-5%." />
@@ -83,7 +83,7 @@ const AssumptionsPanel = ({ assumptions, onChange, currency }: Props) => {
               Management Fees
             </h3>
           </div>
-          <div className="grid grid-cols-2 gap-x-4 gap-y-4">
+          <div className="grid grid-cols-4 gap-x-4">
             <CurrencyInput label="CAM Fee/Unit/Mo" value={assumptions.camFeePerUnit} placeholder={PLACEHOLDER_VALUES.camFeePerUnit} onChange={(v) => handleChange('camFeePerUnit', v)} currency={currency} tooltip="Monthly CAM fee per unit. Formula: CAM × 12 × keys. Only charged when property is operational." />
             <SecondaryInput label="Base Fee %" value={assumptions.baseFeePercent} placeholder={PLACEHOLDER_VALUES.baseFeePercent} onChange={(v) => handleChange('baseFeePercent', v)} isPercentage tooltip="Base management fee as % of total revenue (first operational year), then grows with fee growth rate." />
             <CurrencyInput label="Tech Fee/Unit/Mo" value={assumptions.techFeePerUnit} placeholder={PLACEHOLDER_VALUES.techFeePerUnit} onChange={(v) => handleChange('techFeePerUnit', v)} currency={currency} tooltip="Monthly tech fee per unit. Formula: Tech × 12 × keys. Charged even during development phase." />
