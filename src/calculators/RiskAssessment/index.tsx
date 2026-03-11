@@ -271,8 +271,9 @@ export function RiskAssessment() {
     });
     financialScore += leverageScore;
 
-    // Break-even Timeline (0-15 points) - Linear scale: 0 months = 0, 60+ months = 15
-    let beScore = Math.max(0, Math.min(15, Math.round((inputs.breakEvenMonths / 60) * 15)));
+    // Break-even Timeline (0-15 points) - 12 months or less = 0 (excellent), 72+ months = 15 (bad)
+    let beScore = inputs.breakEvenMonths <= 12 ? 0 :
+                  Math.max(0, Math.min(15, Math.round(((inputs.breakEvenMonths - 12) / 60) * 15)));
     factors.push({
       category: 'Financial',
       name: 'Break-even Timeline',
