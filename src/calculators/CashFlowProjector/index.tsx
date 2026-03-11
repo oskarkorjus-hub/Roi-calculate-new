@@ -61,7 +61,7 @@ const INITIAL_INPUTS: CashFlowInputsType = {
   expenseGrowthRate: 0,
   fixedExpensePercent: 0,
   variableExpensePercent: 0,
-  seasonalMultiplier: 0,
+  seasonalMultiplier: 1, // Default to 1 (no seasonal adjustment)
 };
 
 const symbols: Record<CurrencyType, string> = { IDR: 'Rp', USD: '$', AUD: 'A$', EUR: '€', GBP: '£', INR: '₹', CNY: '¥', AED: 'د.إ', RUB: '₽' };
@@ -135,8 +135,9 @@ export function CashFlowProjector() {
     const expenseMultiplier = 1 + expenseGrowthRate / 100;
 
     for (let year = 1; year <= projectionYears; year++) {
-      // Basic calculations with growth
-      const yearlyGrossIncome = monthlyRentalIncome * 12 * Math.pow(growthMultiplier, year - 1) * seasonalMultiplier;
+      // Basic calculations with growth (default seasonalMultiplier to 1 if 0)
+      const effectiveSeasonalMultiplier = seasonalMultiplier || 1;
+      const yearlyGrossIncome = monthlyRentalIncome * 12 * Math.pow(growthMultiplier, year - 1) * effectiveSeasonalMultiplier;
       const yearlyVacancyLoss = (yearlyGrossIncome * vacancyRate) / 100;
       const yearlyEffectiveIncome = yearlyGrossIncome - yearlyVacancyLoss;
       
