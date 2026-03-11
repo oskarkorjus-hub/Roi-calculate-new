@@ -241,9 +241,9 @@ const ProjectionsTable: React.FC<Props> = ({ data, avg, currency }) => {
                   {!isCollapsed && section.rows.map((row, rIdx) => (
                     <tr
                       key={rIdx}
-                      className={`group hover:bg-zinc-800/50 transition-colors border-b border-zinc-800/50`}
+                      className={`group hover:bg-zinc-800 transition-colors border-b border-zinc-800/50`}
                     >
-                      <td className={`sticky left-0 p-3 pl-10 z-[20] bg-zinc-900 border-r border-zinc-700 shadow-[4px_0_8px_rgba(0,0,0,0.2)] group-hover:bg-zinc-800/50
+                      <td className={`sticky left-0 p-3 pl-10 z-[20] bg-zinc-900 border-r border-zinc-700 shadow-[4px_0_8px_rgba(0,0,0,0.2)] group-hover:bg-zinc-800
                         ${row.indent ? 'pl-14 text-zinc-500' : 'text-zinc-300'}
                         ${row.bold ? 'font-bold text-white' : 'font-medium'}`}>
                         <div className="flex items-center gap-2">
@@ -251,7 +251,7 @@ const ProjectionsTable: React.FC<Props> = ({ data, avg, currency }) => {
                         </div>
                       </td>
                       {data.map(y => (
-                        <td key={y.year} className="p-3 text-right border-r border-zinc-800/30 bg-zinc-900 group-hover:bg-zinc-800/50">
+                        <td key={y.year} className="p-3 text-right border-r border-zinc-800/30 bg-zinc-900 group-hover:bg-zinc-800">
                           {renderCellValue((y as any)[row.key], row.type, row.color)}
                         </td>
                       ))}
