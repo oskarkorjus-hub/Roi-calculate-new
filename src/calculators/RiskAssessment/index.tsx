@@ -1030,30 +1030,48 @@ export function RiskAssessment() {
 
         {/* Breakdown Tab */}
         {activeTab === 'breakdown' && (
-          <div className="space-y-6">
-            <RiskBreakdown factors={riskScore.factors} />
-            <SensitivityChart
-              baseScore={riskScore.overall}
-              factors={riskScore.factors}
-            />
-          </div>
+          isIncomplete ? (
+            <div className="rounded-xl border border-zinc-800 bg-zinc-900 p-8 text-center">
+              <p className="text-zinc-500">Enter investment details in the Overview tab to see risk breakdown</p>
+            </div>
+          ) : (
+            <div className="space-y-6">
+              <RiskBreakdown factors={riskScore.factors} />
+              <SensitivityChart
+                baseScore={riskScore.overall}
+                factors={riskScore.factors}
+              />
+            </div>
+          )
         )}
 
         {/* Scenarios Tab */}
         {activeTab === 'scenarios' && (
-          <ScenarioAnalysis
-            scenarios={scenarios}
-            symbol={symbol}
-            currency={inputs.currency}
-          />
+          isIncomplete ? (
+            <div className="rounded-xl border border-zinc-800 bg-zinc-900 p-8 text-center">
+              <p className="text-zinc-500">Enter investment details in the Overview tab to see scenario analysis</p>
+            </div>
+          ) : (
+            <ScenarioAnalysis
+              scenarios={scenarios}
+              symbol={symbol}
+              currency={inputs.currency}
+            />
+          )
         )}
 
         {/* Mitigation Tab */}
         {activeTab === 'mitigation' && (
-          <RiskMitigation
-            factors={riskScore.factors}
-            riskScore={riskScore.overall}
-          />
+          isIncomplete ? (
+            <div className="rounded-xl border border-zinc-800 bg-zinc-900 p-8 text-center">
+              <p className="text-zinc-500">Enter investment details in the Overview tab to see mitigation strategies</p>
+            </div>
+          ) : (
+            <RiskMitigation
+              factors={riskScore.factors}
+              riskScore={riskScore.overall}
+            />
+          )
         )}
 
         {/* Benchmark Comparison */}
