@@ -215,13 +215,8 @@ export function RiskAssessment() {
     // === FINANCIAL RISK (40% weight) ===
     let financialScore = 0;
 
-    // ROI Quality (0-20 points)
-    let roiScore = 0;
-    if (inputs.projectROI >= 20) roiScore = 0;
-    else if (inputs.projectROI >= 15) roiScore = 5;
-    else if (inputs.projectROI >= 10) roiScore = 10;
-    else if (inputs.projectROI >= 5) roiScore = 15;
-    else roiScore = 20;
+    // ROI Quality (0-20 points) - Linear scale: 25%+ = 0, 0% = 20
+    let roiScore = Math.max(0, Math.min(20, Math.round(20 - (inputs.projectROI / 25) * 20)));
     factors.push({
       category: 'Financial',
       name: 'ROI Quality',
@@ -229,7 +224,8 @@ export function RiskAssessment() {
       maxScore: 20,
       impact: roiScore > 12 ? 'high' : roiScore > 6 ? 'moderate' : 'low',
       description: inputs.projectROI >= 20 ? 'Excellent ROI above 20%' :
-                   inputs.projectROI >= 10 ? 'Moderate ROI between 10-20%' : 'Low ROI below 10%',
+                   inputs.projectROI >= 10 ? 'Good ROI between 10-20%' :
+                   inputs.projectROI >= 5 ? 'Low ROI between 5-10%' : 'Very low ROI below 5%',
     });
     financialScore += roiScore;
 
@@ -246,12 +242,8 @@ export function RiskAssessment() {
     });
     financialScore += cfScore;
 
-    // DSCR (0-15 points)
-    let dscrScore = 0;
-    if (inputs.debtServiceCoverageRatio >= 1.5) dscrScore = 0;
-    else if (inputs.debtServiceCoverageRatio >= 1.25) dscrScore = 5;
-    else if (inputs.debtServiceCoverageRatio >= 1.0) dscrScore = 10;
-    else dscrScore = 15;
+    // DSCR (0-15 points) - Linear scale: 2.0+ = 0, 0 = 15
+    let dscrScore = Math.max(0, Math.min(15, Math.round(15 - (inputs.debtServiceCoverageRatio / 2) * 15)));
     factors.push({
       category: 'Financial',
       name: 'Debt Service Coverage',
@@ -259,39 +251,38 @@ export function RiskAssessment() {
       maxScore: 15,
       impact: dscrScore > 10 ? 'high' : dscrScore > 5 ? 'moderate' : 'low',
       description: `DSCR of ${inputs.debtServiceCoverageRatio.toFixed(2)}x - ${
-        inputs.debtServiceCoverageRatio >= 1.25 ? 'healthy buffer' : 'tight margin'}`,
+        inputs.debtServiceCoverageRatio >= 1.5 ? 'strong buffer' :
+        inputs.debtServiceCoverageRatio >= 1.25 ? 'healthy buffer' :
+        inputs.debtServiceCoverageRatio >= 1.0 ? 'adequate' : 'insufficient coverage'}`,
     });
     financialScore += dscrScore;
 
-    // Leverage Ratio (0-15 points)
-    let leverageScore = 0;
-    if (inputs.leverageRatio <= 0.5) leverageScore = 0;
-    else if (inputs.leverageRatio <= 0.7) leverageScore = 5;
-    else if (inputs.leverageRatio <= 0.8) leverageScore = 10;
-    else leverageScore = 15;
+    // Leverage Ratio (0-15 points) - Linear scale: 0% = 0, 100% = 15
+    let leverageScore = Math.max(0, Math.min(15, Math.round(inputs.leverageRatio * 15)));
     factors.push({
       category: 'Financial',
       name: 'Leverage Ratio',
       score: leverageScore,
       maxScore: 15,
       impact: leverageScore > 10 ? 'high' : leverageScore > 5 ? 'moderate' : 'low',
-      description: `${(inputs.leverageRatio * 100).toFixed(0)}% debt to total investment`,
+      description: `${(inputs.leverageRatio * 100).toFixed(0)}% debt to total investment - ${
+        inputs.leverageRatio <= 0.5 ? 'conservative' :
+        inputs.leverageRatio <= 0.7 ? 'moderate' : 'aggressive leverage'}`,
     });
     financialScore += leverageScore;
 
-    // Break-even Timeline (0-15 points)
-    let beScore = 0;
-    if (inputs.breakEvenMonths <= 12) beScore = 0;
-    else if (inputs.breakEvenMonths <= 24) beScore = 5;
-    else if (inputs.breakEvenMonths <= 36) beScore = 10;
-    else beScore = 15;
+    // Break-even Timeline (0-15 points) - Linear scale: 0 months = 0, 60+ months = 15
+    let beScore = Math.max(0, Math.min(15, Math.round((inputs.breakEvenMonths / 60) * 15)));
     factors.push({
       category: 'Financial',
       name: 'Break-even Timeline',
       score: beScore,
       maxScore: 15,
       impact: beScore > 10 ? 'high' : beScore > 5 ? 'moderate' : 'low',
-      description: `${inputs.breakEvenMonths} months to break even`,
+      description: `${inputs.breakEvenMonths} months to break even - ${
+        inputs.breakEvenMonths <= 12 ? 'excellent' :
+        inputs.breakEvenMonths <= 24 ? 'good' :
+        inputs.breakEvenMonths <= 36 ? 'moderate' : 'long timeline'}`,
     });
     financialScore += beScore;
 
@@ -323,19 +314,18 @@ export function RiskAssessment() {
     });
     marketScore += seasonalScore;
 
-    // Occupancy Risk (0-15 points)
-    let occScore = 0;
-    if (inputs.averageOccupancy >= 75) occScore = 0;
-    else if (inputs.averageOccupancy >= 60) occScore = 5;
-    else if (inputs.averageOccupancy >= 45) occScore = 10;
-    else occScore = 15;
+    // Occupancy Risk (0-15 points) - Linear scale: 90%+ = 0, 0% = 15
+    let occScore = Math.max(0, Math.min(15, Math.round(15 - (inputs.averageOccupancy / 90) * 15)));
     factors.push({
       category: 'Market',
       name: 'Occupancy Risk',
       score: occScore,
       maxScore: 15,
       impact: occScore > 10 ? 'high' : occScore > 5 ? 'moderate' : 'low',
-      description: `${inputs.averageOccupancy}% average occupancy`,
+      description: `${inputs.averageOccupancy}% average occupancy - ${
+        inputs.averageOccupancy >= 75 ? 'excellent' :
+        inputs.averageOccupancy >= 60 ? 'good' :
+        inputs.averageOccupancy >= 45 ? 'moderate' : 'low occupancy'}`,
     });
     marketScore += occScore;
 
@@ -430,12 +420,11 @@ export function RiskAssessment() {
     // === PROPERTY-SPECIFIC RISK (15% weight) ===
     let propertyScore = 0;
 
-    // Age & Condition (0-10 points)
-    let ageScore = 0;
-    if (inputs.propertyAge <= 5 && inputs.propertyCondition === 'excellent') ageScore = 0;
-    else if (inputs.propertyAge <= 10 && ['excellent', 'good'].includes(inputs.propertyCondition)) ageScore = 3;
-    else if (inputs.propertyAge <= 20) ageScore = 6;
-    else ageScore = 10;
+    // Age & Condition (0-10 points) - Age scaled 0-30 years, condition modifies
+    const conditionModifier = inputs.propertyCondition === 'excellent' ? 0 :
+                              inputs.propertyCondition === 'good' ? 0.2 :
+                              inputs.propertyCondition === 'fair' ? 0.4 : 0.6;
+    let ageScore = Math.max(0, Math.min(10, Math.round((inputs.propertyAge / 30) * 7 + conditionModifier * 10)));
     factors.push({
       category: 'Property',
       name: 'Age & Condition',
