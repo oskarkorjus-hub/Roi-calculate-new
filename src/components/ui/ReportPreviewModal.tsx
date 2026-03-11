@@ -330,6 +330,8 @@ export function ReportPreviewModal({ isOpen, onClose, reportData }: Props) {
       red: [COLORS.danger.r, COLORS.danger.g, COLORS.danger.b],
       purple: [168, 85, 247],
       blue: [59, 130, 246],
+      amber: [245, 158, 11],
+      zinc: [113, 113, 122],
     };
 
     // ============ SINGLE PAGE PITCH DECK LAYOUT ============
