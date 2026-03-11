@@ -66,6 +66,19 @@ const INITIAL_INPUTS: CashFlowInputsType = {
 
 const symbols: Record<CurrencyType, string> = { IDR: 'Rp', USD: '$', AUD: 'A$', EUR: '€', GBP: '£', INR: '₹', CNY: '¥', AED: 'د.إ', RUB: '₽' };
 
+// Smart formatting: show actual numbers, only use M/B for millions+
+const formatSmartCurrency = (amount: number, symbol: string): string => {
+  const absAmount = Math.abs(amount);
+  if (absAmount >= 1_000_000_000) {
+    return `${symbol} ${(amount / 1_000_000_000).toFixed(2)}B`;
+  }
+  if (absAmount >= 1_000_000) {
+    return `${symbol} ${(amount / 1_000_000).toFixed(2)}M`;
+  }
+  // For amounts under 1 million, show full number with commas
+  return `${symbol} ${Math.round(amount).toLocaleString()}`;
+};
+
 export function CashFlowProjector() {
   const { user } = useAuth();
   const [inputs, setInputs] = useState<CashFlowInputsType>(() => {
@@ -345,21 +358,21 @@ export function CashFlowProjector() {
                   <div className="space-y-4">
                     <ResultCard
                       title="Year 1 Net Cash Flow"
-                      value={`${symbol} ${(schedule[0].netCashFlow / 1000000).toFixed(2)}M`}
+                      value={formatSmartCurrency(schedule[0].netCashFlow, symbol)}
                       label="First year projection"
                       color="emerald"
                       icon={<svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>}
                     />
                     <ResultCard
                       title={`Total ${inputs.projectionYears}Y Cash Flow`}
-                      value={`${symbol} ${(schedule[schedule.length - 1].cumulativeCashFlow / 1000000).toFixed(2)}M`}
+                      value={formatSmartCurrency(schedule[schedule.length - 1].cumulativeCashFlow, symbol)}
                       label="Cumulative projection"
                       color="cyan"
                       icon={<svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" /></svg>}
                     />
                     <ResultCard
                       title="Avg Annual Cash Flow"
-                      value={`${symbol} ${(schedule[schedule.length - 1].cumulativeCashFlow / inputs.projectionYears / 1000000).toFixed(2)}M`}
+                      value={formatSmartCurrency(schedule[schedule.length - 1].cumulativeCashFlow / inputs.projectionYears, symbol)}
                       label="Per year average"
                       color="purple"
                       icon={<svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" /></svg>}

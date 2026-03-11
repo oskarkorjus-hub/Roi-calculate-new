@@ -8,6 +8,7 @@ import { generateMortgageReport } from '../../hooks/useReportGenerator';
 import { useArchivedDrafts, type ArchivedDraft } from '../../hooks/useArchivedDrafts';
 import { useAutoSave, loadAutoSave } from '../../hooks/useAutoSave';
 import { useAuth } from '../../lib/auth-context';
+import { useNotifications } from '../../lib/notification-context';
 import { parseDecimalInput } from '../../utils/numberParsing';
 import { MortgageInputs } from './components/MortgageInputs';
 import { MortgageResults } from './components/MortgageResults';
@@ -76,6 +77,7 @@ const symbols: Record<CurrencyType, string> = { IDR: 'Rp', USD: '$', AUD: 'A$', 
 
 export function MortgageCalculator() {
   const { user } = useAuth();
+  const { addNotification } = useNotifications();
   const [inputs, setInputs] = useState<MortgageInputsType>(() => {
     const saved = loadAutoSave<MortgageInputsType>('mortgage');
     return saved?.data || INITIAL_INPUTS;
@@ -105,7 +107,13 @@ export function MortgageCalculator() {
     saveArchivedDraft(name, inputs);
     setCurrentDraftName(name);
     setToast({ message: `Saved "${name}"`, type: 'success' });
-  }, [saveArchivedDraft, inputs]);
+    addNotification({
+      title: 'Draft Saved',
+      message: `"${name}" saved to Mortgage Calculator drafts`,
+      type: 'success',
+      icon: 'save',
+    });
+  }, [saveArchivedDraft, inputs, addNotification]);
 
   const handleDeleteDraft = useCallback((id: string) => {
     deleteDraft(id);

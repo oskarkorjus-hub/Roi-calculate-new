@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useComparison } from '../../lib/comparison-context';
+import { useNotifications } from '../../lib/notification-context';
 import type { CalculatorType, ComparisonData } from '../../lib/comparison-types';
 import { MAX_COMPARISONS, calculatorDisplayNames } from '../../lib/comparison-types';
 import { ComparisonView } from './ComparisonView';
@@ -19,6 +20,7 @@ export function ComparisonButtons({
   inline = false,
 }: ComparisonButtonsProps) {
   const { addComparison, getCount } = useComparison();
+  const { addNotification } = useNotifications();
   const [showComparison, setShowComparison] = useState(false);
   const [showLabelInput, setShowLabelInput] = useState(false);
   const [label, setLabel] = useState('');
@@ -45,6 +47,12 @@ export function ComparisonButtons({
 
     if (success) {
       setToast({ message: 'Saved to comparison', type: 'success' });
+      addNotification({
+        title: 'Comparison Added',
+        message: `"${label || `Calc ${count + 1}`}" added to ${calculatorDisplayNames[calculatorType]} comparison`,
+        type: 'success',
+        icon: 'compare_arrows',
+      });
     } else {
       setToast({ message: 'Failed to save comparison', type: 'error' });
     }

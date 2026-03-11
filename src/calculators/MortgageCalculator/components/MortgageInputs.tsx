@@ -101,7 +101,7 @@ export function MortgageInputs({ inputs, onInputChange, symbol }: MortgageInputs
             <button
               type="button"
               onClick={() => onInputChange('pmiRequired', !inputs.pmiRequired)}
-              className={`w-full rounded-2xl px-6 py-4 text-[16px] font-bold transition-all border ${
+              className={`w-full rounded-lg px-4 py-2.5 text-sm font-medium transition-all border ${
                 inputs.pmiRequired
                   ? 'bg-emerald-500/20 border-emerald-500 text-emerald-400'
                   : 'bg-zinc-800 border-zinc-700 text-zinc-400'

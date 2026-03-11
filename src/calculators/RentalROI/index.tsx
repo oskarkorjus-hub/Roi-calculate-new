@@ -15,11 +15,13 @@ import { generateRentalROIReport } from '../../hooks/useReportGenerator';
 import { useArchivedDrafts, type ArchivedDraft } from '../../hooks/useArchivedDrafts';
 import { useAutoSave, loadAutoSave } from '../../hooks/useAutoSave';
 import { useAuth } from '../../lib/auth-context';
+import { useNotifications } from '../../lib/notification-context';
 
 const DRAFT_STORAGE_KEY = 'rental_roi_draft';
 
 export function RentalROICalculator() {
   const { user } = useAuth();
+  const { addNotification } = useNotifications();
   const [showComparison, setShowComparison] = useState(false);
   const [showReportModal, setShowReportModal] = useState(false);
 
@@ -93,7 +95,13 @@ export function RentalROICalculator() {
     saveArchivedDraft(name, assumptions);
     setCurrentDraftName(name);
     setToast({ message: `Saved "${name}"`, type: 'success' });
-  }, [saveArchivedDraft, assumptions]);
+    addNotification({
+      title: 'Draft Saved',
+      message: `"${name}" saved to Rental ROI drafts`,
+      type: 'success',
+      icon: 'save',
+    });
+  }, [saveArchivedDraft, assumptions, addNotification]);
 
   const handleDeleteDraft = useCallback((id: string) => {
     deleteDraft(id);

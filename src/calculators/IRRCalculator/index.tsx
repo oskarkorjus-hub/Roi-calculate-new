@@ -9,6 +9,7 @@ import { generateIRRReport } from '../../hooks/useReportGenerator';
 import { useArchivedDrafts, type ArchivedDraft } from '../../hooks/useArchivedDrafts';
 import { useAutoSave, loadAutoSave } from '../../hooks/useAutoSave';
 import { useAuth } from '../../lib/auth-context';
+import { useNotifications } from '../../lib/notification-context';
 import { parseDecimalInput } from '../../utils/numberParsing';
 import { CashFlowInputs } from './components/CashFlowInputs';
 import { IRRResults } from './components/IRRResults';
@@ -53,6 +54,7 @@ interface IRRInputs {
 
 export function IRRCalculator() {
   const { user } = useAuth();
+  const { addNotification } = useNotifications();
 
   // Load auto-saved data on initialization
   const savedData = loadAutoSave<IRRInputs>('irr');
@@ -97,7 +99,13 @@ export function IRRCalculator() {
     saveArchivedDraft(name, { currency, discountRate, cashFlows, showAdvanced, reinvestmentRate, alternativeDiscountRate });
     setCurrentDraftName(name);
     setToast({ message: `Saved "${name}"`, type: 'success' });
-  }, [saveArchivedDraft, currency, discountRate, cashFlows, showAdvanced, reinvestmentRate, alternativeDiscountRate]);
+    addNotification({
+      title: 'Draft Saved',
+      message: `"${name}" saved to IRR Calculator drafts`,
+      type: 'success',
+      icon: 'save',
+    });
+  }, [saveArchivedDraft, currency, discountRate, cashFlows, showAdvanced, reinvestmentRate, alternativeDiscountRate, addNotification]);
 
   const handleDeleteDraft = useCallback((id: string) => {
     deleteDraft(id);
@@ -350,7 +358,7 @@ export function IRRCalculator() {
                     value={discountRate === 0 ? '' : discountRate}
                     onChange={(e) => setDiscountRate(parseDecimalInput(e.target.value) || 0)}
                     placeholder="0"
-                    className="w-full bg-zinc-800 border border-zinc-700 rounded-2xl px-6 py-4 text-[16px] font-bold text-white placeholder:text-zinc-500 outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all tabular-nums"
+                    className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-4 py-2.5 text-sm font-medium text-white placeholder:text-zinc-500 outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all tabular-nums"
                   />
                   <p className="text-xs text-zinc-500">Typically 8-12%. Higher = more conservative.</p>
                 </div>
@@ -372,7 +380,7 @@ export function IRRCalculator() {
                         value={reinvestmentRate === 0 ? '' : reinvestmentRate}
                         onChange={(e) => setReinvestmentRate(parseDecimalInput(e.target.value) || 0)}
                         placeholder="0"
-                        className="w-full bg-zinc-800 border border-zinc-700 rounded-2xl px-6 py-4 text-[16px] font-bold text-white placeholder:text-zinc-500 outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all tabular-nums"
+                        className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-4 py-2.5 text-sm font-medium text-white placeholder:text-zinc-500 outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all tabular-nums"
                       />
                       <p className="text-xs text-zinc-500">Rate at which positive cash flows are reinvested</p>
                     </div>
@@ -387,7 +395,7 @@ export function IRRCalculator() {
                         value={alternativeDiscountRate === 0 ? '' : alternativeDiscountRate}
                         onChange={(e) => setAlternativeDiscountRate(parseDecimalInput(e.target.value) || 0)}
                         placeholder="0"
-                        className="w-full bg-zinc-800 border border-zinc-700 rounded-2xl px-6 py-4 text-[16px] font-bold text-white placeholder:text-zinc-500 outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all tabular-nums"
+                        className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-4 py-2.5 text-sm font-medium text-white placeholder:text-zinc-500 outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all tabular-nums"
                       />
                       <p className="text-xs text-zinc-500">Scenario analysis with different discount rate</p>
                     </div>
