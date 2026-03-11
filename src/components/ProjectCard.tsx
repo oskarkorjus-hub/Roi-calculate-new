@@ -497,7 +497,7 @@ export function ProjectCard({
   // Full enterprise-level view
   return (
     <div
-      className="bg-zinc-900 rounded-xl border border-zinc-800 overflow-hidden hover:border-zinc-700/80 transition-all group cursor-pointer"
+      className="h-full flex flex-col bg-zinc-900 rounded-xl border border-zinc-800 overflow-hidden hover:border-zinc-700/80 transition-all group cursor-pointer"
       onClick={() => onView?.(project)}
       onMouseEnter={() => setShowActions(true)}
       onMouseLeave={() => {
@@ -601,79 +601,75 @@ export function ProjectCard({
         ))}
       </div>
 
-      {/* Score Breakdown - Only for investment calculators */}
-      {categoryConfig.showScoreBreakdown && (
-        <div className="px-4 py-3 bg-zinc-800/30">
-          <div className="flex items-center gap-2">
-            <div className="flex-1 flex items-center gap-1">
-              <span className="text-xs text-zinc-500 w-8">ROI</span>
-              <div className="flex-1 h-1 bg-zinc-700 rounded-full overflow-hidden">
-                <div
-                  className="h-full bg-emerald-500 rounded-full transition-all"
-                  style={{ width: `${Math.min((displayRoiScore / 5) * 100, 100)}%` }}
-                />
+      {/* Flex-grow section to push footer to bottom */}
+      <div className="flex-grow bg-zinc-800/30">
+        {/* Score Breakdown - Only for investment calculators */}
+        {categoryConfig.showScoreBreakdown && (
+          <div className="px-4 py-3">
+            <div className="flex items-center gap-2">
+              <div className="flex-1 flex items-center gap-1">
+                <span className="text-xs text-zinc-500 w-8">ROI</span>
+                <div className="flex-1 h-1 bg-zinc-700 rounded-full overflow-hidden">
+                  <div
+                    className="h-full bg-emerald-500 rounded-full transition-all"
+                    style={{ width: `${Math.min((displayRoiScore / 5) * 100, 100)}%` }}
+                  />
+                </div>
               </div>
-            </div>
-            <div className="flex-1 flex items-center gap-1">
-              <span className="text-xs text-zinc-500 w-8">Cash</span>
-              <div className="flex-1 h-1 bg-zinc-700 rounded-full overflow-hidden">
-                <div
-                  className="h-full bg-blue-500 rounded-full transition-all"
-                  style={{ width: `${Math.min((displayCashflowScore / 3) * 100, 100)}%` }}
-                />
+              <div className="flex-1 flex items-center gap-1">
+                <span className="text-xs text-zinc-500 w-8">Cash</span>
+                <div className="flex-1 h-1 bg-zinc-700 rounded-full overflow-hidden">
+                  <div
+                    className="h-full bg-blue-500 rounded-full transition-all"
+                    style={{ width: `${Math.min((displayCashflowScore / 3) * 100, 100)}%` }}
+                  />
+                </div>
               </div>
-            </div>
-            <div className="flex-1 flex items-center gap-1">
-              <span className="text-xs text-zinc-500 w-8">Stab</span>
-              <div className="flex-1 h-1 bg-zinc-700 rounded-full overflow-hidden">
-                <div
-                  className="h-full bg-yellow-500 rounded-full transition-all"
-                  style={{ width: `${Math.min((displayStabilityScore / 2) * 100, 100)}%` }}
-                />
+              <div className="flex-1 flex items-center gap-1">
+                <span className="text-xs text-zinc-500 w-8">Stab</span>
+                <div className="flex-1 h-1 bg-zinc-700 rounded-full overflow-hidden">
+                  <div
+                    className="h-full bg-yellow-500 rounded-full transition-all"
+                    style={{ width: `${Math.min((displayStabilityScore / 2) * 100, 100)}%` }}
+                  />
+                </div>
               </div>
-            </div>
-            <div className="flex-1 flex items-center gap-1">
-              <span className="text-xs text-zinc-500 w-8">Loc</span>
-              <div className="flex-1 h-1 bg-zinc-700 rounded-full overflow-hidden">
-                <div
-                  className="h-full bg-purple-500 rounded-full transition-all"
-                  style={{ width: `${Math.min(displayLocationScore * 100, 100)}%` }}
-                />
+              <div className="flex-1 flex items-center gap-1">
+                <span className="text-xs text-zinc-500 w-8">Loc</span>
+                <div className="flex-1 h-1 bg-zinc-700 rounded-full overflow-hidden">
+                  <div
+                    className="h-full bg-purple-500 rounded-full transition-all"
+                    style={{ width: `${Math.min(displayLocationScore * 100, 100)}%` }}
+                  />
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
 
-      {/* Budget Progress Bar - Only for budget calculator */}
-      {categoryConfig.category === 'budget' && (
-        <div className="px-4 py-3 bg-zinc-800/30">
-          <div className="flex items-center justify-between text-xs mb-1">
-            <span className="text-zinc-500">Budget Progress</span>
-            <span className="text-zinc-400">
-              {((project.data?.calculations?.totalActual || 0) / (project.data?.calculations?.totalBudgeted || 1) * 100).toFixed(0)}%
-            </span>
+        {/* Budget Progress Bar - Only for budget calculator */}
+        {categoryConfig.category === 'budget' && (
+          <div className="px-4 py-3">
+            <div className="flex items-center justify-between text-xs mb-1">
+              <span className="text-zinc-500">Budget Progress</span>
+              <span className="text-zinc-400">
+                {((project.data?.calculations?.totalActual || 0) / (project.data?.calculations?.totalBudgeted || 1) * 100).toFixed(0)}%
+              </span>
+            </div>
+            <div className="h-2 bg-zinc-700 rounded-full overflow-hidden">
+              <div
+                className={`h-full rounded-full transition-all ${
+                  (project.data?.calculations?.variancePercent || 0) > 10 ? 'bg-red-500' :
+                  (project.data?.calculations?.variancePercent || 0) > 0 ? 'bg-yellow-500' : 'bg-emerald-500'
+                }`}
+                style={{
+                  width: `${Math.min(((project.data?.calculations?.totalActual || 0) / (project.data?.calculations?.totalBudgeted || 1) * 100), 100)}%`
+                }}
+              />
+            </div>
           </div>
-          <div className="h-2 bg-zinc-700 rounded-full overflow-hidden">
-            <div
-              className={`h-full rounded-full transition-all ${
-                (project.data?.calculations?.variancePercent || 0) > 10 ? 'bg-red-500' :
-                (project.data?.calculations?.variancePercent || 0) > 0 ? 'bg-yellow-500' : 'bg-emerald-500'
-              }`}
-              style={{
-                width: `${Math.min(((project.data?.calculations?.totalActual || 0) / (project.data?.calculations?.totalBudgeted || 1) * 100), 100)}%`
-              }}
-            />
-          </div>
-        </div>
-      )}
-
-      {/* Empty spacer for consistent card height when no breakdown section */}
-      {!categoryConfig.showScoreBreakdown && categoryConfig.category !== 'budget' && (
-        <div className="px-4 py-3 bg-zinc-800/30">
-          <div className="h-[18px]" />
-        </div>
-      )}
+        )}
+      </div>
 
       {/* Footer with Actions */}
       <div className="px-4 py-3 border-t border-zinc-800 flex items-center justify-between">
