@@ -133,7 +133,7 @@ export function AmortizationTable({ result, symbol, currency }: Props) {
               );
             })}
           </tbody>
-          <tfoot className="bg-zinc-800/50 sticky bottom-0">
+          <tfoot className="bg-zinc-900 sticky bottom-0 border-t border-zinc-700">
             <tr>
               <td className="p-3 text-zinc-300 font-bold">Total</td>
               <td className="p-3 text-right text-zinc-300 font-bold">
