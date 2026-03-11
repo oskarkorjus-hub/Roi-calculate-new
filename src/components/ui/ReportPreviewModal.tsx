@@ -461,17 +461,20 @@ export function ReportPreviewModal({ isOpen, onClose, reportData }: Props) {
       const color = colorMap[section.color || 'emerald'];
       checkPageBreak(16);
 
+      // Colored left accent bar
       doc.setFillColor(color[0], color[1], color[2]);
-      doc.roundedRect(margin, y, 2, 12, 1, 1, 'F');
+      doc.roundedRect(margin, y, 3, 12, 1, 1, 'F');
 
-      doc.setFillColor(color[0], color[1], color[2], 0.05);
-      doc.roundedRect(margin + 2, y, contentWidth - 2, 12, 2, 2, 'F');
+      // Dark background for contrast
+      doc.setFillColor(COLORS.dark.r, COLORS.dark.g, COLORS.dark.b);
+      doc.roundedRect(margin + 3, y, contentWidth - 3, 12, 2, 2, 'F');
 
-      doc.setTextColor(COLORS.dark.r, COLORS.dark.g, COLORS.dark.b);
+      // White text for readability
+      doc.setTextColor(COLORS.white.r, COLORS.white.g, COLORS.white.b);
       doc.setFontSize(8);
       doc.setFont('helvetica', 'bold');
       const text = section.data.length > 100 ? section.data.substring(0, 97) + '...' : section.data;
-      doc.text(text, margin + 6, y + 7);
+      doc.text(text, margin + 8, y + 7);
       y += 16;
     }
 

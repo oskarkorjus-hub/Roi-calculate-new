@@ -53,6 +53,7 @@ const getCalculatorDisplayName = (calculatorId: string): string => {
     'financing': 'Financing Comparison',
     'dev-budget': 'Development Budget Tracker',
     'risk-assessment': 'Risk Assessment',
+    'brrrr': 'BRRRR Analysis',
   };
   return names[calculatorId] || calculatorId?.replace('-', ' ') || 'Calculator';
 };
@@ -980,6 +981,49 @@ function getMetricsForCategory(
       });
       return metrics;
     }
+
+    // ===== BRRRR =====
+    case 'brrrr': {
+      const purchasePrice = project.data?.purchasePrice || project.data?.result?.purchasePrice || 0;
+      const rehabCost = project.data?.rehabCost || project.data?.result?.rehabCost || 0;
+      const arv = project.data?.afterRepairValue || project.data?.arv || 0;
+      const cashLeftInDeal = project.data?.result?.cashLeftInDeal || 0;
+      const monthlyCashFlow = project.data?.result?.monthlyCashFlow || project.avgCashFlow || 0;
+      const cashOnCashROI = project.data?.result?.cashOnCashROI || project.roi || 0;
+      const metrics = [
+        {
+          label: 'Purchase Price',
+          value: formatCurrency(purchasePrice),
+          color: categoryColor,
+        },
+        {
+          label: 'Rehab Cost',
+          value: formatCurrency(rehabCost),
+          color: colors.warning,
+        },
+        {
+          label: 'ARV',
+          value: formatCurrency(arv),
+          color: colors.success,
+        },
+        {
+          label: 'Cash Left in Deal',
+          value: formatCurrency(cashLeftInDeal),
+          color: cashLeftInDeal <= 0 ? colors.success : colors.primary,
+        },
+        {
+          label: 'Monthly Cash Flow',
+          value: formatCurrency(monthlyCashFlow),
+          color: monthlyCashFlow > 0 ? colors.success : colors.danger,
+        },
+        {
+          label: 'Cash-on-Cash ROI',
+          value: `${cashOnCashROI.toFixed(1)}%`,
+          color: cashOnCashROI >= 12 ? colors.success : cashOnCashROI >= 8 ? colors.warning : colors.danger,
+        },
+      ];
+      return metrics;
+    }
   }
 
   // Fall back to category-based metrics
@@ -1381,6 +1425,28 @@ function getAnalysisForCategory(project: PortfolioProject, category: CalculatorC
       else analysis.push(`Cash-on-Cash Return: ${cashOnCash.toFixed(1)}%`);
       return analysis;
     }
+
+    // ===== BRRRR =====
+    case 'brrrr': {
+      const purchasePrice = project.data?.purchasePrice || project.data?.result?.purchasePrice || 0;
+      const rehabCost = project.data?.rehabCost || project.data?.result?.rehabCost || 0;
+      const arv = project.data?.afterRepairValue || project.data?.arv || 0;
+      const totalInvestment = project.data?.result?.totalInvestment || (purchasePrice + rehabCost) || 0;
+      const refinanceAmount = project.data?.result?.refinanceAmount || 0;
+      const cashLeftInDeal = project.data?.result?.cashLeftInDeal || 0;
+      const monthlyCashFlow = project.data?.result?.monthlyCashFlow || project.avgCashFlow || 0;
+      const cashOnCashROI = project.data?.result?.cashOnCashROI || project.roi || 0;
+      const equityCapture = arv - totalInvestment;
+      const cocRating = cashOnCashROI >= 15 ? 'Excellent' : cashOnCashROI >= 10 ? 'Good' : cashOnCashROI >= 5 ? 'Moderate' : 'Low';
+      const analysis = [
+        `Cash-on-Cash ROI: ${cocRating} (${cashOnCashROI.toFixed(1)}%)`,
+        `Total Investment: ${formatCurrency(totalInvestment)} (Purchase + Rehab)`,
+        `After Repair Value: ${formatCurrency(arv)}`,
+        `Refinance Amount: ${formatCurrency(refinanceAmount)}`,
+        `Cash Left in Deal: ${formatCurrency(cashLeftInDeal)} ${cashLeftInDeal <= 0 ? '(Full Cash Recovery!)' : ''}`,
+      ];
+      return analysis;
+    }
   }
 
   // Fall back to category-based analysis
@@ -1578,6 +1644,25 @@ function getSummaryForCategory(project: PortfolioProject, category: CalculatorCa
       const cashOnCash = project.roi || 0;
       const annualCashFlow = netMonthly * 12;
       return `This cash flow analysis shows monthly rental income of ${formatCurrency(monthlyRental)} against total monthly expenses of ${formatCurrency(totalExpenses)}, resulting in ${netMonthly >= 0 ? 'positive' : 'negative'} net cash flow of ${formatCurrency(netMonthly)}/month (${formatCurrency(annualCashFlow)}/year). The cash-on-cash return is ${cashOnCash.toFixed(1)}%. ${netMonthly > 0 && cashOnCash >= 8 ? 'This property generates strong positive cash flow.' : netMonthly > 0 ? 'Cash flow is positive but consider strategies to improve returns.' : 'Evaluate rent increases or expense reductions to achieve positive cash flow.'}`;
+    }
+
+    // ===== BRRRR =====
+    case 'brrrr': {
+      const purchasePrice = project.data?.purchasePrice || project.data?.result?.purchasePrice || 0;
+      const rehabCost = project.data?.rehabCost || project.data?.result?.rehabCost || 0;
+      const arv = project.data?.afterRepairValue || project.data?.arv || 0;
+      const totalInvestment = project.data?.result?.totalInvestment || (purchasePrice + rehabCost) || 0;
+      const cashLeftInDeal = project.data?.result?.cashLeftInDeal || 0;
+      const monthlyCashFlow = project.data?.result?.monthlyCashFlow || project.avgCashFlow || 0;
+      const cashOnCashROI = project.data?.result?.cashOnCashROI || project.roi || 0;
+      const annualCashFlow = monthlyCashFlow * 12;
+      const equityCapture = arv - totalInvestment;
+
+      const cashRecoveryStatus = cashLeftInDeal <= 0
+        ? 'achieved full cash recovery through refinancing'
+        : `left ${formatCurrency(cashLeftInDeal)} in the deal`;
+
+      return `This BRRRR analysis shows a ${formatCurrency(purchasePrice)} purchase with ${formatCurrency(rehabCost)} in rehab costs, achieving an ARV of ${formatCurrency(arv)}. The deal ${cashRecoveryStatus}, creating ${formatCurrency(equityCapture)} in equity. The property generates ${formatCurrency(monthlyCashFlow)}/month (${formatCurrency(annualCashFlow)}/year) in cash flow with a ${cashOnCashROI.toFixed(1)}% cash-on-cash ROI. ${cashLeftInDeal <= 0 ? 'This is an excellent BRRRR deal with infinite returns on recovered capital.' : cashOnCashROI >= 12 ? 'Strong returns make this a successful BRRRR investment.' : 'Consider renegotiating purchase or rehab costs to improve returns.'}`;
     }
   }
 

@@ -227,6 +227,17 @@ export function SaveToPortfolioButton({
         breakEvenMonths = 0;
         break;
 
+      case 'brrrr':
+        // BRRRR passes: { ...inputs, result } where inputs has purchasePrice, rehabCost, etc.
+        totalInvestment = projectData.result?.totalInvestment || ((projectData.purchasePrice || 0) + (projectData.rehabCost || 0) + (projectData.holdingCosts || 0));
+        roi = projectData.result?.cashOnCashROI || 0;
+        avgCashFlow = projectData.result?.monthlyCashFlow || 0;
+        // Break-even: if cashLeftInDeal > 0 and monthlyCashFlow > 0, calculate months to recover
+        const cashLeft = projectData.result?.cashLeftInDeal || 0;
+        const monthlyFlow = projectData.result?.monthlyCashFlow || 0;
+        breakEvenMonths = (cashLeft > 0 && monthlyFlow > 0) ? Math.ceil(cashLeft / monthlyFlow) : (cashLeft <= 0 ? 0 : 0);
+        break;
+
       default:
         totalInvestment = projectData.loanAmount || projectData.propertyValue || projectData.totalInvestment || 0;
         roi = 0;

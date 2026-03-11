@@ -92,6 +92,38 @@ const getCategoryConfig = (calculatorId: string): CategoryConfig => {
     };
   }
 
+  // BRRRR specific metrics
+  if (calculatorId === 'brrrr') {
+    return {
+      category: 'investment',
+      showScore: true,
+      showScoreBreakdown: true,
+      accentColor: '#f59e0b', // amber
+      metrics: [
+        {
+          label: 'Purchase',
+          getValue: (p) => formatCurrency(p.data?.purchasePrice || p.data?.result?.purchasePrice || 0),
+          getColor: () => 'text-amber-400',
+        },
+        {
+          label: 'CoC ROI',
+          getValue: (p) => `${(p.data?.result?.cashOnCashROI || p.roi || 0).toFixed(1)}%`,
+          getColor: (p) => (p.data?.result?.cashOnCashROI || p.roi || 0) >= 12 ? 'text-emerald-400' : (p.data?.result?.cashOnCashROI || p.roi || 0) >= 8 ? 'text-yellow-400' : 'text-orange-400',
+        },
+        {
+          label: 'Cash Flow',
+          getValue: (p) => formatCurrency(p.data?.result?.monthlyCashFlow || p.avgCashFlow || 0),
+          getColor: (p) => (p.data?.result?.monthlyCashFlow || p.avgCashFlow || 0) > 0 ? 'text-emerald-400' : 'text-red-400',
+        },
+        {
+          label: 'Cash Left',
+          getValue: (p) => formatCurrency(p.data?.result?.cashLeftInDeal || 0),
+          getColor: (p) => (p.data?.result?.cashLeftInDeal || 0) <= 0 ? 'text-emerald-400' : 'text-zinc-400',
+        },
+      ],
+    };
+  }
+
   const category = getCalculatorCategory(calculatorId);
 
   switch (category) {
@@ -341,6 +373,7 @@ const getCalculatorDisplayName = (calculatorId: string): string => {
     'financing': 'Financing',
     'dev-budget': 'Budget Tracker',
     'risk-assessment': 'Risk Assessment',
+    'brrrr': 'BRRRR',
   };
   return names[calculatorId] || calculatorId?.replace('-', ' ') || 'Calculator';
 };
