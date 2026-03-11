@@ -219,18 +219,18 @@ export function ReportPreviewModal({ isOpen, onClose, reportData }: Props) {
       doc.setFillColor(gradeColor.r, gradeColor.g, gradeColor.b);
       doc.roundedRect(margin, startY, 3, boxHeight, 1, 1, 'F');
 
-      // Background
-      doc.setFillColor(gradeColor.r, gradeColor.g, gradeColor.b, 0.1);
+      // Background - dark for contrast
+      doc.setFillColor(COLORS.dark.r, COLORS.dark.g, COLORS.dark.b);
       doc.roundedRect(margin + 3, startY, contentWidth - 3, boxHeight, 2, 2, 'F');
 
-      // Verdict text
-      doc.setTextColor(COLORS.dark.r, COLORS.dark.g, COLORS.dark.b);
+      // Verdict text - white on dark background
+      doc.setTextColor(COLORS.white.r, COLORS.white.g, COLORS.white.b);
       doc.setFontSize(9);
       doc.setFont('helvetica', 'bold');
       doc.text(`INVESTMENT VERDICT: ${reportData.rating.label.toUpperCase()}`, margin + 8, startY + 7);
 
       doc.setFont('helvetica', 'normal');
-      doc.setTextColor(COLORS.gray.r, COLORS.gray.g, COLORS.gray.b);
+      doc.setTextColor(180, 180, 180); // Light gray for subtitle
       doc.setFontSize(8);
 
       const descText = `${reportData.rating.description} | Key Value: ${reportData.rating.value}`;
@@ -275,10 +275,10 @@ export function ReportPreviewModal({ isOpen, onClose, reportData }: Props) {
       let indicator = '';
       if (metric.positive) {
         doc.setTextColor(COLORS.success.r, COLORS.success.g, COLORS.success.b);
-        indicator = '↑ ';
+        indicator = '+ ';
       } else if (metric.negative) {
         doc.setTextColor(COLORS.danger.r, COLORS.danger.g, COLORS.danger.b);
-        indicator = '↓ ';
+        indicator = '- ';
       } else {
         doc.setTextColor(COLORS.dark.r, COLORS.dark.g, COLORS.dark.b);
       }
