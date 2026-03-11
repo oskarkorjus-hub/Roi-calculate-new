@@ -65,31 +65,37 @@ export function IRRResults({
         icon={<svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" /></svg>}
       />
 
-      {/* Advanced Results */}
-      {showAdvanced && result.mirr !== undefined && (
+      {/* Advanced Results - only show when user has entered non-zero rates */}
+      {showAdvanced && result.mirr !== undefined && (reinvestmentRate > 0 || (alternativeDiscountRate ?? 0) > 0) && (
         <>
           <div className="border-t border-zinc-700 pt-4 mt-4">
             <h4 className="font-bold text-white text-sm mb-3">Advanced Analysis</h4>
           </div>
 
           <div className="grid grid-cols-1 gap-3">
-            <MiniCard
-              title={`MIRR @ ${reinvestmentRate}%`}
-              value={`${result.mirr.toFixed(2)}%`}
-              color={result.mirr >= 15 ? 'emerald' : result.mirr >= 10 ? 'cyan' : 'orange'}
-            />
+            {reinvestmentRate > 0 && (
+              <MiniCard
+                title={`MIRR @ ${reinvestmentRate}%`}
+                value={`${result.mirr.toFixed(2)}%`}
+                color={result.mirr >= 15 ? 'emerald' : result.mirr >= 10 ? 'cyan' : 'orange'}
+              />
+            )}
 
-            <MiniCard
-              title={`NPV @ ${alternativeDiscountRate}%`}
-              value={formatCurrency(npvAlt!)}
-              color={npvAlt! >= 0 ? 'emerald' : 'red'}
-            />
+            {(alternativeDiscountRate ?? 0) > 0 && (
+              <MiniCard
+                title={`NPV @ ${alternativeDiscountRate}%`}
+                value={formatCurrency(npvAlt!)}
+                color={npvAlt! >= 0 ? 'emerald' : 'red'}
+              />
+            )}
 
-            <MiniCard
-              title="Profitability Index"
-              value={`${result.profitabilityIndex!.toFixed(2)}x`}
-              color={result.profitabilityIndex! >= 1 ? 'emerald' : 'red'}
-            />
+            {(reinvestmentRate > 0 || (alternativeDiscountRate ?? 0) > 0) && (
+              <MiniCard
+                title="Profitability Index"
+                value={`${result.profitabilityIndex!.toFixed(2)}x`}
+                color={result.profitabilityIndex! >= 1 ? 'emerald' : 'red'}
+              />
+            )}
           </div>
         </>
       )}
