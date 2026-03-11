@@ -170,7 +170,9 @@ export function DevBudgetTracker() {
     const variancePercent = totalBudgeted > 0 ? (variance / totalBudgeted) * 100 : 0;
 
     // Expected spend based on timeline
-    const timelineProgress = inputs.currentMonth / inputs.totalProjectDuration;
+    const timelineProgress = inputs.totalProjectDuration > 0
+      ? inputs.currentMonth / inputs.totalProjectDuration
+      : 0;
     const expectedSpend = totalBudgeted * timelineProgress;
     const spendVariance = totalActual - expectedSpend;
 
@@ -407,7 +409,7 @@ export function DevBudgetTracker() {
           <div className="bg-zinc-900 rounded-xl border border-zinc-800 p-4">
             <p className="text-xs text-zinc-400 uppercase mb-2">Overall Progress</p>
             <p className="text-3xl font-bold text-cyan-400">
-              {calculations.overallCompletion.toFixed(0)}%
+              {calculations.timelineProgress.toFixed(0)}%
             </p>
             <p className="text-xs text-zinc-500 mt-1">
               Month {inputs.currentMonth} of {inputs.totalProjectDuration}
