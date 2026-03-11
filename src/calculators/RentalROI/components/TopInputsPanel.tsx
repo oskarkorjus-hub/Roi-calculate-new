@@ -321,12 +321,19 @@ const TopInputsPanel: React.FC<Props> = ({ assumptions, onChange, currency }) =>
           <div className="mb-8 p-5 bg-zinc-800 rounded-2xl border border-zinc-700">
             <div className="flex items-center gap-3">
               <label className="flex items-center gap-3 cursor-pointer select-none">
-                <input
-                  type="checkbox"
-                  checked={!assumptions.isPropertyReady}
-                  onChange={(e) => handleChange('isPropertyReady', !e.target.checked)}
-                  className="w-5 h-5 rounded-md border-zinc-600 bg-zinc-700 text-emerald-500 focus:ring-emerald-500 cursor-pointer"
-                />
+                <div className="relative flex items-center justify-center w-5 h-5 rounded-md border border-zinc-600 bg-zinc-700 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={!assumptions.isPropertyReady}
+                    onChange={(e) => handleChange('isPropertyReady', !e.target.checked)}
+                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                  />
+                  {!assumptions.isPropertyReady && (
+                    <svg className="w-3.5 h-3.5 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="3">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                    </svg>
+                  )}
+                </div>
                 <span className="text-sm font-semibold text-zinc-300">Property is not ready yet</span>
               </label>
               <Tooltip text="Check this if the property is still under construction or not yet operational. The ready date will affect Year 1 occupancy calculations." />
