@@ -111,25 +111,25 @@ const INITIAL_INPUTS: RiskInputs = {
   debtAmount: 0,
   monthlyDebtService: 0,
 
-  // Market
-  marketStability: 'growing',
-  rentalStrategy: 'str',
+  // Market - neutral defaults
+  marketStability: 'stable',
+  rentalStrategy: 'mixed',
   averageOccupancy: 0,
   priceVolatility: 'moderate',
-  demandTrend: 'increasing',
+  demandTrend: 'stable',
 
-  // Regulatory
+  // Regulatory - neutral defaults
   strAllowed: true,
   ownershipType: 'leasehold',
   taxIncentivesExpiring: false,
   permitDifficulty: 'moderate',
-  politicalStability: 'stable',
+  politicalStability: 'moderate',
 
-  // Property
+  // Property - neutral defaults
   propertyAge: 0,
-  propertyCondition: 'excellent',
-  locationQuality: 'prime',
-  amenityLevel: 'luxury',
+  propertyCondition: 'good',
+  locationQuality: 'good',
+  amenityLevel: 'standard',
   managementBurden: 'moderate',
   exitLiquidity: 'moderate',
 };
