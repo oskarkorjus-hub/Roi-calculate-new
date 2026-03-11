@@ -257,11 +257,22 @@ export function DevBudgetTracker() {
   const handlePhaseChange = (phaseId: string, field: keyof ConstructionPhase, value: string | number) => {
     setInputs(prev => ({
       ...prev,
-      phases: prev.phases.map(phase =>
-        phase.id === phaseId
-          ? { ...phase, [field]: typeof value === 'number' ? value : value }
-          : phase
-      ),
+      phases: prev.phases.map(phase => {
+        if (phase.id !== phaseId) return phase;
+
+        const updates: Partial<ConstructionPhase> = { [field]: value };
+
+        // Auto-set completion percent when status changes
+        if (field === 'status') {
+          if (value === 'completed') {
+            updates.completionPercent = 100;
+          } else if (value === 'not-started') {
+            updates.completionPercent = 0;
+          }
+        }
+
+        return { ...phase, ...updates };
+      }),
     }));
   };
 
