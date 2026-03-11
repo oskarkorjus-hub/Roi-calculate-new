@@ -700,7 +700,13 @@ export function RentalIncomeProjection() {
                   value={inputs.cleaningCostPerGuest}
                   onChange={(v) => handleInputChange('cleaningCostPerGuest', v)}
                   prefix={symbol}
-                  tooltip="Cost per guest checkout (cleaning + linen = ~250K IDR)"
+                  tooltip={`Cost per guest checkout (cleaning + linen = ~${
+                    inputs.currency === 'IDR' ? '250K IDR' :
+                    inputs.currency === 'USD' ? '$15' :
+                    inputs.currency === 'EUR' ? '€14' :
+                    inputs.currency === 'GBP' ? '£12' :
+                    inputs.currency === 'AUD' ? 'A$22' : '250K IDR'
+                  })`}
                 />
 
                 <InputField
@@ -774,7 +780,13 @@ export function RentalIncomeProjection() {
             >
               <div className="mb-4 p-3 bg-orange-500/10 border border-orange-500/20 rounded-lg">
                 <p className="text-xs text-orange-400">
-                  <strong>Cost Guide:</strong> Platform fees: 10-18%. Cleaning: 200-300K IDR. Property management: 15-25% of revenue or fixed monthly.
+                  <strong>Cost Guide:</strong> Platform fees: 10-18%. Cleaning: {
+                    inputs.currency === 'IDR' ? '200-300K IDR' :
+                    inputs.currency === 'USD' ? '$12-20' :
+                    inputs.currency === 'EUR' ? '€11-18' :
+                    inputs.currency === 'GBP' ? '£10-15' :
+                    inputs.currency === 'AUD' ? 'A$18-27' : '200-300K IDR'
+                  }. Property management: 15-25% of revenue or fixed monthly.
                 </p>
               </div>
 

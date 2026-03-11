@@ -87,7 +87,11 @@ export function OccupancyHeatmap({ monthlyProjections, baseRate, baseOccupancy, 
                         className={`relative h-10 rounded ${getColor(cell.revenue)} flex items-center justify-center text-[10px] font-bold text-white transition-all hover:scale-105 cursor-default group`}
                         title={`${symbol}${formatCurrency(cell.revenue, currency)}/month`}
                       >
-                        {formatCurrency(cell.revenue / 1000000, currency)}M
+                        {cell.revenue >= 1000000
+                          ? `${(cell.revenue / 1000000).toFixed(1)}M`
+                          : cell.revenue >= 1000
+                          ? `${(cell.revenue / 1000).toFixed(0)}K`
+                          : formatCurrency(cell.revenue, currency)}
                         {isOptimal && (
                           <div className="absolute -top-1 -right-1 w-4 h-4 bg-yellow-400 rounded-full flex items-center justify-center">
                             <span className="text-[8px] text-black font-black">★</span>

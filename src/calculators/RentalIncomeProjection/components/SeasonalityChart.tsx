@@ -3,6 +3,15 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Responsive
 import { formatCurrency } from '../../../utils/numberParsing';
 import type { MonthlyProjection } from '../index';
 
+// Smart axis formatter - shows K, M, or B based on value magnitude
+const formatAxisValue = (value: number): string => {
+  const absValue = Math.abs(value);
+  if (absValue >= 1_000_000_000) return `${(value / 1_000_000_000).toFixed(1)}B`;
+  if (absValue >= 1_000_000) return `${(value / 1_000_000).toFixed(1)}M`;
+  if (absValue >= 1_000) return `${(value / 1_000).toFixed(0)}K`;
+  return value.toFixed(0);
+};
+
 interface Props {
   monthlyProjections: MonthlyProjection[];
   symbol: string;
@@ -72,14 +81,14 @@ export function SeasonalityChart({ monthlyProjections, symbol, currency }: Props
                 yAxisId="left"
                 stroke="#9ca3af"
                 fontSize={12}
-                tickFormatter={(value) => `${(value / 1000000).toFixed(0)}M`}
+                tickFormatter={formatAxisValue}
               />
               <YAxis
                 yAxisId="right"
                 orientation="right"
                 stroke="#9ca3af"
                 fontSize={12}
-                tickFormatter={(value) => `${(value / 1000000).toFixed(1)}M`}
+                tickFormatter={formatAxisValue}
               />
               <Tooltip content={<CustomTooltip />} />
               <Legend />

@@ -155,10 +155,12 @@ export function DevFeasibilityCalculator() {
 
     const scenarios: VillaScenario[] = [];
     const maxVillas = Math.floor((landSizeM2 * 0.4) / avgVillaSize);
-    const showAllScenarios = numVillas === 0;
-    const villasToShow = showAllScenarios ? Math.min(maxVillas, 10) : Math.min(numVillas, maxVillas);
-    const startVilla = showAllScenarios ? 1 : Math.max(1, numVillas - 1);
-    const endVilla = showAllScenarios ? villasToShow : Math.min(villasToShow, numVillas + 2);
+
+    // If numVillas = 0: show all possible scenarios (1 to maxVillas, max 10)
+    // If numVillas > 0: show all scenarios from 1 to numVillas
+    const targetVillas = numVillas === 0 ? Math.min(maxVillas, 10) : Math.min(numVillas, maxVillas);
+    const startVilla = 1;
+    const endVilla = Math.max(1, targetVillas);
 
     for (let villas = startVilla; villas <= endVilla; villas++) {
       const totalConstructionArea = villas * avgVillaSize;
