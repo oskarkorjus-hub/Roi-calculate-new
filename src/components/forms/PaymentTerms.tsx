@@ -157,7 +157,7 @@ export function PaymentTerms({
                       }
                     }}
                     placeholder="0"
-                    className="w-full rounded-lg bg-surface-alt border border-border px-4 py-3 pl-12 text-text-primary font-mono placeholder:text-text-muted focus:border-primary focus:outline-none"
+                    className="w-full rounded-lg bg-surface-alt border border-border px-3 py-2 pl-10 text-sm text-text-primary font-mono placeholder:text-text-muted focus:border-primary focus:outline-none"
                   />
                 </div>
                 {totalPriceIDR > 0 && data.bookingFee > 0 && (
@@ -187,7 +187,7 @@ export function PaymentTerms({
                     }}
                     placeholder="0"
                     disabled={totalPriceIDR === 0}
-                    className={`w-full rounded-lg bg-surface-alt border border-border px-4 py-3 pr-8 text-text-primary font-mono placeholder:text-text-muted focus:border-primary focus:outline-none ${totalPriceIDR === 0 ? 'opacity-50 cursor-not-allowed' : ''}`}
+                    className={`w-full rounded-lg bg-surface-alt border border-border px-3 py-2 pr-8 text-sm text-text-primary font-mono placeholder:text-text-muted focus:border-primary focus:outline-none ${totalPriceIDR === 0 ? 'opacity-50 cursor-not-allowed' : ''}`}
                   />
                   <span className="absolute right-4 top-1/2 -translate-y-1/2 text-text-muted font-mono">%</span>
                 </div>
@@ -242,7 +242,7 @@ export function PaymentTerms({
                 }}
                 placeholder={totalPriceIDR > 0 ? "0" : "Enter total price first"}
                 disabled={totalPriceIDR === 0}
-                className={`w-full rounded-lg bg-surface-alt border border-border px-4 py-3 pl-12 text-2xl text-text-primary font-mono placeholder:text-text-muted focus:border-primary focus:outline-none ${totalPriceIDR === 0 ? 'opacity-50 cursor-not-allowed' : ''}`}
+                className={`w-full rounded-lg bg-surface-alt border border-border px-3 py-2 pl-10 text-sm text-text-primary font-mono placeholder:text-text-muted focus:border-primary focus:outline-none ${totalPriceIDR === 0 ? 'opacity-50 cursor-not-allowed' : ''}`}
               />
             </div>
             {totalPriceIDR === 0 && (

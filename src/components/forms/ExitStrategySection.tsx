@@ -100,7 +100,7 @@ export function ExitStrategySection({
               value={displayExitPrice > 0 ? formatNumber(displayExitPrice) : ''}
               onChange={(e) => onExitPriceChange(parseInput(e.target.value))}
               placeholder="4,375,000,000"
-              className="w-full rounded-lg bg-surface-alt border border-border px-4 py-3 pl-12 text-text-primary font-mono text-base placeholder:text-text-muted focus:border-primary focus:outline-none overflow-hidden text-ellipsis"
+              className="w-full rounded-lg bg-surface-alt border border-border px-3 py-2 pl-10 text-sm text-text-primary font-mono placeholder:text-text-muted focus:border-primary focus:outline-none overflow-hidden text-ellipsis"
             />
           </div>
         </label>
@@ -127,7 +127,7 @@ export function ExitStrategySection({
           </span>
           <span className="text-xs text-text-muted">Taxes, fees, commissions</span>
           <div className="flex items-center gap-2">
-            <div className="flex items-center gap-1 rounded-lg bg-surface-alt border border-border px-3 py-3 flex-shrink-0">
+            <div className="flex items-center gap-1 rounded-lg bg-surface-alt border border-border px-3 py-2 flex-shrink-0">
               <input
                 type="text"
                 inputMode="decimal"
@@ -156,7 +156,7 @@ export function ExitStrategySection({
                 onChange={(e) => handleClosingCostAmountChange(parseInput(e.target.value))}
                 placeholder="0"
                 title={closingCostDisplay > 0 ? `${symbol} ${formatNumber(closingCostDisplay)}` : undefined}
-                className="w-full rounded-lg bg-surface-alt border border-border px-3 py-3 pl-10 text-text-primary font-mono text-sm focus:border-primary focus:outline-none truncate"
+                className="w-full rounded-lg bg-surface-alt border border-border px-3 py-2 pl-9 text-sm text-text-primary font-mono focus:border-primary focus:outline-none truncate"
               />
             </div>
           </div>

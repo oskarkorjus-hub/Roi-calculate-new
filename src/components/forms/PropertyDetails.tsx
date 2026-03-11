@@ -76,7 +76,7 @@ export function PropertyDetails({ data, symbol, displayPrice, onUpdate, onPriceC
             value={data.projectName}
             onChange={(e) => onUpdate('projectName', e.target.value)}
             placeholder="e.g., Villa Matahari Phase 1"
-            className="w-full rounded-lg bg-surface-alt border border-border px-4 py-3 text-text-primary placeholder:text-text-muted focus:border-primary focus:outline-none"
+            className="w-full rounded-lg bg-surface-alt border border-border px-3 py-2 text-sm text-text-primary placeholder:text-text-muted focus:border-primary focus:outline-none"
           />
         </label>
 
@@ -95,7 +95,7 @@ export function PropertyDetails({ data, symbol, displayPrice, onUpdate, onPriceC
               value={data.location}
               onChange={(e) => onUpdate('location', e.target.value)}
               placeholder="e.g., Canggu, Bali"
-              className="w-full rounded-lg bg-surface-alt border border-border px-4 py-3 pl-10 text-text-primary placeholder:text-text-muted focus:border-primary focus:outline-none"
+              className="w-full rounded-lg bg-surface-alt border border-border px-3 py-2 pl-9 text-sm text-text-primary placeholder:text-text-muted focus:border-primary focus:outline-none"
             />
             <datalist id="locations">
               {LOCATIONS.map(loc => <option key={loc} value={loc} />)}
@@ -117,7 +117,7 @@ export function PropertyDetails({ data, symbol, displayPrice, onUpdate, onPriceC
               value={displayPrice > 0 ? formatNumber(displayPrice) : ''}
               onChange={(e) => onPriceChange(parseInput(e.target.value))}
               placeholder="3,500,000,000"
-              className="w-full rounded-lg bg-surface-alt border border-border px-4 py-3 pl-12 text-text-primary font-mono text-lg placeholder:text-text-muted focus:border-primary focus:outline-none"
+              className="w-full rounded-lg bg-surface-alt border border-border px-3 py-2 pl-10 text-sm text-text-primary font-mono placeholder:text-text-muted focus:border-primary focus:outline-none"
             />
           </div>
         </label>
@@ -133,7 +133,7 @@ export function PropertyDetails({ data, symbol, displayPrice, onUpdate, onPriceC
               value={sizeInput}
               onChange={(e) => handleSizeChange(e.target.value)}
               placeholder="100"
-              className="w-full rounded-lg bg-surface-alt border border-border px-4 py-3 pr-12 text-text-primary font-mono placeholder:text-text-muted focus:border-primary focus:outline-none"
+              className="w-full rounded-lg bg-surface-alt border border-border px-3 py-2 pr-10 text-sm text-text-primary font-mono placeholder:text-text-muted focus:border-primary focus:outline-none"
             />
             <span className="absolute right-4 top-1/2 -translate-y-1/2 text-text-muted">
               m²
