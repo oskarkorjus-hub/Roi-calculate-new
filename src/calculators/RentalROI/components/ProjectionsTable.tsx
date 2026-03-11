@@ -205,7 +205,7 @@ const ProjectionsTable: React.FC<Props> = ({ data, avg, currency }) => {
                   {y.calendarYear}
                 </th>
               ))}
-              <th className="p-4 text-sm font-semibold text-center text-emerald-400 bg-emerald-500/10 sticky right-0 z-[30] border-l-2 border-emerald-500/30 shadow-[-4px_0_8px_rgba(0,0,0,0.2)]">
+              <th className="p-4 text-sm font-semibold text-center text-emerald-400 bg-zinc-800 sticky right-0 z-[30] border-l-2 border-emerald-500/30 shadow-[-4px_0_8px_rgba(0,0,0,0.2)]">
                 Average
               </th>
             </tr>
@@ -235,7 +235,7 @@ const ProjectionsTable: React.FC<Props> = ({ data, avg, currency }) => {
                     {data.map(y => (
                       <td key={y.year} className="p-4 text-right bg-zinc-800"></td>
                     ))}
-                    <td className="sticky right-0 bg-zinc-800 p-4 border-l-2 border-zinc-700 z-[25] shadow-[-4px_0_8px_rgba(0,0,0,0.2)]"></td>
+                    <td className="sticky right-0 bg-zinc-800 p-4 border-l-2 border-emerald-500/30 z-[25] shadow-[-4px_0_8px_rgba(0,0,0,0.2)]"></td>
                   </tr>
 
                   {!isCollapsed && section.rows.map((row, rIdx) => (
@@ -255,7 +255,7 @@ const ProjectionsTable: React.FC<Props> = ({ data, avg, currency }) => {
                           {renderCellValue((y as any)[row.key], row.type, row.color)}
                         </td>
                       ))}
-                      <td className={`sticky right-0 p-3 text-right z-[20] bg-zinc-900 border-l-2 border-zinc-700 shadow-[-4px_0_8px_rgba(0,0,0,0.2)] group-hover:bg-zinc-800/50 transition-colors
+                      <td className={`sticky right-0 p-3 text-right z-[20] bg-zinc-900 border-l-2 border-emerald-500/30 shadow-[-4px_0_8px_rgba(0,0,0,0.2)] group-hover:bg-zinc-800 transition-colors
                         ${row.bold ? 'font-bold' : ''}`}>
                         {avg[row.key as keyof YearlyData] !== undefined ? renderCellValue(avg[row.key as keyof YearlyData] as number, row.type, row.color) : <span className="text-zinc-500">-</span>}
                       </td>
