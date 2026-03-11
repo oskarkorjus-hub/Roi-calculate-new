@@ -8,6 +8,7 @@ import { generateNPVReport } from '../../hooks/useReportGenerator';
 import { useArchivedDrafts, type ArchivedDraft } from '../../hooks/useArchivedDrafts';
 import { useAutoSave, loadAutoSave } from '../../hooks/useAutoSave';
 import { useAuth } from '../../lib/auth-context';
+import { useNotifications } from '../../lib/notification-context';
 import { formatCurrency, parseDecimalInput } from '../../utils/numberParsing';
 import type { NPVComparisonData } from '../../lib/comparison-types';
 
@@ -46,6 +47,7 @@ interface NPVInputs {
 
 export function NPVCalculator() {
   const { user } = useAuth();
+  const { addNotification } = useNotifications();
 
   // Load from auto-save on init
   const savedData = loadAutoSave<NPVInputs>('npv')?.data;
@@ -53,6 +55,7 @@ export function NPVCalculator() {
   const [currency, setCurrency] = useState<CurrencyType>(savedData?.currency || 'USD');
   const [discountRate, setDiscountRate] = useState(savedData?.discountRate || 0);
   const [cashFlows, setCashFlows] = useState<CashFlow[]>(savedData?.cashFlows || INITIAL_CASH_FLOWS);
+  const [rawInputs, setRawInputs] = useState<Record<number, string>>({});
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
   const [showReportModal, setShowReportModal] = useState(false);
   const [showResetConfirm, setShowResetConfirm] = useState(false);
@@ -84,7 +87,13 @@ export function NPVCalculator() {
     saveArchivedDraft(name, { currency, discountRate, cashFlows });
     setCurrentDraftName(name);
     setToast({ message: `Saved "${name}"`, type: 'success' });
-  }, [saveArchivedDraft, currency, discountRate, cashFlows]);
+    addNotification({
+      title: 'Draft Saved',
+      message: `"${name}" saved to NPV Calculator drafts`,
+      type: 'success',
+      icon: 'save',
+    });
+  }, [saveArchivedDraft, currency, discountRate, cashFlows, addNotification]);
 
   const handleDeleteDraft = useCallback((id: string) => {
     deleteDraft(id);
@@ -134,13 +143,39 @@ export function NPVCalculator() {
   }, [cashFlows, discountRate, result, symbol, totalInflows, totalOutflows]);
 
   const handleCashFlowChange = (index: number, amount: string) => {
-    const numAmount = parseDecimalInput(amount) || 0;
+    // Track raw input for display
+    setRawInputs(prev => ({ ...prev, [index]: amount }));
+
+    // Allow intermediate states like "-" or "-."
+    if (amount === '-' || amount === '-.' || amount === '.') {
+      return;
+    }
+
+    const numAmount = parseDecimalInput(amount);
+    const finalAmount = isNaN(numAmount) ? 0 : numAmount;
     const year = cashFlows[index].year;
-    const discountedValue = calculateDiscountedValue(numAmount, year, discountRate);
+    const discountedValue = calculateDiscountedValue(finalAmount, year, discountRate);
 
     const newFlows = [...cashFlows];
-    newFlows[index] = { year, amount: numAmount, discountedValue };
+    newFlows[index] = { year, amount: finalAmount, discountedValue };
     setCashFlows(newFlows);
+  };
+
+  const handleCashFlowBlur = (index: number) => {
+    // Clear raw input on blur to show the numeric value
+    setRawInputs(prev => {
+      const next = { ...prev };
+      delete next[index];
+      return next;
+    });
+  };
+
+  const getCashFlowInputValue = (index: number, amount: number): string => {
+    // Show raw input while typing, otherwise show the numeric value
+    if (rawInputs[index] !== undefined) {
+      return rawInputs[index];
+    }
+    return amount === 0 ? '' : String(amount);
   };
 
   const handleDiscountRateChange = (newRate: number) => {
@@ -287,7 +322,7 @@ export function NPVCalculator() {
                   value={discountRate === 0 ? '' : discountRate}
                   onChange={(e) => handleDiscountRateChange(parseDecimalInput(e.target.value) || 0)}
                   placeholder="0"
-                  className="w-full bg-zinc-800 border border-zinc-700 rounded-2xl px-6 py-4 text-[16px] font-bold text-white placeholder:text-zinc-500 outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all tabular-nums"
+                  className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-4 py-2.5 text-sm font-medium text-white placeholder:text-zinc-500 outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all tabular-nums"
                 />
                 <p className="text-xs text-zinc-500">
                   Typically 8-12% for real estate. This is your minimum required return.
@@ -333,9 +368,10 @@ export function NPVCalculator() {
                           <td className="px-4 py-3">
                             <input
                               type="text"
-                              inputMode="decimal"
-                              value={cf.amount === 0 ? '' : cf.amount}
+                              inputMode="text"
+                              value={getCashFlowInputValue(idx, cf.amount)}
                               onChange={(e) => handleCashFlowChange(idx, e.target.value)}
+                              onBlur={() => handleCashFlowBlur(idx)}
                               placeholder="0"
                               className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2 text-sm font-medium text-white placeholder:text-zinc-500 outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all tabular-nums"
                             />
