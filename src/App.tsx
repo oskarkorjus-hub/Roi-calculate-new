@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { useState, useCallback, Suspense } from 'react';
 import { getCalculatorById } from './calculators/registry';
 import { ScenarioComparison } from './components';
@@ -8,7 +8,6 @@ import { Navigation } from './components/layout/Navigation';
 import { DashboardLayout } from './components/layout/DashboardLayout';
 import { CalculatorHeader } from './components/layout/CalculatorHeader';
 import { Footer } from './components/layout/Footer';
-import { Landing } from './pages/Landing';
 import { Pricing } from './pages/Pricing';
 import { CalculatorsGuide } from './pages/CalculatorsGuide';
 import { Terms } from './pages/Terms';
@@ -128,7 +127,7 @@ function AppRoutes() {
           <Navigation />
           <main className="flex-1">
             <Routes>
-              <Route path="/" element={<Landing />} />
+              <Route path="/" element={<Navigate to="/login" replace />} />
               <Route path="/features" element={<CalculatorsGuide />} />
               <Route path="/pricing" element={<Pricing />} />
               <Route path="/terms" element={<Terms />} />
@@ -138,7 +137,7 @@ function AppRoutes() {
               <Route path="/signup" element={<Signup />} />
               <Route path="/reset-password" element={<ResetPassword />} />
               <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
-              <Route path="*" element={<Landing />} />
+              <Route path="*" element={<Navigate to="/login" replace />} />
             </Routes>
           </main>
           <Footer />

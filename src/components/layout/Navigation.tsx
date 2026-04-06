@@ -13,7 +13,7 @@ export function Navigation() {
   const handleSignOut = async () => {
     await signOut();
     setUserMenuOpen(false);
-    navigate('/');
+    navigate('/login');
   };
 
   // Close mobile menu on route change
@@ -26,7 +26,6 @@ export function Navigation() {
   };
 
   const navLinks = [
-    { path: '/', label: 'Home' },
     { path: '/features', label: 'Features' },
     { path: '/pricing', label: 'Pricing' },
     { path: '/contact', label: 'Contact' },
@@ -42,7 +41,7 @@ export function Navigation() {
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 lg:h-20">
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-3 group">
+          <Link to="/login" className="flex items-center gap-3 group">
             <img
               src="/logo.png"
               alt="ROI Calculate"
