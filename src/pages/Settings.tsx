@@ -1,31 +1,12 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../lib/auth-context';
-import { useTier } from '../lib/tier-context';
-import { ProfileSection, SubscriptionSection, BillingSection } from '../components/settings';
-import { getBillingData } from '../lib/billing-service';
-import type { BillingData } from '../types/billing';
-
-type SettingsTab = 'profile' | 'subscription' | 'billing';
+import { ProfileSection } from '../components/settings';
 
 export function Settings() {
   const { user, loading: authLoading } = useAuth();
-  const { tier, loading: tierLoading } = useTier();
   const navigate = useNavigate();
-  const location = useLocation();
-
-  // Get initial tab from URL hash or default to 'profile'
-  const getInitialTab = (): SettingsTab => {
-    const hash = location.hash.replace('#', '');
-    if (hash === 'billing' || hash === 'subscription' || hash === 'profile') {
-      return hash;
-    }
-    return 'profile';
-  };
-
-  const [activeTab, setActiveTab] = useState<SettingsTab>(getInitialTab);
-  const [billingData, setBillingData] = useState<BillingData | null>(null);
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
 
   // Redirect to login if not authenticated
@@ -35,41 +16,13 @@ export function Settings() {
     }
   }, [user, authLoading, navigate]);
 
-  // Update URL hash when tab changes
-  useEffect(() => {
-    if (activeTab !== 'profile') {
-      window.history.replaceState(null, '', `#${activeTab}`);
-    } else {
-      window.history.replaceState(null, '', location.pathname);
-    }
-  }, [activeTab, location.pathname]);
-
-  // Listen for hash changes (e.g., from sidebar navigation)
-  useEffect(() => {
-    const hash = location.hash.replace('#', '');
-    if (hash === 'billing' || hash === 'subscription' || hash === 'profile') {
-      setActiveTab(hash);
-    }
-  }, [location.hash]);
-
-  // Load billing data when tier is loaded
-  useEffect(() => {
-    if (!tierLoading && tier) {
-      setBillingData(getBillingData(tier));
-    }
-  }, [tier, tierLoading]);
-
   const handleToast = (message: string, type: 'success' | 'error') => {
     setToast({ message, type });
     setTimeout(() => setToast(null), 5000);
   };
 
-  const handleBillingUpdate = (data: BillingData) => {
-    setBillingData(data);
-  };
-
   // Loading state
-  if (authLoading || tierLoading) {
+  if (authLoading) {
     return (
       <div className="min-h-screen bg-[#0a0a0a] pt-20 flex items-center justify-center">
         <div className="text-zinc-400">Loading...</div>
@@ -81,36 +34,6 @@ export function Settings() {
   if (!user) {
     return null;
   }
-
-  const tabs: { id: SettingsTab; label: string; icon: React.ReactNode }[] = [
-    {
-      id: 'profile',
-      label: 'Profile',
-      icon: (
-        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-        </svg>
-      ),
-    },
-    {
-      id: 'subscription',
-      label: 'Subscription',
-      icon: (
-        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
-        </svg>
-      ),
-    },
-    {
-      id: 'billing',
-      label: 'Billing',
-      icon: (
-        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
-        </svg>
-      ),
-    },
-  ];
 
   return (
     <div className="min-h-screen bg-[#0a0a0a] pt-20">
@@ -132,86 +55,17 @@ export function Settings() {
           </button>
           <h1 className="text-3xl font-bold text-white mb-2">Account Settings</h1>
           <p className="text-zinc-400">
-            Manage your profile, subscription, and billing information.
+            Manage your profile information.
           </p>
         </motion.div>
 
-        {/* Tab Navigation */}
+        {/* Profile Content */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="bg-zinc-900/50 border border-zinc-800 rounded-2xl p-2 mb-8"
         >
-          <div className="flex flex-wrap gap-2">
-            {tabs.map((tab) => (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
-                className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-medium text-sm transition-all ${
-                  activeTab === tab.id
-                    ? 'bg-zinc-800 text-white'
-                    : 'text-zinc-400 hover:text-white hover:bg-zinc-800/50'
-                }`}
-              >
-                {tab.icon}
-                {tab.label}
-              </button>
-            ))}
-          </div>
-        </motion.div>
-
-        {/* Tab Content */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-        >
-          <AnimatePresence mode="wait">
-            {activeTab === 'profile' && (
-              <motion.div
-                key="profile"
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: 20 }}
-                transition={{ duration: 0.2 }}
-              >
-                <ProfileSection onToast={handleToast} />
-              </motion.div>
-            )}
-
-            {activeTab === 'subscription' && billingData && (
-              <motion.div
-                key="subscription"
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: 20 }}
-                transition={{ duration: 0.2 }}
-              >
-                <SubscriptionSection
-                  billingData={billingData}
-                  onBillingUpdate={handleBillingUpdate}
-                  onToast={handleToast}
-                />
-              </motion.div>
-            )}
-
-            {activeTab === 'billing' && billingData && (
-              <motion.div
-                key="billing"
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: 20 }}
-                transition={{ duration: 0.2 }}
-              >
-                <BillingSection
-                  billingData={billingData}
-                  onBillingUpdate={handleBillingUpdate}
-                  onToast={handleToast}
-                />
-              </motion.div>
-            )}
-          </AnimatePresence>
+          <ProfileSection onToast={handleToast} />
         </motion.div>
       </div>
 

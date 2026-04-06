@@ -6,7 +6,6 @@ export function Footer() {
   const footerLinks = {
     product: [
       { label: 'Features', path: '/features' },
-      { label: 'Pricing', path: '/pricing' },
     ],
     company: [
       { label: 'Contact', path: '/contact' },
@@ -23,7 +22,7 @@ export function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-8">
           {/* Brand Section */}
           <div className="lg:col-span-1">
-            <Link to="/" className="flex items-center gap-3 mb-6 group">
+            <Link to="/login" className="flex items-center gap-3 mb-6 group">
               <img
                 src="/logo.png"
                 alt="ROI Calculate"

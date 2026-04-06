@@ -6,8 +6,8 @@ export interface TierLimits {
 }
 
 export const TIER_LIMITS: Record<UserTier, TierLimits> = {
-  free: { calculationsPerMonth: 3, maxSavedProjects: 1 },
-  pro: { calculationsPerMonth: Infinity, maxSavedProjects: 25 },
+  free: { calculationsPerMonth: Infinity, maxSavedProjects: Infinity },
+  pro: { calculationsPerMonth: Infinity, maxSavedProjects: Infinity },
   enterprise: { calculationsPerMonth: Infinity, maxSavedProjects: Infinity },
 };
 

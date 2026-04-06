@@ -27,7 +27,6 @@ export function Navigation() {
 
   const navLinks = [
     { path: '/features', label: 'Features' },
-    { path: '/pricing', label: 'Pricing' },
     { path: '/contact', label: 'Contact' },
   ];
 

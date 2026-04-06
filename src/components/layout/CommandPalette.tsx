@@ -89,17 +89,10 @@ export function CommandPalette({ isOpen, onClose, onSelectCalculator, onViewChan
     const actionCommands: Command[] = [
       {
         id: 'action-home',
-        label: 'Go to Homepage',
+        label: 'Go to Login',
         icon: 'home',
         category: 'action',
-        action: () => navigate('/'),
-      },
-      {
-        id: 'action-pricing',
-        label: 'View Pricing',
-        icon: 'payments',
-        category: 'action',
-        action: () => navigate('/pricing'),
+        action: () => navigate('/login'),
       },
       {
         id: 'action-help',
