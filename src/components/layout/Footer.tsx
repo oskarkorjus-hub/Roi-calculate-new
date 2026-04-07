@@ -4,11 +4,8 @@ export function Footer() {
   const currentYear = new Date().getFullYear();
 
   const footerLinks = {
-    product: [
-      { label: 'Features', path: '/features' },
-    ],
+    product: [] as { label: string; path: string }[],
     company: [
-      { label: 'Contact', path: '/contact' },
       { label: 'Terms of Service', path: '/terms' },
       { label: 'Privacy Policy', path: '/privacy' },
     ],

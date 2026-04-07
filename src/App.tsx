@@ -8,11 +8,8 @@ import { Navigation } from './components/layout/Navigation';
 import { DashboardLayout } from './components/layout/DashboardLayout';
 import { CalculatorHeader } from './components/layout/CalculatorHeader';
 import { Footer } from './components/layout/Footer';
-import { Pricing } from './pages/Pricing';
-import { CalculatorsGuide } from './pages/CalculatorsGuide';
 import { Terms } from './pages/Terms';
 import { Privacy } from './pages/Privacy';
-import { Contact } from './pages/Contact';
 import { Login } from './pages/Login';
 import { Signup } from './pages/Signup';
 import { ResetPassword } from './pages/ResetPassword';
@@ -128,11 +125,8 @@ function AppRoutes() {
           <main className="flex-1">
             <Routes>
               <Route path="/" element={<Navigate to="/login" replace />} />
-              <Route path="/features" element={<CalculatorsGuide />} />
-              <Route path="/pricing" element={<Pricing />} />
               <Route path="/terms" element={<Terms />} />
               <Route path="/privacy" element={<Privacy />} />
-              <Route path="/contact" element={<Contact />} />
               <Route path="/login" element={<Login />} />
               <Route path="/signup" element={<Signup />} />
               <Route path="/reset-password" element={<ResetPassword />} />

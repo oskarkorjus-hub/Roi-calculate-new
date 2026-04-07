@@ -94,13 +94,6 @@ export function CommandPalette({ isOpen, onClose, onSelectCalculator, onViewChan
         category: 'action',
         action: () => navigate('/login'),
       },
-      {
-        id: 'action-help',
-        label: 'Get Help',
-        icon: 'help',
-        category: 'action',
-        action: () => navigate('/contact'),
-      },
     ];
 
     return [...navCommands, ...calculatorCommands, ...actionCommands];

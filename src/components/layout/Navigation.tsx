@@ -25,10 +25,7 @@ export function Navigation() {
     return location.pathname === path;
   };
 
-  const navLinks = [
-    { path: '/features', label: 'Features' },
-    { path: '/contact', label: 'Contact' },
-  ];
+  const navLinks: { path: string; label: string }[] = [];
 
   return (
     <motion.nav
